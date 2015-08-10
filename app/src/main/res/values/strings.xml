@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">UsbTest</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Epostadresse</string>
+    <string name="prompt_password">Passord</string>
+    <string name="action_sign_in">Logg inn</string>
+    <string name="action_sign_in_short">Logg inn</string>
+    <string name="error_invalid_email">Ugyldig epostadresse</string>
+    <string name="error_invalid_password">Passordet er for kort</string>
+    <string name="error_incorrect_password">Feil passord</string>
+    <string name="error_field_required">Dette feltet er påkrevd</string>
+    <string name="action_forgot_password">Glemt passord</string>
+    <string name="action_sign_up">Registrer bruker</string>
+    <string name="title_activity_my_page">MyPageActivity</string>
+</resources>

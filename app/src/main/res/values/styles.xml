@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- Colours -->
+    <color name="border_black">#000000</color>
+    <color name="text_white">#FFFFFF</color>
+    <color name="passive_orange">#FF6600</color>
+    <color name="done_yellow">#FFC900</color>
+    <color name="ack_green">#00CC00</color>
+    <color name="nak_red">#f00</color>
+    <color name="message_blue">#4C85D3</color>
+    <color name="footer_gray">#4C4747</color>
+    <color name="unavailable_grey">#B9B9B9</color>
+    <color name="helpful_grey">#D5D5D5</color>
+    <color name="hyperlink_blue">#0000EE</color>
+
+</resources>
