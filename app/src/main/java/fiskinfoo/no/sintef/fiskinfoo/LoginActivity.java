@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -30,6 +29,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -39,6 +40,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      */
     private UserLoginTask mAuthTask = null;
     private static SharedPreferences prefs;
+    private User user;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -48,7 +50,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
@@ -165,10 +166,14 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         return matcher.matches();
     }
 
+    /**
+     * This function checks the passwords validity
+     * @param password
+     *  The password must be greater than 7, ensure compat with bw
+     * @return
+     */
     private boolean isPasswordValid(String password) {
-        // TODO: Replace this with your own logic
-
-        return password.length() > 6;
+        return password.length() > 7;
     }
 
     /**
@@ -238,7 +243,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         // Create adapter to tell the AutoCompleteTextView what to show in its
         // dropdown list.
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(LoginActivity.this, android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(LoginActivity.this, android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
     }
@@ -260,16 +265,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-				/*
-				 * TODO: attempt authentication against a network service. for
-				 * now just let user through after simulating web traffic.
-				 */
-                // if(successfulAuthenticationWithServer) {
                 return true;
-                // } else {
-                // return false;
-                // }
-
             } catch (Exception e) {
                 return false;
             }
