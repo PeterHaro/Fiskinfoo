@@ -1,5 +1,11 @@
 package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit;
 
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,6 +29,22 @@ public class BarentswatchApi {
                 request.addHeader("Authorization", "Bearer " + accessToken);
             }
         }
+    }
+
+    public static Request getRequestForAuthentication(String mEmail, String mPassword) {
+        final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json;charset=utf-8");
+        final OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("grant_type", "password")
+                .add("username", mEmail)
+                .add("password", mPassword)
+                .build();
+         return new Request.Builder()
+                .url("https://www.barentswatch.no/api/token")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .post(formBody)
+                .build();
+
     }
 
     private IBarentswatchApi initializeBarentswatchAPI(Executor httpExecutor, Executor callbackExecutor) {

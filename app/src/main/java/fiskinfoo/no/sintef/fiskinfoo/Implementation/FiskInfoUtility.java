@@ -43,7 +43,7 @@ public class FiskInfoUtility {
      * @throws ArithmeticException
      *             if the byte count is too large
      */
-    public int copy(InputStream input, OutputStream output) throws IOException {
+    public static int copy(InputStream input, OutputStream output) throws IOException {
         long count = copyLarge(input, output);
         if (count > Integer.MAX_VALUE) {
             return -1;
@@ -68,7 +68,7 @@ public class FiskInfoUtility {
      * @throws IOException
      *             if an I/O error occurs
      */
-    public long copyLarge(InputStream input, OutputStream output) throws IOException {
+    public static long copyLarge(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long count = 0;
         int n = 0;
@@ -95,7 +95,7 @@ public class FiskInfoUtility {
      * @throws IOException
      *             if an I/O error occurs
      */
-    public byte[] toByteArray(InputStream input) throws IOException {
+    public static byte[] toByteArray(InputStream input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         copy(input, output);
         return output.toByteArray();

@@ -8,13 +8,13 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -24,11 +24,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 /**
@@ -38,6 +47,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
+    private static final String TAG = "LoginActivity::";
     private UserLoginTask mAuthTask = null;
     private static SharedPreferences prefs;
     private User user;
@@ -46,6 +56,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private BarentswatchApi barentswatchApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +78,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 return false;
             }
         });
+        barentswatchApi = new BarentswatchApi();
+
 
         Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -169,11 +182,11 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     /**
      * This function checks the passwords validity
      * @param password
-     *  The password must be greater than 7, ensure compat with bw
+     *  The password must be greater than 6, ensure compat with bw
      * @return
      */
     private boolean isPasswordValid(String password) {
-        return password.length() > 7;
+        return password.length() >= 7;
     }
 
     /**
@@ -265,8 +278,12 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                OkHttpClient mClient = new OkHttpClient();
+                Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
+                Log.d(TAG, response.body().string());
                 return true;
             } catch (Exception e) {
+                Log.d(TAG, "Excpetion occured: " + e.toString());
                 return false;
             }
         }

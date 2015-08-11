@@ -101,6 +101,38 @@
                 android:text="@string/action_sign_up"
                 android:textColor="@color/hyperlink_blue" />
         </RelativeLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TestLogin"
+            android:id="@+id/button1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TestGetSubscribable"
+            android:id="@+id/button2"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TestSub"
+            android:id="@+id/button3"
+            android:layout_below="@+id/button1"
+            android:layout_toEndOf="@+id/login_progress" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TestYolo"
+            android:id="@+id/button4"
+            android:layout_alignTop="@+id/button3"
+            android:layout_alignStart="@+id/button2" />
     </RelativeLayout>
 
 </ScrollView>

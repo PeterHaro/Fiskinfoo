@@ -13,8 +13,10 @@ public class User implements Parcelable{
     private static final String PREFS_NAME = "no.sintef.fiskinfo";
     private static final String PREFS_KEY = "user";
 
+    //TODO: DO ME SAFELY
     private String username;
     private String password;
+    //TODO: END
     private String token;
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
