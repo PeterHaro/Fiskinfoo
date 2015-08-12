@@ -7,7 +7,6 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,15 +20,16 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,19 +45,22 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      */
     private static final String TAG = "LoginActivity::";
     private UserLoginTask mAuthTask = null;
-    private static SharedPreferences prefs;
     private User user;
+    private BarentswatchApi barentswatchApi;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    private BarentswatchApi barentswatchApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //Skip login form if the user requested it
+        user = new User();
+        loginUserIfStored();
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email_sign_in_edit_text);
@@ -75,7 +78,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             }
         });
         barentswatchApi = new BarentswatchApi();
-
 
         Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +105,17 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void loginUserIfStored() {
+        if (!User.exists(this)) {
+            Log.d(TAG, "Could not find user");
+            return;
+        }
+        user = User.readFromSharedPref(this);
+        Log.d(TAG, "Username is: " + user.getUsername());
+        Log.d(TAG, "password is: " + user.getPassword());
+        changeActivity(MyPageActivity.class, user);
     }
 
     private void populateAutoComplete() {
@@ -262,10 +275,11 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
         private final String mEmail;
         private final String mPassword;
-
+        private final User user = new User();
+        private final AtomicReference<String> responseAsString = new AtomicReference<>();
+        private final CheckBox storeUserToDisk = (CheckBox) findViewById(R.id.login_checkbox);
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -276,10 +290,10 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             try {
                 OkHttpClient mClient = new OkHttpClient();
                 Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
-                Log.d(TAG, response.body().string());
+                responseAsString.set(response.body().toString());
                 return true;
             } catch (Exception e) {
-                Log.d(TAG, "Excpetion occured: " + e.toString());
+                Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
                 return false;
             }
         }
@@ -288,9 +302,18 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
-                changeActivity(MyPageActivity.class);
+                user.setAuthentication(true);
+                user.setUsername(mEmail);
+                user.setPassword(mPassword);
+                if(storeUserToDisk.isChecked()) {
+                    Log.d(TAG, "Store to disk isChecked == true");
+                    user.rememberUser(LoginActivity.this);
+                    user.writeToSharedPref(LoginActivity.this);
+                } else {
+                    User.forgetUser(LoginActivity.this);
+                }
+                changeActivity(MyPageActivity.class, user);
 
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -404,7 +427,16 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
     private void changeActivity(Class<?> activityClass) {
         Intent intent = new Intent(this, activityClass);
+        intent.putExtra("user", user);
         startActivity(intent);
+        finish();
+    }
+
+    private void changeActivity(Class<?> activityClass, User mUser) {
+        Intent intent = new Intent(this, activityClass);
+        intent.putExtra("user", mUser);
+        startActivity(intent);
+        finish();
     }
 
 }

@@ -18,4 +18,5 @@
     <string name="action_forgot_password">Glemt passord</string>
     <string name="action_sign_up">Registrer bruker</string>
     <string name="title_activity_my_page">MyPageActivity</string>
+    <string name="login_activity_remember_login">Husk meg</string>
 </resources>
