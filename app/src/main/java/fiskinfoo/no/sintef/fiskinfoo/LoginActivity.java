@@ -129,7 +129,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         user = User.readFromSharedPref(this);
         Log.d(TAG, "Username is: " + user.getUsername());
         Log.d(TAG, "password is: " + user.getPassword());
-        changeActivity(MyPageActivity.class, user);
+        changeActivity(MainActivity.class, user);
     }
 
     private void populateAutoComplete() {
@@ -327,7 +327,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 } else {
                     User.forgetUser(LoginActivity.this);
                 }
-                changeActivity(MyPageActivity.class, user);
+                changeActivity(MainActivity.class, user);
 
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -379,7 +379,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
             if (success) {
                 // user successfully created
-                changeActivity(MyPageActivity.class);
+                changeActivity(MainActivity.class);
 
             } else {
             }
@@ -425,7 +425,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
             if (success) {
                 // password reset request successful
-                changeActivity(MyPageActivity.class);
+                changeActivity(MainActivity.class);
 
             } else {
                 // failed to request password reset.

@@ -15,7 +15,7 @@ limitations under the License.
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowNoTitle">true</item>
     </style>
@@ -33,6 +33,7 @@ limitations under the License.
     <color name="helpful_grey">#D5D5D5</color>
     <color name="hyperlink_blue">#0000EE</color>
     <color name="barentswatch_blue">#085382</color>
+
 
 
 </resources>
