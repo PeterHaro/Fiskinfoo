@@ -1,27 +1,41 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="no.dualog.ifangst.LoginActivity" >
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="no.dualog.ifangst.LoginActivity">
 
     <!-- Login progress -->
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <View
             android:id="@+id/login_logo_view"
             android:layout_width="@dimen/login_logo_width"
             android:layout_height="@dimen/login_logo_height"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
 
         <ProgressBar
             android:id="@+id/login_progress"
@@ -32,14 +46,14 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <RelativeLayout
             android:id="@+id/login_form"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_below="@+id/login_logo_view"
-            android:layout_marginTop="@dimen/activity_vertical_margin" >
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
             <AutoCompleteTextView
                 android:id="@+id/email_sign_in_edit_text"
@@ -52,9 +66,9 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:selectAllOnFocus="true"
-                android:singleLine="true" >
+                android:singleLine="true">
 
-                <requestFocus />
+                <requestFocus/>
 
             </AutoCompleteTextView>
 
@@ -68,17 +82,18 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
-                android:selectAllOnFocus="true"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:selectAllOnFocus="true"
+                android:singleLine="true"/>
 
             <CheckBox
+                android:id="@+id/login_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login_activity_remember_login"
-                android:id="@+id/login_checkbox"
+                android:layout_alignParentStart="true"
                 android:layout_below="@+id/password_sign_in_edit_text"
-                android:layout_alignParentStart="true" />
+                android:checked="true"
+                android:text="@string/login_activity_remember_login"/>
 
             <Button
                 android:id="@+id/sign_in_button"
@@ -88,7 +103,7 @@
                 android:layout_below="@+id/login_checkbox"
                 android:layout_marginTop="10dp"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/forgotten_password_text_view"
@@ -98,7 +113,7 @@
                 android:layout_below="@+id/sign_in_button"
                 android:layout_marginTop="18dp"
                 android:text="@string/action_forgot_password"
-                android:textColor="@color/hyperlink_blue" />
+                android:textColor="@color/hyperlink_blue"/>
 
             <TextView
                 android:id="@+id/sign_up_text_view"
@@ -107,7 +122,7 @@
                 android:layout_alignBottom="@+id/forgotten_password_text_view"
                 android:layout_alignRight="@+id/sign_in_button"
                 android:text="@string/action_sign_up"
-                android:textColor="@color/hyperlink_blue" />
+                android:textColor="@color/hyperlink_blue"/>
 
         </RelativeLayout>
 

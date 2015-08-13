@@ -12,16 +12,11 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit;
+package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
+import android.content.Context;
+import android.view.View;
 
-public abstract class BarentswatchApiCallback<T> implements Callback<T> {
-    public abstract void failure(BarentswatchApiError error);
-
-    @Override
-    public void failure(RetrofitError error) {
-        failure(BarentswatchApiError.fromRetrofitError(error));
-    }
+public interface UtilityRowsInterface {
+    View getToolLegendRow(Context context, String toolName, int toolColor);
 }

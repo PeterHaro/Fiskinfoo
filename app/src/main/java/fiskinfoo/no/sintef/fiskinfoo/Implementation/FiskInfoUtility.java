@@ -190,19 +190,19 @@ public class FiskInfoUtility {
         } else {
             switch (projection) {
                 case "EPSG:3857":
-                    if (checkProjectionEPSG3857(coordinates) == true) {
+                    if (checkProjectionEPSG3857(coordinates)) {
                         break;
                     }
                 case "EPSG:4326":
-                    if (checkProjectionEPSG4326(coordinates) == true) {
+                    if (checkProjectionEPSG4326(coordinates)) {
                         break;
                     }
                 case "EPSG:23030":
-                    if (checkProjectionEPSG23030(coordinates) == true) {
+                    if (checkProjectionEPSG23030(coordinates)) {
                         break;
                     }
                 case "EPSG:900913":
-                    if (checkProjectionEPSG900913(coordinates) == true) {
+                    if (checkProjectionEPSG900913(coordinates)) {
                         break;
                     }
                 default:
