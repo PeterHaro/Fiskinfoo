@@ -28,11 +28,32 @@ limitations under the License.
     <dimen name="dialog_container_margin_right">15dp</dimen>
     <dimen name="dialog_container_margin_top">20dp</dimen>
     <dimen name="dialog_internal_container_margin_top">5dp</dimen>
+    <dimen name="dialog_internal_container_margin_bottom">5dp</dimen>
     <dimen name="dialog_internal_container_large_margin_top">10dp</dimen>
+    <dimen name="bottom_button_container_margin_left">5dp</dimen>
+    <dimen name="bottom_button_container_margin_right">5dp</dimen>
+    <dimen name="bottom_button_container_margin_top">15dp</dimen>
+    <dimen name="bottom_button_container_margin_bottom">15dp</dimen>
 
-    <!-- Tool legend margins-->
+    <!-- Tool legend dialog margins-->
     <dimen name="tool_legend_row_margin_left">10dp</dimen>
     <dimen name="tool_legend_row_margin_right">10dp</dimen>
     <dimen name="tool_legend_row_margin_top">5dp</dimen>
+
+    <!-- Select map layers dialog margins -->
+    <dimen name="map_layer_linear_layout_margin_left">10dp</dimen>
+    <dimen name="map_layer_linear_layout_margin_right">10dp</dimen>
+    <dimen name="map_layer_row_margin_left">5dp</dimen>
+    <dimen name="map_layer_row_margin_right">5dp</dimen>
+    <dimen name="map_layer_bottom_button_margin_top">15dp</dimen>
+    <dimen name="map_layer_bottom_button_margin_bottom">15dp</dimen>
+
+
+    <!-- Proximity alert margins -->
+    <dimen name="proximity_alert_spinner_margin_top">20dp</dimen>
+    <dimen name="proximity_alert_spinner_margin_bottom">20dp</dimen>
+    <dimen name="proximity_alert_spinner_margin_left">20dp</dimen>
+    <dimen name="proximity_alert_spinner_margin_right">20dp</dimen>
+    <dimen name="proximity_alert_range_edit_text_width">80dp</dimen>
 
 </resources>

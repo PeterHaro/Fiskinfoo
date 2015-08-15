@@ -14,16 +14,16 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.view.View;
 
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
-
-public interface UtilityRowsInterface {
-    ToolLegendRow getToolLegendRow(Context context, int toolColor, String toolName);
-    MapLayerCheckBoxRow getMapLayerCheckBoxRow(Context context, boolean isChecked, String layerName);
-    SettingsButtonRow getSettingsButtonRow(Context context, String buttonText);
-    SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener);
+public interface DialogInterface {
+    /**
+     * Return a dialog with the given layout and title that is not cancelled by outside touch.
+     * @param context
+     * @param layoutId
+     * @param titleId
+     * @return
+     */
+    Dialog getDialog(Context context, int layoutId, int titleId);
 }

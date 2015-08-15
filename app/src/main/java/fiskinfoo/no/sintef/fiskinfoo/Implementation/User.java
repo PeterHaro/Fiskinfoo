@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
@@ -39,6 +40,8 @@ public class User implements Parcelable{
     private long previousAuthenticationTimeStamp = 0;
     //TODO: END
     private Authentication authentication;
+    private String filePathForExternalStorage;
+    private List<String> activeLayers = new ArrayList<>();
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
     private Boolean isAuthenticated; //False == anon user, I.E no permission
@@ -51,6 +54,7 @@ public class User implements Parcelable{
         username = in.readString();
         password = in.readString();
         authentication = in.readParcelable(Authentication.class.getClassLoader());
+        activeLayers = in.createStringArrayList();
         mySubscriptions = in.createStringArrayList();
         availableSubscriptions = in.createStringArrayList();
     }
@@ -105,6 +109,23 @@ public class User implements Parcelable{
             return authentication.access_token;
         }
     }
+
+    public String getFilePathForExternalStorage() {
+        return filePathForExternalStorage;
+    }
+
+    public void setFilePathForExternalStorage(String filePathForExternalStorage) {
+        this.filePathForExternalStorage = filePathForExternalStorage;
+    }
+
+    public void setActiveLayers(List<String> layers) {
+        this.activeLayers = layers;
+    }
+
+    public List<String> getActiveLayers() {
+        return this.activeLayers;
+    }
+
 
     public Boolean isAuthenticated() {
         return isAuthenticated;
@@ -174,6 +195,7 @@ public class User implements Parcelable{
         dest.writeString(username);
         dest.writeString(password);
         dest.writeParcelable(authentication, flags);
+        dest.writeStringList(activeLayers);
         dest.writeStringList(mySubscriptions);
         dest.writeStringList(availableSubscriptions);
     }

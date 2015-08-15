@@ -17,24 +17,36 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 
 public class UtilityRows implements UtilityRowsInterface {
     @Override
-    public View getToolLegendRow(Context context, String toolName, int toolColor) {
-        TableRow tr = new TableRow(context);
-        View v = LayoutInflater.from(context).inflate(R.layout.tool_legend_row, tr, false);
-        TextView textView = (TextView) v.findViewById(R.id.tool_legend_row_text_view);
-        ImageView imageView = (ImageView) v.findViewById(R.id.tool_legend_row_image_view);
+    public ToolLegendRow getToolLegendRow(Context context, int toolColor, String toolName) {
+        return new ToolLegendRow(context, toolColor, toolName);
+    }
 
-        textView.setText(toolName);
-        imageView.setBackgroundColor(toolColor);
+    @Override
+    public MapLayerCheckBoxRow getMapLayerCheckBoxRow(Context context, boolean isChecked, String layerName) {
+        return new MapLayerCheckBoxRow(context, isChecked, layerName);
+    }
 
-        return v;
+    @Override
+    public SettingsButtonRow getSettingsButtonRow(Context context, String buttonText) {
+        return new SettingsButtonRow(context, buttonText);
+    }
+
+    @Override
+    public SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
+        return new SettingsButtonRow(context, buttonText, onClickListener);
     }
 }
+

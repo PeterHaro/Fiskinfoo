@@ -186,13 +186,13 @@ public class GpsLocationTracker extends Service implements LocationListener {
     }
 
     /**
-     * function to prompt user to open settings to enable gps
+     * function to prompt user to open dialog_settings to enable gps
      */
     public void showSettingsAlert() {
         AlertDialog.Builder mAlertDialog = new AlertDialog.Builder(new ContextThemeWrapper(mContext, R.style.AppTheme));
         mAlertDialog.setTitle("Gps Disabled");
         mAlertDialog.setMessage("gps is not enabled . do you want to enable ?");
-        mAlertDialog.setPositiveButton("settings", new DialogInterface.OnClickListener() {
+        mAlertDialog.setPositiveButton("dialog_settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent mIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(mIntent);
