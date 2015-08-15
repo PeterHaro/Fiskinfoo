@@ -24,6 +24,11 @@ limitations under the License.
     <string name="my_page">Min side</string>
     <string name="map">Kart</string>
 
+    <!-- MyPage fragment strings -->
+    <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
+    <string name="my_page_all_warnings">Mine varsler</string>
+    <string name="my_page_my_subscriptions">Mine kart</string>
+
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
     <string name="tool_legend">Tegnforklaring for redskaper</string>
@@ -55,5 +60,17 @@ limitations under the License.
     <string name="login_activity_remember_login">Husk meg</string>
     <string name="title_activity_map">MapActivity</string>
     <string name="title_activity_main">MainActivity</string>
+
+    <!-- Cardview fragment -->
+        <string name="cardview_contents">This is a CardView widget. CardView widgets can have
+        shadows and rounded corners.
+        \n\nTo create a card with a shadow, use the <font fgcolor="#FFFFFFFF">android:elevation</font>
+        attribute.
+        \n\nTo set the corner radius in your layouts, use the <font
+                fgcolor="#FFFFFFFF">card_view:cardCornerRadius</font> attribute.
+    </string>
+    <string name="cardview_radius_seekbar_text">Radius</string>
+    <string name="cardview_elevation_seekbar_text">Elevation</string>
+    <string name="cardview_base_title"> Noe gikk feil: </string>
 
 </resources>

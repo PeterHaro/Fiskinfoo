@@ -24,6 +24,8 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
+
 public class User implements Parcelable{
     private static final String PREFS_NAME = "no.sintef.fiskinfo";
     private static final String PREFS_KEY = "user";
@@ -33,7 +35,10 @@ public class User implements Parcelable{
     private String username;
     private String password;
     //TODO: END
-    private String token;
+    //TODO: THIS IS STUPID
+    private long previousAuthenticationTimeStamp = 0;
+    //TODO: END
+    private Authentication authentication;
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
     private Boolean isAuthenticated; //False == anon user, I.E no permission
@@ -41,6 +46,42 @@ public class User implements Parcelable{
     public User() {
         isAuthenticated = false;
     }
+
+    protected User(Parcel in) {
+        username = in.readString();
+        password = in.readString();
+        authentication = in.readParcelable(Authentication.class.getClassLoader());
+        mySubscriptions = in.createStringArrayList();
+        availableSubscriptions = in.createStringArrayList();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    public void setPreviousAuthenticationTimeStamp(long authenticationTimeStamp) {
+        previousAuthenticationTimeStamp = authenticationTimeStamp;
+    }
+
+    public boolean isTokenValid() {
+        if(authentication == null) {
+            return false;
+        }
+        if ((System.currentTimeMillis() / 1000L) - previousAuthenticationTimeStamp > (authentication.expires_in + 600)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -57,12 +98,12 @@ public class User implements Parcelable{
         return password;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public String getToken() {
-        return token;
+        if (authentication == null) {
+            return null;
+        } else {
+            return authentication.access_token;
+        }
     }
 
     public Boolean isAuthenticated() {
@@ -71,14 +112,6 @@ public class User implements Parcelable{
 
     public void setAuthentication(boolean authentication) {
         isAuthenticated = authentication;
-    }
-
-    protected User(Parcel in) {
-        username = in.readString();
-        password = in.readString();
-        token = in.readString();
-        mySubscriptions = in.createStringArrayList();
-        availableSubscriptions = in.createStringArrayList();
     }
 
     public static boolean exists(Context context) {
@@ -118,21 +151,18 @@ public class User implements Parcelable{
     public static User readFromSharedPref(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String serializedDataFromPreference = prefs.getString(PREFS_KEY, null);
-        Log.d("User should be: " , serializedDataFromPreference);
+        Log.d("User should be: ", serializedDataFromPreference);
         return deSerialize(serializedDataFromPreference);
     }
 
-    public static final Creator<User> CREATOR = new Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel in) {
-            return new User(in);
-        }
 
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
+    public Authentication getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
+    }
 
     @Override
     public int describeContents() {
@@ -143,7 +173,7 @@ public class User implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(username);
         dest.writeString(password);
-        dest.writeString(token);
+        dest.writeParcelable(authentication, flags);
         dest.writeStringList(mySubscriptions);
         dest.writeStringList(availableSubscriptions);
     }

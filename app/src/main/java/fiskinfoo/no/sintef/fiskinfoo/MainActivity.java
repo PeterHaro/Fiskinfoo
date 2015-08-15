@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        user = savedInstanceState.getParcelable("user");
+        user = getIntent().getParcelableExtra("user");
         if (user == null) {
             Log.d(TAG, "did not receive user");
         }

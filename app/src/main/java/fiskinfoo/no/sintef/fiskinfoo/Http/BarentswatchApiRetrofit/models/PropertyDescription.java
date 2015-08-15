@@ -57,6 +57,26 @@ public class PropertyDescription implements Parcelable{
         }
     };
 
+    public String getFormatsAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (String format:
+             Formats) {
+            sb.append(format);
+            sb.append(System.getProperty("line.separator"));
+        }
+        return sb.toString();
+    }
+
+    public String getSubscriptionIntervalAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (String interval:
+                SubscriptionInterval) {
+            sb.append(interval);
+            sb.append(System.getProperty("line.separator"));
+        }
+        return sb.toString();
+    }
+
     @Override
     public int describeContents() {
         return 0;

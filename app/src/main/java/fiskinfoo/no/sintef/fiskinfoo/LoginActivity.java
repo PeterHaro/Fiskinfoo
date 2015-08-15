@@ -38,6 +38,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 
@@ -48,6 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 /**
@@ -127,8 +129,10 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             return;
         }
         user = User.readFromSharedPref(this);
-        Log.d(TAG, "Username is: " + user.getUsername());
-        Log.d(TAG, "password is: " + user.getPassword());
+        if(!user.isTokenValid()) {
+            LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
+            loginTask.execute((Void) null);
+        }
         changeActivity(MainActivity.class, user);
     }
 
@@ -292,7 +296,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         private final String mEmail;
         private final String mPassword;
         private final User user = new User();
-        private final AtomicReference<String> responseAsString = new AtomicReference<>();
+        private final AtomicReference<Authentication> authenticationResponse = new AtomicReference<>();
         private final CheckBox storeUserToDisk = (CheckBox) findViewById(R.id.login_checkbox);
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -304,7 +308,9 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             try {
                 OkHttpClient mClient = new OkHttpClient();
                 Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
-                responseAsString.set(response.body().toString());
+                Gson gson = new Gson();
+                Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
+                authenticationResponse.set(auth);
                 return true;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
@@ -320,8 +326,9 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 user.setAuthentication(true);
                 user.setUsername(mEmail);
                 user.setPassword(mPassword);
+                user.setAuthentication(authenticationResponse.get());
+                user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
                 if(storeUserToDisk.isChecked()) {
-                    Log.d(TAG, "Store to disk isChecked == true");
                     user.rememberUser(LoginActivity.this);
                     user.writeToSharedPref(LoginActivity.this);
                 } else {
@@ -339,6 +346,47 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+
+    public class LoginAuthenticationUserTask extends AsyncTask<Void, Void, Boolean> {
+        User user;
+        private final AtomicReference<Authentication> authenticationResponse = new AtomicReference<>();
+        public LoginAuthenticationUserTask(User user) {
+            this.user = user;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                OkHttpClient mClient = new OkHttpClient();
+                Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(user.getUsername(), user.getPassword())).execute();
+                Gson gson = new Gson();
+                Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
+                authenticationResponse.set(auth);
+                return true;
+            } catch (Exception e) {
+                Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                user.setAuthentication(authenticationResponse.get());
+                user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
+                user.rememberUser((LoginActivity.this));
+                user.writeToSharedPref(LoginActivity.this);
+                changeActivity(MainActivity.class, user);
+
+            } else {
+                Log.d(TAG, "Something went amiss while reauthing user");
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
         }
     }
 
