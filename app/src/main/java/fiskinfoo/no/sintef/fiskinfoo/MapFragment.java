@@ -19,8 +19,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,32 +38,38 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolsGeoJson;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
+import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
 import retrofit.client.Header;
 import retrofit.client.Response;
@@ -327,6 +335,54 @@ public class MapFragment extends Fragment{
 
         Button downloadMapLayerButton = (Button) dialog.findViewById(R.id.download_map_layer_download_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.download_map_layer_cancel_button);
+        final ExpandableListView expListView = (ExpandableListView) dialog.findViewById(R.id.exportMetadataMapServices);
+        final List<String> listDataHeader = new ArrayList<String>();
+        final HashMap<String, List<String>> listDataChild = new HashMap<String, List<String>>();
+        final AtomicReference<String> selectedHeader = new AtomicReference<String>();
+        final AtomicReference<String> selectedFormat = new AtomicReference<String>();
+        final BarentswatchApi barentswatchApi = new BarentswatchApi();
+        final Map<String, String> nameToApi = new HashMap<>();
+        barentswatchApi.setAccesToken(user.getToken());
+        final IBarentswatchApi api = barentswatchApi.getApi();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
+        List<PropertyDescription> availableSubscriptions = null;
+        try {
+            availableSubscriptions = api.getSubscribable();
+        } catch(Exception e) {
+            Log.d(TAG, "Could not download available subscriptions.\n Exception occured : " + e.toString());
+        }
+        if (availableSubscriptions == null) {
+            return;
+        }
+        for(int i = 0; i < availableSubscriptions.size(); i++) {
+            listDataHeader.add(availableSubscriptions.get(i).Name);
+            nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
+            List<String> availableFormats = new ArrayList<>();
+            for(String format : availableSubscriptions.get(i).Formats) {
+                availableFormats.add(format);
+            }
+            listDataChild.put(listDataHeader.get(i), availableFormats);
+        }
+        LegacyExpandableListAdapter legacyExpandableListAdapter = new LegacyExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
+        expListView.setAdapter(legacyExpandableListAdapter);
+        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                selectedHeader.set(listDataHeader.get(groupPosition));
+                selectedFormat.set(listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition));
+
+                LinearLayout currentlySelected = (LinearLayout) parent.findViewWithTag("currentlySelectedRow");
+                if(currentlySelected != null) {
+                    currentlySelected.getChildAt(0).setBackgroundColor(Color.WHITE);
+                    currentlySelected.setTag(null);
+                }
+
+                ((LinearLayout)v).getChildAt(0).setBackgroundColor(Color.rgb(214, 214, 214));
+                v.setTag("currentlySelectedRow");
+                return true;
+            }
+        });
 
         // TODO: add available layers and their available formats.
 
@@ -334,36 +390,26 @@ public class MapFragment extends Fragment{
 
         downloadMapLayerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String apiName = null;
-                String format = null;
-
-                //TODO: get selected values
-//                apiName = ;
-//                format = ;
-
-                if(apiName == null || format == null) {
-                    Toast.makeText(getActivity(), getString(R.string.error_no_format_selected), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // TODO: download map layer and pass to function to write to disk.
-                Response response = barentswatchApi.getApi().geoDataDownload(apiName, format);
-
-                if(response.getHeaders().contains("200 OK")) {
-                    for(Header header : response.getHeaders()) {
-                        System.out.println("Header: " + header.getName() + ", " + header.getValue() + ", " + header.toString());
+                String apiName = nameToApi.get(selectedHeader.get());
+                String format = selectedFormat.get();
+                Response response = null;
+                try {
+                    response = api.geoDataDownload(apiName, format);
+                    if (response == null) {
+                        Log.d(TAG, "RESPONSE == NULL");
                     }
-                    Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                }
+                    byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
+                    if(isExternalStorageWritable()) {
+                        writeMapLayerToExternalStorage(fileData, selectedHeader.get(), format);
+                    } else {
+                        Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                        return;
+                    }
 
-                if(isExternalStorageWritable()) {
-                    writeMapLayerToExternalStorage(null, null, null, null);
-                } else {
-                    Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                    return;
+                } catch(Exception e) {
+                    Log.d(TAG, "Could not download with ApiName: " + apiName + "  and format: " + format);
                 }
-
                 dialog.dismiss();
             }
         });
@@ -407,8 +453,9 @@ public class MapFragment extends Fragment{
         }
     }
 
-    private void writeMapLayerToExternalStorage(byte[] data, OutputStream outputStream, String writableName, String format) {
+    private void writeMapLayerToExternalStorage(byte[] data, String writableName, String format) {
         String filePath = null;
+        OutputStream outputStream = null;
         // TODO: fix once user is properly implemented
         if(user != null) {
             filePath = user.getFilePathForExternalStorage();

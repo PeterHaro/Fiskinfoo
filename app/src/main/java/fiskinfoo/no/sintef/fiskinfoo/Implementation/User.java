@@ -53,7 +53,9 @@ public class User implements Parcelable{
     protected User(Parcel in) {
         username = in.readString();
         password = in.readString();
+        previousAuthenticationTimeStamp = in.readLong();
         authentication = in.readParcelable(Authentication.class.getClassLoader());
+        filePathForExternalStorage = in.readString();
         activeLayers = in.createStringArrayList();
         mySubscriptions = in.createStringArrayList();
         availableSubscriptions = in.createStringArrayList();
@@ -185,6 +187,7 @@ public class User implements Parcelable{
         this.authentication = authentication;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -194,7 +197,9 @@ public class User implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(username);
         dest.writeString(password);
+        dest.writeLong(previousAuthenticationTimeStamp);
         dest.writeParcelable(authentication, flags);
+        dest.writeString(filePathForExternalStorage);
         dest.writeStringList(activeLayers);
         dest.writeStringList(mySubscriptions);
         dest.writeStringList(availableSubscriptions);

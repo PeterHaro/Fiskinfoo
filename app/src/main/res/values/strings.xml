@@ -79,6 +79,7 @@ limitations under the License.
     <string name="close_settings">Lukk instillingsvindu</string>
     <string name="settings">Instillinger</string>
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
+    <string name="map_to_plotter">Kart til din kartplotter</string>
 
 
     <!-- Strings related to login -->
