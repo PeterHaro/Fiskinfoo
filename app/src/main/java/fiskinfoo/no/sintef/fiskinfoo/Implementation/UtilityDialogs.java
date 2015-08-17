@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.Window;
 import android.view.WindowManager;
 
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
@@ -27,6 +28,19 @@ public class UtilityDialogs implements DialogInterface{
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(layoutId);
         dialog.setTitle(titleId);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        return dialog;
+    }
+
+    @Override
+    public Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        dialog.setContentView(layoutId);
+        dialog.setTitle(titleId);
+        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ikon_kart_til_din_kartplotter);
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 

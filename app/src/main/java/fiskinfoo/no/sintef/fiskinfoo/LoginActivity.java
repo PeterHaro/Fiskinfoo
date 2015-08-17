@@ -43,6 +43,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -328,6 +329,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 user.setPassword(mPassword);
                 user.setAuthentication(authenticationResponse.get());
                 user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
+                user.setActiveLayers(new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.map_layer_names_array))));
                 if(storeUserToDisk.isChecked()) {
                     user.rememberUser(LoginActivity.this);
                     user.writeToSharedPref(LoginActivity.this);

@@ -19,11 +19,21 @@ import android.content.Context;
 
 public interface DialogInterface {
     /**
-     * Return a dialog with the given layout and title that is not cancelled by outside touch.
+     * Return a dialog with the given layout and title. The dialog defaults to not being cancelled by outside touch.
      * @param context
      * @param layoutId
      * @param titleId
      * @return
      */
     Dialog getDialog(Context context, int layoutId, int titleId);
+
+    /**
+     * Return a dialog with the given layout, title, and icon. The dialog defaults to not being cancelled by outside touch.
+     * @param context
+     * @param layoutId
+     * @param titleId
+     * @param iconId
+     * @return
+     */
+    Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId);
 }

@@ -58,7 +58,7 @@ limitations under the License.
 
     <string name="choose_map_layers_info">Her velger du hvilke kartlag du ser på kartet.</string>
 
-    <string name="warning_radius">Varslingsradius</string>
+    <string name="warning_radius_meters">Varslingsradius (meter)</string>
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>
@@ -67,7 +67,7 @@ limitations under the License.
     <string name="download_failed">Nedlasting mislyktes</string>
     <string name="download_completed">Nedlasting fullført</string>
     <string name="disk_write_completed">Fil lagret</string>
-    <string name="download_map_layer_dialog_help_text">Her kan du laste ned kartlag i forskjellige formater. Velg et kartlag og klikk last ned. Kartlaget lagres som standard i mappen Downloads/fiskinfo med mindre du har valgt en annen mappe i instillingene.</string>
+    <string name="download_map_layer_dialog_help_text">Her kan du laste ned kartlag i forskjellige formater. Velg et kartlag og klikk last ned. Kartlaget lagres som standard i mappen Downloads/fiskinfo med mindre du har valgt en annen mappe i innstillingene.</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
 

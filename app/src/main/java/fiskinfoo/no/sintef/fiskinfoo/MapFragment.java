@@ -61,7 +61,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolsGeoJson;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -71,7 +70,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
-import retrofit.client.Header;
 import retrofit.client.Response;
 
 public class MapFragment extends Fragment{
@@ -331,11 +329,11 @@ public class MapFragment extends Fragment{
     }
 
     private void createDownloadMapLayerDialog() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title);
+        final Dialog dialog = dialogInterface.getDialogWithTitleIcon(getActivity(), R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title, R.drawable.ikon_kart_til_din_kartplotter);
 
         Button downloadMapLayerButton = (Button) dialog.findViewById(R.id.download_map_layer_download_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.download_map_layer_cancel_button);
-        final ExpandableListView expListView = (ExpandableListView) dialog.findViewById(R.id.exportMetadataMapServices);
+        final ExpandableListView expListView = (ExpandableListView) dialog.findViewById(R.id.download_map_layer_dialog_expandable_list_layer_container);
         final List<String> listDataHeader = new ArrayList<String>();
         final HashMap<String, List<String>> listDataChild = new HashMap<String, List<String>>();
         final AtomicReference<String> selectedHeader = new AtomicReference<String>();
@@ -384,15 +382,17 @@ public class MapFragment extends Fragment{
             }
         });
 
-        // TODO: add available layers and their available formats.
-
-
-
         downloadMapLayerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String apiName = nameToApi.get(selectedHeader.get());
                 String format = selectedFormat.get();
                 Response response = null;
+
+                if(apiName == null || format == null) {
+                    Toast.makeText(getActivity(), R.string.error_no_format_selected, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 try {
                     response = api.geoDataDownload(apiName, format);
                     if (response == null) {
