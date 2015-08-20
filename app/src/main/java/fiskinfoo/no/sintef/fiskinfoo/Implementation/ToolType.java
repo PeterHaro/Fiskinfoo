@@ -55,25 +55,25 @@ public enum ToolType {
         int retVal = -1;
         switch(this) {
             case LONG_LINE:
-                retVal = 0xFFFF4444;
+                retVal = 0xFFF30F0F;
                 break;
             case NETS:
-                retVal = 0xFF33B5E5;
+                retVal = 0xFF0881D7;
                 break;
             case CRAB_POTS:
-                retVal = 0xFFFFBB33;
+                retVal = 0xFFFF6500;
                 break;
             case SEISMIC:
-                retVal = 0xFFA52A2A;
+                retVal = 0xFFA06C49;
                 break;
             case DANISH_PURSE_SEINE:
                 retVal = 0xFF9933CC;
                 break;
             case SENSOR_CABLE:
-                retVal = 0xFF99CC00;
+                retVal = 0xFF75A103;
                 break;
             case MOORING_SYSTEM:
-                retVal = 0xFF669900;
+                retVal = 0xFFFF42E5;
                 break;
             case UNKNOWN:
                 retVal = 0xff000000;
