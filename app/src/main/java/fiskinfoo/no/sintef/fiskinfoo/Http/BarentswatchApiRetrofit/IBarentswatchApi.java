@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit;
 
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import retrofit.Callback;
@@ -28,6 +29,7 @@ public interface IBarentswatchApi {
     String subscribable = "/service/subscribable/";
     String geoDataSubscription = "/subscription/";
     String geoDataDownload = "/download/{ApiName}";
+    String authorization = "/authorization";
 
     @GET(subscribable)
     void getSubscribable(Callback<List<PropertyDescription>> callback);
@@ -43,5 +45,8 @@ public interface IBarentswatchApi {
 
     @GET(geoDataDownload) //TODO: Figure out how to do this async
     Response geoDataDownload(@Path("ApiName")String apiName, @Query("format") String format);
+
+    @GET(authorization)
+    List<Authorization> getAuthorization();
 
 }

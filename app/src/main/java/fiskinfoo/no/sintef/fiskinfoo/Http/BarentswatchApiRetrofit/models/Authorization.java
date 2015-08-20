@@ -17,26 +17,25 @@ package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Authentication implements Parcelable{
-    public String access_token;
-    public String token_type;
-    public int expires_in;
+public class Authorization implements Parcelable {
+    public int Id;
+    public boolean hasAccess;
 
-    protected Authentication(Parcel in) {
-        access_token = in.readString();
-        token_type = in.readString();
-        expires_in = in.readInt();
+    // TODO: cannot write boolean to parcel so needs to be rewritten.
+
+    protected Authorization(Parcel in) {
+        Id = in.readInt();
     }
 
-    public static final Creator<Authentication> CREATOR = new Creator<Authentication>() {
+    public static final Creator<Authorization> CREATOR = new Creator<Authorization>() {
         @Override
-        public Authentication createFromParcel(Parcel in) {
-            return new Authentication(in);
+        public Authorization createFromParcel(Parcel in) {
+            return new Authorization(in);
         }
 
         @Override
-        public Authentication[] newArray(int size) {
-            return new Authentication[size];
+        public Authorization[] newArray(int size) {
+            return new Authorization[size];
         }
     };
 
@@ -47,8 +46,6 @@ public class Authentication implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(access_token);
-        dest.writeString(token_type);
-        dest.writeInt(expires_in);
+        dest.writeInt(Id);
     }
 }
