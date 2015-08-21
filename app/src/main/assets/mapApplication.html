@@ -39,21 +39,20 @@
                         }
 
 	      	), new OpenLayers.Layer.WMS(
-            "Redskapskartet", "http://153.44.6.85:8080/geoserver/bwdev/wms",
-            {
-                LAYERS: 'bwdev:fishingfacility',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        ), new OpenLayers.Layer.WMS(
-            "BÃ¸lgevarsel", "http://153.44.6.85:8080/geoserver/bw/wms",
+                "Redskapskartet", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:fishingfacility_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }), new OpenLayers.Layer.WMS(
+            "BÃ¸lgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
             {
                 LAYERS: 'bwdev:waveforecast_area_iso_latest',
                 transparent: true,
@@ -67,7 +66,7 @@
                 yx: { 'EPSG:4326': true }
             }
         ), new OpenLayers.Layer.WMS(
-            "Iskanten", "http://153.44.6.85:8080/geoserver/bw/wms",
+            "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
             {
                 LAYERS: 'bwdev:iceedge_latest',
                 transparent: true,
@@ -81,7 +80,7 @@
                 yx: { 'EPSG:4326': true }
             }
         ), new OpenLayers.Layer.WMS(
-            "Seismikk, pÃ¥gÃ¥ende", "http://153.44.6.85:8080/geoserver/bw/wms",
+            "Seismikk, pÃ¥gÃ¥ende", "https://geo.barentswatch.no/geoserver/bw/wms",
             {
                 LAYERS: 'bwdev:npdsurveyongoing_latest',
                 transparent: true,
@@ -95,7 +94,7 @@
                 yx: { 'EPSG:4326': true }
             }
         ), new OpenLayers.Layer.WMS(
-            "Seismikk, planlagt", "http://153.44.6.85:8080/geoserver/bw/wms",
+            "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
             {
                 LAYERS: 'bwdev:npdsurveyplanned_latest',
                 transparent: true,
@@ -115,6 +114,10 @@
             });
             gJson = getGeoJson();
             parseGeoJsonResponse(gJson);
+            activeLayers = getActiveLayers();
+
+
+
         };
 
         function getGeoJson() {
@@ -124,8 +127,8 @@
 
 
         function getActiveLayers() {
-            layersToDisplay = Android.getActiveLayers();
-            return layersToDisplay;
+            layers = Android.getActiveLayers();
+            return layers;
         }
 
         function parseGeoJsonResponse(data) {
