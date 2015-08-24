@@ -13,7 +13,9 @@ limitations under the License.
 -->
 
 <resources>
-    <integer name="meters_pet_nautical_mile">1852</integer>
-    <integer name="maximum_warning_range_meters">1852</integer>
-    <integer name="minimum_warning_range_meters">200</integer>
+    <integer name="zero">0</integer>
+    <integer name="meters_per_nautical_mile">1852</integer>
+    <integer name="proximity_alert_maximum_warning_range_meters">1852</integer>
+    <integer name="proximity_alert_minimum_warning_range_meters">200</integer>
+    <integer name="proximity_alert_interval_time_seconds">20</integer>
 </resources>

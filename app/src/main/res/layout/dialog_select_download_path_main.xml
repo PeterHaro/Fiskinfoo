@@ -18,9 +18,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingBottom="@dimen/file_dialog_select_folder_layout_padding_bottom"
+            android:paddingLeft="@dimen/file_dialog_select_folder_layout_padding_left"
+            android:paddingRight="@dimen/file_dialog_select_folder_layout_padding_right">
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -56,9 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingBottom="@dimen/file_dialog_create_folder_layout_padding_bottom"
+            android:paddingLeft="@dimen/file_dialog_create_folder_layout_padding_left"
+            android:paddingRight="@dimen/file_dialog_create_folder_layout_padding_right">
 
             <TextView
                 android:id="@+id/text_view_filename"

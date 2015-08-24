@@ -18,10 +18,18 @@ limitations under the License.
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="seekbar_label_length">70dp</dimen>
 
-
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>
     <dimen name="login_logo_height">105dp</dimen>
+
+    <!-- File dialog -->
+    <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
+    <dimen name="file_dialog_select_folder_layout_padding_left">10dp</dimen>
+    <dimen name="file_dialog_select_folder_layout_padding_right">10dp</dimen>
+
+    <dimen name="file_dialog_create_folder_layout_padding_bottom">5dp</dimen>
+    <dimen name="file_dialog_create_folder_layout_padding_left">10dp</dimen>
+    <dimen name="file_dialog_create_folder_layout_padding_right">10dp</dimen>
 
     <!-- dialog margins -->
     <dimen name="dialog_container_margin_left">15dp</dimen>
@@ -55,5 +63,26 @@ limitations under the License.
     <dimen name="proximity_alert_spinner_margin_left">20dp</dimen>
     <dimen name="proximity_alert_spinner_margin_right">20dp</dimen>
     <dimen name="proximity_alert_range_edit_text_width">80dp</dimen>
+    <item name="proximity_alert_dialog_button_text_size_small" format="float" type="dimen">10.0</item>
+
+    <!-- expandableListView -->
+    <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
+
+    <!-- Recycle View -->
+    <dimen name="recycle_item_child_margin_left">8dp</dimen>
+    <dimen name="recycle_item_child_margin_right">8dp</dimen>
+    <dimen name="recycle_item_child_title_field_margin_left">5dp</dimen>
+    <dimen name="recycle_item_child_title_field_margin_right">5dp</dimen>
+    <dimen name="recycle_item_child_title_field_margin_bottom">8dp</dimen>
+    <dimen name="recycle_item_child_title_field_margin_top">8dp</dimen>
+    <dimen name="recycle_item_child_is_subscribed_switch_margin_left">20dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_left">30dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
+    <dimen name="recycle_item_child_download_button_width">40dp</dimen>
+    <dimen name="recycle_item_child_download_button_height">40dp</dimen>
+    <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
+    <dimen name="recycle_item_child_separator_line_view_height">3dp</dimen>
+
 
 </resources>

@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DownloadFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
@@ -47,6 +48,11 @@ public class UtilityRows implements UtilityRowsInterface {
     @Override
     public SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
         return new SettingsButtonRow(context, buttonText, onClickListener);
+    }
+
+    @Override
+    public DownloadFormatRow getDownloadFormatRow(Context context, String formatName) {
+        return new DownloadFormatRow(context, formatName);
     }
 }
 

@@ -19,12 +19,14 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,52 +40,68 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolsGeoJson;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
-import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 public class MapFragment extends Fragment{
     FragmentActivity listener;
     public static final String TAG = "Map";
-    private ToolsGeoJson mTools = null;
     private WebView browser;
     private BarentswatchApi barentswatchApi;
-    String geoJsonFile = null;
     private User user;
     private UtilityDialogs dialogInterface;
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
+    private ScheduledFuture proximityAlertWatcher;
+    private GpsLocationTracker mGpsLocationTracker;
 
+    private Vibrator vibrator;
+    private ToolsGeoJson mTools = null;
+    private FiskInfoPolygon2D tools = null;
+    private boolean cacheDeserialized = false;
+    private boolean alarmFiring = false;
+    protected AsyncTask<String, String, byte[]> cacheWriter;
+    protected double cachedLat;
+    protected double cachedLon;
+    private String geoJsonFile = null;
+    protected String cachedDistance;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -131,8 +149,9 @@ public class MapFragment extends Fragment{
         onClickListenerInterface = new UtilityOnClickListeners();
         utilityRowsInterface = new UtilityRows();
         mTools = new ToolsGeoJson(getActivity());
-        getMapTools();
+        geoJsonFile = null;
 
+        getMapTools();
         configureWebParametersAndLoadDefaultMapApplication();
     }
 
@@ -161,7 +180,7 @@ public class MapFragment extends Fragment{
             }
         });
         // TODO: add tools
-        updateMapTools();
+//        updateMapTools();
 
         browser.loadUrl("file:///android_asset/mapApplication.html");
     }
@@ -189,11 +208,13 @@ public class MapFragment extends Fragment{
         public JSONArray getActiveLayers() {
             JSONArray jsonArray = null;
             try {
-                //TODO: remove once user is properly implemented
-                if(user != null) {
-                    jsonArray = new JSONArray(user.getActiveLayers());
-                }
+                  jsonArray = new JSONArray(user.getActiveLayers());
             } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                System.out.println("Sent array: " + jsonArray.toString(1));
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return jsonArray;
@@ -217,14 +238,11 @@ public class MapFragment extends Fragment{
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
         String[] mapLayerNames = getResources().getStringArray(R.array.map_layer_names_array);
-        final boolean hasUser = user != null;
 
         for (String mapLayerName : mapLayerNames) {
             boolean isActive = false;
 
-            if (hasUser) {
-                isActive = user.getActiveLayers().contains(mapLayerName);
-            }
+            isActive = user.getActiveLayers().contains(mapLayerName);
 
             MapLayerCheckBoxRow row = utilityRowsInterface.getMapLayerCheckBoxRow(getActivity(), isActive, mapLayerName);
             rows.add(row);
@@ -243,9 +261,8 @@ public class MapFragment extends Fragment{
                     }
                 }
 
-                if(hasUser) {
                     user.setActiveLayers(layersList);
-                }
+                    user.writeToSharedPref(getActivity());
                 dialog.dismiss();
                 browser.loadUrl("file:///android_asset/mapApplication.html");
             }
@@ -257,59 +274,16 @@ public class MapFragment extends Fragment{
     }
 
     private void createPolarLowDialog() {
-        Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_polar_low, R.string.polar_low);
-
-        Button closeDialogButton = (Button) dialog.findViewById(R.id.polar_low_ok_button);
-
-        // TODO: implement me
-
-        closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-
-        dialog.show();
-    }
-
-    private void createProximityAlertSetupDialog() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_create_proximity_alert, R.string.create_proximity_alert);
-
-        Button setProximityAlertWatcherButton = (Button) dialog.findViewById(R.id.create_proximity_alert_create_alert_watcher_button);
-        Button cancelButton = (Button) dialog.findViewById(R.id.create_proximity_alert_cancel_button);
-        SeekBar seekbar = (SeekBar) dialog.findViewById(R.id.create_proximity_alert_seekBar);
-        final EditText radiusEditText = (EditText) dialog.findViewById(R.id.create_proximity_alert_range_edit_text);
-
-        final int stepSizeMeters = (getResources().getInteger(R.integer.maximum_warning_range_meters) - getResources().getInteger(R.integer.minimum_warning_range_meters)) / 100;
-
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser == true) {
-                    radiusEditText.setText(String.valueOf((getResources().getInteger(R.integer.minimum_warning_range_meters) + (stepSizeMeters * progress))));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        setProximityAlertWatcherButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: implement
-
-
-                dialog.dismiss();
-            }
-        });
-
-        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-
-        dialog.show();
+//        Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_polar_low, R.string.polar_low);
+//
+//        Button closeDialogButton = (Button) dialog.findViewById(R.id.polar_low_ok_button);
+//
+//        // TODO: implement me
+//
+//        closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+//
+//        dialog.show();
+        browser.loadUrl("file:///android_asset/mapApplicationPolarLow.html");
     }
 
     private void createToolSymbolExplanationDialog() {
@@ -328,93 +302,211 @@ public class MapFragment extends Fragment{
         dialog.show();
     }
 
-    private void createDownloadMapLayerDialog() {
-        final Dialog dialog = dialogInterface.getDialogWithTitleIcon(getActivity(), R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title, R.drawable.ikon_kart_til_din_kartplotter);
+    private void createProximityAlertSetupDialog() {
+        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_proximity_alert_create, R.string.create_proximity_alert);
 
-        Button downloadMapLayerButton = (Button) dialog.findViewById(R.id.download_map_layer_download_button);
-        Button cancelButton = (Button) dialog.findViewById(R.id.download_map_layer_cancel_button);
-        final ExpandableListView expListView = (ExpandableListView) dialog.findViewById(R.id.download_map_layer_dialog_expandable_list_layer_container);
-        final List<String> listDataHeader = new ArrayList<String>();
-        final HashMap<String, List<String>> listDataChild = new HashMap<String, List<String>>();
-        final AtomicReference<String> selectedHeader = new AtomicReference<String>();
-        final AtomicReference<String> selectedFormat = new AtomicReference<String>();
-        final BarentswatchApi barentswatchApi = new BarentswatchApi();
-        final Map<String, String> nameToApi = new HashMap<>();
-        barentswatchApi.setAccesToken(user.getToken());
-        final IBarentswatchApi api = barentswatchApi.getApi();
+        Button setProximityAlertWatcherButton = (Button) dialog.findViewById(R.id.create_proximity_alert_create_alert_watcher_button);
+        Button stopCurrentProximityAlertWatcherButton = (Button) dialog.findViewById(R.id.create_proximity_alert_stop_existing_alert_button);
+        Button cancelButton = (Button) dialog.findViewById(R.id.create_proximity_alert_cancel_button);
+        SeekBar seekbar = (SeekBar) dialog.findViewById(R.id.create_proximity_alert_seekBar);
+        final EditText radiusEditText = (EditText) dialog.findViewById(R.id.create_proximity_alert_range_edit_text);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
-        List<PropertyDescription> availableSubscriptions = null;
-        try {
-            availableSubscriptions = api.getSubscribable();
-        } catch(Exception e) {
-            Log.d(TAG, "Could not download available subscriptions.\n Exception occured : " + e.toString());
-        }
-        if (availableSubscriptions == null) {
-            return;
-        }
-        for(int i = 0; i < availableSubscriptions.size(); i++) {
-            listDataHeader.add(availableSubscriptions.get(i).Name);
-            nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
-            List<String> availableFormats = new ArrayList<>();
-            for(String format : availableSubscriptions.get(i).Formats) {
-                availableFormats.add(format);
-            }
-            listDataChild.put(listDataHeader.get(i), availableFormats);
-        }
-        LegacyExpandableListAdapter legacyExpandableListAdapter = new LegacyExpandableListAdapter(getActivity(), listDataHeader, listDataChild);
-        expListView.setAdapter(legacyExpandableListAdapter);
-        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        final double seekBarStepSize = (double)(getResources().getInteger(R.integer.proximity_alert_maximum_warning_range_meters) - getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)) / 100;
+
+        radiusEditText.setText(String.valueOf(getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)));
+
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                selectedHeader.set(listDataHeader.get(groupPosition));
-                selectedFormat.set(listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition));
-
-                LinearLayout currentlySelected = (LinearLayout) parent.findViewWithTag("currentlySelectedRow");
-                if(currentlySelected != null) {
-                    currentlySelected.getChildAt(0).setBackgroundColor(Color.WHITE);
-                    currentlySelected.setTag(null);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser == true) {
+                    String range = String.valueOf((int) (getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters) + (seekBarStepSize * progress)));
+                    radiusEditText.setText(range);
                 }
+            }
 
-                ((LinearLayout)v).getChildAt(0).setBackgroundColor(Color.rgb(214, 214, 214));
-                v.setTag("currentlySelectedRow");
-                return true;
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
-        downloadMapLayerButton.setOnClickListener(new View.OnClickListener() {
+        setProximityAlertWatcherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                String apiName = nameToApi.get(selectedHeader.get());
-                String format = selectedFormat.get();
-                Response response = null;
+                // TODO: implement
+                String toastText = null;
 
-                if(apiName == null || format == null) {
-                    Toast.makeText(getActivity(), R.string.error_no_format_selected, Toast.LENGTH_LONG).show();
+                if (proximityAlertWatcher == null) {
+                    toastText = getString(R.string.proximity_alert_set);
+                } else {
+
+                    toastText = getString(R.string.proximity_alert_replace);
+                }
+
+                if (proximityAlertWatcher != null) {
+                    proximityAlertWatcher.cancel(true);
+                }
+
+                mGpsLocationTracker = new GpsLocationTracker(getActivity());
+                double latitude, longitude = 0;
+                if (mGpsLocationTracker.canGetLocation()) {
+                    latitude = mGpsLocationTracker.getLatitude();
+                    cachedLat = latitude;
+                    longitude = mGpsLocationTracker.getLongitude();
+                    cachedLon = longitude;
+                } else {
+                    mGpsLocationTracker.showSettingsAlert();
                     return;
                 }
+                String distance = radiusEditText.getText().toString();
+                cachedDistance = distance;
 
-                try {
-                    response = api.geoDataDownload(apiName, format);
-                    if (response == null) {
-                        Log.d(TAG, "RESPONSE == NULL");
-                    }
-                    byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-                    if(isExternalStorageWritable()) {
-                        writeMapLayerToExternalStorage(fileData, selectedHeader.get(), format);
-                    } else {
-                        Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                        return;
-                    }
+//                    cacheWriter = new BarentswatchApi barentswatchApi.getApi().geoDataDownload("")  .execute("fishingfacility", "OLEX", "cachedResults",
+//                            String.valueOf(longitude), String.valueOf(latitude), distance, "true");
+                runScheduledAlarm();
 
-                } catch(Exception e) {
-                    Log.d(TAG, "Could not download with ApiName: " + apiName + "  and format: " + format);
+
+                Toast.makeText(
+
+                        getActivity(), toastText, Toast
+
+                                .LENGTH_LONG).
+
+                        show();
+
+                dialog.dismiss();
+
+            }
+        });
+
+        if(proximityAlertWatcher != null) {
+            TypedValue outValue = new TypedValue();
+            stopCurrentProximityAlertWatcherButton.setVisibility(View.VISIBLE);
+
+
+            getResources().getValue(R.dimen.proximity_alert_dialog_button_text_size_small, outValue, true);
+            float textSize = outValue.getFloat();
+
+            setProximityAlertWatcherButton.setTextSize(textSize);
+            stopCurrentProximityAlertWatcherButton.setTextSize(textSize);
+            cancelButton.setTextSize(textSize);
+
+            stopCurrentProximityAlertWatcherButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proximityAlertWatcher.cancel(true);
+                    proximityAlertWatcher = null;
+                    dialog.dismiss();
                 }
+            });
+        }
+
+        System.out.println("size: " + String.valueOf(stopCurrentProximityAlertWatcherButton.getTextSize()));
+
+        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+
+        dialog.show();
+    }
+
+    private void runScheduledAlarm() {
+        proximityAlertWatcher = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
+
+            @Override
+            public void run() {
+                // Need to get alarm status and handle kill
+                if (!cacheDeserialized) {
+                    if (checkCacheWriterStatus()) {
+                        String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                        String directoryName = "FiskInfo";
+                        String filename = "cachedResults";
+                        String filePath = directoryPath + "/" + directoryName + "/" + filename;
+                        tools = new FiskInfoUtility().deserializeFiskInfoPolygon2D(filePath);
+                        cacheDeserialized = true;
+                        // DEMO: add point here for testing/demo purposes
+                         Point point = new Point(69.650543, 18.956831);
+                         tools.addPoint(point);
+                    }
+                } else {
+                    if (alarmFiring) {
+                        notifyUserOfProximityAlert();
+                    } else {
+                        double latitude, longitude = 0;
+                        if (mGpsLocationTracker.canGetLocation()) {
+                            latitude = mGpsLocationTracker.getLatitude();
+                            cachedLat = latitude;
+                            longitude = mGpsLocationTracker.getLongitude();
+                            cachedLon = longitude;
+                            System.out.println("Lat; " + latitude + "lon: " + longitude);
+                            Log.i("GPS-LocationTracker", String.format("latitude: %s", latitude));
+                            Log.i("GPS-LocationTracker", String.format("longitude: %s", longitude));
+                        } else {
+                            mGpsLocationTracker.showSettingsAlert();
+                            return;
+                        }
+                        Point userPosition = new Point(cachedLat, cachedLon);
+                        if (!tools.checkCollsionWithPoint(userPosition, Double.parseDouble(cachedDistance))) {
+                            return;
+                        }
+
+                        alarmFiring = true;
+                    }
+                }
+            }
+
+        }, getResources().getInteger(R.integer.zero), 3, TimeUnit.SECONDS); // <num1> is initial delay,<num2> is the subsequent delay between each call
+    }
+
+    private boolean checkCacheWriterStatus() {
+        if (cacheWriter != null && cacheWriter.getStatus() == AsyncTask.Status.FINISHED) {
+            return true;
+        }
+        return false;
+    }
+
+    private void notifyUserOfProximityAlert() {
+        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_proximity_alert_warning, R.string.proximity_alert_warning);
+
+        Button okButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_ok_button);
+        Button showOnMapButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_show_on_map_button);
+        Button dismissAlertButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_dismiss_button);
+
+        long[] pattern = { 0, 500, 200, 200, 300, 200, 200 };
+
+        vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(pattern, 0);
+
+//		MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), R.raw.proximity_warning_sound);
+//		if (mediaPlayer == null) {
+//			return;
+//		}
+//		mediaPlayer.start();
+
+        okButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+
+        showOnMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Zoom map to user position.
                 dialog.dismiss();
             }
         });
 
-        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+        dismissAlertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Kill background task handling proximity checking and set proximityAlertWatcher to null.
+                vibrator.cancel();
+                vibrator = null;
+                proximityAlertWatcher.cancel(true);
+                proximityAlertWatcher = null;
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
     }
@@ -422,7 +514,43 @@ public class MapFragment extends Fragment{
     private void getMapTools() {
             // TODO: place in own thread as task is not asynch, and get tools
 
-//            barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
+//        Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
+//        System.out.println("This is the body: " + response);
+//
+//        InputStream data = null;
+//        Reader reader = null;
+//        StringWriter writer = null;
+//        String charset = "UTF-8";
+//        byte[] rawData = null;
+//
+//        data = new ByteArrayInputStream(((TypedByteArray)response.getBody()).getBytes());
+//
+//        try {
+//            reader = new InputStreamReader(data, charset);
+//            writer = new StringWriter();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//
+//        char[] buffer = new char[10240];
+//        try {
+//            for (int length = 0; (length = reader.read(buffer)) > 0;) {
+//                writer.write(buffer, 0, length);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(writer.toString());
+//        geoJsonFile = writer.toString();
+//        try {
+//            rawData = new FiskInfoUtility().toByteArray(data);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+
 
     }
 
@@ -439,58 +567,6 @@ public class MapFragment extends Fragment{
 //        }
     }
 
-    /**
-     * Checks if external storage is available for read and write.
-     *
-     * @return True if external storage is available, false otherwise.
-     */
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void writeMapLayerToExternalStorage(byte[] data, String writableName, String format) {
-        String filePath = null;
-        OutputStream outputStream = null;
-        // TODO: fix once user is properly implemented
-        if(user != null) {
-            filePath = user.getFilePathForExternalStorage();
-        }
-        if(filePath == null) {
-            String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-            String directoryName = "FiskInfo";
-            filePath = directoryPath + "/" + directoryName + "/";
-        }
-
-        File directory = new File(filePath);
-
-        if (!(directory.exists())) {
-            directory.mkdirs();
-        }
-
-        Toast toast = Toast.makeText(getActivity(), R.string.disk_write_completed, Toast.LENGTH_LONG);
-        toast.show();
-
-        try {
-            outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
-            outputStream.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -499,9 +575,6 @@ public class MapFragment extends Fragment{
                 return true;
             case R.id.zoom_to_user_position:
                 browser.loadUrl("javascript:zoomToUserPosition()");
-                return true;
-            case R.id.export_metadata_to_user:
-                createDownloadMapLayerDialog();
                 return true;
             case R.id.symbol_explanation:
                 createToolSymbolExplanationDialog();

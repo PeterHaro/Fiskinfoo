@@ -20,13 +20,11 @@ import android.view.View;
 import android.widget.TableRow;
 
 public class BaseTableRow {
-    private Context mContext;
     private View mTableRow;
 
     public BaseTableRow(Context context, int layoutId) {
-        mContext = context;
         TableRow tableRow = new TableRow(context);
-        mTableRow = (View) LayoutInflater.from(context).inflate(layoutId, tableRow, false);
+        mTableRow = LayoutInflater.from(context).inflate(layoutId, tableRow, false);
     }
 
     /**

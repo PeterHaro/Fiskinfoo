@@ -23,6 +23,7 @@ limitations under the License.
     <string name="zero_number">0</string>
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
+    <string name="placeholder_string">Placeholder</string>
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -42,6 +43,8 @@ limitations under the License.
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
     <string name="my_page_all_warnings">Mine varsler</string>
     <string name="my_page_my_subscriptions">Mine kart</string>
+    <string name="subscribe">Abonnér</string>
+
 
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
@@ -67,17 +70,24 @@ limitations under the License.
     <string name="download_failed">Nedlasting mislyktes</string>
     <string name="download_completed">Nedlasting fullført</string>
     <string name="disk_write_completed">Fil lagret</string>
+    <string name="disk_write_failed">Lagring feilet</string>
     <string name="download_map_layer_dialog_help_text">Her kan du laste ned kartlag i forskjellige formater. Velg et kartlag og klikk last ned. Kartlaget lagres som standard i mappen Downloads/fiskinfo med mindre du har valgt en annen mappe i innstillingene.</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
+    <string name="proximity_alert_set">Kollisjonsvarsling opprettet</string>
+    <string name="proximity_alert_replace">Ny kollisjonsvarsling opprettet, den gamle kollisjonsvarslingen har blitt stoppet.</string>
+    <string name="stop_existing_proximity_checker">Stopp eksisterende varsel</string>
+    <string name="proximity_alert_warning">Kollisjonsvarsling</string>
+    <string name="proximity_alert_warning_dismiss">Avslutt varsling</string>
+    <string name="show_position_on_map">Vis posisjon på kart</string>
 
     <string name="fragment_my_page_tag">MyPage</string>
     <string name="fragment_map_tag">Map</string>
 
     <!-- dialog_settings -->
     <string name="set_download_path">Endre lagringsmappe for nedlastninger</string>
-    <string name="close_settings">Lukk instillingsvindu</string>
-    <string name="settings">Instillinger</string>
+    <string name="close_settings">Lukk innstillingsvindu</string>
+    <string name="settings">Innstillinger</string>
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
 
@@ -99,14 +109,6 @@ limitations under the License.
     <string name="title_activity_main">MainActivity</string>
     <string name="log_out">Logg ut</string>
     <string name="confirm_log_out">Er du sikker på at du vil logge ut?</string>
-
-    <string-array name="map_layer_names_array">
-        <item>Redskapskart</item>
-        <item>Bølgevarsel</item>
-        <item>Iskant</item>
-        <item>Seismikk, pågående</item>
-        <item>Seismikk, planlagt</item>
-    </string-array>
     <string name="title_activity_file_dialog">FileDialog</string>
 
     <!-- Cardview fragment -->
@@ -120,5 +122,22 @@ limitations under the License.
     <string name="cardview_radius_seekbar_text">Radius</string>
     <string name="cardview_elevation_seekbar_text">Elevation</string>
     <string name="cardview_base_title"> Noe gikk feil: </string>
+
+    <string-array name="map_layer_names_array">
+        <item>Redskapskart</item>
+        <item>Bølgevarsel</item>
+        <item>Iskant</item>
+        <item>Seismikk, pågående</item>
+        <item>Seismikk, planlagt</item>
+    </string-array>
+
+    <string-array name="map_layer_api_names_array">
+        <item>bwdev:fishingfacility</item>
+        <item>bwdev:waveforecast_area_iso_latest</item>
+        <item>bwdev:iceedge_latest</item>
+        <item>bwdev:npdsurveyongoing_latest</item>
+        <item>bwdev:npdsurveyplanned_latest</item>
+    </string-array>
+
 
 </resources>

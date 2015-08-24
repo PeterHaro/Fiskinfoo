@@ -13,7 +13,6 @@ limitations under the License.
 -->
 
 <ScrollView
-    android:id="@+id/settings_dialog"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,20 +22,20 @@ limitations under the License.
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <RelativeLayout
-        android:id="@+id/settings_dialog_container"
+        android:id="@+id/select_download_format_main_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/settings_dialog_fields_container"
+            android:id="@+id/select_download_format_formats_container"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content"></LinearLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/settings_dialog_fields_container"
+            android:layout_below="@+id/select_download_format_formats_container"
             android:layout_marginTop="@dimen/dialog_container_margin_top"
             android:orientation="horizontal"
             android:paddingBottom="1.0dip"
@@ -45,12 +44,20 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
-                android:id="@+id/settings_dialog_close_button"
+                android:id="@+id/select_download_format_download_button"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/close_settings"/>
+                android:text="@string/download"/>
+
+            <Button
+                android:id="@+id/select_download_format_cancel_button"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/cancel"/>
         </LinearLayout>
     </RelativeLayout>
 

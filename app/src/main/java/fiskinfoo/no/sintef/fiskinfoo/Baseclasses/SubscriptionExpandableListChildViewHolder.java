@@ -20,17 +20,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ChildViewHolder;
 
-/**
- * TODO: Ideally, only dataText should be present in this class and the different
- * child views would have their own holders, but that requires modifying the
- * MyPageExpandableListAdapter and probably best not to ruin that before demo time.
- */
-public class ExpandableListChildViewHolder extends ChildViewHolder{
+public class SubscriptionExpandableListChildViewHolder extends ExpandableListChildViewHolder {
 
     public TextView dataText;
-
     public TextView lastUpdatedTextView;
     public Switch subscribedSwitch;
     public Button downloadButton;
@@ -40,11 +33,8 @@ public class ExpandableListChildViewHolder extends ChildViewHolder{
      *
      * @param itemView the child ViewHolder's view
      */
-    public ExpandableListChildViewHolder(View itemView) {
+    public SubscriptionExpandableListChildViewHolder(View itemView) {
         super(itemView);
-
-        dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
-
 
         dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
         lastUpdatedTextView = (TextView) itemView.findViewById(R.id.recycler_item_last_updated_text_view);

@@ -22,9 +22,6 @@ limitations under the License.
         android:id="@+id/zoom_to_user_position"
         android:title="@string/map_zoom_button"></item>
     <item
-        android:id="@+id/export_metadata_to_user"
-        android:title="@string/map_export_metadata"></item>
-    <item
         android:id="@+id/symbol_explanation"
         android:title="@string/map_symbol_explanation"></item>
     <item

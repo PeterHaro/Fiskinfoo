@@ -41,7 +41,7 @@ public class User implements Parcelable{
     //TODO: END
     private Authentication authentication;
     private String filePathForExternalStorage;
-    private List<String> activeLayers = new ArrayList<>();
+    private List<String> activeLayers;
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
     private Boolean isAuthenticated; //False == anon user, I.E no permission

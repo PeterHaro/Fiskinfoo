@@ -53,14 +53,16 @@ limitations under the License.
         <Button
             android:id="@+id/download_map_layer_download_button"
             android:layout_width="0.0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1.0"
             android:text="@string/download"/>
 
         <Button
             android:id="@+id/download_map_layer_cancel_button"
             android:layout_width="0.0dip"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1.0"
             android:text="@string/cancel"/>
     </LinearLayout>

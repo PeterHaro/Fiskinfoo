@@ -1,18 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/child_bg"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/recycle_item_child_margin_right"
+                android:layout_marginRight="@dimen/recycle_item_child_margin_left"
+                android:background="@drawable/child_bg">
 
     <TextView
-        android:id="@+id/recycler_item_text_child"
+        android:id="@+id/recycler_child_item_title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="72dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginBottom="@dimen/recycle_item_child_title_field_margin_bottom"
+        android:layout_marginLeft="@dimen/recycle_item_child_title_field_margin_left"
+        android:layout_marginTop="@dimen/recycle_item_child_title_field_margin_right"
+        android:hint="@string/placeholder_string"
+        android:textSize="20dp"/>
 
+    <TextView
+        android:id="@+id/recycler_item_last_updated_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/recycle_item_child_last_updated_text_view_margin_bottom"
+        android:layout_marginLeft="@dimen/recycle_item_child_last_updated_text_view_margin_left"
+        android:layout_marginTop="@dimen/recycle_item_child_last_updated_text_view_margin_top"
+        android:layout_toLeftOf="@+id/recycle_child_view_subscribed_switch"
+        android:hint="@string/placeholder_string"
+        android:textSize="14dp"/>
+
+    <Switch
+        android:id="@+id/recycle_child_view_subscribed_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/recycler_child_item_title_text_view"
+        android:layout_marginLeft="@dimen/recycle_item_child_is_subscribed_switch_margin_left"
+        android:layout_toLeftOf="@+id/recycler_item_download_map_button"/>
+
+
+    <Button
+        android:id="@+id/recycler_item_download_map_button"
+        android:layout_width="@dimen/recycle_item_child_download_button_width"
+        android:layout_height="@dimen/recycle_item_child_download_button_width"
+        android:layout_alignParentEnd="true"
+        android:background="@android:drawable/ic_dialog_alert"
+        android:text="DL"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/recycle_item_child_separator_line_view_height"
+        android:layout_below="@+id/recycler_child_item_title_text_view"
+        android:layout_marginTop="@dimen/recycle_item_child_separator_line_view_margin_top"
+        android:background="@color/barentswatch_blue"/>
 
 </RelativeLayout>

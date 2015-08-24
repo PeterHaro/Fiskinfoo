@@ -1,6 +1,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,26 +12,26 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListChildViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentViewHolder;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandableRecyclerAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
 public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<ExpandableListParentViewHolder, ExpandableListChildViewHolder> {
-    private final String TAG = this.getClass().getSimpleName();
-    //private HorribleHackListener childrenOnClickListener = null;
     private LayoutInflater mInflater;
     private View.OnClickListener childrenOnClickListener = null;
 
     /**
      * Public primary constructor.
      *
-     * @param context for inflating views
+     * @param context        for inflating views
      * @param parentItemList the list of parent items to be displayed in the RecyclerView
      */
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList) {
         super(context, parentItemList);
         mInflater = LayoutInflater.from(context);
     }
+
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList, View.OnClickListener childrenOnClickListener) {
         super(context, parentItemList);
         mInflater = LayoutInflater.from(context);
@@ -42,12 +43,12 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * view when the adapter is created without having to set it later. This is here for demo
      * purposes.
      *
-     * @param context for inflating views
-     * @param parentItemList the list of parent items to be displayed in the RecyclerView
+     * @param context               for inflating views
+     * @param parentItemList        the list of parent items to be displayed in the RecyclerView
      * @param customClickableViewId the id of the view that triggers the expansion
      */
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList,
-                               int customClickableViewId) {
+                                       int customClickableViewId) {
         super(context, parentItemList, customClickableViewId);
         mInflater = LayoutInflater.from(context);
     }
@@ -57,13 +58,13 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * view and a custom animation duration when the adapter is created without having to set them
      * later. This is here for demo purposes.
      *
-     * @param context for inflating views
-     * @param parentItemList the list of parent items to be displayed in the RecyclerView
+     * @param context               for inflating views
+     * @param parentItemList        the list of parent items to be displayed in the RecyclerView
      * @param customClickableViewId the id of the view that triggers the expansion
-     * @param animationDuration the duration (in ms) of the rotation animation
+     * @param animationDuration     the duration (in ms) of the rotation animation
      */
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList,
-                               int customClickableViewId, long animationDuration) {
+                                       int customClickableViewId, long animationDuration) {
         super(context, parentItemList, customClickableViewId, animationDuration);
         mInflater = LayoutInflater.from(context);
     }
@@ -100,7 +101,7 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * parent view should be performed here.
      *
      * @param parentViewHolder the ViewHolder of the parent item created in OnCreateParentViewHolder
-     * @param position the position in the RecyclerView of the item
+     * @param position         the position in the RecyclerView of the item
      */
     @Override
     public void onBindParentViewHolder(ExpandableListParentViewHolder parentViewHolder, int position, Object parentObject) {
@@ -114,19 +115,54 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * child view should be performed here.
      *
      * @param childViewHolder the ViewHolder of the child item created in OnCreateChildViewHolder
-     * @param position the position in the RecyclerView of the item
+     * @param position        the position in the RecyclerView of the item
      */
     @Override
     public void onBindChildViewHolder(ExpandableListChildViewHolder childViewHolder, int position, Object childObject) {
-        ExpandableListChildObject customChildObject = (ExpandableListChildObject) childObject;
-        if (this.childrenOnClickListener != null) {
-            ((ExpandableListChildObject) childObject).setHorribleHack(childViewHolder.dataText);
-            ((ExpandableListChildObject) childObject).setHorribleHackOnClickHacker(childrenOnClickListener);
+        switch (((ExpandableListChildObject) childObject).getObjectType()) {
+            case EXPANDABLE_LIST_CHILD_OBJECT:
+                bindChildViewHolder(childViewHolder, childObject);
+                break;
+            case SUBSCRIPTION_EXPANDABLE_LIST_CHILD_OBJECT:
+                bindSubscriptionChildViewHolder(childViewHolder, childObject);
+                break;
+            default:
+                Log.e("Unknown type", "Type not supported");
         }
-        childViewHolder.dataText.setText(customChildObject.getChildText());
+
     }
 
     public void setChildrenOnClickListener(View.OnClickListener childrenOnClickListener) {
         this.childrenOnClickListener = childrenOnClickListener;
+    }
+
+    private void bindChildViewHolder(ExpandableListChildViewHolder childViewHolder, Object childObject) {
+        ExpandableListChildObject customChildObject = (ExpandableListChildObject) childObject;
+
+        if (this.childrenOnClickListener != null) {
+            customChildObject.setTitleTextView(childViewHolder.dataText);
+            customChildObject.setOnClickListener(childrenOnClickListener);
+        }
+        childViewHolder.dataText.setText(customChildObject.getTitleText());
+    }
+
+    private void bindSubscriptionChildViewHolder(ExpandableListChildViewHolder childViewHolder, Object childObject) {
+        ((SubscriptionExpandableListChildObject) childObject).setTitleTextView(childViewHolder.dataText);
+
+        ((SubscriptionExpandableListChildObject) childObject).setLastUpdatedTextView(childViewHolder.lastUpdatedTextView);
+        childViewHolder.lastUpdatedTextView.setText(((SubscriptionExpandableListChildObject) childObject).getLastUpdatedText());
+
+        ((SubscriptionExpandableListChildObject) childObject).setSubscribedSwitch(childViewHolder.subscribedSwitch);
+        childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
+
+        ((SubscriptionExpandableListChildObject) childObject).setDownloadMapLayerButton(childViewHolder.downloadButton);
+
+        ((SubscriptionExpandableListChildObject) childObject).setOnClickListener(childrenOnClickListener);
+
+        ((ViewGroup) childViewHolder.dataText.getParent()).setTag(((SubscriptionExpandableListChildObject) childObject).getTitleText());
+        childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText().length() > 10 ?
+                ((SubscriptionExpandableListChildObject) childObject).getTitleText().substring(0, 14) + ".." : ((SubscriptionExpandableListChildObject) childObject).getTitleText());
+
+        childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
     }
 }

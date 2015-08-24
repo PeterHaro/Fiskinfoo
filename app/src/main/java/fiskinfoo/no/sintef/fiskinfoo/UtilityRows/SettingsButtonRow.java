@@ -58,7 +58,4 @@ public class SettingsButtonRow extends BaseTableRow {
         return mButton;
     }
 
-    public void setButton(Button button) {
-        mButton.setText(button.getText().toString());
-    }
 }

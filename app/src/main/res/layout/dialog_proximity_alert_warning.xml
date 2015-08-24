@@ -36,12 +36,28 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
-                android:id="@+id/polar_low_ok_button"
+                android:id="@+id/proximity_alert_warning_ok_button"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
                 android:text="@string/ok"/>
+
+            <Button
+                android:id="@+id/proximity_alert_warning_show_on_map_button"
+                android:layout_width="0.0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/show_position_on_map"/>
+
+            <Button
+                android:id="@+id/proximity_alert_warning_dismiss_button"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/proximity_alert_warning_dismiss"/>
         </LinearLayout>
 
     </RelativeLayout>
