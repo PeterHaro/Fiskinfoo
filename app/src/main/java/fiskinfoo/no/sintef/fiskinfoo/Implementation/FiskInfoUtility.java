@@ -1,18 +1,32 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.io.StreamCorruptedException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class FiskInfoUtility {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
@@ -153,6 +167,86 @@ public class FiskInfoUtility {
         }
     }
 
+    /**
+     * Checks if external storage is available for read and write.
+     *
+     * @return True if external storage is available, false otherwise.
+     */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath) {
+        String filePath;
+        OutputStream outputStream = null;
+        filePath = downloadSavePath;
+
+        File directory = filePath == null ? null : new File(filePath);
+
+
+        if(directory == null || !directory.mkdir()) {
+            System.out.println("Could not create user path, using default.");
+            String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+            String directoryName = "FiskInfo";
+            filePath = directoryPath + "/" + directoryName + "/";
+        }
+
+        try {
+            outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
+            outputStream.write(data);
+
+            Toast.makeText(context, R.string.disk_write_completed, Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieve a serialized <code>FiskInfoPolygon2D</code> from disk as a
+     * <code>FiskInfoPolygon2D class</code>
+     *
+     * @param path
+     *            the <code>Path</code> to read from
+     * @return the Requested <code>FiskInfoPolygon2D</code>
+     */
+    public FiskInfoPolygon2D deserializeFiskInfoPolygon2D(String path) {
+        FiskInfoPolygon2D polygon = null;
+        try {
+            FileInputStream fileIn = new FileInputStream(path);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            polygon = (FiskInfoPolygon2D) in.readObject();
+
+            in.close();
+            fileIn.close();
+            Log.d("FiskInfo", "Deserialization successfull, the data should be stored in the inputclass");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Couldnt find class. I am doing something wrong I guess");
+            e.printStackTrace();
+        }
+        return polygon;
+    }
+
+
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz");
         if (input.endsWith("Z")) {
@@ -178,54 +272,47 @@ public class FiskInfoUtility {
     }
 
     /**
-     *
-     */
-    public boolean checkCoordinates(String coordinates, String projection) {
-        System.out.println("coords: " + coordinates);
-        System.out.println("projection: " + projection);
-
-        if (coordinates.length() == 0) {
-
-            return false;
-        } else {
-            switch (projection) {
-                case "EPSG:3857":
-                    if (checkProjectionEPSG3857(coordinates)) {
-                        break;
-                    }
-                case "EPSG:4326":
-                    if (checkProjectionEPSG4326(coordinates)) {
-                        break;
-                    }
-                case "EPSG:23030":
-                    if (checkProjectionEPSG23030(coordinates)) {
-                        break;
-                    }
-                case "EPSG:900913":
-                    if (checkProjectionEPSG900913(coordinates)) {
-                        break;
-                    }
-                default:
-                    return false;
-            }
-            return true;
-        }
-    }
-
-    /**
      * Checks that the given string contains coordinates in a valid format in
      * regards to the given projection.
      *
      * @param coordinates
-     *            the coordinates to be checked.
-     * @return true if coordinates are in a valid format.
+     * @param projection
+     * @return
      */
+    public boolean checkCoordinates(String coordinates, ProjectionType projection) {
+        boolean retVal = false;
+        System.out.println("coords: " + coordinates);
+        System.out.println("projection: " + projection);
+
+        if (coordinates.length() == 0) {
+            retVal = false;
+        } else {
+            switch (projection) {
+                case EPSG_3857:
+                    retVal = checkProjectionEPSG3857(coordinates);
+                    break;
+                case EPSG_4326:
+                    retVal = checkProjectionEPSG4326(coordinates);
+                    break;
+                case EPSG_23030:
+                    retVal = checkProjectionEPSG23030(coordinates);
+                    break;
+                case EPSG_900913:
+                    retVal = checkProjectionEPSG900913(coordinates);
+                    break;
+                default:
+                    return retVal;
+            }
+        }
+
+        return retVal;
+    }
 
     private boolean checkProjectionEPSG3857(String coordinates) {
         try {
-            int commaSeperatorIndex = coordinates.indexOf(",");
-            double latitude = Double.parseDouble(coordinates.substring(0, commaSeperatorIndex - 1));
-            double longitude = Double.parseDouble(coordinates.substring(commaSeperatorIndex + 1, coordinates.length() - 1));
+            int commaSeparatorIndex = coordinates.indexOf(",");
+            double latitude = Double.parseDouble(coordinates.substring(0, commaSeparatorIndex - 1));
+            double longitude = Double.parseDouble(coordinates.substring(commaSeparatorIndex + 1, coordinates.length() - 1));
 
             double EPSG3857MinX = -20026376.39;
             double EPSG3857MaxX = 20026376.39;
@@ -248,9 +335,9 @@ public class FiskInfoUtility {
 
     private boolean checkProjectionEPSG4326(String coordinates) {
         try {
-            int commaSeperatorIndex = coordinates.indexOf(",");
-            double latitude = Double.parseDouble(coordinates.substring(0, commaSeperatorIndex - 1));
-            double longitude = Double.parseDouble(coordinates.substring(commaSeperatorIndex + 1, coordinates.length() - 1));
+            int commaSeparatorIndex = coordinates.indexOf(",");
+            double latitude = Double.parseDouble(coordinates.substring(0, commaSeparatorIndex - 1));
+            double longitude = Double.parseDouble(coordinates.substring(commaSeparatorIndex + 1, coordinates.length() - 1));
             double EPSG4326MinX = -180.0;
             double EPSG4326MaxX = 180.0;
             double EPSG4326MinY = -90.0;
@@ -272,9 +359,9 @@ public class FiskInfoUtility {
 
     private boolean checkProjectionEPSG23030(String coordinates) {
         try {
-            int commaSeperatorIndex = coordinates.indexOf(",");
-            double latitude = Double.parseDouble(coordinates.substring(0, commaSeperatorIndex - 1));
-            double longitude = Double.parseDouble(coordinates.substring(commaSeperatorIndex + 1, coordinates.length() - 1));
+            int commaSeparatorIndex = coordinates.indexOf(",");
+            double latitude = Double.parseDouble(coordinates.substring(0, commaSeparatorIndex - 1));
+            double longitude = Double.parseDouble(coordinates.substring(commaSeparatorIndex + 1, coordinates.length() - 1));
             double EPSG23030MinX = 229395.8528;
             double EPSG23030MaxX = 770604.1472;
             double EPSG23030MinY = 3982627.8377;
@@ -296,13 +383,13 @@ public class FiskInfoUtility {
 
     private boolean checkProjectionEPSG900913(String coordinates) {
         try {
-            int commaSeperatorIndex = coordinates.indexOf(",");
-            double latitude = Double.parseDouble(coordinates.substring(0, commaSeperatorIndex - 1));
-            double longitude = Double.parseDouble(coordinates.substring(commaSeperatorIndex + 1, coordinates.length() - 1));
+            int commaSeparatorIndex = coordinates.indexOf(",");
+            double latitude = Double.parseDouble(coordinates.substring(0, commaSeparatorIndex - 1));
+            double longitude = Double.parseDouble(coordinates.substring(commaSeparatorIndex + 1, coordinates.length() - 1));
 
 			/*
 			 * These are based on the spherical metricator bounds of OpenLayers
-			 * and as we are currently using OpenLayer these are bounds to use.
+			 * and as we are currently using OpenLayer these are the bounds to use.
 			 */
             double EPSG900913MinX = -20037508.34;
             double EPSG900913MaxX = 20037508.34;
