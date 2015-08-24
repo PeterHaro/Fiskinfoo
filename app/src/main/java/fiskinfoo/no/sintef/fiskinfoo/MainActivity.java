@@ -110,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getTag() == MyPageFragment.TAG) {
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_placeholder, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).
+                            replace(R.id.fragment_placeholder, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).addToBackStack(null).
                             commit();
                 } else if (tab.getTag() == MapFragment.TAG) {
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_placeholder, createFragment(MapFragment.TAG), MapFragment.TAG).
+                            replace(R.id.fragment_placeholder, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
@@ -328,6 +328,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void setProximityAlerterRunning(boolean proximityAlerterRunning) {
         this.proximityAlerterRunning = proximityAlerterRunning;
+    }
+
+    @Override
+    public void onBackPressed() {
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
     @Override

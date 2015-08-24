@@ -15,8 +15,11 @@
 package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.view.View;
 
 public interface OnclickListenerInterface {
     View.OnClickListener getDismissDialogListener(Dialog dialog);
+    View.OnClickListener getShowToastListener(Context context, String toastString);
+    View.OnClickListener getShowToastListener(Context context, int stringId);
 }

@@ -15,16 +15,10 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
-import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DownloadFormatRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
@@ -51,8 +45,8 @@ public class UtilityRows implements UtilityRowsInterface {
     }
 
     @Override
-    public DownloadFormatRow getDownloadFormatRow(Context context, String formatName) {
-        return new DownloadFormatRow(context, formatName);
+    public FormatRow getFormatRow(Context context, String formatName) {
+        return new FormatRow(context, formatName);
     }
 }
 

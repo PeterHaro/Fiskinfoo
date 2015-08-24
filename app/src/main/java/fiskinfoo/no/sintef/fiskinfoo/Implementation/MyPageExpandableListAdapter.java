@@ -163,6 +163,9 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
         childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText().length() > 10 ?
                 ((SubscriptionExpandableListChildObject) childObject).getTitleText().substring(0, 14) + ".." : ((SubscriptionExpandableListChildObject) childObject).getTitleText());
 
+        childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
+        childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
+
         childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
     }
 }

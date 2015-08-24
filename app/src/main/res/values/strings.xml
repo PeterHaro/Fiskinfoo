@@ -65,13 +65,17 @@ limitations under the License.
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>
+    <string name="choose_a_download_format">Vennligst velg et nedlastningsformat</string>
     <string name="download_map_layer_dialog_title">Last ned kartlag</string>
+    <string name="subscribe_to_map_layer_dialog_title">Abboner på kartlag</string>
     <string name="download">Last ned</string>
     <string name="download_failed">Nedlasting mislyktes</string>
     <string name="download_completed">Nedlasting fullført</string>
     <string name="disk_write_completed">Fil lagret</string>
     <string name="disk_write_failed">Lagring feilet</string>
     <string name="download_map_layer_dialog_help_text">Her kan du laste ned kartlag i forskjellige formater. Velg et kartlag og klikk last ned. Kartlaget lagres som standard i mappen Downloads/fiskinfo med mindre du har valgt en annen mappe i innstillingene.</string>
+    <string name="cancel_subscription_dialog_title">Kanseller abonnement</string>
+    <string name="confirm_subscription_cancelation">Er du sikker på at du vil avbryte dette abonnementet?</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
     <string name="proximity_alert_set">Kollisjonsvarsling opprettet</string>

@@ -68,6 +68,10 @@ limitations under the License.
     <!-- expandableListView -->
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
 
+    <!-- FormatRow -->
+    <dimen name="download_format_row_text_size">22dp</dimen>
+    <dimen name="download_format_row_text_view_margin_left">50dp</dimen>
+
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>
     <dimen name="recycle_item_child_margin_right">8dp</dimen>

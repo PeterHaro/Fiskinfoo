@@ -20,12 +20,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ExpandableListChildType;
-import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentViewHolder;
 
 public class SubscriptionExpandableListChildObject extends ExpandableListChildObject {
     private TextView mLastUpdatedTextView;
     private Switch mSubscribedSwitch;
     private Button mDownloadMapLayerButton;
+    private View.OnClickListener mDownloadButtonOnClickListener;
+    private View.OnClickListener mSubscribeSwitchOnClickListener;
 
     private String mLastUpdated;
     private boolean isSubscribed;
@@ -88,5 +89,21 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
 //        if (mLastUpdatedTextView != null && onClickListener != null) {
 //            mLastUpdatedTextView.setOnClickListener(onClickListener);
 //        }
+    }
+
+    public View.OnClickListener getDownloadButtonOnClickListener() {
+        return mDownloadButtonOnClickListener;
+    }
+
+    public void setDownloadButtonOnClickListener(View.OnClickListener onClickListener) {
+        mDownloadButtonOnClickListener = onClickListener;
+    }
+
+    public View.OnClickListener getSubscribeSwitchOnClickListener() {
+        return mSubscribeSwitchOnClickListener;
+    }
+
+    public void setSubscribeSwitchOnClickListener(View.OnClickListener onClickListener) {
+        mSubscribeSwitchOnClickListener = onClickListener;
     }
 }
