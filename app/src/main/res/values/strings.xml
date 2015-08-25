@@ -23,6 +23,7 @@ limitations under the License.
     <string name="zero_number">0</string>
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
+    <string name="update">Oppdater</string>
     <string name="placeholder_string">Placeholder</string>
 
     <!-- Set file download storage path -->
@@ -42,7 +43,7 @@ limitations under the License.
     <!-- MyPage fragment strings -->
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
     <string name="my_page_all_warnings">Mine varsler</string>
-    <string name="my_page_my_subscriptions">Mine kart</string>
+    <string name="my_page_my_subscriptions">Mine abonnementer</string>
     <string name="subscribe">Abonnér</string>
 
 
@@ -66,8 +67,9 @@ limitations under the License.
 
     <string name="error_no_format_selected">Ingen format valgt</string>
     <string name="choose_a_download_format">Vennligst velg et nedlastningsformat</string>
-    <string name="download_map_layer_dialog_title">Last ned kartlag</string>
+    <string name="download_map_layer_dialog_title">Velg nedlastningsformat</string>
     <string name="subscribe_to_map_layer_dialog_title">Abboner på kartlag</string>
+    <string name="update_subscriptions">Oppdater abonnement</string>
     <string name="download">Last ned</string>
     <string name="download_failed">Nedlasting mislyktes</string>
     <string name="download_completed">Nedlasting fullført</string>

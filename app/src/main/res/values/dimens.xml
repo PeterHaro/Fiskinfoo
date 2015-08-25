@@ -69,8 +69,10 @@ limitations under the License.
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
 
     <!-- FormatRow -->
-    <dimen name="download_format_row_text_size">22dp</dimen>
-    <dimen name="download_format_row_text_view_margin_left">50dp</dimen>
+    <dimen name="format_row_text_size">22dp</dimen>
+    <dimen name="format_row_text_view_margin_left">50dp</dimen>
+    <dimen name="format_row_check_box_margin_left">25dp</dimen>
+    <dimen name="format_row_text_view_padding">10dp</dimen>
 
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>
@@ -80,13 +82,18 @@ limitations under the License.
     <dimen name="recycle_item_child_title_field_margin_bottom">8dp</dimen>
     <dimen name="recycle_item_child_title_field_margin_top">8dp</dimen>
     <dimen name="recycle_item_child_is_subscribed_switch_margin_left">20dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_left">30dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_left">15dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
     <dimen name="recycle_item_child_download_button_width">40dp</dimen>
     <dimen name="recycle_item_child_download_button_height">40dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_height">3dp</dimen>
+
+    <!-- fragment card view -->
+    <dimen name="card_view_thumbnail_height">250dp</dimen>
+    <dimen name="card_view_title_text_size">22dp</dimen>
+    <dimen name="card_view_title_text_view_padding">8dp</dimen>
 
 
 </resources>

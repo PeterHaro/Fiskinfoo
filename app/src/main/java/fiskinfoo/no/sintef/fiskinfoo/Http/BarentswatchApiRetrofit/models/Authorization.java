@@ -25,6 +25,9 @@ public class Authorization implements Parcelable {
 
     protected Authorization(Parcel in) {
         Id = in.readInt();
+        boolean[] tmp = new boolean[1];
+        in.readBooleanArray(tmp);
+        hasAccess = tmp[0];
     }
 
     public static final Creator<Authorization> CREATOR = new Creator<Authorization>() {

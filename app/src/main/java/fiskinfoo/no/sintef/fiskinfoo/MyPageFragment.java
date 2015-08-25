@@ -14,8 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -23,14 +25,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -39,6 +45,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
@@ -120,199 +127,37 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             List<PropertyDescription> availableSubscriptions = api.getSubscribable();
             List<String> myWarnings = new ArrayList<>(); //TODO: Tie in polar low warning
             List<Subscription> personalMaps = api.getSubscriptions();
+            List<Authorization> authorizations = api.getAuthorization();
+
+            Map<Integer, Boolean> authMap = new HashMap<Integer, Boolean>();
+
+            for(Authorization auth : authorizations) {
+                authMap.put(auth.Id, auth.hasAccess);
+                System.out.println("Id: " + auth.Id + ", access: " + auth.hasAccess);
+            }
 
             ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
-                currentPropertyDescriptionChildObject.setTitleText(propertyDescription.Name);
-                currentPropertyDescriptionChildObject.setLastUpdatedText(propertyDescription.LastUpdated.replace("T", "\n"));
+                //TODO: uncomment after fixing getAuthorization to read correct values.
+//                if(!authMap.get(propertyDescription.Id)) {
+//                    continue;
+//                }
 
-                boolean isSubscribed = false;
-
-                for(Subscription subscription : personalMaps) {
-                    if(subscription.GeoDataServiceName.equals(propertyDescription.ApiName)) {
-                        isSubscribed = true;
-                        break;
-                    }
-                }
-
-                currentPropertyDescriptionChildObject.setIsSubscribed(isSubscribed);
-
-                View. OnClickListener downloadButtonOnClickListener = new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.download_map_layer_dialog_title);
-
-                        final Button downloadButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
-                        Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                        final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
-
-                        downloadButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
-
-                        for (String format : propertyDescription.Formats) {
-                            final FormatRow formatRow = utilityRowsInterface.getFormatRow(getActivity(), format);
-
-                            formatRow.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    for (int i = 0; i < rowsContainer.getChildCount(); i++) {
-
-                                        rowsContainer.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.background_white));
-                                    }
-                                    formatRow.setBackgroundColor(getResources().getColor(R.color.helpful_grey));
-
-                                    downloadButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-
-                                            Response response;
-                                            String downloadFormat = formatRow.getText();
-
-                                            try {
-                                                response = api.geoDataDownload(propertyDescription.ApiName, downloadFormat);
-                                                if (response == null) {
-                                                    Log.d(TAG, "RESPONSE == NULL");
-                                                }
-                                                byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-                                                if (fiskInfoUtility.isExternalStorageWritable()) {
-                                                    fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), fileData, propertyDescription.Name, downloadFormat, user.getFilePathForExternalStorage());
-                                                } else {
-                                                    Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                                                }
-                                            } catch (Exception e) {
-                                                Log.d(TAG, "Could not download with ApiName: " + propertyDescription.ApiName + "  and format: " + downloadFormat);
-                                            }
-
-                                            dialog.dismiss();
-                                        }
-                                    });
-                                }
-                            });
-                            rowsContainer.addView(formatRow.getView());
-                        }
-
-                        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-
-                        dialog.show();
-                    }
-                };
-
-                View.OnClickListener subscriptionSwitchClickListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        if(((Switch)v).isChecked()) {
-                            final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.subscribe_to_map_layer_dialog_title);
-
-                            final Button subscribeButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
-                            Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                            final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
-
-                            subscribeButton.setText(R.string.subscribe);
-                            subscribeButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
-
-                            for (String format : propertyDescription.Formats) {
-                                final FormatRow formatRow = utilityRowsInterface.getFormatRow(getActivity(), format);
-
-                                formatRow.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View formatRowView) {
-                                        for (int i = 0; i < rowsContainer.getChildCount(); i++) {
-
-                                            rowsContainer.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.background_white));
-                                        }
-                                        formatRow.setBackgroundColor(getResources().getColor(R.color.helpful_grey));
-
-                                        subscribeButton.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View subscribeButtonView) {
-
-                                                Response response;
-                                                String downloadFormat = formatRow.getText();
-
-//                                                try {
-//                                                      TODO: add API call to set up subscription
-//                                                    }
-//                                                } catch (Exception e) {
-//                                                    Log.d(TAG, "Could set up subscription: " + propertyDescription.ApiName + "  and format: " + downloadFormat);
-//                                                }
-//
-//                                                dialog.dismiss();
-//                                                ((Switch)v).setChecked(true);
-                                            }
-                                        });
-                                    }
-                                });
-                                rowsContainer.addView(formatRow.getView());
-                            }
-
-                            cancelButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View cancelButton) {
-                                    dialog.dismiss();
-                                    ((Switch) v).setChecked(true);
-                                }
-                            });
-
-                            dialog.show();
-                        } else {
-                            new AlertDialog.Builder(v.getContext())
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setTitle(propertyDescription.Name)
-                                .setMessage(getString(R.string.confirm_subscription_cancelation))
-                                .setPositiveButton(getString(R.string.yes), new android.content.DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(android.content.DialogInterface dialog, int which) {
-                                        Response response;
-
-//                                        try {
-//                                            TODO: API call to remove subscription
-//                                            }
-//                                        } catch (Exception e) {
-//                                            Log.d(TAG, "Could not cancel subscription: " + propertyDescription.ApiName);
-//                                        }
-                                    }
-                                })
-                                .setNegativeButton(getString(R.string.cancel), new android.content.DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(android.content.DialogInterface dialog, int which) {
-                                        ((Switch) v).setChecked(false);
-                                    }
-                                })
-                                .show();
-                        }
-                    }
-                };
-
-                currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
-                currentPropertyDescriptionChildObject.setSubscribeSwitchOnClickListener(subscriptionSwitchClickListener);
+                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, personalMaps);
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
 
             ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
-            for (String s : myWarnings) {
-                SubscriptionExpandableListChildObject currentWarningObject = new SubscriptionExpandableListChildObject();
-                currentWarningObject.setTitleText(s);
-                currentWarningObject.setLastUpdatedText("");
-                currentWarningObject.setIsSubscribed(true);
+            for (String warning : myWarnings) {
+                SubscriptionExpandableListChildObject currentWarning = setupWarningChildView(warning);
 
-                warningServiceChildObjectList.add(currentWarningObject);
+                warningServiceChildObjectList.add(currentWarning);
             }
 
             ArrayList<Object> mySubscriptions = new ArrayList<>();
             for (Subscription s : personalMaps) {
-                SubscriptionExpandableListChildObject currentSubscription = new SubscriptionExpandableListChildObject();
-                currentSubscription.setTitleText(s.GeoDataServiceName);
-                for(PropertyDescription subscription : availableSubscriptions) {
-                    if(subscription.ApiName.equals(s.GeoDataServiceName)) {
-                        currentSubscription.setTitleText(subscription.Name);
-                        break;
-                    }
-
-                    currentSubscription.setLastUpdatedText(s.LastModified.replace("T", "\n"));
-                    currentSubscription.setIsSubscribed(true);
-                }
+                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(s, availableSubscriptions);
 
                 mySubscriptions.add(currentSubscription);
             }
@@ -352,6 +197,211 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         return parentObjectList;
     }
 
+    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final List<Subscription> activeSubscriptions) {
+        final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
+        currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
+        currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
+
+        boolean isSubscribed = false;
+
+        for (Subscription activeSubscription : activeSubscriptions) {
+            if (activeSubscription.GeoDataServiceName.equals(subscription.ApiName)) {
+                isSubscribed = true;
+                break;
+            }
+        }
+
+        currentPropertyDescriptionChildObject.setIsSubscribed(isSubscribed);
+
+        View.OnClickListener downloadButtonOnClickListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.download_map_layer_dialog_title);
+
+                final Button downloadButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
+                Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
+                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
+
+                downloadButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
+
+                for (String format : subscription.Formats) {
+                    final FormatRow formatRow = utilityRowsInterface.getFormatRow(getActivity(), format);
+
+                    formatRow.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            for (int i = 0; i < rowsContainer.getChildCount(); i++) {
+
+                                rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view).setBackgroundColor(getResources().getColor(R.color.text_white));
+                            }
+
+                            formatRow.setTextViewBackgroundColor(getResources().getColor(R.color.helpful_grey));
+
+                            downloadButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    BarentswatchApi barentswatchApi = new BarentswatchApi();
+                                    barentswatchApi.setAccesToken(user.getToken());
+                                    IBarentswatchApi api = barentswatchApi.getApi();
+
+                                    Response response;
+                                    String downloadFormat = formatRow.getText();
+
+                                    try {
+                                        response = api.geoDataDownload(subscription.ApiName, downloadFormat);
+                                        if (response == null) {
+                                            Log.d(TAG, "RESPONSE == NULL");
+                                        }
+                                        byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
+                                        if (fiskInfoUtility.isExternalStorageWritable()) {
+                                            fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage());
+                                        } else {
+                                            Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (Exception e) {
+                                        Log.d(TAG, "Could not download with ApiName: " + subscription.ApiName + "  and format: " + downloadFormat);
+                                    }
+
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    });
+                    rowsContainer.addView(formatRow.getView());
+                }
+
+                cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+
+                dialog.show();
+            }
+        };
+
+        View.OnClickListener subscriptionSwitchClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.update_subscriptions);
+
+                final Button subscribeButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
+                Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
+                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
+
+                final List<String> activeSubscriptionFormats = new ArrayList<>();
+
+                for(Subscription activeSubscription : activeSubscriptions) {
+                    if(activeSubscription.GeoDataServiceName.equals(subscription.ApiName)) {
+                        activeSubscriptionFormats.add(activeSubscription.FileFormatType);
+                    }
+                }
+
+                subscribeButton.setText(R.string.update);
+                subscribeButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
+
+                for (String format : subscription.Formats) {
+                    final CheckBoxFormatRow formatRow = utilityRowsInterface.getCheckBoxFormatRow(getActivity(), format);
+                    if(activeSubscriptionFormats.contains(format)) {
+                        formatRow.setChecked(true);
+                    }
+
+                    rowsContainer.addView(formatRow.getView());
+                }
+
+                subscribeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View subscribeButton) {
+                        boolean isSubscribed = false;
+
+                        BarentswatchApi barentswatchApi = new BarentswatchApi();
+                        barentswatchApi.setAccesToken(user.getToken());
+                        final IBarentswatchApi api = barentswatchApi.getApi();
+
+                        for(int i = 0; i < rowsContainer.getChildCount(); i++) {
+                            String currentFormat = ((TextView) rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view)).getText().toString();
+
+
+                            if(((CheckBox) rowsContainer.getChildAt(i).findViewById(R.id.format_row_check_box)).isChecked()) {
+                                isSubscribed = true;
+
+                                if(activeSubscriptionFormats.contains(currentFormat)) {
+                                    continue;
+                                } else {
+                                    // TODO: API call to add subscription
+                                    Response response;
+                                }
+                            } else {
+                                if(activeSubscriptions.contains(currentFormat)) {
+                                    // TODO: API call to remove subscription
+                                    Response response;
+                                }
+                            }
+                        }
+
+                        ((Switch) v).setChecked(isSubscribed);
+                        dialog.dismiss();
+                    }
+                });
+
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View cancelButton) {
+                        ((Switch) v).setChecked(activeSubscriptionFormats.size() > 0);
+
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+
+            }
+        };
+
+        View.OnClickListener errorNotificationOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(v.getContext())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(subscription.ErrorType)
+                        .setMessage(subscription.ErrorText)
+                        .setPositiveButton(getString(R.string.ok), null)
+                        .show();
+            }
+        };
+
+        currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
+        currentPropertyDescriptionChildObject.setSubscribeSwitchOnClickListener(subscriptionSwitchClickListener);
+
+        currentPropertyDescriptionChildObject.setErrorType(ApiErrorType.getType(subscription.ErrorType));
+        currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
+
+        return currentPropertyDescriptionChildObject;
+    }
+
+
+    private SubscriptionExpandableListChildObject setupWarningChildView(final String subscription) {
+        SubscriptionExpandableListChildObject currentWarningObject = new SubscriptionExpandableListChildObject();
+        currentWarningObject.setTitleText(subscription);
+        currentWarningObject.setLastUpdatedText("");
+        currentWarningObject.setIsSubscribed(true);
+
+        return currentWarningObject;
+    }
+
+    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription subscription, List<PropertyDescription> availableSubscriptions) {
+        SubscriptionExpandableListChildObject currentSubscription = new SubscriptionExpandableListChildObject();
+
+        for (PropertyDescription availableSubscription : availableSubscriptions) {
+            if (availableSubscription.ApiName.equals(subscription.GeoDataServiceName)) {
+                currentSubscription.setTitleText(availableSubscription.Name);
+                break;
+            }
+        }
+        currentSubscription.setLastUpdatedText(subscription.LastModified.replace("T", "\n"));
+        currentSubscription.setIsSubscribed(true);
+
+
+        return currentSubscription;
+    }
+
     @Override
     public void onRecyclerViewItemExpanded(int position) {
         Toast.makeText(this.getActivity(), "Item Expanded " + position, Toast.LENGTH_SHORT).show();
@@ -386,7 +436,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
         @Override
         public void onClick(View v) {
-            String identifier = ((ViewGroup)v.getParent()).getTag().toString();
+            String identifier = ((ViewGroup) v.getParent()).getTag().toString();
             boolean found = false;
             JsonObject object = null;
             Gson gson = new Gson();

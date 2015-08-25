@@ -1,6 +1,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -147,25 +148,40 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
     }
 
     private void bindSubscriptionChildViewHolder(ExpandableListChildViewHolder childViewHolder, Object childObject) {
+        Context context = childViewHolder.lastUpdatedTextView.getContext();
         ((SubscriptionExpandableListChildObject) childObject).setTitleTextView(childViewHolder.dataText);
 
-        ((SubscriptionExpandableListChildObject) childObject).setLastUpdatedTextView(childViewHolder.lastUpdatedTextView);
+//        ((SubscriptionExpandableListChildObject) childObject).setLastUpdatedTextView(childViewHolder.lastUpdatedTextView);
         childViewHolder.lastUpdatedTextView.setText(((SubscriptionExpandableListChildObject) childObject).getLastUpdatedText());
 
-        ((SubscriptionExpandableListChildObject) childObject).setSubscribedSwitch(childViewHolder.subscribedSwitch);
+//        ((SubscriptionExpandableListChildObject) childObject).setSubscribedSwitch(childViewHolder.subscribedSwitch);
         childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
-        ((SubscriptionExpandableListChildObject) childObject).setDownloadMapLayerButton(childViewHolder.downloadButton);
+//        ((SubscriptionExpandableListChildObject) childObject).setDownloadMapLayerButton(childViewHolder.downloadButton);
 
         ((SubscriptionExpandableListChildObject) childObject).setOnClickListener(childrenOnClickListener);
 
         ((ViewGroup) childViewHolder.dataText.getParent()).setTag(((SubscriptionExpandableListChildObject) childObject).getTitleText());
-        childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText().length() > 10 ?
-                ((SubscriptionExpandableListChildObject) childObject).getTitleText().substring(0, 14) + ".." : ((SubscriptionExpandableListChildObject) childObject).getTitleText());
+        childViewHolder.dataText.setText(
+                ((SubscriptionExpandableListChildObject) childObject).getTitleText().
+                        length() > context.getResources().getInteger(R.integer.subscription_name_cut_off_length) ?
+                        ((SubscriptionExpandableListChildObject) childObject).getTitleText().
+                                substring(0, context.getResources().getInteger(R.integer.subscription_name_shortened_name_length)) +
+                                ".." : ((SubscriptionExpandableListChildObject) childObject).getTitleText());
 
         childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
         childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
 
         childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
+
+        if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.WARNING) {
+            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, android.R.drawable.ic_dialog_info));
+            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+        } else if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.ERROR) {
+            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, android.R.drawable.ic_dialog_alert));
+            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+        }
     }
 }

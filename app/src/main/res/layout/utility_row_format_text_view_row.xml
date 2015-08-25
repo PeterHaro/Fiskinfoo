@@ -14,17 +14,15 @@ limitations under the License.
 
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
+          android:background="@android:drawable/dialog_holo_light_frame"
           android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/download_format_row_text_view"
+        android:id="@+id/format_row_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/download_format_row_text_view_margin_left"
-        android:layout_marginRight="@dimen/dialog_container_margin_right"
-        android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-        android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-        android:textSize="@dimen/download_format_row_text_size"
+        android:padding="@dimen/format_row_text_view_padding"
+        android:textSize="@dimen/format_row_text_size"
         android:layout_weight="1"/>
 
 </TableRow>

@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Interface;
 import android.content.Context;
 import android.view.View;
 
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
@@ -28,4 +29,6 @@ public interface UtilityRowsInterface {
     SettingsButtonRow getSettingsButtonRow(Context context, String buttonText);
     SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener);
     FormatRow getFormatRow(Context context, String formatName);
+    CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName);
+    CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName, boolean isChecked);
 }

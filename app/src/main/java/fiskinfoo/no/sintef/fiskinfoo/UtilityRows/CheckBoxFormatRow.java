@@ -16,18 +16,32 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class FormatRow extends BaseTableRow {
+public class CheckBoxFormatRow extends BaseTableRow {
     private TextView mTextView;
+    private CheckBox mCheckBox;
 
-    public FormatRow(Context context, String format) {
+    public CheckBoxFormatRow(Context context, String format) {
+        super(context, R.layout.utility_row_format_check_box_row);
+
+        mTextView = (TextView) getView().findViewById(R.id.format_row_text_view);
+        mCheckBox = (CheckBox) getView().findViewById(R.id.format_row_check_box);
+
+        mTextView.setText(format);
+    }
+
+    public CheckBoxFormatRow(Context context, String buttonText, boolean isChecked) {
         super(context, R.layout.utility_row_format_text_view_row);
 
         mTextView = (TextView) getView().findViewById(R.id.format_row_text_view);
-        mTextView.setText(format);
+        mCheckBox = (CheckBox) getView().findViewById(R.id.format_row_check_box);
+
+        mTextView.setText(buttonText);
+        mCheckBox.setChecked(isChecked);
     }
 
     public void setText(String buttonText) {
@@ -42,11 +56,17 @@ public class FormatRow extends BaseTableRow {
         mTextView.setOnClickListener(onClickListener);
     }
 
-    public void setBackgroundColor(int color) {
-        getView().setBackgroundColor(color);
+    public void setChecked(boolean isChecked) {
+        if(mCheckBox != null) {
+            mCheckBox.setChecked(isChecked);
+        }
     }
 
-    public void setTextViewBackgroundColor(int color) {
-        mTextView.setBackgroundColor(color);
+    public boolean isChecked() {
+        if(mCheckBox != null ) {
+            return mCheckBox.isChecked();
+        } else {
+            return false;
+        }
     }
 }

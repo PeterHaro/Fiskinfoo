@@ -46,7 +46,7 @@ public enum ToolType {
                 retVal = "Unknown";
                 break;
             default:
-                throw new UnsupportedOperationException("Message type does not exist in the system");
+                throw new UnsupportedOperationException("Tool type does not exist in the system");
         }
         return retVal;
     }

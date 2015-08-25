@@ -36,5 +36,8 @@ limitations under the License.
     <color name="toolbar_blue">#2196F3</color>
     <color name="card_background">#fefefe</color>
     <color name="background_white">#EEEEEE</color>
+    <color name="warning_orange">#FF9900</color>
+    <color name="error_red">#CC2626</color>
+    <color name="card_view_title_black">#222</color>
 
 </resources>

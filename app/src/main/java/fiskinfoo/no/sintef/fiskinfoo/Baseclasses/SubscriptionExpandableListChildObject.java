@@ -16,9 +16,11 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ExpandableListChildType;
 
 public class SubscriptionExpandableListChildObject extends ExpandableListChildObject {
@@ -27,9 +29,11 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
     private Button mDownloadMapLayerButton;
     private View.OnClickListener mDownloadButtonOnClickListener;
     private View.OnClickListener mSubscribeSwitchOnClickListener;
+    private View.OnClickListener mErrorNotificationOnClickListener;
 
     private String mLastUpdated;
     private boolean isSubscribed;
+    private ApiErrorType errorType;
 
     public SubscriptionExpandableListChildObject() {
         super(ExpandableListChildType.SUBSCRIPTION_EXPANDABLE_LIST_CHILD_OBJECT);
@@ -82,15 +86,6 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
         }
     }
 
-    @Override
-    public void setOnClickListener(View.OnClickListener onClickListener) {
-        super.setOnClickListener(onClickListener);
-
-//        if (mLastUpdatedTextView != null && onClickListener != null) {
-//            mLastUpdatedTextView.setOnClickListener(onClickListener);
-//        }
-    }
-
     public View.OnClickListener getDownloadButtonOnClickListener() {
         return mDownloadButtonOnClickListener;
     }
@@ -105,5 +100,21 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
 
     public void setSubscribeSwitchOnClickListener(View.OnClickListener onClickListener) {
         mSubscribeSwitchOnClickListener = onClickListener;
+    }
+
+    public ApiErrorType getErrorType() {
+        return errorType;
+    }
+
+    public void setErrorType(ApiErrorType errorType) {
+        this.errorType = errorType;
+    }
+
+    public View.OnClickListener getErrorNotificationOnClickListener() {
+        return mErrorNotificationOnClickListener;
+    }
+
+    public void setErrorNotificationOnClickListener(View.OnClickListener onClickListener) {
+        mErrorNotificationOnClickListener = onClickListener;
     }
 }
