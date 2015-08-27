@@ -67,9 +67,7 @@ limitations under the License.
                 android:orientation="vertical"
                 android:layout_below="@+id/card_view_title_text_view"
                 android:layout_marginLeft="@dimen/card_view_information_container_margin_left"
-                android:layout_marginRight="@dimen/card_view_information_container_margin_right">
-
-            </LinearLayout>
+                android:layout_marginRight="@dimen/card_view_information_container_margin_right"/>
 
         </RelativeLayout>
     </ScrollView>

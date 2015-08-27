@@ -52,11 +52,20 @@ limitations under the License.
                 android:id="@+id/card_notification_image_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/card_view_title_text_view_padding"
                 android:layout_alignTop="@+id/card_view_title_text_view"
+                android:layout_marginTop="@dimen/card_view_title_text_view_padding"
                 android:layout_toRightOf="@+id/card_view_title_text_view"
                 android:visibility="gone"/>
 
+            <LinearLayout
+                android:id="@+id/card_view_information_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/card_view_title_text_view"
+                android:layout_marginLeft="@dimen/card_view_information_container_margin_left"
+                android:layout_marginRight="@dimen/card_view_information_container_margin_right"
+                android:layout_marginTop="@dimen/card_view_information_container_margin_top"
+                android:orientation="vertical"/>
 
         </RelativeLayout>
     </ScrollView>
