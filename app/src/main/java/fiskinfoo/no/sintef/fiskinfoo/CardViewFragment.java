@@ -2,10 +2,8 @@ package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Fragment;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +24,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 
 
 public class CardViewFragment extends Fragment {
@@ -38,6 +38,7 @@ public class CardViewFragment extends Fragment {
     private String warning = null;
     private PropertyDescription propertyDescription = null;
     private String type = null;
+    private UtilityRows utilityRows;
     List<Integer> takenIds;
     //END HINT
 
@@ -77,16 +78,17 @@ public class CardViewFragment extends Fragment {
             default:
                 Log.d(TAG, "INVALUD type of object sent to cardview");
         }
+        utilityRows = new UtilityRows();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_card_view, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_card_view, container, false);
 
         RelativeLayout textAreaPlaceHolder = (RelativeLayout) rootView.findViewById(R.id.card_view_container);
-        TextView title = (TextView) rootView.findViewById(R.id.card_view_title);
+        TextView title = (TextView) rootView.findViewById(R.id.card_view_title_text_view);
         if (subscription != null) {
             title.setText(subscription.GeoDataServiceName);
             TextView idView = generateTextViewWithText("id: " + subscription.Id, title);
@@ -109,53 +111,61 @@ public class CardViewFragment extends Fragment {
         }
         if (propertyDescription != null) {
             title.setText(propertyDescription.Name);
-            TextView idView = generateTextViewWithText("id: " + propertyDescription.Id, title);
-            TextView serviceTypeIdView = generateTextViewWithText("TjenesteId: " + propertyDescription.ServiceTypeId, idView);
-            TextView nameView = generateTextViewWithText("Navn: " + propertyDescription.Name, serviceTypeIdView);
-            TextView layerNameView = generateTextViewWithText("Kartlag: " + propertyDescription.LayerName, nameView);
-            TextView apiNameView = generateTextViewWithText("Barentswatch tjenestenavn: " + propertyDescription.ApiName, layerNameView);
-            TextView updateFrequencyText = generateTextViewWithText("Oppdateringsfrekvens: " + propertyDescription.UpdateFrequencyText, apiNameView);
-            TextView descriptionView = generateTextViewWithText("Kart beskrivelse: " + propertyDescription.Description, updateFrequencyText);
-            TextView longDescriptionView = generateTextViewWithText("All informasjon om kartlaget: " + propertyDescription.LongDescription, descriptionView);
-            TextView errorMessageTextView = generateTextViewWithText("Errortekst: " + propertyDescription.ErrorText, longDescriptionView);
-            TextView dataOwnerView = generateTextViewWithText("Dataeier: " + propertyDescription.DataOwner, errorMessageTextView);
-            TextView dataOwnerLinkView = generateTextViewWithText("Dataeier sin addresse: " + propertyDescription.DataOwnerLink, dataOwnerView);
-            TextView formatsView = generateTextViewWithText("Filformater tilgjengelige for nedlastning: " + propertyDescription.getFormatsAsString(), dataOwnerLinkView);
-            TextView subscriptionIntervalView = generateTextViewWithText("Hvor ofte man kan få automatiske oppdateringer for dette kartlaget : " + propertyDescription.getSubscriptionIntervalAsString(), formatsView);
-            TextView createdView = generateTextViewWithText("Kartlaget ble opprettet den: " + propertyDescription.Created, subscriptionIntervalView);
-            TextView lastUpdatedView = generateTextViewWithText("Karlaget ble sist gang oppdatert den: " + propertyDescription.LastUpdated, createdView);
-            TextView roleView = generateTextViewWithText("For å laste ned dette kartet trenger du å være: " + propertyDescription.Role, lastUpdatedView);
+
+            ImageView notificationIconImageView = (ImageView) rootView.findViewById(R.id.card_notification_image_view);
+            CardViewInformationRow row;
+
+            final LinearLayout informationContainer = (LinearLayout) rootView.findViewById(R.id.card_view_information_container);
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.last_updated), propertyDescription.LastUpdated, true);
+            informationContainer.addView(row.getView());
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.information), propertyDescription.LongDescription, true);
+            informationContainer.addView(row.getView());
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.update_frequency), propertyDescription.UpdateFrequencyText, true);
+            informationContainer.addView(row.getView());
 
             if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
-                ImageView notificationIconImageView = (ImageView) rootView.findViewById(R.id.card_notification_image_view);
+                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
 
                 notificationIconImageView.setVisibility(View.VISIBLE);
-                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), android.R.drawable.ic_dialog_info));
-                errorMessageTextView.setTextColor(getResources().getColor(R.color.warning_orange));
+                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_dialog_alert_holo_light));
+                row.setTextColor(getResources().getColor(R.color.warning_orange));
+                informationContainer.addView(row.getView());
+
             } else if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
-                ImageView notificationIconImageView = (ImageView) rootView.findViewById(R.id.card_notification_image_view);
+                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
 
                 notificationIconImageView.setVisibility(View.VISIBLE);
-                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), android.R.drawable.ic_dialog_alert));
-                errorMessageTextView.setTextColor(getResources().getColor(R.color.error_red));
+                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.indicator_input_error));
+                row.setTextColor(getResources().getColor(R.color.error_red));
+                informationContainer.addView(row.getView());
             }
 
-            textAreaPlaceHolder.addView(idView);
-            textAreaPlaceHolder.addView(serviceTypeIdView);
-            textAreaPlaceHolder.addView(nameView);
-            textAreaPlaceHolder.addView(layerNameView);
-            textAreaPlaceHolder.addView(apiNameView);
-            textAreaPlaceHolder.addView(updateFrequencyText);
-            textAreaPlaceHolder.addView(descriptionView);
-            textAreaPlaceHolder.addView(longDescriptionView);
-            textAreaPlaceHolder.addView(errorMessageTextView);
-            textAreaPlaceHolder.addView(dataOwnerView);
-            textAreaPlaceHolder.addView(dataOwnerLinkView);
-            textAreaPlaceHolder.addView(formatsView);
-            textAreaPlaceHolder.addView(subscriptionIntervalView);
-            textAreaPlaceHolder.addView(createdView);
-            textAreaPlaceHolder.addView(lastUpdatedView);
-            textAreaPlaceHolder.addView(roleView);
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner), propertyDescription.DataOwner, true);
+            informationContainer.addView(row.getView());
+
+            if(propertyDescription.DataOwnerLink != null && !propertyDescription.DataOwnerLink.trim().equals("")) {
+                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner_link), propertyDescription.DataOwner, true);
+                informationContainer.addView(row.getView());
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for(String format : propertyDescription.Formats) {
+                stringBuilder.append(format + "\n");
+            }
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
+            informationContainer.addView(row.getView());
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), propertyDescription.getSubscriptionIntervalAsString().trim(), false);
+            informationContainer.addView(row.getView());
+
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.map_creation_date), propertyDescription.Created.substring(0, propertyDescription.Created.indexOf('T')), true);
+            informationContainer.addView(row.getView());
         }
         if(warning != null) {
             TextView content = generateTextViewWithText(warning, title);

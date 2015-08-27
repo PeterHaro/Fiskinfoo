@@ -36,4 +36,11 @@ public class BaseTableRow {
         return mTableRow;
     }
 
+    public Object getTag() {
+        return mTableRow.getTag();
+    }
+
+    public void setTag(Object tag) {
+        mTableRow.setTag(tag);
+    }
 }

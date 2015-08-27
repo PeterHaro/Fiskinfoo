@@ -16,11 +16,11 @@ limitations under the License.
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="seek_bar_label_length">70dp</dimen>
 
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>
     <dimen name="login_logo_height">105dp</dimen>
+    <dimen name="seek_bar_label_length">70dp</dimen>
 
     <!-- File dialog -->
     <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
@@ -38,8 +38,8 @@ limitations under the License.
     <dimen name="dialog_internal_container_margin_top">5dp</dimen>
     <dimen name="dialog_internal_container_margin_bottom">5dp</dimen>
     <dimen name="dialog_internal_container_large_margin_top">10dp</dimen>
-    <dimen name="bottom_button_container_margin_left">5dp</dimen>
-    <dimen name="bottom_button_container_margin_right">5dp</dimen>
+    <dimen name="bottom_button_container_margin_left">30dp</dimen>
+    <dimen name="bottom_button_container_margin_right">30dp</dimen>
     <dimen name="bottom_button_container_margin_top">15dp</dimen>
     <dimen name="bottom_button_container_margin_bottom">15dp</dimen>
 
@@ -51,11 +51,13 @@ limitations under the License.
     <!-- Select map layers dialog margins -->
     <dimen name="map_layer_linear_layout_margin_left">10dp</dimen>
     <dimen name="map_layer_linear_layout_margin_right">10dp</dimen>
+    <dimen name="map_layer_linear_layout_margin_top">20dp</dimen>
     <dimen name="map_layer_row_margin_left">5dp</dimen>
     <dimen name="map_layer_row_margin_right">5dp</dimen>
     <dimen name="map_layer_bottom_button_margin_top">15dp</dimen>
     <dimen name="map_layer_bottom_button_margin_bottom">15dp</dimen>
 
+    <dimen name="select_map_layer_info_text_view_margin_top">30dp</dimen>
 
     <!-- Proximity alert margins -->
     <dimen name="proximity_alert_spinner_margin_top">20dp</dimen>
@@ -74,6 +76,12 @@ limitations under the License.
     <dimen name="format_row_check_box_margin_left">25dp</dimen>
     <dimen name="format_row_text_view_padding">10dp</dimen>
 
+    <!-- SettingsButtonRow -->
+    <dimen name="settings_button_row_margin_left">30dp</dimen>
+    <dimen name="settings_button_row_margin_right">30dp</dimen>
+    <dimen name="settings_button_row_margin_top">5dp</dimen>
+    <dimen name="settings_button_row_button_padding">20dp</dimen>
+
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>
     <dimen name="recycle_item_child_margin_right">8dp</dimen>
@@ -91,14 +99,16 @@ limitations under the License.
     <dimen name="recycle_item_child_title_field_margin_top">8dp</dimen>
     <dimen name="recycle_item_child_is_subscribed_switch_margin_left">10dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_left">8dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_right">30dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
     <dimen name="recycle_item_child_download_button_width">40dp</dimen>
     <dimen name="recycle_item_child_download_button_height">40dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_height">2dp</dimen>
-    <dimen name="recycler_item_download_map_button_margin_right">5dp</dimen>
-
+    <dimen name="recycler_item_download_map_button_margin_right">50dp</dimen>
+    <dimen name="recycler_item_subscribed_switch_margin_right">40dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_margin_right">30dp</dimen>
 
     <!-- fragment card view -->
     <dimen name="card_view_thumbnail_height">250dp</dimen>

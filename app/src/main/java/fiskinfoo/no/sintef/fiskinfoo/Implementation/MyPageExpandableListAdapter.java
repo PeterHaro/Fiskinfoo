@@ -184,8 +184,9 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
         childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
 
         childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
-        childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
 
+        childViewHolder.subscribedSwitch.setClickable(false);
+        childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
         childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
     }

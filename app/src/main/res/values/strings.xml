@@ -128,6 +128,16 @@ limitations under the License.
     <string name="cardview_radius_seekbar_text">Radius</string>
     <string name="cardview_elevation_seekbar_text">Elevation</string>
     <string name="cardview_base_title"> Noe gikk feil: </string>
+    <string name="update_frequency">Oppdateringsfrekvens:</string>
+    <string name="information">Informasjon:</string>
+    <string name="data_owner">Karteier:</string>
+    <string name="data_owner_link">Karteiers side:</string>
+    <string name="formats">Tilgjengelige formater:</string>
+    <string name="subscription_frequencies">Abonneringsfrekvenser:</string>
+    <string name="map_creation_date">Kartet ble opprettet:</string>
+    <string name="last_updated">Sist oppdatert:</string>
+    <string name="role_requirement">Rollekrav:</string>
+    <string name="error_text">Merknad:</string>
 
     <string-array name="map_layer_names_array">
         <item>Redskapskart</item>
