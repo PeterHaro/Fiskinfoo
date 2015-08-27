@@ -1,11 +1,14 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -149,6 +152,22 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
 
     private void bindSubscriptionChildViewHolder(ExpandableListChildViewHolder childViewHolder, Object childObject) {
         Context context = childViewHolder.lastUpdatedTextView.getContext();
+
+        // TODO: For some reason Android studio finds icons when using the android.R.drawable path for these icons, but still complains that the icons aren't there. Copied to drawable folder for now.
+        if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.WARNING) {
+            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_dialog_alert_holo_light));
+            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+        } else if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.ERROR) {
+            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.indicator_input_error));
+            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+        } else {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)childViewHolder.dataText.getLayoutParams();
+            params.addRule(RelativeLayout.LEFT_OF, R.id.recycler_child_last_updated_text_view);
+            childViewHolder.dataText.setLayoutParams(params);
+        }
+
         ((SubscriptionExpandableListChildObject) childObject).setTitleTextView(childViewHolder.dataText);
 
 //        ((SubscriptionExpandableListChildObject) childObject).setLastUpdatedTextView(childViewHolder.lastUpdatedTextView);
@@ -162,26 +181,12 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
         ((SubscriptionExpandableListChildObject) childObject).setOnClickListener(childrenOnClickListener);
 
         ((ViewGroup) childViewHolder.dataText.getParent()).setTag(((SubscriptionExpandableListChildObject) childObject).getTitleText());
-        childViewHolder.dataText.setText(
-                ((SubscriptionExpandableListChildObject) childObject).getTitleText().
-                        length() > context.getResources().getInteger(R.integer.subscription_name_cut_off_length) ?
-                        ((SubscriptionExpandableListChildObject) childObject).getTitleText().
-                                substring(0, context.getResources().getInteger(R.integer.subscription_name_shortened_name_length)) +
-                                ".." : ((SubscriptionExpandableListChildObject) childObject).getTitleText());
+        childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
 
         childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
         childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
 
         childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
-        if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.WARNING) {
-            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, android.R.drawable.ic_dialog_info));
-            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
-        } else if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.ERROR) {
-            childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, android.R.drawable.ic_dialog_alert));
-            childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
-        }
     }
 }
