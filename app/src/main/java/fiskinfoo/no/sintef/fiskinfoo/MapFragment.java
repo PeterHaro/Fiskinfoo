@@ -167,8 +167,6 @@ public class MapFragment extends Fragment{
                 return super.onJsAlert(view, url, message, result);
             }
         });
-        // TODO: add tools
-//        updateMapTools();
 
         browser.loadUrl("file:///android_asset/mapApplication.html");
     }
@@ -181,15 +179,8 @@ public class MapFragment extends Fragment{
         }
 
         @android.webkit.JavascriptInterface
-        public JSONObject getGeoJson() {
-            JSONObject jsonObject = null;
-            try {
-
-                jsonObject = mTools.getTools();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return jsonObject;
+        public String getToken() {
+            return user.getToken();
         }
 
         @android.webkit.JavascriptInterface

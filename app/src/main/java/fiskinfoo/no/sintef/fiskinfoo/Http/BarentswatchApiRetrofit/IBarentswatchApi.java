@@ -43,7 +43,7 @@ public interface IBarentswatchApi {
     @GET(geoDataSubscription)
     List<Subscription> getSubscriptions();
 
-    @GET(geoDataDownload) //TODO: Figure out how to do this async
+    @GET(geoDataDownload) //TODO: ASYNC
     Response geoDataDownload(@Path("ApiName")String apiName, @Query("format") String format);
 
     @GET(authorization)

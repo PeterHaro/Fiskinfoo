@@ -118,7 +118,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             Log.d(TAG, savedInstanceState.toString());
         }
 
-        myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
+        //myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         if (outState != null) {
             Log.d(TAG, outState.toString());
         }
-        ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        //((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
     }
 
     public ArrayList<ParentObject> fetchMyPage() {

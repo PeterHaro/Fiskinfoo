@@ -10,6 +10,7 @@
         var mFeature;
         var selectFeature;
         var geoJson = null;
+        var token = null;
         var sensor = false;
         var format = "image/jpeg";
         window.onload = function () {
@@ -80,7 +81,7 @@
                 yx: { 'EPSG:4326': true }
             }
         ), new OpenLayers.Layer.WMS(
-            "Seismikk, pÃ¥gÃ¥ende", "https://geo.barentswatch.no/geoserver/bw/wms",
+            "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
             {
                 LAYERS: 'bwdev:npdsurveyongoing_latest',
                 transparent: true,
@@ -112,17 +113,70 @@
                 center: new OpenLayers.LonLat(15, 66.5).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
                 zoom: 5
             });
-            gJson = getGeoJson();
-            parseGeoJsonResponse(gJson);
             activeLayers = getActiveLayers();
-
+            var mToken = getToken();
+            corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
 
 
         };
 
-        function getGeoJson() {
-            geoJson = Android.getGeoJson();
-            return geoJson;
+        function corsErrBack(error) {
+            var i = 5;
+            alert(error);
+        }
+
+        /**
+         * Make a X-Domain request to url and callback.
+         *
+         * @param url {String}
+         * @param method {String} HTTP verb ('GET', 'POST', 'DELETE', etc.)
+         * @param data {String} request body
+         * @param callback {Function} to callback on completion
+         * @param errback {Function} to callback on error
+         */
+        function corsRequest(url, method, data, callback, errback, authToken) {
+            var req;
+            var token = null;
+            if (authToken !== null) {
+                if (typeof authToken !== 'undefined') {
+                    token = authToken;
+                }
+            }
+
+            if (XMLHttpRequest) {
+                req = new XMLHttpRequest();
+                if ('withCredentials' in req) {
+                    req.open(method, url, true);
+                    req.setRequestHeader('Authorization',
+                        'Bearer ' + token)
+                    req.onerror = errback;
+                    req.onreadystatechange = function () {
+                        if (req.readyState === 4) {
+                            if (req.status >= 200 && req.status < 400) {
+                                callback(req.responseText);
+                            } else {
+                                errback(new Error('Response returned with non-OK status'));
+                            }
+                        }
+                    };
+                    req.send(data);
+                }
+            } else if (XDomainRequest) {
+                req = new XDomainRequest();
+                req.open(method, url);
+                req.onerror = errback;
+                req.onload = function () {
+                    callback(req.responseText);
+                };
+                req.send(data);
+            } else {
+                errback(new Error('CORS not supported'));
+            }
+        }
+
+        function getToken() {
+            token = Android.getToken();
+            return token;
         }
 
 
@@ -156,9 +210,9 @@
             var toolDate;
             var toolTime;
             if (feature.data.vesselname != null) {
-                vesselName = "FartÃ¸ynavn: " + feature.data.vesselname;
+                vesselName = "Fartøynavn: " + feature.data.vesselname;
             } else {
-                vesselName = "FartÃ¸ynavn: " + "Ikke tilgjengelig";
+                vesselName = "Fartøynavn: " + "Ikke tilgjengelig";
             }
             if (feature.data.vesselphone != null) {
                 phoneNumber = "Telefon nummer: " + feature.data.vesselphone;
