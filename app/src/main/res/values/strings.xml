@@ -71,6 +71,7 @@ limitations under the License.
     <string name="subscribe_to_map_layer_dialog_title">Abboner på kartlag</string>
     <string name="update_subscriptions">Oppdater abonnement</string>
     <string name="download">Last ned</string>
+    <string name="download_short">DL</string>
     <string name="download_failed">Nedlasting mislyktes</string>
     <string name="download_completed">Nedlasting fullført</string>
     <string name="disk_write_completed">Fil lagret</string>

@@ -87,8 +87,8 @@ limitations under the License.
     <dimen name="recycle_item_child_margin_right">8dp</dimen>
     <dimen name="recycle_item_child_margin_top">3dp</dimen>
     <dimen name="recycle_item_child_margin_bottom">3dp</dimen>
-    <dimen name="recycle_item_child_padding_top">4dp</dimen>
-    <dimen name="recycle_item_child_padding_bottom">4dp</dimen>
+    <dimen name="recycle_item_child_padding_top">15dp</dimen>
+    <dimen name="recycle_item_child_padding_bottom">15dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_top_left">4dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_top_right">4dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_bottom_left">4dp</dimen>
@@ -97,11 +97,13 @@ limitations under the License.
     <dimen name="recycle_item_child_title_field_margin_right">5dp</dimen>
     <dimen name="recycle_item_child_title_field_margin_bottom">8dp</dimen>
     <dimen name="recycle_item_child_title_field_margin_top">8dp</dimen>
-    <dimen name="recycle_item_child_is_subscribed_switch_margin_left">10dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_left">8dp</dimen>
+    <dimen name="recycle_item_child_title_field_text_size">20dp</dimen>
+    <dimen name="recycle_item_child_is_subscribed_switch_margin_left">20dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_left">30dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_right">30dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">8dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_size">15dp</dimen>
     <dimen name="recycle_item_child_download_button_width">40dp</dimen>
     <dimen name="recycle_item_child_download_button_height">40dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
@@ -109,6 +111,8 @@ limitations under the License.
     <dimen name="recycler_item_download_map_button_margin_right">50dp</dimen>
     <dimen name="recycler_item_subscribed_switch_margin_right">40dp</dimen>
     <dimen name="recycle_item_child_notification_icon_image_view_margin_right">30dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_width_width">40dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_width_height">40dp</dimen>
 
     <!-- fragment card view -->
     <dimen name="card_view_thumbnail_height">250dp</dimen>
@@ -119,5 +123,7 @@ limitations under the License.
     <dimen name="card_view_information_container_margin_right">10dp</dimen>
     <dimen name="card_view_information_row_data_text_view_margin_left">20dp</dimen>
     <dimen name="card_view_information_row_name_text_view_margin_left">5dp</dimen>
+    <dimen name="card_view_notification_icon_width">38dp</dimen>
+    <dimen name="card_view_notification_icon_height">38dp</dimen>
 
 </resources>

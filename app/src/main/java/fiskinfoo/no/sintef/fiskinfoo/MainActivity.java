@@ -322,14 +322,6 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public boolean isProximityAlerterRunning() {
-        return proximityAlerterRunning;
-    }
-
-    public void setProximityAlerterRunning(boolean proximityAlerterRunning) {
-        this.proximityAlerterRunning = proximityAlerterRunning;
-    }
-
     @Override
     public void onBackPressed() {
         int count = getFragmentManager().getBackStackEntryCount();

@@ -15,19 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
@@ -89,7 +86,6 @@ public class CardViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_card_view, container, false);
 
         RelativeLayout textAreaPlaceHolder = (RelativeLayout) rootView.findViewById(R.id.card_view_container);
@@ -156,7 +152,7 @@ public class CardViewFragment extends Fragment {
                 row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
 
                 notificationIconImageView.setVisibility(View.VISIBLE);
-                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_dialog_alert_holo_light));
+                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_36dp));
                 row.setTextColor(getResources().getColor(R.color.warning_orange));
                 informationContainer.addView(row.getView());
 
@@ -164,7 +160,7 @@ public class CardViewFragment extends Fragment {
                 row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
 
                 notificationIconImageView.setVisibility(View.VISIBLE);
-                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.indicator_input_error));
+                notificationIconImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_36dp));
                 row.setTextColor(getResources().getColor(R.color.error_red));
                 informationContainer.addView(row.getView());
             }

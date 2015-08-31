@@ -35,7 +35,7 @@ limitations under the License.
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/recycler_child_item_title_text_view"
         android:layout_marginLeft="20dp"
-        android:layout_toLeftOf="@+id/child_button"/>
+        android:layout_toLeftOf="@+id/recycler_child_download_button"/>
 
     <TextView
         android:id="@+id/recycler_child_last_updated_text_view"
@@ -49,7 +49,7 @@ limitations under the License.
         android:textSize="14dp"/>
 
     <Button
-        android:id="@+id/child_button"
+        android:id="@+id/recycler_child_download_button"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"

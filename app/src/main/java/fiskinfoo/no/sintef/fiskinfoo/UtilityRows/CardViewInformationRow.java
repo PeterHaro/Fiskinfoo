@@ -75,6 +75,6 @@ public class CardViewInformationRow extends BaseTableRow {
     }
 
     public void setHyperlink(String hyperlink) {
-        fieldDataTextView.setText(hyperlink == null ? Html.fromHtml(fieldDataTextView.getText().toString()) : Html.fromHtml(hyperlink));
+        fieldDataTextView.setText(Html.fromHtml(hyperlink));
     }
 }

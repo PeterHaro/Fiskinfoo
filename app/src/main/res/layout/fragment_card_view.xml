@@ -31,7 +31,7 @@ limitations under the License.
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/thumbnail"
+                android:id="@+id/card_view_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/card_view_thumbnail_height"
                 android:layout_alignParentTop="true"
@@ -42,7 +42,7 @@ limitations under the License.
                 android:id="@+id/card_view_title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/thumbnail"
+                android:layout_below="@+id/card_view_thumbnail"
                 android:maxLines="@integer/card_view_title_text_view_max_lines"
                 android:padding="@dimen/card_view_title_text_view_padding"
                 android:text="@string/cardview_base_title"
@@ -52,8 +52,8 @@ limitations under the License.
 
             <ImageView
                 android:id="@+id/card_notification_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/card_view_notification_icon_width"
+                android:layout_height="@dimen/card_view_notification_icon_height"
                 android:layout_alignTop="@+id/card_view_title_text_view"
                 android:layout_marginTop="@dimen/card_view_title_text_view_padding"
                 android:layout_toRightOf="@+id/card_view_title_text_view"

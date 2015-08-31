@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -106,9 +107,18 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             Log.d(TAG, savedInstanceState.toString());
+
+            myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
+            Parcelable manager = savedInstanceState.getParcelable("recycleLayout");
+            LinearLayoutManager manager1 = new LinearLayoutManager(this.getActivity());
+            if(manager != null) {
+                mCRecyclerView.setLayoutManager(manager1);
+                manager1.onRestoreInstanceState(manager);
+            }
+
+
         }
 
-        //myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -117,9 +127,13 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         if (outState != null) {
             Log.d(TAG, outState.toString());
         }
+
         if(mCRecyclerView != null) {
             ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
+            Parcelable layoutState = mCRecyclerView.getLayoutManager().onSaveInstanceState();
+            outState.putParcelable("recycleLayout", layoutState);
         }
+
     }
 
     public ArrayList<ParentObject> fetchMyPage() {
