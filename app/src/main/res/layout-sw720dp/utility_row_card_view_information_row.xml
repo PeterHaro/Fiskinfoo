@@ -16,25 +16,33 @@ limitations under the License.
           android:layout_width="match_parent"
           android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/card_view_field_name_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-        android:layout_marginLeft="@dimen/dialog_container_margin_left"
-        android:layout_marginRight="@dimen/dialog_container_margin_right"
-        android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-        android:text="fieldName"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/card_view_field_data_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-        android:layout_marginLeft="@dimen/dialog_container_margin_left"
-        android:layout_marginRight="@dimen/dialog_container_margin_right"
-        android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-        android:layout_weight="1"
-        android:text="fieldData"/>
+        <TextView
+            android:id="@+id/card_view_field_name_text_view"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
+            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
+            android:layout_marginLeft="@dimen/card_view_information_row_name_text_view_margin_left"
+            android:text="fieldName"/>
+
+        <TextView
+            android:id="@+id/card_view_field_data_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_view_field_name_text_view"
+            android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
+            android:layout_marginLeft="@dimen/card_view_information_row_data_text_view_margin_left"
+            android:layout_marginRight="@dimen/dialog_container_margin_right"
+            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
+            android:layout_weight="1"
+            android:text="fieldData"/>
+
+
+    </RelativeLayout>
 
 </TableRow>

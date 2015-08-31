@@ -15,6 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.text.Html;
+import android.util.Log;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -48,10 +50,8 @@ public class CardViewInformationRow extends BaseTableRow {
 
     public void setTextColor(int textColor) {
         if(fieldNameTextView == null || fieldDataTextView == null) {
-            System.out.println("aint got no field");
-        } else {
-            System.out.println("tis all good: " + textColor);
-
+            System.out.println("Cannot set color, view is null");
+            return;
         }
 
         fieldNameTextView.setTextColor(textColor);
@@ -72,5 +72,9 @@ public class CardViewInformationRow extends BaseTableRow {
 
     public String getFieldData() {
         return fieldDataTextView.getText().toString();
+    }
+
+    public void setHyperlink(String hyperlink) {
+        fieldDataTextView.setText(hyperlink == null ? Html.fromHtml(fieldDataTextView.getText().toString()) : Html.fromHtml(hyperlink));
     }
 }

@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,9 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
@@ -117,13 +121,33 @@ public class CardViewFragment extends Fragment {
 
             final LinearLayout informationContainer = (LinearLayout) rootView.findViewById(R.id.card_view_information_container);
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.last_updated), propertyDescription.LastUpdated, true);
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.last_updated), propertyDescription.LastUpdated.replace('T', ' '), true);
             informationContainer.addView(row.getView());
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.information), propertyDescription.LongDescription, true);
+            String description = (propertyDescription.LongDescription == null || propertyDescription.LongDescription.trim().equals("")) ? propertyDescription.Description : propertyDescription.LongDescription;
+            String hyperlink = null;
+            // TODO: should rewrite in order to handle multiple links.
+            if(description.contains("<a href=\"")) {
+                hyperlink = "<a href='" + description.substring(description.indexOf("\"") + 1, description.indexOf(">") - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
+                description = description.substring(0, description.indexOf('<')) + description.substring(description.indexOf('>') + 1, description.indexOf("</a")) +
+                        "* " +  (description.indexOf("a>") > description.length() - 3 ? "" : description.substring(description.indexOf("a>") + 2, description.length()));
+            }
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.information), description, true);
             informationContainer.addView(row.getView());
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.update_frequency), propertyDescription.UpdateFrequencyText, true);
+            if(hyperlink != null) {
+                TextView textView = new TextView(getActivity());
+                textView.setClickable(true);
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
+                textView.setText(Html.fromHtml(hyperlink));
+
+                informationContainer.addView(textView);
+            }
+
+            String updateFrequency = (propertyDescription.UpdateFrequencyText == null || propertyDescription.UpdateFrequencyText.trim().equals("")) ? getString(R.string.update_frequency_not_available) : propertyDescription.UpdateFrequencyText;
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.update_frequency), updateFrequency, true);
             informationContainer.addView(row.getView());
 
             if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
@@ -147,7 +171,12 @@ public class CardViewFragment extends Fragment {
             informationContainer.addView(row.getView());
 
             if(propertyDescription.DataOwnerLink != null && !propertyDescription.DataOwnerLink.trim().equals("")) {
-                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner_link), propertyDescription.DataOwner, true);
+                String partnerLink = propertyDescription.DataOwnerLink.contains("http") ?
+                        "<a href='" + propertyDescription.DataOwnerLink + "'>" + propertyDescription.DataOwnerLink + "</a>":
+                        "<a href='" + getString(R.string.about_partners_base_address) + propertyDescription.DataOwnerLink + "'>" + getString(R.string.about_partners_base_address) + propertyDescription.DataOwnerLink + "</a>";
+
+                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner_link), partnerLink, true);
+                row.setHyperlink(partnerLink);
                 informationContainer.addView(row.getView());
             }
 
@@ -160,7 +189,21 @@ public class CardViewFragment extends Fragment {
             row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
             informationContainer.addView(row.getView());
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), propertyDescription.getSubscriptionIntervalAsString().trim(), false);
+            Map<String, String> subscriptionFrequenciesMap = new HashMap<>();
+            String[] subscriptionFrequenciesList = getResources().getStringArray(R.array.subscription_frequencies);
+
+            for(String frequency : subscriptionFrequenciesList) {
+                String[] keyVal = frequency.split(":");
+                subscriptionFrequenciesMap.put(keyVal[0].trim().toLowerCase(), keyVal[1]);
+            }
+
+            stringBuilder.setLength(0);
+            for(String interval : propertyDescription.SubscriptionInterval) {
+                String intervalValue = subscriptionFrequenciesMap.get(interval.toLowerCase());
+                stringBuilder.append((intervalValue != null ? intervalValue : interval) + "\n");
+            }
+
+            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), stringBuilder.toString().trim(), false);
             informationContainer.addView(row.getView());
 
 

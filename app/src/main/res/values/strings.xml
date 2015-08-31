@@ -133,12 +133,16 @@ limitations under the License.
     <string name="data_owner">Karteier:</string>
     <string name="data_owner_link">Karteiers side:</string>
     <string name="formats">Tilgjengelige formater:</string>
-    <string name="subscription_frequencies">Abonneringsfrekvenser:</string>
+    <string name="subscription_frequencies">Mulige abonneringsfrekvenser:</string>
     <string name="map_creation_date">Kartet ble opprettet:</string>
     <string name="last_updated">Sist oppdatert:</string>
     <string name="role_requirement">Rollekrav:</string>
     <string name="error_text">Merknad:</string>
-
+    <string name="see_more_info">Les mer her.</string>
+    <string name="update_frequency_not_available">Oppdateringsfrekvens er ikke tilgjengelig for dette kartlaget.</string>
+    <string name="about_partners_base_address">https://www.barentswatch.no</string>
+    
+    
     <string-array name="map_layer_names_array">
         <item>Redskapskart</item>
         <item>Bølgevarsel</item>
@@ -155,5 +159,9 @@ limitations under the License.
         <item>bwdev:npdsurveyplanned_latest</item>
     </string-array>
 
+    <string-array name="subscription_frequencies">
+        <item>EveryDay:Hver dag</item>
+        <item>EveryUpdate:Hver oppdatering</item>
+    </string-array>
 
 </resources>

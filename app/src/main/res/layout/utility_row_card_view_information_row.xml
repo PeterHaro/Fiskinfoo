@@ -36,6 +36,7 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_view_field_name_text_view"
             android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
+            android:clickable="true"
             android:layout_marginLeft="@dimen/card_view_information_row_data_text_view_margin_left"
             android:layout_marginRight="@dimen/dialog_container_margin_right"
             android:layout_marginTop="@dimen/dialog_internal_container_margin_top"

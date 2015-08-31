@@ -105,7 +105,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         myPageExpandableListAdapter = new MyPageExpandableListAdapter(this.getActivity(), data, childOnClickListener);
         myPageExpandableListAdapter.addExpandCollapseListener(this);
         myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
-        mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_test_view);
+        mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
         mCRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mCRecyclerView.setAdapter(myPageExpandableListAdapter);
         return v;
