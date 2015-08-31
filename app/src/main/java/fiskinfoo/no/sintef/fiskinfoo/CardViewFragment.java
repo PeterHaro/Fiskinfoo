@@ -24,9 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
@@ -80,7 +81,7 @@ public class CardViewFragment extends Fragment {
                 warning = getArguments().getString("args");
                 break;
             default:
-                Log.d(TAG, "INVALUD type of object sent to cardview");
+                Log.d(TAG, "INVALID type of object sent to cardview");
         }
         utilityRows = new UtilityRows();
     }
@@ -93,6 +94,7 @@ public class CardViewFragment extends Fragment {
 
         RelativeLayout textAreaPlaceHolder = (RelativeLayout) rootView.findViewById(R.id.card_view_container);
         TextView title = (TextView) rootView.findViewById(R.id.card_view_title_text_view);
+
         if (subscription != null) {
             title.setText(subscription.GeoDataServiceName);
             TextView idView = generateTextViewWithText("id: " + subscription.Id, title);
@@ -189,18 +191,9 @@ public class CardViewFragment extends Fragment {
             row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
             informationContainer.addView(row.getView());
 
-            Map<String, String> subscriptionFrequenciesMap = new HashMap<>();
-            String[] subscriptionFrequenciesList = getResources().getStringArray(R.array.subscription_frequencies);
-
-            for(String frequency : subscriptionFrequenciesList) {
-                String[] keyVal = frequency.split(":");
-                subscriptionFrequenciesMap.put(keyVal[0].trim().toLowerCase(), keyVal[1]);
-            }
-
             stringBuilder.setLength(0);
             for(String interval : propertyDescription.SubscriptionInterval) {
-                String intervalValue = subscriptionFrequenciesMap.get(interval.toLowerCase());
-                stringBuilder.append((intervalValue != null ? intervalValue : interval) + "\n");
+                stringBuilder.append(SubscriptionInterval.getType(interval).toString() + "\n");
             }
 
             row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), stringBuilder.toString().trim(), false);

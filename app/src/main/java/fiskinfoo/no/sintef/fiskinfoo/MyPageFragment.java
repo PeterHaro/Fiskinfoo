@@ -15,8 +15,6 @@
 package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -27,11 +25,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -50,7 +43,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchA
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -59,11 +52,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
-import retrofit.client.Response;
 
 /**
  * TODO: Retain instance on orientation (Alot of work)
@@ -127,7 +117,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         if (outState != null) {
             Log.d(TAG, outState.toString());
         }
-        //((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        if(mCRecyclerView != null) {
+            ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        }
     }
 
     public ArrayList<ParentObject> fetchMyPage() {
@@ -140,10 +132,20 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             StrictMode.setThreadPolicy(policy);
             List<PropertyDescription> availableSubscriptions = api.getSubscribable();
             List<String> myWarnings = new ArrayList<>(); //TODO: Tie in polar low warning
-            List<Subscription> personalMaps = api.getSubscriptions();
+            List<Subscription> activeSubscriptions = api.getSubscriptions();
             List<Authorization> authorizations = api.getAuthorization();
+            Map<Integer, Boolean> authMap = new HashMap<>();
+            Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
+            Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
 
-            Map<Integer, Boolean> authMap = new HashMap<Integer, Boolean>();
+
+            for(PropertyDescription subscribable : api.getSubscribable()) {
+                availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
+            }
+
+            for(Subscription subscription : api.getSubscriptions()) {
+                activeSubscriptionsMap.put(subscription.GeoDataServiceName, subscription);
+            }
 
             for(Authorization auth : authorizations) {
                 authMap.put(auth.Id, auth.hasAccess);
@@ -157,7 +159,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 //                    continue;
 //                }
 
-                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, personalMaps);
+                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName));
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
@@ -170,8 +172,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             ArrayList<Object> mySubscriptions = new ArrayList<>();
-            for (Subscription s : personalMaps) {
-                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(s, availableSubscriptions);
+            for (Subscription subscription : activeSubscriptions) {
+                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName));
 
                 mySubscriptions.add(currentSubscription);
             }
@@ -200,7 +202,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             parentObjectList.add(warningParent);
             parentObjectList.add(subscriptionParent);
 
-            childOnClickListener.setSubscriptions(personalMaps);
+            childOnClickListener.setSubscriptions(activeSubscriptions);
             childOnClickListener.setWarnings(myWarnings);
             childOnClickListener.setPropertyDescriptions(availableSubscriptions);
 
@@ -211,176 +213,16 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         return parentObjectList;
     }
 
-    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final List<Subscription> activeSubscriptions) {
+    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription) {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
+
+        View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getErrorNotificationOnClickListener(subscription);
+        View.OnClickListener subscriptionSwitchClickListener = onClickListenerInterface.getSubscriptionSwitchOnClickListener(subscription, activeSubscription, user);
+        View.OnClickListener downloadButtonOnClickListener = onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG);
+
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
         currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
-
-        boolean isSubscribed = false;
-
-        for (Subscription activeSubscription : activeSubscriptions) {
-            if (activeSubscription.GeoDataServiceName.equals(subscription.ApiName)) {
-                isSubscribed = true;
-                break;
-            }
-        }
-
-        currentPropertyDescriptionChildObject.setIsSubscribed(isSubscribed);
-
-        View.OnClickListener downloadButtonOnClickListener = new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.download_map_layer_dialog_title);
-
-                final Button downloadButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
-                Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
-
-                downloadButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
-
-                for (String format : subscription.Formats) {
-                    final FormatRow formatRow = utilityRowsInterface.getFormatRow(getActivity(), format);
-
-                    formatRow.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for (int i = 0; i < rowsContainer.getChildCount(); i++) {
-
-                                rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view).setBackgroundColor(getResources().getColor(R.color.text_white));
-                            }
-
-                            formatRow.setTextViewBackgroundColor(getResources().getColor(R.color.helpful_grey));
-
-                            downloadButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    BarentswatchApi barentswatchApi = new BarentswatchApi();
-                                    barentswatchApi.setAccesToken(user.getToken());
-                                    IBarentswatchApi api = barentswatchApi.getApi();
-
-                                    Response response;
-                                    String downloadFormat = formatRow.getText();
-
-                                    try {
-                                        response = api.geoDataDownload(subscription.ApiName, downloadFormat);
-                                        if (response == null) {
-                                            Log.d(TAG, "RESPONSE == NULL");
-                                        }
-                                        byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-                                        if (fiskInfoUtility.isExternalStorageWritable()) {
-                                            fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage());
-                                        } else {
-                                            Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                                        }
-                                    } catch (Exception e) {
-                                        Log.d(TAG, "Could not download with ApiName: " + subscription.ApiName + "  and format: " + downloadFormat);
-                                    }
-
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                    });
-                    rowsContainer.addView(formatRow.getView());
-                }
-
-                cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-
-                dialog.show();
-            }
-        };
-
-        View.OnClickListener subscriptionSwitchClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_format, R.string.update_subscriptions);
-
-                final Button subscribeButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
-                Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
-
-                final List<String> activeSubscriptionFormats = new ArrayList<>();
-
-                for(Subscription activeSubscription : activeSubscriptions) {
-                    if(activeSubscription.GeoDataServiceName.equals(subscription.ApiName)) {
-                        activeSubscriptionFormats.add(activeSubscription.FileFormatType);
-                    }
-                }
-
-                subscribeButton.setText(R.string.update);
-                subscribeButton.setOnClickListener(onClickListenerInterface.getShowToastListener(getActivity(), getString(R.string.choose_a_download_format)));
-
-                for (String format : subscription.Formats) {
-                    final CheckBoxFormatRow formatRow = utilityRowsInterface.getCheckBoxFormatRow(getActivity(), format);
-                    if(activeSubscriptionFormats.contains(format)) {
-                        formatRow.setChecked(true);
-                    }
-
-                    rowsContainer.addView(formatRow.getView());
-                }
-
-                subscribeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View subscribeButton) {
-                        boolean isSubscribed = false;
-
-                        BarentswatchApi barentswatchApi = new BarentswatchApi();
-                        barentswatchApi.setAccesToken(user.getToken());
-                        final IBarentswatchApi api = barentswatchApi.getApi();
-
-                        for(int i = 0; i < rowsContainer.getChildCount(); i++) {
-                            String currentFormat = ((TextView) rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view)).getText().toString();
-
-
-                            if(((CheckBox) rowsContainer.getChildAt(i).findViewById(R.id.format_row_check_box)).isChecked()) {
-                                isSubscribed = true;
-
-                                if(activeSubscriptionFormats.contains(currentFormat)) {
-                                    continue;
-                                } else {
-                                    // TODO: API call to add subscription
-                                    Response response;
-                                }
-                            } else {
-                                if(activeSubscriptions.contains(currentFormat)) {
-                                    // TODO: API call to remove subscription
-                                    Response response;
-                                }
-                            }
-                        }
-
-                        ((Switch) v).setChecked(isSubscribed);
-                        dialog.dismiss();
-                    }
-                });
-
-                cancelButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View cancelButton) {
-                        ((Switch) v).setChecked(activeSubscriptionFormats.size() > 0);
-
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
-
-            }
-        };
-
-        View.OnClickListener errorNotificationOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(v.getContext())
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(subscription.ErrorType)
-                        .setMessage(subscription.ErrorText)
-                        .setPositiveButton(getString(R.string.ok), null)
-                        .show();
-            }
-        };
-
+        currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
         currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
         currentPropertyDescriptionChildObject.setSubscribeSwitchOnClickListener(subscriptionSwitchClickListener);
 
@@ -400,20 +242,14 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         return currentWarningObject;
     }
 
-    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription subscription, List<PropertyDescription> availableSubscriptions) {
-        SubscriptionExpandableListChildObject currentSubscription = new SubscriptionExpandableListChildObject();
-
-        for (PropertyDescription availableSubscription : availableSubscriptions) {
-            if (availableSubscription.ApiName.equals(subscription.GeoDataServiceName)) {
-                currentSubscription.setTitleText(availableSubscription.Name);
-                break;
-            }
+    // INFO: we just treat active subscriptions in the same way as we treat available subscriptions, don't see a reason not to.
+    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable) {
+        if(subscribable == null) {
+            Log.e(TAG, "subscribable is null");
+            return null;
         }
-        currentSubscription.setLastUpdatedText(subscription.LastModified.replace("T", "\n"));
-        currentSubscription.setIsSubscribed(true);
 
-
-        return currentSubscription;
+        return setupAvailableSubscriptionChildView(subscribable, activeSubscription);
     }
 
     @Override

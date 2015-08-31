@@ -18,8 +18,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+
 public interface OnclickListenerInterface {
     View.OnClickListener getDismissDialogListener(Dialog dialog);
     View.OnClickListener getShowToastListener(Context context, String toastString);
     View.OnClickListener getShowToastListener(Context context, int stringId);
+    View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final PropertyDescription subscription, final User user, final String tag);
+    View.OnClickListener getErrorNotificationOnClickListener(final PropertyDescription subscription);
+    View.OnClickListener getSubscriptionSwitchOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
 }

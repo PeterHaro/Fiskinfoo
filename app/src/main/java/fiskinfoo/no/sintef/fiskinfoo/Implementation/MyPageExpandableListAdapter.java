@@ -1,6 +1,5 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -8,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -17,6 +15,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListChildViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandableRecyclerAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo.Implementation;
+package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit;
 
 public enum ApiErrorType {
     NONE, WARNING, ERROR;

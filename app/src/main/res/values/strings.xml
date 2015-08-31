@@ -159,9 +159,14 @@ limitations under the License.
         <item>bwdev:npdsurveyplanned_latest</item>
     </string-array>
 
-    <string-array name="subscription_frequencies">
+    <string-array name="subscription_frequencies_array">
         <item>EveryDay:Hver dag</item>
         <item>EveryUpdate:Hver oppdatering</item>
+    </string-array>
+
+    <string-array name="error_types_array">
+        <item>Warning:Advarsel</item>
+        <item>Error:Feil</item>
     </string-array>
 
 </resources>

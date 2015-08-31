@@ -16,11 +16,10 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.ApiErrorType;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ExpandableListChildType;
 
 public class SubscriptionExpandableListChildObject extends ExpandableListChildObject {
