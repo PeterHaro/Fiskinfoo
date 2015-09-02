@@ -312,7 +312,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
-                return true;
+                System.out.println("Seems OK: " + auth.access_token);
+                return auth.access_token != null ? true : false;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
                 return false;
@@ -324,6 +325,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mAuthTask = null;
             showProgress(false);
             if (success) {
+                System.out.println("Found success");
+
                 user.setAuthentication(true);
                 user.setUsername(mEmail);
                 user.setPassword(mPassword);
