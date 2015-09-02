@@ -145,9 +145,9 @@ limitations under the License.
     
     
     <string-array name="map_layer_names_array">
-        <item>Redskapskart</item>
+        <item>Redskapskartet</item>
         <item>Bølgevarsel</item>
-        <item>Iskant</item>
+        <item>Iskanten</item>
         <item>Seismikk, pågående</item>
         <item>Seismikk, planlagt</item>
     </string-array>

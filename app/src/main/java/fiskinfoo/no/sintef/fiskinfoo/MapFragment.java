@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -44,16 +45,24 @@ import android.widget.SeekBar;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolsGeoJson;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
@@ -90,6 +99,7 @@ public class MapFragment extends Fragment{
     protected double cachedLon;
     private String geoJsonFile = null;
     protected String cachedDistance;
+    private JSONArray layersAndVisiblity = null;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -163,9 +173,10 @@ public class MapFragment extends Fragment{
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                Log.i("my log", "Alert box popped");
+                Log.d(TAG, message);
                 return super.onJsAlert(view, url, message, result);
             }
+
         });
 
         browser.loadUrl("file:///android_asset/mapApplication.html");
@@ -184,21 +195,25 @@ public class MapFragment extends Fragment{
         }
 
         @android.webkit.JavascriptInterface
-        public JSONArray getActiveLayers() {
-            JSONArray jsonArray = null;
-            try {
-                  jsonArray = new JSONArray(user.getActiveLayers());
+        public void setMessage(String message) {
+            Log.d(TAG, message);
+            try{
+                layersAndVisiblity = new JSONArray(message);
             } catch (Exception e) {
-                e.printStackTrace();
+                //TODO
             }
-            try {
-                System.out.println("Sent array: " + jsonArray.toString(1));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return jsonArray;
         }
+
     }
+
+    private void getLayers() {
+        browser.loadUrl("javascript:alert(getLayers())");
+    }
+
+    private void getLayersAndVisiblity() {
+        browser.loadUrl("javascript:getLayersAndState()");
+    }
+
 
     private class barentswatchFiskInfoWebClient extends WebViewClient {
         @Override
@@ -206,8 +221,32 @@ public class MapFragment extends Fragment{
             view.loadUrl(url);
             return true;
         }
-    }
 
+        public void onPageFinished(WebView view, String url) {
+            List<String> layers = user.getActiveLayers();
+            if(user.isTokenValid()) {
+                Log.d(TAG, "USER IS AUTHENTICATED");
+                view.loadUrl("javascript:populateMap(1);");
+
+                JSONArray json = new JSONArray(layers);
+                Log.d("TAG", json.toString());
+                view.loadUrl("javascript:toggleLayers(" + json + ")");
+            } else {
+                JSONArray json = new JSONArray(layers);
+                Log.d(TAG, json.toString());
+                view.loadUrl("javascript:populateMap(2)");
+                view.loadUrl("javascript:toggleLayers(" + json+ ")");
+            }
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    getLayersAndVisiblity();
+                }
+            }, 3000);
+
+        }
+
+    }
 
     private void createMapLayerSelectionDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
@@ -216,14 +255,12 @@ public class MapFragment extends Fragment{
         final List<MapLayerCheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
-        String[] mapLayerNames = getResources().getStringArray(R.array.map_layer_names_array);
-
-        for (String mapLayerName : mapLayerNames) {
+        LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisiblity.toString(), LayerAndVisibility[].class);
+        for(LayerAndVisibility layer : layers) {
             boolean isActive = false;
+            isActive = layer.isVisible;
 
-            isActive = user.getActiveLayers().contains(mapLayerName);
-
-            MapLayerCheckBoxRow row = utilityRowsInterface.getMapLayerCheckBoxRow(getActivity(), isActive, mapLayerName);
+            MapLayerCheckBoxRow row = utilityRowsInterface.getMapLayerCheckBoxRow(getActivity(), isActive, layer.name);
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);
@@ -239,11 +276,13 @@ public class MapFragment extends Fragment{
                         layersList.add(rows.get(i).getText());
                     }
                 }
-
-                    user.setActiveLayers(layersList);
-                    user.writeToSharedPref(getActivity());
+                user.setActiveLayers(layersList);
+                user.writeToSharedPref(getActivity());
                 dialog.dismiss();
-                browser.loadUrl("file:///android_asset/mapApplication.html");
+                JSONArray json = new JSONArray(layersList);
+                browser.loadUrl("javascript:toggleLayers(" + json + ")");
+
+                getLayersAndVisiblity();
             }
         });
 
@@ -262,7 +301,8 @@ public class MapFragment extends Fragment{
 //        closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
 //
 //        dialog.show();
-        browser.loadUrl("file:///android_asset/mapApplicationPolarLow.html");
+        //getLayers();
+       // browser.loadUrl("file:///android_asset/mapApplicationPolarLow.html");
     }
 
     private void createToolSymbolExplanationDialog() {

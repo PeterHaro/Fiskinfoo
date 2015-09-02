@@ -39,86 +39,51 @@
                             isBaseLayer: true
                         }
 
-	      	), new OpenLayers.Layer.WMS(
-                "Redskapskartet", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bwdev:fishingfacility_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }), new OpenLayers.Layer.WMS(
-            "BÃ¸lgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
-            {
-                LAYERS: 'bwdev:waveforecast_area_iso_latest',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        ), new OpenLayers.Layer.WMS(
-            "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
-            {
-                LAYERS: 'bwdev:iceedge_latest',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        ), new OpenLayers.Layer.WMS(
-            "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
-            {
-                LAYERS: 'bwdev:npdsurveyongoing_latest',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        ), new OpenLayers.Layer.WMS(
-            "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
-            {
-                LAYERS: 'bwdev:npdsurveyplanned_latest',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        )
+	      	)
                 ],
                 center: new OpenLayers.LonLat(15, 66.5).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
                 zoom: 5
             });
-            activeLayers = getActiveLayers();
-            var mToken = getToken();
-            corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
-
-
         };
+
+        function populateMap(authenticated) {
+            if (authenticated === 1) {
+                map.addLayers(populateAuthenticatedUser());
+                var mToken = getToken();
+                corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
+            } else {
+                map.addLayers(populateAllAvailableWmsLayers());
+            }
+            toggleAllLayersInvisible();
+        }
+
+        function Container(name, isVisible) {
+            this.name = name;
+            this.isVisible = isVisible;
+        }
+
+        function getLayersAndState() {
+            var retval = [];
+            var layerArray = getLayers();
+            for (var i = 0; i < layerArray.length; i++) {
+                if (getLayerVisibilityByName(layerArray[i])) {
+                    var c = new Container(layerArray[i], true);
+                    retval.push(c);
+                } else {
+                    var co = new Container(layerArray[i], false);
+                    retval.push(co);
+                }
+            }
+            message = JSON.stringify(retval);
+            Android.setMessage(message);
+        }
+
+        function toggleLayers(layers) {
+            toggleAllLayersInvisible();
+            for (var i = 0; i < layers.length; i++) {
+                toggleLayerVisibilityByName(layers[i], true);
+            }
+        }
 
         function corsErrBack(error) {
             var i = 5;
@@ -142,7 +107,6 @@
                     token = authToken;
                 }
             }
-
             if (XMLHttpRequest) {
                 req = new XMLHttpRequest();
                 if ('withCredentials' in req) {
@@ -179,20 +143,16 @@
             return token;
         }
 
-
-        function getActiveLayers() {
-            layers = Android.getActiveLayers();
-            return layers;
-        }
-
         function parseGeoJsonResponse(data) {
             geoJson = data;
             var geoJsonFormat = new OpenLayers.Format.GeoJSON({
                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
             });
-            var toolsVectorLayer = new OpenLayers.Layer.Vector();
+            var myStyle = { fill: true, fillColor: "#ff0000", pointRadius: 12, strokeColor: "blue", strokeWidth: 3, };
+            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskapskartet");
             toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
+            toolsVectorLayer.style = myStyle;
             map.addLayer(toolsVectorLayer);
             selectFeature = new OpenLayers.Control.SelectFeature(
             toolsVectorLayer, {
@@ -201,6 +161,174 @@
                 autoActivate: true
             });
             map.addControl(selectFeature);
+        }
+
+        function getLayers() {
+            var mLayers = map.layers;
+            var retval = [];
+            for (var a = 0; a < mLayers.length; a++) {
+                retval.push(mLayers[a].name);
+            };
+            return retval;
+        }
+
+        function getLayerVisibilityByName(name) {
+            var layer = map.getLayersByName(name)[0];
+            return layer.visibility;
+        }
+
+        function toggleAllLayersInvisible() {
+            var layers = getLayers();
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i] === "Grunnkart") {
+                    continue;
+                }
+                toggleLayerVisibilityByName(layers[i], false);
+            }
+        }
+
+        function toggleLayerVisibilityByName(name, visibility) {
+            var layer = map.getLayersByName(name)[0];
+            layer.setVisibility(visibility);
+        }
+
+        function populateAllAvailableWmsLayers() {
+            var layers = [
+                 new OpenLayers.Layer.WMS(
+                    "Redskapskartet", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:fishingfacility_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }), new OpenLayers.Layer.WMS(
+                    "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:iceedge_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:npdsurveyongoing_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:npdsurveyplanned_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                )
+            ];
+            return layers;
+        }
+
+        function populateAuthenticatedUser() {
+            var layers = [
+                new OpenLayers.Layer.WMS(
+                "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:iceedge_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:npdsurveyongoing_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:npdsurveyplanned_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            )
+            ];
+            return layers;
         }
 
         function clickNotice(feature) {
