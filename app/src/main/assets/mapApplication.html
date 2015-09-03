@@ -150,7 +150,7 @@
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
             });
             var myStyle = { fill: true, fillColor: "#ff0000", pointRadius: 12, strokeColor: "blue", strokeWidth: 3, };
-            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskapskartet");
+            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap");
             toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
             toolsVectorLayer.style = myStyle;
             map.addLayer(toolsVectorLayer);
@@ -195,7 +195,7 @@
         function populateAllAvailableWmsLayers() {
             var layers = [
                  new OpenLayers.Layer.WMS(
-                    "Redskapskartet", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    "Redskap", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
                         LAYERS: 'bwdev:fishingfacility_latest',
                         transparent: true,
@@ -222,9 +222,23 @@
                         yx: { 'EPSG:4326': true }
                     }
                 ), new OpenLayers.Layer.WMS(
-                    "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
                         LAYERS: 'bwdev:iceedge_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:npdfacility_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -285,9 +299,23 @@
                     yx: { 'EPSG:4326': true }
                 }
             ), new OpenLayers.Layer.WMS(
-                "Iskanten", "https://geo.barentswatch.no/geoserver/bw/wms",
+                "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
                 {
                     LAYERS: 'bwdev:iceedge_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bw:npdfacility_latest',
                     transparent: true,
                     STYLES: '',
                     format: format
@@ -343,9 +371,9 @@
                 vesselName = "Fartøynavn: " + "Ikke tilgjengelig";
             }
             if (feature.data.vesselphone != null) {
-                phoneNumber = "Telefon nummer: " + feature.data.vesselphone;
+                phoneNumber = "Telefonnummer: " + feature.data.vesselphone;
             } else {
-                phoneNumber = "Telefon nummer: " + "Ikke tilgjengelig";
+                phoneNumber = "Telefonnummer: " + "Ikke tilgjengelig";
             }
             if (feature.data.setupdatetime != null) {
                 toolDate = "Redskapet ble satt: " + feature.data.setupdatetime;

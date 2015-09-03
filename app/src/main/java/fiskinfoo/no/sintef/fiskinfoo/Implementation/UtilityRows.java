@@ -22,6 +22,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 
@@ -69,6 +70,11 @@ public class UtilityRows implements UtilityRowsInterface {
     @Override
     public CardViewInformationRow getCardViewInformationRow(Context context, String fieldName, String fieldData, boolean indentData, int textColor) {
         return new CardViewInformationRow(context, fieldName, fieldData, indentData, textColor);
+    }
+
+    @Override
+    public RadioButtonRow getRadioButtonRow(Context context, String item) {
+        return new RadioButtonRow(context, item);
     }
 }
 

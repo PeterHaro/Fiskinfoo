@@ -22,6 +22,7 @@ limitations under the License.
     android:layout_marginRight="@dimen/activity_horizontal_margin">
 
     <ScrollView
+        android:id="@+id/card_view_scroll_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -45,19 +46,30 @@ limitations under the License.
                 android:layout_below="@+id/card_view_thumbnail"
                 android:maxLines="@integer/card_view_title_text_view_max_lines"
                 android:padding="@dimen/card_view_title_text_view_padding"
-                android:text="@string/cardview_base_title"
+                android:text="@string/card_view_base_title"
                 android:textColor="@color/card_view_title_black"
                 android:textSize="@dimen/card_view_title_text_size"
                 android:textStyle="bold"/>
 
-            <ImageView
+            <Button
                 android:id="@+id/card_notification_image_view"
                 android:layout_width="@dimen/card_view_notification_icon_width"
                 android:layout_height="@dimen/card_view_notification_icon_height"
-                android:layout_alignTop="@+id/card_view_title_text_view"
-                android:layout_marginTop="@dimen/card_view_title_text_view_padding"
-                android:layout_toRightOf="@+id/card_view_title_text_view"
+                android:layout_alignTop="@+id/card_view_download_map_button"
+                android:layout_marginRight="@dimen/card_view_notification_icon_margin_right"
+                android:layout_toLeftOf="@+id/card_view_download_map_button"
                 android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/card_view_download_map_button"
+                android:layout_width="@dimen/card_view_notification_icon_width"
+                android:layout_height="@dimen/card_view_notification_icon_height"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/card_view_thumbnail"
+                android:layout_marginRight="@dimen/card_view_download_map_button_margin_right"
+                android:layout_marginTop="@dimen/card_view_download_map_button_margin_top"
+                android:background="@drawable/ic_file_download_black_36dp"/>
 
             <LinearLayout
                 android:id="@+id/card_view_information_container"
@@ -69,6 +81,12 @@ limitations under the License.
                 android:layout_marginRight="@dimen/card_view_information_container_margin_right"
                 android:layout_marginTop="@dimen/card_view_information_container_margin_top"
                 android:orientation="vertical"/>
+
+            <include
+                layout="@layout/bottom_button_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/card_view_information_container"/>
 
         </RelativeLayout>
     </ScrollView>

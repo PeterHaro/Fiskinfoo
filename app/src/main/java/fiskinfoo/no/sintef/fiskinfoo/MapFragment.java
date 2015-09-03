@@ -251,12 +251,17 @@ public class MapFragment extends Fragment{
     private void createMapLayerSelectionDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
 
+
+
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
         final List<MapLayerCheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
         LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisiblity.toString(), LayerAndVisibility[].class);
         for(LayerAndVisibility layer : layers) {
+            if(layer.name.equals("Grunnkart")) {
+                continue;
+            }
             boolean isActive = false;
             isActive = layer.isVisible;
 
@@ -270,12 +275,14 @@ public class MapFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 List<String> layersList = new ArrayList<>();
+                layersList.add("Grunnkart");
 
                 for (int i = 0; i < mapLayerLayout.getChildCount(); i++) {
                     if (rows.get(i).isChecked()) {
                         layersList.add(rows.get(i).getText());
                     }
                 }
+
                 user.setActiveLayers(layersList);
                 user.writeToSharedPref(getActivity());
                 dialog.dismiss();

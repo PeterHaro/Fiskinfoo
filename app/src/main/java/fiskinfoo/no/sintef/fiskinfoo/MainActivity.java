@@ -37,10 +37,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -134,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createDownloadMapLayerDialog() {
-        final Dialog dialog = dialogInterface.getDialogWithTitleIcon(this, R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title, R.drawable.ikon_kart_til_din_kartplotter);
+        final Dialog dialog = dialogInterface.getDialogWithTitleIcon(this, R.layout.dialog_download_map_layer_from_list, R.string.download_map_layer_dialog_title, R.drawable.ikon_kart_til_din_kartplotter);
 
         Button downloadMapLayerButton = (Button) dialog.findViewById(R.id.download_map_layer_download_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.download_map_layer_cancel_button);

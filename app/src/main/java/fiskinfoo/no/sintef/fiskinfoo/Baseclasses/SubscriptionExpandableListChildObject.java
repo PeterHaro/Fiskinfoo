@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -24,10 +25,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.ExpandableListChildType;
 
 public class SubscriptionExpandableListChildObject extends ExpandableListChildObject {
     private TextView mLastUpdatedTextView;
-    private Switch mSubscribedSwitch;
+    private CheckBox mSubscribedCheckBox;
     private Button mDownloadMapLayerButton;
     private View.OnClickListener mDownloadButtonOnClickListener;
-    private View.OnClickListener mSubscribeSwitchOnClickListener;
+    private View.OnClickListener mSubscribedCheckBoxOnClickListener;
     private View.OnClickListener mErrorNotificationOnClickListener;
 
     private String mLastUpdated;
@@ -50,13 +51,13 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
         this.mLastUpdatedTextView = textView;
     }
 
-    public void setSubscribedSwitch(Switch subscribedSwitch) {
-        mSubscribedSwitch = subscribedSwitch;
+    public void setSubscribedSwitch(CheckBox subscribedCheckBox) {
+        mSubscribedCheckBox = subscribedCheckBox;
     }
 
     public void setSubscribedSwitchValue(boolean isSubscribed) {
-        if(mSubscribedSwitch != null) {
-            mSubscribedSwitch.setChecked(isSubscribed);
+        if(mSubscribedCheckBox != null) {
+            mSubscribedCheckBox.setChecked(isSubscribed);
             System.out.println("isSubscribed set");
         } else {
             System.out.println("Cannot set isSubscribed, switch is null");
@@ -94,11 +95,11 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
     }
 
     public View.OnClickListener getSubscribeSwitchOnClickListener() {
-        return mSubscribeSwitchOnClickListener;
+        return mSubscribedCheckBoxOnClickListener;
     }
 
-    public void setSubscribeSwitchOnClickListener(View.OnClickListener onClickListener) {
-        mSubscribeSwitchOnClickListener = onClickListener;
+    public void setSubscribedCheckBoxOnClickListener(View.OnClickListener onClickListener) {
+        mSubscribedCheckBoxOnClickListener = onClickListener;
     }
 
     public ApiErrorType getErrorType() {

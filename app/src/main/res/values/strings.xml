@@ -66,10 +66,14 @@ limitations under the License.
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>
-    <string name="choose_a_download_format">Vennligst velg et nedlastningsformat</string>
+    <string name="choose_download_format_and_interval">Vennligst velg et nedlastningsformat og interval</string>
+    <string name="choose_subscription_format">Velg et format</string>
+    <string name="choose_subscription_interval">Velg en abonneringfrekvens</string>
     <string name="download_map_layer_dialog_title">Velg nedlastningsformat</string>
     <string name="subscribe_to_map_layer_dialog_title">Abboner på kartlag</string>
     <string name="update_subscriptions">Oppdater abonnement</string>
+    <string name="subscription_format">Format</string>
+    <string name="subscription_frequency">Abonneringsfrekvens</string>
     <string name="download">Last ned</string>
     <string name="download_short">DL</string>
     <string name="download_failed">Nedlasting mislyktes</string>
@@ -87,6 +91,7 @@ limitations under the License.
     <string name="proximity_alert_warning">Kollisjonsvarsling</string>
     <string name="proximity_alert_warning_dismiss">Avslutt varsling</string>
     <string name="show_position_on_map">Vis posisjon på kart</string>
+    <string name="show_on_map">Vis i kart</string>
 
     <string name="fragment_my_page_tag">MyPage</string>
     <string name="fragment_map_tag">Map</string>
@@ -119,17 +124,20 @@ limitations under the License.
     <string name="title_activity_file_dialog">FileDialog</string>
 
     <!-- Cardview fragment -->
-        <string name="cardview_contents">This is a CardView widget. CardView widgets can have
-        shadows and rounded corners.
-        \n\nTo create a card with a shadow, use the <font fgcolor="#FFFFFFFF">android:elevation</font>
-        attribute.
-        \n\nTo set the corner radius in your layouts, use the <font
-                fgcolor="#FFFFFFFF">card_view:cardCornerRadius</font> attribute.
+    <string name="cardview_contents">This is a CardView widget. CardView widgets can have
+    shadows and rounded corners.
+    \n\nTo create a card with a shadow, use the <font fgcolor="#FFFFFFFF">android:elevation</font>
+    attribute.
+    \n\nTo set the corner radius in your layouts, use the <font
+            fgcolor="#FFFFFFFF">card_view:cardCornerRadius</font> attribute.
     </string>
     <string name="cardview_radius_seekbar_text">Radius</string>
     <string name="cardview_elevation_seekbar_text">Elevation</string>
-    <string name="cardview_base_title"> Noe gikk feil: </string>
+    <string name="card_view_base_title"> Noe gikk feil: </string>
     <string name="update_frequency">Oppdateringsfrekvens:</string>
+    <string name="manage_subscription_subscription_active">Du abonnerer på dette kartet</string>
+    <string name="manage_subscription_subscription_inactive">Abonnementet er ikke aktivt</string>
+    <string name="manage_subscription_subscription_cancellation">Abonnementet vil bli avsluttet</string>
     <string name="information">Informasjon:</string>
     <string name="data_owner">Karteier:</string>
     <string name="data_owner_link">Karteiers side:</string>
@@ -142,12 +150,13 @@ limitations under the License.
     <string name="see_more_info">Les mer her.</string>
     <string name="update_frequency_not_available">Oppdateringsfrekvens er ikke tilgjengelig for dette kartlaget.</string>
     <string name="about_partners_base_address">https://www.barentswatch.no</string>
-    
-    
+
+
     <string-array name="map_layer_names_array">
-        <item>Redskapskartet</item>
+        <item>Redskap</item>
         <item>Bølgevarsel</item>
         <item>Iskanten</item>
+        <item>Havbunnsinstallasjoner</item>
         <item>Seismikk, pågående</item>
         <item>Seismikk, planlagt</item>
     </string-array>
@@ -156,6 +165,7 @@ limitations under the License.
         <item>bwdev:fishingfacility</item>
         <item>bwdev:waveforecast_area_iso_latest</item>
         <item>bwdev:iceedge_latest</item>
+        <item>bw:npdfacility_latest</item>
         <item>bwdev:npdsurveyongoing_latest</item>
         <item>bwdev:npdsurveyplanned_latest</item>
     </string-array>

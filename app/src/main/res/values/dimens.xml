@@ -16,11 +16,11 @@ limitations under the License.
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="seek_bar_label_length">70dp</dimen>
 
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>
     <dimen name="login_logo_height">105dp</dimen>
+    <dimen name="seek_bar_label_length">70dp</dimen>
 
     <!-- File dialog -->
     <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
@@ -51,11 +51,18 @@ limitations under the License.
     <!-- Select map layers dialog margins -->
     <dimen name="map_layer_linear_layout_margin_left">10dp</dimen>
     <dimen name="map_layer_linear_layout_margin_right">10dp</dimen>
+    <dimen name="map_layer_linear_layout_margin_top">20dp</dimen>
     <dimen name="map_layer_row_margin_left">5dp</dimen>
     <dimen name="map_layer_row_margin_right">5dp</dimen>
     <dimen name="map_layer_bottom_button_margin_top">15dp</dimen>
     <dimen name="map_layer_bottom_button_margin_bottom">15dp</dimen>
 
+    <dimen name="select_map_layer_info_text_view_margin_top">30dp</dimen>
+
+    <!-- Manage subscription dialog margins -->
+    <dimen name="manage_subscription_margin_top">10dp</dimen>
+    <dimen name="manage_subscription_title_margin_top">20dp</dimen>
+    <dimen name="manage_subscription_title_margin_left">10dp</dimen>
 
     <!-- Proximity alert margins -->
     <dimen name="proximity_alert_spinner_margin_top">20dp</dimen>
@@ -69,10 +76,33 @@ limitations under the License.
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
 
     <!-- FormatRow -->
-    <dimen name="format_row_text_size">22dp</dimen>
+    <dimen name="format_row_text_size">20dp</dimen>
     <dimen name="format_row_text_view_margin_left">50dp</dimen>
     <dimen name="format_row_check_box_margin_left">25dp</dimen>
     <dimen name="format_row_text_view_padding">10dp</dimen>
+    <dimen name="format_row_padding_left">20dp</dimen>
+    <dimen name="format_row_padding_right">20dp</dimen>
+    <dimen name="checkbox_row_padding_left">20dp</dimen>
+    <dimen name="checkbox_row_padding_right">20dp</dimen>
+
+    <!-- RadioButtonRow -->
+    <dimen name="radio_button_row_text_size">20dp</dimen>
+    <dimen name="radio_button_row_text_view_margin_left">50dp</dimen>
+    <dimen name="radio_button_row_check_box_margin_left">25dp</dimen>
+    <dimen name="radio_button_row_text_view_padding">10dp</dimen>
+    <dimen name="radio_button_row_padding_bottom">5dp</dimen>
+    <dimen name="radio_button_row_padding_top">5dp</dimen>
+    <dimen name="radio_button_row_padding_left">20dp</dimen>
+    <dimen name="radio_button_row_padding_right">20dp</dimen>
+    <dimen name="radio_button_row_radio_button_margin_left">5dp</dimen>
+    <dimen name="radio_button_row_radio_button_margin_top">5dp</dimen>
+    <dimen name="radio_button_row_text_view_margin_top">5dp</dimen>
+
+    <!-- SettingsButtonRow -->
+    <dimen name="settings_button_row_margin_left">30dp</dimen>
+    <dimen name="settings_button_row_margin_right">30dp</dimen>
+    <dimen name="settings_button_row_margin_top">5dp</dimen>
+    <dimen name="settings_button_row_button_padding">20dp</dimen>
 
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>
@@ -106,7 +136,6 @@ limitations under the License.
     <dimen name="recycle_item_child_notification_icon_image_view_width_width">40dp</dimen>
     <dimen name="recycle_item_child_notification_icon_image_view_width_height">40dp</dimen>
 
-
     <!-- fragment card view -->
     <dimen name="card_view_thumbnail_height">150dp</dimen>
     <dimen name="card_view_title_text_size">22dp</dimen>
@@ -119,5 +148,10 @@ limitations under the License.
     <dimen name="card_view_information_row_name_text_view_margin_left">5dp</dimen>
     <dimen name="card_view_notification_icon_width">38dp</dimen>
     <dimen name="card_view_notification_icon_height">38dp</dimen>
+    <dimen name="card_view_notification_icon_margin_right">20dp</dimen>
+    <dimen name="card_view_download_map_button_margin_right">20dp</dimen>
+    <dimen name="card_view_download_map_button_margin_top">5dp</dimen>
+    <dimen name="card_view_download_map_button_width">38dp</dimen>
+    <dimen name="card_view_download_map_button_height">38dp</dimen>
 
 </resources>

@@ -38,7 +38,7 @@ public class SubscriptionExpandableListChildViewHolder extends ExpandableListChi
 
         dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
         lastUpdatedTextView = (TextView) itemView.findViewById(R.id.recycler_child_last_updated_text_view);
-        subscribedSwitch = (Switch) itemView.findViewById(R.id.recycle_child_view_subscribed_switch);
+        subscribedSwitch = (Switch) itemView.findViewById(R.id.recycle_child_view_subscribed_check_box);
         downloadButton = (Button) itemView.findViewById(R.id.recycler_item_download_map_button);
     }
 }

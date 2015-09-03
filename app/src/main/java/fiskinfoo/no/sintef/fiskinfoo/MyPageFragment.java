@@ -231,14 +231,14 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
 
         View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getErrorNotificationOnClickListener(subscription);
-        View.OnClickListener subscriptionSwitchClickListener = onClickListenerInterface.getSubscriptionSwitchOnClickListener(subscription, activeSubscription, user);
+        View.OnClickListener subscriptionSwitchClickListener = onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user);
         View.OnClickListener downloadButtonOnClickListener = onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG);
 
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
         currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
         currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
         currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
-        currentPropertyDescriptionChildObject.setSubscribeSwitchOnClickListener(subscriptionSwitchClickListener);
+        currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
         currentPropertyDescriptionChildObject.setErrorType(ApiErrorType.getType(subscription.ErrorType));
         currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
@@ -268,12 +268,10 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
     @Override
     public void onRecyclerViewItemExpanded(int position) {
-        Toast.makeText(this.getActivity(), "Item Expanded " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRecyclerViewItemCollapsed(int position) {
-        Toast.makeText(this.getActivity(), "Item Collapsed " + position, Toast.LENGTH_SHORT).show();
     }
 
 

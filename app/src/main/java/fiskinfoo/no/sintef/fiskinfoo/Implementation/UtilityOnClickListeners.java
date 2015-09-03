@@ -3,11 +3,14 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +21,7 @@ import java.util.List;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
@@ -26,6 +30,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import retrofit.client.Response;
 
 public class UtilityOnClickListeners implements OnclickListenerInterface {
@@ -69,13 +74,13 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 OnclickListenerInterface onClickListenerInterface = new UtilityOnClickListeners();
                 final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
 
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_select_format, R.string.download_map_layer_dialog_title);
+                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title);
 
                 final Button downloadButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
+                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.download_map_formats_container);
 
-                downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.choose_a_download_format)));
+                downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.choose_download_format_and_interval)));
 
                 for (String format : subscription.Formats) {
                     final FormatRow formatRow = new FormatRow(v.getContext(), format);
@@ -147,7 +152,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getSubscriptionSwitchOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
+    public View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
         return new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -155,58 +160,106 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 OnclickListenerInterface onClickListenerInterface = new UtilityOnClickListeners();
                 UtilityRowsInterface utilityRowsInterface = new UtilityRows();
 
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_select_format, R.string.update_subscriptions);
+                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_manage_subscription, R.string.update_subscriptions);
 
-                final Button subscribeButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
-                Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
-                final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.select_download_format_formats_container);
+                final Switch subscribedSwitch = (Switch) dialog.findViewById(R.id.manage_subscription_switch);
+                final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);
+                final LinearLayout intervalsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_intervals_container);
+                final Button subscribeButton = (Button) dialog.findViewById(R.id.manage_subscription_update_button);
+                Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 
                 final List<String> activeSubscriptionFormats = new ArrayList<>();
+                boolean isSubscribed = activeSubscription != null;
 
-                if(activeSubscription != null) {
+                dialog.setTitle(subscription.Name);
+
+                if(isSubscribed) {
                     activeSubscriptionFormats.add(activeSubscription.FileFormatType);
+                    subscribedSwitch.setVisibility(View.VISIBLE);
+                    subscribedSwitch.setChecked(true);
+                    subscribedSwitch.setText(v.getResources().getString(R.string.manage_subscription_subscription_active));
+
+                    subscribedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            System.out.println("This is checked:" + isChecked);
+                            String switchText = isChecked ? v.getResources().getString(R.string.manage_subscription_subscription_active) : v.getResources().getString(R.string.manage_subscription_subscription_cancellation);
+                            subscribedSwitch.setText(switchText);
+                        }
+                    });
                 }
 
-                subscribeButton.setText(R.string.update);
-                subscribeButton.setOnClickListener(onClickListenerInterface.getShowToastListener(v.getContext(), v.getContext().getString(R.string.choose_a_download_format)));
-
                 for (String format : subscription.Formats) {
-                    final CheckBoxFormatRow formatRow = utilityRowsInterface.getCheckBoxFormatRow(v.getContext(), format);
+                    final RadioButtonRow row = utilityRowsInterface.getRadioButtonRow(v.getContext(), format);
                     if(activeSubscriptionFormats.contains(format)) {
-                        formatRow.setChecked(true);
+                        row.setSelected(true);
                     }
 
-                    rowsContainer.addView(formatRow.getView());
+                    formatsContainer.addView(row.getView());
+                }
+
+                for(String interval : subscription.SubscriptionInterval) {
+                    final RadioButtonRow row = utilityRowsInterface.getRadioButtonRow(v.getContext(), SubscriptionInterval.getType(interval).toString());
+
+                    if(activeSubscription != null) {
+                        row.setSelected(activeSubscription.SubscriptionIntervalName.equals(interval));
+                    }
+
+                    intervalsContainer.addView(row.getView());
+                }
+
+                if(intervalsContainer.getChildCount() == 1) {
+                    ((RadioButton)intervalsContainer.getChildAt(0).findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
                 }
 
                 subscribeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View subscribeButton) {
+                        String subscriptionFormat = null;
+                        String subscriptionInterval = null;
                         boolean isSubscribed = false;
+                        boolean formatSelected = false;
+                        boolean intervalSelected = false;
 
                         BarentswatchApi barentswatchApi = new BarentswatchApi();
                         barentswatchApi.setAccesToken(user.getToken());
                         final IBarentswatchApi api = barentswatchApi.getApi();
 
-                        for(int i = 0; i < rowsContainer.getChildCount(); i++) {
-                            String currentFormat = ((TextView) rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view)).getText().toString();
-
-
-                            if(((CheckBox) rowsContainer.getChildAt(i).findViewById(R.id.format_row_check_box)).isChecked()) {
-                                isSubscribed = true;
-
-                                if(activeSubscriptionFormats.contains(currentFormat)) {
-                                    continue;
-                                } else {
-                                    // TODO: API call to add subscription
-                                    Response response;
-                                }
-                            } else {
-                                if(activeSubscription != null) {
-                                    // TODO: API call to remove subscription
-                                    Response response;
-                                }
+                        for(int i = 0; i < formatsContainer.getChildCount(); i++) {
+                            if(((RadioButton)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).isChecked()) {
+                                subscriptionFormat = ((TextView)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_text_view)).getText().toString();
+                                formatSelected = true;
+                                break;
                             }
+                        }
+
+                        if(!formatSelected) {
+                            Toast.makeText(v.getContext(), v.getContext().getString(R.string.choose_subscription_format), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        for(int i = 0; i < intervalsContainer.getChildCount(); i++) {
+                            if(((RadioButton)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).isChecked()) {
+                                subscriptionInterval = ((TextView)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_text_view)).getText().toString();
+                                intervalSelected = true;
+                                break;
+                            }
+                        }
+
+                        if(!intervalSelected) {
+                            Toast.makeText(v.getContext(), v.getContext().getString(R.string.choose_subscription_interval), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+
+                        if(activeSubscription != null) {
+                            if(subscribedSwitch.isChecked()) {
+                                // TODO: fix api call.
+                            } else {
+                                // TODO: fix api call.
+                            }
+                        } else {
+                            // TODO: fix api call
                         }
 
                         ((Switch) v).setChecked(isSubscribed);
@@ -217,7 +270,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View cancelButton) {
-                        ((Switch) v).setChecked(activeSubscriptionFormats.size() > 0);
+                        ((CheckBox) v).setChecked(activeSubscriptionFormats.size() > 0);
 
                         dialog.dismiss();
                     }

@@ -1,6 +1,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.Fragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,6 +28,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
+import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class FiskInfoUtility {
@@ -131,6 +135,24 @@ public class FiskInfoUtility {
         } else {
             return new BigDecimal(String.valueOf(number)).setScale(numberofDecimals, BigDecimal.ROUND_CEILING).doubleValue();
         }
+    }
+
+    public Fragment createFragment(String tag, User user, String currentTag) {
+        Bundle userBundle = new Bundle();
+        userBundle.putParcelable("user", user);
+        switch(tag) {
+            case MyPageFragment.TAG:
+                MyPageFragment myPageFragment = new MyPageFragment();
+                myPageFragment.setArguments(userBundle);
+                return myPageFragment;
+            case MapFragment.TAG:
+                MapFragment mapFragment = new MapFragment();
+                mapFragment.setArguments(userBundle);
+                return mapFragment;
+            default:
+                Log.d(currentTag, "Trying to create invalid fragment with TAG: " + tag);
+        }
+        return null;
     }
 
     /**

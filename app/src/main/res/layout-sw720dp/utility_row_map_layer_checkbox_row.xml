@@ -14,7 +14,9 @@ limitations under the License.
 
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
-          android:layout_height="match_parent">
+          android:layout_height="match_parent"
+          android:layout_marginLeft="@dimen/checkbox_row_padding_left"
+          android:layout_marginRight="@dimen/checkbox_row_padding_right">
 
     <CheckBox
         android:id="@+id/map_layer_row_check_box"

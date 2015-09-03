@@ -1,0 +1,78 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/download_map_layer_bottom_button_container"
+        android:orientation="vertical">
+
+
+        <ExpandableListView
+            android:id="@+id/download_map_layer_dialog_expandable_list_layer_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/download_map_layer_bottom_button_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/download_map_layer_help_text_view"
+        android:layout_marginBottom="@dimen/dialog_container_margin_top"
+        android:layout_marginTop="@dimen/dialog_internal_container_large_margin_top"
+        android:orientation="horizontal"
+        android:paddingBottom="1.0dip"
+        android:paddingLeft="4.0dip"
+        android:paddingRight="4.0dip"
+        android:paddingTop="5.0dip">
+
+        <Button
+            android:id="@+id/download_map_layer_download_button"
+            android:layout_width="0.0dip"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0"
+            android:text="@string/download"/>
+
+        <Button
+            android:id="@+id/download_map_layer_cancel_button"
+            android:layout_width="0.0dip"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0"
+            android:text="@string/cancel"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/download_map_layer_help_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dialog_container_margin_top"
+        android:text="@string/download_map_layer_dialog_help_text"/>
+
+</RelativeLayout>

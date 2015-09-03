@@ -28,5 +28,5 @@ public interface OnclickListenerInterface {
     View.OnClickListener getShowToastListener(Context context, int stringId);
     View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final PropertyDescription subscription, final User user, final String tag);
     View.OnClickListener getErrorNotificationOnClickListener(final PropertyDescription subscription);
-    View.OnClickListener getSubscriptionSwitchOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
+    View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
 }

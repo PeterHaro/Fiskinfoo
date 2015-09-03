@@ -58,13 +58,13 @@ limitations under the License.
         android:layout_marginLeft="@dimen/recycle_item_child_last_updated_text_view_margin_left"
         android:layout_marginRight="@dimen/recycle_item_child_last_updated_text_view_margin_right"
         android:layout_marginTop="@dimen/recycle_item_child_last_updated_text_view_margin_top"
-        android:layout_toLeftOf="@+id/recycle_child_view_subscribed_switch"
+        android:layout_toLeftOf="@+id/recycle_child_view_subscribed_check_box"
         android:gravity="center_horizontal"
         android:hint="@string/placeholder_string"
         android:textSize="@dimen/recycle_item_child_last_updated_text_size"/>
 
     <Switch
-        android:id="@+id/recycle_child_view_subscribed_switch"
+        android:id="@+id/recycle_child_view_subscribed_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/recycler_child_item_title_text_view"

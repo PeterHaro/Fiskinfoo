@@ -58,7 +58,6 @@ public class BarentswatchApi {
                 .header("content-type", "application/x-www-form-urlencoded")
                 .post(formBody)
                 .build();
-
     }
 
     private IBarentswatchApi initializeBarentswatchAPI(Executor httpExecutor, Executor callbackExecutor) {
