@@ -27,7 +27,9 @@ limitations under the License.
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/radio_button_row_radio_button_margin_left"
         android:layout_marginStart="@dimen/radio_button_row_radio_button_margin_left"
-        android:layout_marginTop="@dimen/radio_button_row_radio_button_margin_top"/>
+        android:layout_marginTop="@dimen/radio_button_row_radio_button_margin_top"
+        android:clickable="false"
+        android:duplicateParentState="true"/>
 
     <TextView
         android:id="@+id/radio_button_row_text_view"
@@ -38,6 +40,8 @@ limitations under the License.
         android:layout_marginRight="@dimen/dialog_container_margin_right"
         android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
         android:layout_weight="1"
+        android:clickable="false"
+        android:duplicateParentState="true"
         android:textSize="@dimen/radio_button_row_text_size"/>
 
 </TableRow>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,11 +24,18 @@ import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
 import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -135,6 +143,20 @@ public class FiskInfoUtility {
         } else {
             return new BigDecimal(String.valueOf(number)).setScale(numberofDecimals, BigDecimal.ROUND_CEILING).doubleValue();
         }
+    }
+
+    /**
+     * Checks that the given string is a valid E-mail address
+     *
+     * @param email
+     *            the address to check
+     * @return true if address is a valid E-mail address, false otherwise.
+     */
+    public boolean isEmailValid(String email) {
+        String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     public Fragment createFragment(String tag, User user, String currentTag) {

@@ -34,23 +34,13 @@ public class RadioButtonRow extends BaseTableRow {
 
         mTextView.setText(format);
 
-        mTextView.setOnClickListener(new View.OnClickListener() {
+        getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i = 0; i < ((ViewGroup) getView().getParent()).getChildCount(); i++) {
-                    ((RadioButton) ((ViewGroup) getView().getParent()).getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).setChecked(false);
+                for (int i = 0; i < ((ViewGroup)v.getParent()).getChildCount(); i++) {
+                    ((RadioButton) ((ViewGroup)v.getParent()).getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).setChecked(false);
                 }
-                ((RadioButton) ((ViewGroup)v.getParent()).findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
-            }
-        });
-
-        mRadioButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for(int i = 0; i < ((ViewGroup)getView().getParent()).getChildCount(); i++) {
-                    ((RadioButton)((ViewGroup)getView().getParent()).getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).setChecked(false);
-                }
-                ((RadioButton)v).setChecked(true);
+                ((RadioButton)v.findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
             }
         });
     }
@@ -72,7 +62,6 @@ public class RadioButtonRow extends BaseTableRow {
     }
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
-        mRadioButton.setOnClickListener(onClickListener);
-        mTextView.setOnClickListener(onClickListener);
+        getView().setOnClickListener(onClickListener);
     }
 }

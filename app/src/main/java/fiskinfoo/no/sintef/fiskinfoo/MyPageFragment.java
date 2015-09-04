@@ -151,6 +151,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             Map<Integer, Boolean> authMap = new HashMap<>();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
+            ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
+            ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
+            ArrayList<Object> mySubscriptions = new ArrayList<>();
 
 
             for(PropertyDescription subscribable : api.getSubscribable()) {
@@ -166,7 +169,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                 System.out.println("Id: " + auth.Id + ", access: " + auth.hasAccess);
             }
 
-            ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
                 //TODO: uncomment after fixing getAuthorization to read correct values.
 //                if(!authMap.get(propertyDescription.Id)) {
@@ -178,15 +180,14 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
 
-            ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
             for (String warning : myWarnings) {
                 SubscriptionExpandableListChildObject currentWarning = setupWarningChildView(warning);
 
                 warningServiceChildObjectList.add(currentWarning);
             }
 
-            ArrayList<Object> mySubscriptions = new ArrayList<>();
             for (Subscription subscription : activeSubscriptions) {
+                System.out.println("Still have an active sub");
                 SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName));
 
                 mySubscriptions.add(currentSubscription);

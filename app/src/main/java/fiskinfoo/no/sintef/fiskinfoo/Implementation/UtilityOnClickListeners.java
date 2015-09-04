@@ -1,3 +1,17 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.app.AlertDialog;
@@ -6,24 +20,34 @@ import android.content.Context;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.SubscriptionSubmitObject;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.OnclickListenerInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
@@ -31,6 +55,7 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
+import retrofit.client.Header;
 import retrofit.client.Response;
 
 public class UtilityOnClickListeners implements OnclickListenerInterface {
@@ -55,16 +80,6 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getShowToastListener(final Context context, final int stringId) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, context.getString(stringId), Toast.LENGTH_LONG).show();
-            }
-        };
-    }
-
-    @Override
     public View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final PropertyDescription subscription, final User user, final String tag) {
         return new View.OnClickListener() {
 
@@ -83,17 +98,15 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.choose_download_format_and_interval)));
 
                 for (String format : subscription.Formats) {
-                    final FormatRow formatRow = new FormatRow(v.getContext(), format);
+                    final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);
 
-                    formatRow.setOnClickListener(new View.OnClickListener() {
+                    row.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            for (int i = 0; i < rowsContainer.getChildCount(); i++) {
-
-                                rowsContainer.getChildAt(i).findViewById(R.id.format_row_text_view).setBackgroundColor(v.getContext().getResources().getColor(R.color.text_white));
+                            for (int i = 0; i < ((ViewGroup)v.getParent()).getChildCount(); i++) {
+                                ((RadioButton) ((ViewGroup)v.getParent()).getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).setChecked(false);
                             }
-
-                            formatRow.setTextViewBackgroundColor(v.getContext().getResources().getColor(R.color.helpful_grey));
+                            ((RadioButton)v.findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
 
                             downloadButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -103,7 +116,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                                     IBarentswatchApi api = barentswatchApi.getApi();
 
                                     Response response;
-                                    String downloadFormat = formatRow.getText();
+                                    String downloadFormat = row.getText();
 
                                     try {
                                         response = api.geoDataDownload(subscription.ApiName, downloadFormat);
@@ -125,7 +138,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             });
                         }
                     });
-                    rowsContainer.addView(formatRow.getView());
+
+                    rowsContainer.addView(row.getView());
                 }
 
                 cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
@@ -157,7 +171,6 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
             @Override
             public void onClick(final View v) {
                 DialogInterface dialogInterface = new UtilityDialogs();
-                OnclickListenerInterface onClickListenerInterface = new UtilityOnClickListeners();
                 UtilityRowsInterface utilityRowsInterface = new UtilityRows();
 
                 final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_manage_subscription, R.string.update_subscriptions);
@@ -165,16 +178,18 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 final Switch subscribedSwitch = (Switch) dialog.findViewById(R.id.manage_subscription_switch);
                 final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);
                 final LinearLayout intervalsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_intervals_container);
+                final EditText subscriptionEmailEditText = (EditText) dialog.findViewById(R.id.manage_subscription_email_edit_text);
                 final Button subscribeButton = (Button) dialog.findViewById(R.id.manage_subscription_update_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 
-                final List<String> activeSubscriptionFormats = new ArrayList<>();
-                boolean isSubscribed = activeSubscription != null;
+                final boolean isSubscribed = activeSubscription != null;
+                final Map<String, String> subscriptionFrequencies = new HashMap();
 
                 dialog.setTitle(subscription.Name);
 
                 if(isSubscribed) {
-                    activeSubscriptionFormats.add(activeSubscription.FileFormatType);
+                    subscriptionEmailEditText.setText(activeSubscription.SubscriptionEmail);
+
                     subscribedSwitch.setVisibility(View.VISIBLE);
                     subscribedSwitch.setChecked(true);
                     subscribedSwitch.setText(v.getResources().getString(R.string.manage_subscription_subscription_active));
@@ -187,11 +202,13 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             subscribedSwitch.setText(switchText);
                         }
                     });
+                } else {
+                    subscriptionEmailEditText.setText(user.getUsername());
                 }
 
                 for (String format : subscription.Formats) {
                     final RadioButtonRow row = utilityRowsInterface.getRadioButtonRow(v.getContext(), format);
-                    if(activeSubscriptionFormats.contains(format)) {
+                    if(isSubscribed && activeSubscription.FileFormatType.equals(format)) {
                         row.setSelected(true);
                     }
 
@@ -205,6 +222,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         row.setSelected(activeSubscription.SubscriptionIntervalName.equals(interval));
                     }
 
+                    subscriptionFrequencies.put(SubscriptionInterval.getType(interval).toString(), interval);
                     intervalsContainer.addView(row.getView());
                 }
 
@@ -217,23 +235,20 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     public void onClick(View subscribeButton) {
                         String subscriptionFormat = null;
                         String subscriptionInterval = null;
-                        boolean isSubscribed = false;
-                        boolean formatSelected = false;
-                        boolean intervalSelected = false;
+                        String subscriptionEmail = null;
 
                         BarentswatchApi barentswatchApi = new BarentswatchApi();
                         barentswatchApi.setAccesToken(user.getToken());
                         final IBarentswatchApi api = barentswatchApi.getApi();
 
                         for(int i = 0; i < formatsContainer.getChildCount(); i++) {
-                            if(((RadioButton)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).isChecked()) {
-                                subscriptionFormat = ((TextView)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_text_view)).getText().toString();
-                                formatSelected = true;
+                            if(((RadioButton)formatsContainer.getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).isChecked()) {
+                                subscriptionFormat = ((TextView)formatsContainer.getChildAt(i).findViewById(R.id.radio_button_row_text_view)).getText().toString();
                                 break;
                             }
                         }
 
-                        if(!formatSelected) {
+                        if(subscriptionFormat == null) {
                             Toast.makeText(v.getContext(), v.getContext().getString(R.string.choose_subscription_format), Toast.LENGTH_LONG).show();
                             return;
                         }
@@ -241,28 +256,53 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         for(int i = 0; i < intervalsContainer.getChildCount(); i++) {
                             if(((RadioButton)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_radio_button)).isChecked()) {
                                 subscriptionInterval = ((TextView)intervalsContainer.getChildAt(i).findViewById(R.id.radio_button_row_text_view)).getText().toString();
-                                intervalSelected = true;
                                 break;
                             }
                         }
 
-                        if(!intervalSelected) {
+                        if(subscriptionInterval == null) {
                             Toast.makeText(v.getContext(), v.getContext().getString(R.string.choose_subscription_interval), Toast.LENGTH_LONG).show();
                             return;
                         }
 
+                        subscriptionEmail = subscriptionEmailEditText.getText().toString();
 
-                        if(activeSubscription != null) {
-                            if(subscribedSwitch.isChecked()) {
-                                // TODO: fix api call.
-                            } else {
-                                // TODO: fix api call.
-                            }
-                        } else {
-                            // TODO: fix api call
+                        if(subscriptionEmail == null || !(new FiskInfoUtility().isEmailValid(subscriptionEmail))) {
+                            Toast.makeText(v.getContext(), v.getContext().getString(R.string.error_invalid_email), Toast.LENGTH_LONG).show();
+                            return;
                         }
 
-                        ((Switch) v).setChecked(isSubscribed);
+                        if(isSubscribed) {
+                            if(subscribedSwitch.isChecked()) {
+                                if(!(subscriptionFormat.equals(activeSubscription.FileFormatType) && activeSubscription.SubscriptionIntervalName.equals(subscriptionFrequencies.get(subscriptionInterval)) &&
+                                        user.getUsername().equals(subscriptionEmail))) {
+                                    SubscriptionSubmitObject updatedSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
+                                    Subscription newSubscriptionObject = api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+
+                                    if(newSubscriptionObject != null) {
+                                        ((CheckBox) v).setChecked(true);
+                                    }
+                                }
+                            } else {
+                                Response response = api.deleteSubscription(String.valueOf(activeSubscription.Id));
+
+
+                                if(response.getStatus() == 204) {
+                                    ((CheckBox) v).setChecked(false);
+                                }
+                            }
+                        } else {
+                            SubscriptionSubmitObject newSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
+
+                            Subscription response = api.setSubscription(newSubscription);
+
+                            if(response != null) {
+                                ((CheckBox) v).setChecked(true);
+                                // TODO: add to "Mine abonnementer"
+                            }
+
+                        }
+
                         dialog.dismiss();
                     }
                 });
@@ -270,7 +310,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View cancelButton) {
-                        ((CheckBox) v).setChecked(activeSubscriptionFormats.size() > 0);
+                        ((CheckBox) v).setChecked(isSubscribed);
 
                         dialog.dismiss();
                     }

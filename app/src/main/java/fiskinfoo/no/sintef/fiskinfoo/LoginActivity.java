@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 /**
@@ -133,6 +134,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         if(!user.isTokenValid()) {
             LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
             loginTask.execute((Void) null);
+        } else {
+            Log.d(TAG, "Token not valid");
         }
         changeActivity(MainActivity.class, user);
     }
@@ -174,7 +177,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!new FiskInfoUtility().isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -191,20 +194,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-    /**
-     * Checks that the given string is a valid E-mail address
-     *
-     * @param email
-     *            the address to check
-     * @return true if address is a valid E-mail address, false otherwise.
-     */
-    private boolean isEmailValid(String email) {
-        String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
     }
 
     /**

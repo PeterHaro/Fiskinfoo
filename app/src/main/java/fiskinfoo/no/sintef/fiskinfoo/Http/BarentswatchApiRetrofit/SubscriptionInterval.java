@@ -23,11 +23,11 @@ public enum SubscriptionInterval {
 
     public static SubscriptionInterval getType(String type) {
         SubscriptionInterval retVal = null;
-        switch(type.toLowerCase()) {
-            case "everyday":
+        switch(type) {
+            case "EveryDay":
                 retVal = EVERY_DAY;
                 break;
-            case "everyupdate":
+            case "EveryUpdate":
                 retVal = EVERY_UPDATE;
                 break;
             default:

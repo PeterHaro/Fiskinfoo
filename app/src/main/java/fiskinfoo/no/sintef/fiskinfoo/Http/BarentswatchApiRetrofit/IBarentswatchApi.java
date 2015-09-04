@@ -19,15 +19,21 @@ import java.util.List;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.SubscriptionSubmitObject;
 import retrofit.Callback;
 import retrofit.client.Response;
+import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
 public interface IBarentswatchApi {
     String subscribable = "/service/subscribable/";
     String geoDataSubscription = "/subscription/";
+    String geoDataSubscriptionManagement = "/subscription/{Id}";
     String geoDataDownload = "/download/{ApiName}";
     String authorization = "/authorization";
 
@@ -42,6 +48,24 @@ public interface IBarentswatchApi {
 
     @GET(geoDataSubscription)
     List<Subscription> getSubscriptions();
+
+    @POST(geoDataSubscription)
+    void setSubscription(Callback<Subscription> callback);
+
+    @POST(geoDataSubscription)
+    Subscription setSubscription(@Body SubscriptionSubmitObject subscription);
+
+    @PUT(geoDataSubscriptionManagement)
+    void updateSubscription(Callback<Subscription> callback);
+
+    @PUT(geoDataSubscriptionManagement)
+    Subscription updateSubscription(@Path("Id")String id, @Body SubscriptionSubmitObject subscription);
+
+    @DELETE(geoDataSubscriptionManagement)
+    void deleteSubscription(Callback<Subscription> callback);
+
+    @DELETE(geoDataSubscriptionManagement)
+    Response deleteSubscription(@Path("Id")String id);
 
     @GET(geoDataDownload) //TODO: ASYNC
     Response geoDataDownload(@Path("ApiName")String apiName, @Query("format") String format);

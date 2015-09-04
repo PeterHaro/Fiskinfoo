@@ -167,17 +167,12 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
             childViewHolder.dataText.setLayoutParams(params);
         }
 
-//        ((SubscriptionExpandableListChildObject) childObject).setLastUpdatedTextView(childViewHolder.lastUpdatedTextView);
-//        ((SubscriptionExpandableListChildObject) childObject).setSubscribedSwitch(childViewHolder.subscribedSwitch);
-//        ((SubscriptionExpandableListChildObject) childObject).setDownloadMapLayerButton(childViewHolder.downloadButton);
-
-        ((SubscriptionExpandableListChildObject) childObject).setTitleTextView(childViewHolder.dataText);
+        childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
+        childViewHolder.dataText.setOnClickListener(childrenOnClickListener);
 
         childViewHolder.lastUpdatedTextView.setText(((SubscriptionExpandableListChildObject) childObject).getLastUpdatedText());
         childViewHolder.lastUpdatedTextView.setGravity(Gravity.CENTER);
-        childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
-
-        ((SubscriptionExpandableListChildObject) childObject).setOnClickListener(childrenOnClickListener);
+        childViewHolder.subscribedCheckBox.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
 
         ((ViewGroup) childViewHolder.dataText.getParent()).setTag(((SubscriptionExpandableListChildObject) childObject).getTitleText());
@@ -185,9 +180,8 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
 
         childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
 
-        childViewHolder.subscribedSwitch.setClickable(false);
-        childViewHolder.subscribedSwitch.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
-        childViewHolder.subscribedSwitch.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
+        childViewHolder.subscribedCheckBox.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
+        childViewHolder.subscribedCheckBox.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
     }
 }
