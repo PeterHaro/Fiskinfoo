@@ -63,16 +63,15 @@ limitations under the License.
         android:hint="@string/placeholder_string"
         android:textSize="@dimen/recycle_item_child_last_updated_text_size"/>
 
-    <Switch
+    <CheckBox
         android:id="@+id/recycle_child_view_subscribed_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/recycler_child_item_title_text_view"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/recycle_item_child_is_subscribed_switch_margin_left"
-        android:layout_marginRight="@dimen/recycler_item_subscribed_switch_margin_right"
-        android:layout_toLeftOf="@+id/recycler_item_download_map_button"
-        android:clickable="false"/>
+        android:layout_marginLeft="@dimen/recycle_item_child_is_subscribed_check_box_margin_left"
+        android:layout_marginRight="@dimen/recycler_item_subscribed_check_box_margin_right"
+        android:layout_toLeftOf="@+id/recycler_item_download_map_button"/>
 
     <Button
         android:id="@+id/recycler_item_download_map_button"

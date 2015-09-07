@@ -69,8 +69,8 @@ limitations under the License.
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/recycler_child_item_title_text_view"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/recycle_item_child_is_subscribed_switch_margin_left"
-        android:layout_marginRight="@dimen/recycler_item_subscribed_switch_margin_right"
+        android:layout_marginLeft="@dimen/recycle_item_child_is_subscribed_check_box_margin_left"
+        android:layout_marginRight="@dimen/recycler_item_subscribed_check_box_margin_right"
         android:layout_toLeftOf="@+id/recycler_item_download_map_button"
         android:clickable="false"/>
 
