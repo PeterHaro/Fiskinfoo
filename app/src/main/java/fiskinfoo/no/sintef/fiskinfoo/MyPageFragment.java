@@ -164,15 +164,13 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for(Authorization auth : authorizations) {
-                authMap.put(auth.Id, auth.hasAccess);
-                System.out.println("Id: " + auth.Id + ", access: " + auth.hasAccess);
+                authMap.put(auth.Id, auth.HasAccess);
             }
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                //TODO: uncomment after fixing getAuthorization to read correct values.
-//                if(!authMap.get(propertyDescription.Id)) {
-//                    continue;
-//                }
+                if(!authMap.get(propertyDescription.Id)) {
+                    continue;
+                }
 
                 SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName));
 
@@ -186,7 +184,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for (Subscription subscription : activeSubscriptions) {
-                System.out.println("Still have an active sub");
                 SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName));
 
                 mySubscriptions.add(currentSubscription);

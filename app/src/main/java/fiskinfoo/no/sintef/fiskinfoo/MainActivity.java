@@ -135,14 +135,17 @@ public class MainActivity extends AppCompatActivity {
         Button downloadMapLayerButton = (Button) dialog.findViewById(R.id.download_map_layer_download_button);
         Button cancelButton = (Button) dialog.findViewById(R.id.download_map_layer_cancel_button);
         final ExpandableListView expListView = (ExpandableListView) dialog.findViewById(R.id.download_map_layer_dialog_expandable_list_layer_container);
-        final List<String> listDataHeader = new ArrayList<String>();
-        final HashMap<String, List<String>> listDataChild = new HashMap<String, List<String>>();
-        final AtomicReference<String> selectedHeader = new AtomicReference<String>();
-        final AtomicReference<String> selectedFormat = new AtomicReference<String>();
+
+        final List<String> listDataHeader = new ArrayList<>();
+        final HashMap<String, List<String>> listDataChild = new HashMap<>();
+        final AtomicReference<String> selectedHeader = new AtomicReference<>();
+        final AtomicReference<String> selectedFormat = new AtomicReference<>();
         final BarentswatchApi barentswatchApi = new BarentswatchApi();
         final Map<String, String> nameToApi = new HashMap<>();
+        final Map<Integer, Boolean> authMap = new HashMap<>();
         barentswatchApi.setAccesToken(user.getToken());
         final IBarentswatchApi api = barentswatchApi.getApi();
+
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
         List<PropertyDescription> availableSubscriptions = null;
@@ -153,11 +156,18 @@ public class MainActivity extends AppCompatActivity {
         } catch(Exception e) {
             Log.d(TAG, "Could not download available subscriptions.\n Exception occured : " + e.toString());
         }
-        if (availableSubscriptions == null /*|| authorizations == null*/) {
+        if (availableSubscriptions == null || authorizations == null) {
             return;
+        } else {
+            for(Authorization authorization : authorizations) {
+                authMap.put(authorization.Id, authorization.HasAccess);
+            }
         }
+
         for(int i = 0; i < availableSubscriptions.size(); i++) {
-            // TODO: use authorizations to filter out any layers that user does not have access to.
+            if(!authMap.get(availableSubscriptions.get(i).Id)) {
+                continue;
+            }
             listDataHeader.add(availableSubscriptions.get(i).Name);
             nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
             List<String> availableFormats = new ArrayList<>();
@@ -166,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
             }
             listDataChild.put(listDataHeader.get(i), availableFormats);
         }
+
         LegacyExpandableListAdapter legacyExpandableListAdapter = new LegacyExpandableListAdapter(this, listDataHeader, listDataChild);
         expListView.setAdapter(legacyExpandableListAdapter);
         expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {

@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -25,7 +26,7 @@ public class SubscriptionExpandableListChildViewHolder extends ExpandableListChi
 
     public TextView dataText;
     public TextView lastUpdatedTextView;
-    public Switch subscribedSwitch;
+    public CheckBox subscribedSwitch;
     public Button downloadButton;
 
     /**
@@ -38,7 +39,7 @@ public class SubscriptionExpandableListChildViewHolder extends ExpandableListChi
 
         dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
         lastUpdatedTextView = (TextView) itemView.findViewById(R.id.recycler_child_last_updated_text_view);
-        subscribedSwitch = (Switch) itemView.findViewById(R.id.recycle_child_view_subscribed_check_box);
+        subscribedSwitch = (CheckBox) itemView.findViewById(R.id.recycle_child_view_subscribed_check_box);
         downloadButton = (Button) itemView.findViewById(R.id.recycler_item_download_map_button);
     }
 }

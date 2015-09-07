@@ -58,9 +58,6 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
     public void setSubscribedSwitchValue(boolean isSubscribed) {
         if(mSubscribedCheckBox != null) {
             mSubscribedCheckBox.setChecked(isSubscribed);
-            System.out.println("isSubscribed set");
-        } else {
-            System.out.println("Cannot set isSubscribed, switch is null");
         }
     }
 
@@ -80,9 +77,6 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
     public void setDownloadMapLayerButtonOnClickListener(View.OnClickListener onClickListener) {
         if(mDownloadMapLayerButton != null && onClickListener != null) {
             mDownloadMapLayerButton.setOnClickListener(onClickListener);
-            System.out.println("onClickListener set");
-        } else {
-            System.out.println("Cannot set onClickListener, button is null");
         }
     }
 

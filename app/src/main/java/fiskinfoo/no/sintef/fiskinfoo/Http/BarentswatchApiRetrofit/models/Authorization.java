@@ -19,15 +19,13 @@ import android.os.Parcelable;
 
 public class Authorization implements Parcelable {
     public int Id;
-    public boolean hasAccess;
+    public boolean HasAccess;
 
     // TODO: cannot write boolean to parcel so needs to be rewritten.
 
     protected Authorization(Parcel in) {
         Id = in.readInt();
-        boolean[] tmp = new boolean[1];
-        in.readBooleanArray(tmp);
-        hasAccess = tmp[0];
+        HasAccess = in.readByte() != 0;
     }
 
     public static final Creator<Authorization> CREATOR = new Creator<Authorization>() {
@@ -50,5 +48,6 @@ public class Authorization implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(Id);
+        dest.writeByte((byte) (HasAccess ? 1 : 0));
     }
 }
