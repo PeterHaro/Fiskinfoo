@@ -47,21 +47,43 @@ limitations under the License.
                 android:id="@+id/create_proximity_alert_range_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/create_proximity_alert_seekBar"
                 android:layout_alignParentLeft="true"
+                android:layout_below="@+id/create_proximity_alert_seekBar"
                 android:layout_marginLeft="@dimen/proximity_alert_spinner_margin_left"
-                android:text="@string/warning_radius_meters"/>
+                android:text="@string/warning_radius"/>
 
             <EditText
                 android:id="@+id/create_proximity_alert_range_edit_text"
                 android:layout_width="@dimen/proximity_alert_range_edit_text_width"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:selectAllOnFocus="true"
-                android:inputType="number"
-
                 android:layout_alignBaseline="@+id/create_proximity_alert_range_text_view"
-                android:layout_marginLeft="@dimen/dialog_container_margin_left"/>
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="@dimen/dialog_container_margin_left"
+                android:inputType="number"
+                android:selectAllOnFocus="true"/>
+
+
+            <TextView
+                android:id="@+id/create_proximity_alert_format_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/create_proximity_alert_range_text_view"
+                android:layout_marginLeft="@dimen/proximity_alert_spinner_margin_left"
+                android:layout_marginRight="@dimen/proximity_alert_format_info_margin_right"
+                android:layout_marginTop="@dimen/proximity_alert_spinner_margin_left"
+                android:text="@string/range_format_info"/>
+
+            <Switch
+                android:id="@+id/create_proximity_alert_format_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:textStyle="normal"
+                android:layout_below="@+id/create_proximity_alert_format_text_view"
+                android:layout_marginLeft="@dimen/proximity_alert_spinner_margin_left"
+                android:layout_marginTop="@dimen/proximity_alert_spinner_margin_left"
+                android:text="@string/range_format_meters"/>
 
         </RelativeLayout>
 
@@ -92,9 +114,9 @@ limitations under the License.
                 android:layout_width="0.0dip"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:visibility="gone"
                 android:layout_weight="1.0"
-                android:text="@string/stop_existing_proximity_checker"/>
+                android:text="@string/stop_existing_proximity_checker"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/create_proximity_alert_cancel_button"

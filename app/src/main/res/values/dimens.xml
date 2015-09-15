@@ -73,6 +73,7 @@ limitations under the License.
     <dimen name="proximity_alert_spinner_margin_bottom">20dp</dimen>
     <dimen name="proximity_alert_spinner_margin_left">20dp</dimen>
     <dimen name="proximity_alert_spinner_margin_right">20dp</dimen>
+    <dimen name="proximity_alert_format_info_margin_right">40dp</dimen>
     <dimen name="proximity_alert_range_edit_text_width">80dp</dimen>
     <item name="proximity_alert_dialog_button_text_size_small" format="float" type="dimen">10.0</item>
 

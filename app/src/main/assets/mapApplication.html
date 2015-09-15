@@ -412,9 +412,16 @@
             } else {
                 toolTime = "Redskapstype: " + "Ikke tilgjengelig";
             }
+            if(feature.geometry != null) {
+                var wgs84 = feature.geometry.clone();
+                wgs84.transform("EPSG:900913", "EPSG:4326");
+                position = "Posisjon: " + wgs84.getBounds().getCenterLonLat().lat + ", " + wgs84.getBounds().getCenterLonLat().lon;
+            } else {
+                position = "Posisjon: " + "Ikke tilgjengelig";
+            }
             popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
             feature.geometry.getBounds().getCenterLonLat(),
-                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolTime + "</p>" + "<p></p>", null, true, onPopupClose);
+                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolTime + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
             popup.panMapIfOutOfView = true;
             popup.autoSize = true;
             feature.popup = popup;

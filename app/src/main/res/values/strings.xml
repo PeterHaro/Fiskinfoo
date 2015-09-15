@@ -62,7 +62,10 @@ limitations under the License.
 
     <string name="choose_map_layers_info">Her velger du hvilke kartlag du ser på kartet.</string>
 
-    <string name="warning_radius_meters">Varslingsradius (meter)</string>
+    <string name="warning_radius">Varslingsradius</string>
+    <string name="range_format_info">Bruk bryteren under for å velge mellom meter og nautiske mil.</string>
+    <string name="range_format_meters">Distansetype: Meter</string>
+    <string name="range_format_nautical_miles">Distansetype: Nautiske mil</string>
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>

@@ -39,9 +39,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
@@ -99,9 +101,10 @@ public class MapFragment extends Fragment {
     private FiskInfoPolygon2D tools = null;
     private boolean cacheDeserialized = false;
     private boolean alarmFiring = false;
+    private boolean looperPrepared = false;
     protected double cachedLat;
     protected double cachedLon;
-    protected String cachedDistance;
+    protected double cachedDistance;
     private JSONArray layersAndVisibility = null;
 
     @Override
@@ -322,10 +325,23 @@ public class MapFragment extends Fragment {
         Button cancelButton = (Button) dialog.findViewById(R.id.create_proximity_alert_cancel_button);
         SeekBar seekbar = (SeekBar) dialog.findViewById(R.id.create_proximity_alert_seekBar);
         final EditText radiusEditText = (EditText) dialog.findViewById(R.id.create_proximity_alert_range_edit_text);
+        final Switch formatSwitch = (Switch) dialog.findViewById(R.id.create_proximity_alert_format_switch);
 
         final double seekBarStepSize = (double) (getResources().getInteger(R.integer.proximity_alert_maximum_warning_range_meters) - getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)) / 100;
 
         radiusEditText.setText(String.valueOf(getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)));
+
+        formatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    buttonView.setText(getString(R.string.range_format_nautical_miles));
+                } else {
+                    buttonView.setText(getString(R.string.range_format_meters));
+                }
+            }
+        });
+
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -377,7 +393,11 @@ public class MapFragment extends Fragment {
                     return;
                 }
 
-                cachedDistance = radiusEditText.getText().toString();
+                if(formatSwitch.isChecked()) {
+                    cachedDistance = Double.valueOf(radiusEditText.getText().toString()) * getResources().getInteger(R.integer.meters_per_nautical_mile);
+                } else {
+                    cachedDistance = Double.valueOf(radiusEditText.getText().toString());
+                }
 
                 Response response;
 
@@ -393,24 +413,6 @@ public class MapFragment extends Fragment {
                         Log.d(TAG, "RESPONSE == NULL");
                         throw new InternalError();
                     }
-//                    InputStream data = response.getBody().in();
-//                    byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-
-//                    Log.d(TAG, "Size of data: ");
-//                    Log.d(TAG, (fileData != null ? String.valueOf(fileData.length) : "NULL"));
-//                    Log.d(TAG, "length of response body: " + (response.getBody() != null ? response.getBody().length() : "NULL"));
-
-
-//                    Reader readerr = new InputStreamReader(data, "UTF-8");
-//                    StringWriter writer = new StringWriter();
-//
-//                    char[] buffer = new char[10240];
-//                    for (int length = 0; (length = readerr.read(buffer)) > 0;) {
-//                        writer.write(buffer, 0, length);
-//                    }
-
-
-//                    System.out.print("Writer gave us: " + writer.toString());
 
                     if (fiskInfoUtility.isExternalStorageWritable()) {
                         OutputStream outputStream = null;
@@ -425,27 +427,8 @@ public class MapFragment extends Fragment {
 
                             InputSource inputSource = new InputSource(zippedInputStream);
                             InputStream input = new BufferedInputStream(inputSource.getByteStream());
-//                            OutputStream output = new FileOutputStream(filePath + "/" + fileName + "." + format);
                             byte data[];
-//                            int count;
-
-//                            while ((count = input.read(data)) != -1) {
-//                                output.write(data, 0, count);
-//                            }
-//
-//                            output.flush();
-//                            output.close();
-//                            input.close();
-
                             data = FiskInfoUtility.toByteArray(input);
-
-//                            outputStream = new FileOutputStream(new File(filePath + fileName + "." + format));
-//                            outputStream.write(data);
-
-//                            if(data.length > 10) {
-//                                return;
-//                            }
-
 
                             InputStream inputStream = new ByteArrayInputStream(data);
                             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -458,11 +441,9 @@ public class MapFragment extends Fragment {
                             while ((line = reader.readLine()) != null) {
                                 Point currPoint = new Point();
                                 if (line.length() == 0 || line.equals("")) {
-//                                    Log.d(TAG, "We skipped this line");
                                     continue;
                                 }
                                 if (Character.isLetter(line.charAt(0))) {
-//                                    Log.d(TAG, "We skipped this line");
                                     continue;
                                 }
 
@@ -470,11 +451,9 @@ public class MapFragment extends Fragment {
 
                                 if (line.length() > 150) {
                                     Log.d(TAG, "line " + line);
-//                                    break;
                                 }
 
                                 if (convertedLine[3].equalsIgnoreCase("Garnstart") && startSet) {
-//                                    Log.d(TAG, "Found garnstart");
                                     if (shape.size() == 1) {
                                         // Point
 
@@ -494,14 +473,12 @@ public class MapFragment extends Fragment {
                                 }
 
                                 if (convertedLine[3].equalsIgnoreCase("Garnstart") && !startSet) {
-//                                    Log.d(TAG, "Adding values garnstart");
                                     double lat = Double.parseDouble(convertedLine[0]) / 60;
                                     double lon = Double.parseDouble(convertedLine[1]) / 60;
                                     currPoint.setNewPointValues(lat, lon);
                                     shape.add(currPoint);
                                     startSet = true;
                                 } else if (convertedLine[3].equalsIgnoreCase("Brunsirkel")) {
-//                                    Log.d(TAG, "Adding values brunsirkel");
                                     double lat = Double.parseDouble(convertedLine[0]) / 60;
                                     double lon = Double.parseDouble(convertedLine[1]) / 60;
                                     currPoint.setNewPointValues(lat, lon);
@@ -511,12 +488,9 @@ public class MapFragment extends Fragment {
 
                             reader.close();
                             new FiskInfoUtility().serializeFiskInfoPolygon2D(filePath + fileName + "." + format, serializablePolygon2D);
-//                            outputStream = new FileOutputStream(new File(filePath + fileName + "." + format));
-//                            outputStream.write(data);
 
                             tools = serializablePolygon2D;
 
-//                            tools.printPolygon();
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -534,9 +508,6 @@ public class MapFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         }
-
-
-//                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, fileName, format, filePath);
                     } else {
                         Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
@@ -610,14 +581,12 @@ public class MapFragment extends Fragment {
 //                         tools.addPoint(point);
                 } else {
                     if (alarmFiring) {
-                        Looper.prepare();
-//
-//
-                        notifyUserOfProximityAlert();
-                        //alarmFiring = !alarmFiring;
+                        if(!looperPrepared) {
+                            Looper.prepare();
+                            looperPrepared = true;
+                            notifyUserOfProximityAlert();
+                        }
                     } else {
-
-                        System.out.println("Checking for collision");
                         double latitude, longitude;
                         if (mGpsLocationTracker.canGetLocation()) {
                             latitude = mGpsLocationTracker.getLatitude();
@@ -632,9 +601,7 @@ public class MapFragment extends Fragment {
                             return;
                         }
                         Point userPosition = new Point(cachedLat, cachedLon);
-                        if (!tools.checkCollsionWithPoint(userPosition, Double.parseDouble(cachedDistance))) {
-
-                            System.out.println("No collision yet");
+                        if (!tools.checkCollsionWithPoint(userPosition, cachedDistance)) {
                             return;
                         }
 
@@ -645,20 +612,25 @@ public class MapFragment extends Fragment {
                 System.out.println("BEEP");
             }
 
-        }, getResources().getInteger(R.integer.zero), 3, TimeUnit.SECONDS);
+        }, getResources().getInteger(R.integer.zero), 1, TimeUnit.SECONDS);
     }
 
     private void notifyUserOfProximityAlert() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_proximity_alert_warning, R.string.proximity_alert_warning);
+        Handler mainHandler = new Handler(getActivity().getMainLooper());
 
-        Button okButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_ok_button);
-        Button showOnMapButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_show_on_map_button);
-        Button dismissAlertButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_dismiss_button);
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_proximity_alert_warning, R.string.proximity_alert_warning);
 
-        long[] pattern = {0, 500, 200, 200, 300, 200, 200};
+                Button okButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_ok_button);
+                Button showOnMapButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_show_on_map_button);
+                Button dismissAlertButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_dismiss_button);
 
-        vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(pattern, 0);
+                long[] pattern = {0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200};
+
+                vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(pattern, -1);
 
 //		MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), R.raw.proximity_warning_sound);
 //		if (mediaPlayer == null) {
@@ -666,37 +638,57 @@ public class MapFragment extends Fragment {
 //		}
 //		mediaPlayer.start();
 
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vibrator.cancel();
-                vibrator = null;
-                dialog.dismiss();
-            }
-        });
+                System.out.println("here");
 
-        showOnMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Zoom map to user position.
-                browser.loadUrl("javascript:zoomToUserPosition()");
-                dialog.dismiss();
-            }
-        });
+                okButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alarmFiring = false;
+                        looperPrepared = false;
+                        vibrator.cancel();
+                        vibrator = null;
+                        dialog.dismiss();
+                    }
+                });
 
-        dismissAlertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Kill background task handling proximity checking and set proximityAlertWatcher to null.
-                vibrator.cancel();
-                vibrator = null;
-                proximityAlertWatcher.cancel(true);
-                proximityAlertWatcher = null;
-                dialog.dismiss();
-            }
-        });
+                System.out.println("ok");
 
-        dialog.show();
+                showOnMapButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO: Zoom map to user position.
+                        browser.loadUrl("javascript:zoomToUserPosition()");
+                        dialog.dismiss();
+                    }
+                });
+
+
+                System.out.println("zoom");
+
+                dismissAlertButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO: Kill background task handling proximity checking and set proximityAlertWatcher to null.
+                        vibrator.cancel();
+                        vibrator = null;
+                        proximityAlertWatcher.cancel(true);
+                        proximityAlertWatcher = null;
+                        dialog.dismiss();
+                    }
+                });
+
+
+                System.out.println("dismiss");
+
+                dialog.show();
+
+
+                System.out.println("showing");
+            } // This is your code
+        };
+        mainHandler.post(myRunnable);
+
+
     }
 
     @Override
