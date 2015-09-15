@@ -14,52 +14,56 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
-public class Line implements java.io.Serializable {
-    Point start;
-    Point stop;
-    double dx;
-    double dy;
+public class Line implements java.io.Serializable{
+    private static final long serialVersionUID = 1337L;
+
+    private Point start;
+    private Point stop;
+    private double dx;
+    private double dy;
 
     public Line(Point start, Point stop) {
         this.start = start;
         this.stop = stop;
-        this.dx = stop.lat - start.lat;
-        this.dy = stop.lon - start.lon;
+        this.dx = stop.getLatitude() - start.getLatitude();
+        this.dy = stop.getLongitude() - start.getLongitude();
     }
 
-    public boolean checkDistanceWithLineAndReportStatus(Point position, double distance) {
-        double denominator = Math.abs((this.dy * position.lat) - (this.dx * position.lon) - (this.start.lat * this.stop.lon) + (this.stop.lat * this.start.lon));
+    public String toString() {
+        return "start: " + start.getLatitude() + "," + start.getLongitude() + "   " + stop.getLatitude() + "," + stop.getLongitude();
+    }
+    /**
+     * Only use this when you are so close to the point that the curvature of the earth almost does not affect results.
+     * @param point
+     * @param distance
+     * @return
+     */
+    public boolean checkDistanceWithLineLegacy(Point point, double distance) {
+        double denominator = Math.abs((this.dy * point.getLatitude()) - (this.dx * point.getLongitude()) - (this.start.getLatitude() * this.stop.getLongitude()) + (this.stop.getLatitude() * this.start.getLongitude()));
         double distanceInDegrees = denominator / Math.sqrt(((this.dx * this.dx) + (this.dy * this.dy)));
-        double actualDistanceInNauticalMiles = computeLengthOfDegrees(distanceInDegrees);
-
-        System.out.println("line start pos: " + start.lat + ", " + start.lon);
-        System.out.println("line end pos: " + stop.lat + ", " + stop.lon);
-        System.out.println("line pos: " + dx + ", " + dy);
-        System.out.println("distance to line: " + (actualDistanceInNauticalMiles - distance));
-        System.out.println("line length: " + actualDistanceInNauticalMiles);
-        System.out.println("distance: " + distance);
-
-        if (actualDistanceInNauticalMiles - distance < 0) {
+        double distanceMeters = computeLengthOfDegrees(distanceInDegrees);
+        if (distanceMeters - distance < 0) {
             return true;
         }
         return false;
-
     }
 
-    public void printLine() {
-        System.out.println("line start: ");
-        this.start.printPointValues();
-        System.out.println("line stop: ");
-        this.stop.printPointValues();
-    }
-
-    public double deg2rad(double degree) {
-        double conversionFactor = (2 * Math.PI) / 360;
-        return (degree * conversionFactor);
+    public boolean checkDistanceWithLineAndReportStatus(Point point, double distance) {
+        if (distance < 1600) {
+            return checkDistanceWithLineLegacy(point, distance);
+        } else {
+            Distance a = point.inverseCalculation(start);
+            Distance b = point.inverseCalculation(stop);
+            if (a.distance - distance < 0 || b.distance - distance < 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     public double computeLengthOfDegrees(double degree) {
-        double lat = deg2rad(degree);
+        double lat = Math.toRadians(degree);
 
         // Constants
         double m1 = 111132.92; // latitude calculation term 1
@@ -74,15 +78,7 @@ public class Line implements java.io.Serializable {
         double lonLen = (p1 * Math.cos(lat)) + (p2 * Math.cos(3 * lat)) + (p3 * Math.cos(5 * lat));
 
         double latMeters = Math.round(latLen);
-        double nauticalMiles = latMeters / 1852;
-
-        return nauticalMiles;
+        return latMeters;
 
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 2L;
-
 }

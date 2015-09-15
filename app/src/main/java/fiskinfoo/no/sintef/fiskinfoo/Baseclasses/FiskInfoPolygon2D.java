@@ -68,6 +68,7 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
                 currPoint = vertices.get(i);
                 Line currLine = new Line(prevPoint, currPoint);
                 if (currLine.checkDistanceWithLineAndReportStatus(point, distance)) {
+                    System.out.println("CRASHED WITH LINE AT: " + currLine.toString());
                     return true;
                 }
             }
@@ -75,6 +76,7 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
         // Points
         for (Point currentPoint : points) {
             if(currentPoint.checkDistanceBetweenTwoPoints(point, distance)) {
+                System.out.println("CRASHED WITH POINT AT: " + currentPoint.getLatitude() + "," + currentPoint.getLongitude());
                 return true;
             }
         }
@@ -86,20 +88,6 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
      * Utility functions might/should be removed after debugging
      */
 
-    public void printPolygon() {
-        System.out.println("All lines");
-        for (Line line : lines) {
-            line.printLine();
-        }
-        System.out.println("All polygons");
-        for (Polygon polygon : polygons) {
-            polygon.printPolygon();
-        }
-        System.out.println("All points!");
-        for (Point point : points) {
-            point.printPointValues();
-        }
-    }
 
 
     /**

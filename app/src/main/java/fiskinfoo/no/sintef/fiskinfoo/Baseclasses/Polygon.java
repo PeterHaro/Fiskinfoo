@@ -42,11 +42,6 @@ public class Polygon implements java.io.Serializable {
         return vertices;
     }
 
-    public void printPolygon() {
-        for(Point point : vertices) {
-            point.printPointValues();
-        }
-    }
 
     private static final long serialVersionUID = 9L;
 }

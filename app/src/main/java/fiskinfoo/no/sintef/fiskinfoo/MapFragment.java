@@ -610,11 +610,11 @@ public class MapFragment extends Fragment {
 //                         tools.addPoint(point);
                 } else {
                     if (alarmFiring) {
-//                        Looper.prepare();
+                        Looper.prepare();
 //
 //
-//                        notifyUserOfProximityAlert();
-                        alarmFiring = !alarmFiring;
+                        notifyUserOfProximityAlert();
+                        //alarmFiring = !alarmFiring;
                     } else {
 
                         System.out.println("Checking for collision");
