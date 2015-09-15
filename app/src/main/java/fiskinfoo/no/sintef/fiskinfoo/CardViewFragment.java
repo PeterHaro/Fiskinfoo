@@ -265,6 +265,7 @@ public class CardViewFragment extends Fragment {
                     user.setActiveLayers(layersList);
                     user.writeToSharedPref(getActivity());
 
+
                     getFragmentManager().beginTransaction().replace(R.id.fragment_placeholder, new FiskInfoUtility().createFragment(MapFragment.TAG, user, TAG), MapFragment.TAG).addToBackStack(null).commit();
                 }
             });

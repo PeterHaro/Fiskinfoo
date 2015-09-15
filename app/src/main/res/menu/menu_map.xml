@@ -28,9 +28,6 @@ limitations under the License.
         android:id="@+id/setProximityAlert"
         android:title="@string/set_alert_watcher"></item>
     <item
-        android:id="@+id/check_polar_low"
-        android:title="@string/check_polar_low"></item>
-    <item
         android:id="@+id/choose_map_layers"
         android:title="@string/choose_map_layers"></item>
 </menu>

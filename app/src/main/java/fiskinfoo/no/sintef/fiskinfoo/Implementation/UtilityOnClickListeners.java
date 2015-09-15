@@ -95,7 +95,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
                 final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.download_map_formats_container);
 
-                downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.choose_download_format_and_interval)));
+                downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.error_no_format_selected)));
 
                 for (String format : subscription.Formats) {
                     final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);

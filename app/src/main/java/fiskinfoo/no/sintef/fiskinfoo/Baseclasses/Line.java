@@ -31,6 +31,14 @@ public class Line implements java.io.Serializable {
         double denominator = Math.abs((this.dy * position.lat) - (this.dx * position.lon) - (this.start.lat * this.stop.lon) + (this.stop.lat * this.start.lon));
         double distanceInDegrees = denominator / Math.sqrt(((this.dx * this.dx) + (this.dy * this.dy)));
         double actualDistanceInNauticalMiles = computeLengthOfDegrees(distanceInDegrees);
+
+        System.out.println("line start pos: " + start.lat + ", " + start.lon);
+        System.out.println("line end pos: " + stop.lat + ", " + stop.lon);
+        System.out.println("line pos: " + dx + ", " + dy);
+        System.out.println("distance to line: " + (actualDistanceInNauticalMiles - distance));
+        System.out.println("line length: " + actualDistanceInNauticalMiles);
+        System.out.println("distance: " + distance);
+
         if (actualDistanceInNauticalMiles - distance < 0) {
             return true;
         }

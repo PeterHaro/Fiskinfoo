@@ -50,6 +50,12 @@ public class Point implements java.io.Serializable{
         double distanceInKilometers = earthMeanRadius * c;
         double distanceInMeter = distanceInKilometers * 1000;
         double distanceInNauticalMiles = distanceInMeter / 1852;
+
+        System.out.println("Length between points: ");
+        System.out.println("is point false? " + distanceInNauticalMiles);
+        System.out.println("is distance false? " + unacceptableDistance);
+
+
         if (distanceInNauticalMiles - unacceptableDistance < 0) {
             return true;
         }

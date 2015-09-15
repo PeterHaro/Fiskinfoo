@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.math.BigDecimal;
@@ -234,7 +236,7 @@ public class FiskInfoUtility {
 
 
         if(directory == null || !directory.mkdir()) {
-            System.out.println("Could not create user path, using default.");
+            System.out.println("Could not create provided path, using default.");
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             String directoryName = "FiskInfo";
             filePath = directoryPath + "/" + directoryName + "/";
@@ -245,6 +247,8 @@ public class FiskInfoUtility {
             outputStream.write(data);
 
             Toast.makeText(context, R.string.disk_write_completed, Toast.LENGTH_LONG).show();
+            System.out.println("file write complete");
+
         } catch (IOException e) {
             Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -260,6 +264,31 @@ public class FiskInfoUtility {
     }
 
     /**
+     * Get the contents of an <code>FiskInfoPolygon2D</code> and writes it to
+     * disk This method catches all <code>Exceptions</code> internally,
+     * therefore it should be usable directly
+     *
+     * @param path
+     *            the <code>Path</code> of the file to write
+     * @param polygon
+     *            the <code>FiskInfoPolygon2d</code> which is written to disk
+     */
+    public void serializeFiskInfoPolygon2D(String path, FiskInfoPolygon2D polygon) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream(path);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(polygon);
+            out.close();
+            fileOut.close();
+            Log.d("FiskInfo", "Serialization successfull, the data should be stored in the specified path");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Retrieve a serialized <code>FiskInfoPolygon2D</code> from disk as a
      * <code>FiskInfoPolygon2D class</code>
      *
@@ -269,14 +298,20 @@ public class FiskInfoUtility {
      */
     public FiskInfoPolygon2D deserializeFiskInfoPolygon2D(String path) {
         FiskInfoPolygon2D polygon = null;
+        FileInputStream fileIn;
+        ObjectInputStream in;
+
         try {
-            FileInputStream fileIn = new FileInputStream(path);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
+            System.out.println("Starting deserializing");
+            fileIn = new FileInputStream(path);
+            in = new ObjectInputStream(fileIn);
             polygon = (FiskInfoPolygon2D) in.readObject();
+
 
             in.close();
             fileIn.close();
-            Log.d("FiskInfo", "Deserialization successfull, the data should be stored in the inputclass");
+            Log.d("FiskInfo", "Deserialization successful, the data should be stored in the input class");
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (StreamCorruptedException e) {
@@ -284,9 +319,10 @@ public class FiskInfoUtility {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            System.out.println("Couldnt find class. I am doing something wrong I guess");
+            Log.d("Utility", "Deserialization failed, couldn't find class");
             e.printStackTrace();
         }
+
         return polygon;
     }
 

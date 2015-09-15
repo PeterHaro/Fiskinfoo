@@ -23,12 +23,13 @@ limitations under the License.
         <TextView
             android:id="@+id/card_view_field_name_text_view"
             android:layout_width="wrap_content"
-            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
             android:layout_marginLeft="@dimen/card_view_information_row_name_text_view_margin_left"
-            android:text="fieldName"/>
+            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
+            android:text="fieldName"
+            android:textSize="@dimen/card_view_information_row_text_size"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/card_view_field_data_text_view"
@@ -40,7 +41,9 @@ limitations under the License.
             android:layout_marginRight="@dimen/dialog_container_margin_right"
             android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
             android:layout_weight="1"
-            android:text="fieldData"/>
+            android:clickable="true"
+            android:text="fieldData"
+            android:textSize="@dimen/card_view_information_row_text_size"/>
 
 
     </RelativeLayout>

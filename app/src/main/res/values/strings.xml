@@ -153,7 +153,6 @@ limitations under the License.
     <string name="update_frequency_not_available">Oppdateringsfrekvens er ikke tilgjengelig for dette kartlaget.</string>
     <string name="about_partners_base_address">https://www.barentswatch.no</string>
 
-
     <string-array name="map_layer_names_array">
         <item>Redskap</item>
         <item>Bølgevarsel</item>

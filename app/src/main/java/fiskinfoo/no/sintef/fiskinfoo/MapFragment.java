@@ -19,10 +19,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -46,25 +46,28 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.xml.sax.InputSource;
 
-import java.lang.reflect.Type;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Line;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolsGeoJson;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Polygon;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
@@ -76,13 +79,16 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import retrofit.client.Response;
+import retrofit.mime.TypedInput;
 
-public class MapFragment extends Fragment{
+public class MapFragment extends Fragment {
     FragmentActivity listener;
     public static final String TAG = "Map";
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
+    private FiskInfoUtility fiskInfoUtility;
     private UtilityDialogs dialogInterface;
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -90,16 +96,14 @@ public class MapFragment extends Fragment{
     private GpsLocationTracker mGpsLocationTracker;
 
     private Vibrator vibrator;
-    private ToolsGeoJson mTools = null;
     private FiskInfoPolygon2D tools = null;
     private boolean cacheDeserialized = false;
     private boolean alarmFiring = false;
-    protected AsyncTask<String, String, byte[]> cacheWriter;
     protected double cachedLat;
     protected double cachedLon;
-    private String geoJsonFile = null;
     protected String cachedDistance;
-    private JSONArray layersAndVisiblity = null;
+    private JSONArray layersAndVisibility = null;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -120,7 +124,7 @@ public class MapFragment extends Fragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        super.onCreateOptionsMenu(menu, inflater);
-        for(int i = 0; i < menu.size(); i++) {
+        for (int i = 0; i < menu.size(); i++) {
             menu.removeItem(i);
         }
         inflater.inflate(R.menu.menu_map, menu);
@@ -131,8 +135,7 @@ public class MapFragment extends Fragment{
     // Use onCreateView to get a handle to views as soon as they are freshly inflated
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
-        View v =  inf.inflate(R.layout.fragment_map, parent, false);
-        return v;
+        return inf.inflate(R.layout.fragment_map, parent, false);
     }
 
     // This fires 4th, and this is the first time the Activity is fully created.
@@ -142,14 +145,12 @@ public class MapFragment extends Fragment{
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        fiskInfoUtility = new FiskInfoUtility();
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
         utilityRowsInterface = new UtilityRows();
-        mTools = new ToolsGeoJson(getActivity());
-        geoJsonFile = null;
 
-        getMapTools();
         configureWebParametersAndLoadDefaultMapApplication();
     }
 
@@ -197,8 +198,8 @@ public class MapFragment extends Fragment{
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {
             Log.d(TAG, message);
-            try{
-                layersAndVisiblity = new JSONArray(message);
+            try {
+                layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
                 //TODO
             }
@@ -210,7 +211,7 @@ public class MapFragment extends Fragment{
         browser.loadUrl("javascript:alert(getLayers())");
     }
 
-    private void getLayersAndVisiblity() {
+    private void getLayersAndVisibility() {
         browser.loadUrl("javascript:getLayersAndState()");
     }
 
@@ -224,7 +225,7 @@ public class MapFragment extends Fragment{
 
         public void onPageFinished(WebView view, String url) {
             List<String> layers = user.getActiveLayers();
-            if(user.isTokenValid()) {
+            if (user.isTokenValid()) {
                 Log.d(TAG, "USER IS AUTHENTICATED");
                 view.loadUrl("javascript:populateMap(1);");
 
@@ -235,12 +236,12 @@ public class MapFragment extends Fragment{
                 JSONArray json = new JSONArray(layers);
                 Log.d(TAG, json.toString());
                 view.loadUrl("javascript:populateMap(2)");
-                view.loadUrl("javascript:toggleLayers(" + json+ ")");
+                view.loadUrl("javascript:toggleLayers(" + json + ")");
             }
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    getLayersAndVisiblity();
+                    getLayersAndVisibility();
                 }
             }, 3000);
 
@@ -252,17 +253,16 @@ public class MapFragment extends Fragment{
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
 
 
-
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
         final List<MapLayerCheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
-        LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisiblity.toString(), LayerAndVisibility[].class);
-        for(LayerAndVisibility layer : layers) {
-            if(layer.name.equals("Grunnkart")) {
+        LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
+        for (LayerAndVisibility layer : layers) {
+            if (layer.name.equals("Grunnkart")) {
                 continue;
             }
-            boolean isActive = false;
+            boolean isActive;
             isActive = layer.isVisible;
 
             MapLayerCheckBoxRow row = utilityRowsInterface.getMapLayerCheckBoxRow(getActivity(), isActive, layer.name);
@@ -289,7 +289,7 @@ public class MapFragment extends Fragment{
                 JSONArray json = new JSONArray(layersList);
                 browser.loadUrl("javascript:toggleLayers(" + json + ")");
 
-                getLayersAndVisiblity();
+                getLayersAndVisibility();
             }
         });
 
@@ -298,27 +298,13 @@ public class MapFragment extends Fragment{
         dialog.show();
     }
 
-    private void createPolarLowDialog() {
-//        Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_polar_low, R.string.polar_low);
-//
-//        Button closeDialogButton = (Button) dialog.findViewById(R.id.polar_low_ok_button);
-//
-//        // TODO: implement me
-//
-//        closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-//
-//        dialog.show();
-        //getLayers();
-       // browser.loadUrl("file:///android_asset/mapApplicationPolarLow.html");
-    }
-
     private void createToolSymbolExplanationDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_tool_legend, R.string.tool_legend);
 
         TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.message_dialog_mandatory_fields_container);
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
-        for(ToolType toolType : ToolType.values()) {
+        for (ToolType toolType : ToolType.values()) {
             View toolLegendRow = utilityRowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
             tableLayout.addView(toolLegendRow);
         }
@@ -337,14 +323,14 @@ public class MapFragment extends Fragment{
         SeekBar seekbar = (SeekBar) dialog.findViewById(R.id.create_proximity_alert_seekBar);
         final EditText radiusEditText = (EditText) dialog.findViewById(R.id.create_proximity_alert_range_edit_text);
 
-        final double seekBarStepSize = (double)(getResources().getInteger(R.integer.proximity_alert_maximum_warning_range_meters) - getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)) / 100;
+        final double seekBarStepSize = (double) (getResources().getInteger(R.integer.proximity_alert_maximum_warning_range_meters) - getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)) / 100;
 
         radiusEditText.setText(String.valueOf(getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters)));
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser == true) {
+                if (fromUser) {
                     String range = String.valueOf((int) (getResources().getInteger(R.integer.proximity_alert_minimum_warning_range_meters) + (seekBarStepSize * progress)));
                     radiusEditText.setText(range);
                 }
@@ -365,7 +351,7 @@ public class MapFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 // TODO: implement
-                String toastText = null;
+                String toastText;
 
                 if (proximityAlertWatcher == null) {
                     toastText = getString(R.string.proximity_alert_set);
@@ -379,7 +365,8 @@ public class MapFragment extends Fragment{
                 }
 
                 mGpsLocationTracker = new GpsLocationTracker(getActivity());
-                double latitude, longitude = 0;
+                double latitude, longitude;
+
                 if (mGpsLocationTracker.canGetLocation()) {
                     latitude = mGpsLocationTracker.getLatitude();
                     cachedLat = latitude;
@@ -389,28 +376,189 @@ public class MapFragment extends Fragment{
                     mGpsLocationTracker.showSettingsAlert();
                     return;
                 }
-                String distance = radiusEditText.getText().toString();
-                cachedDistance = distance;
 
-//                    cacheWriter = new BarentswatchApi barentswatchApi.getApi().geoDataDownload("")  .execute("fishingfacility", "OLEX", "cachedResults",
-//                            String.valueOf(longitude), String.valueOf(latitude), distance, "true");
+                cachedDistance = radiusEditText.getText().toString();
+
+                Response response;
+
+                try {
+                    String apiName = "fishingfacility";
+                    String format = "OLEX";
+                    String filePath;
+                    String fileName = "collisionCheckToolsFile";
+
+                    response = barentswatchApi.getApi().geoDataDownload(apiName, format);
+
+                    if (response == null) {
+                        Log.d(TAG, "RESPONSE == NULL");
+                        throw new InternalError();
+                    }
+//                    InputStream data = response.getBody().in();
+//                    byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
+
+//                    Log.d(TAG, "Size of data: ");
+//                    Log.d(TAG, (fileData != null ? String.valueOf(fileData.length) : "NULL"));
+//                    Log.d(TAG, "length of response body: " + (response.getBody() != null ? response.getBody().length() : "NULL"));
+
+
+//                    Reader readerr = new InputStreamReader(data, "UTF-8");
+//                    StringWriter writer = new StringWriter();
+//
+//                    char[] buffer = new char[10240];
+//                    for (int length = 0; (length = readerr.read(buffer)) > 0;) {
+//                        writer.write(buffer, 0, length);
+//                    }
+
+
+//                    System.out.print("Writer gave us: " + writer.toString());
+
+                    if (fiskInfoUtility.isExternalStorageWritable()) {
+                        OutputStream outputStream = null;
+                        String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                        String directoryName = "FiskInfo";
+                        filePath = directoryPath + "/" + directoryName + "/";
+
+                        try {
+                            TypedInput responseInput = response.getBody();
+                            InputStream zippedInputStream = responseInput.in();
+                            zippedInputStream = new GZIPInputStream(zippedInputStream);
+
+                            InputSource inputSource = new InputSource(zippedInputStream);
+                            InputStream input = new BufferedInputStream(inputSource.getByteStream());
+//                            OutputStream output = new FileOutputStream(filePath + "/" + fileName + "." + format);
+                            byte data[];
+//                            int count;
+
+//                            while ((count = input.read(data)) != -1) {
+//                                output.write(data, 0, count);
+//                            }
+//
+//                            output.flush();
+//                            output.close();
+//                            input.close();
+
+                            data = FiskInfoUtility.toByteArray(input);
+
+//                            outputStream = new FileOutputStream(new File(filePath + fileName + "." + format));
+//                            outputStream.write(data);
+
+//                            if(data.length > 10) {
+//                                return;
+//                            }
+
+
+                            InputStream inputStream = new ByteArrayInputStream(data);
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                            FiskInfoPolygon2D serializablePolygon2D = new FiskInfoPolygon2D();
+
+                            String line;
+                            boolean startSet = false;
+                            String[] convertedLine;
+                            List<Point> shape = new ArrayList<>();
+                            while ((line = reader.readLine()) != null) {
+                                Point currPoint = new Point();
+                                if (line.length() == 0 || line.equals("")) {
+//                                    Log.d(TAG, "We skipped this line");
+                                    continue;
+                                }
+                                if (Character.isLetter(line.charAt(0))) {
+//                                    Log.d(TAG, "We skipped this line");
+                                    continue;
+                                }
+
+                                convertedLine = line.split("\\s+");
+
+                                if (line.length() > 150) {
+                                    Log.d(TAG, "line " + line);
+//                                    break;
+                                }
+
+                                if (convertedLine[3].equalsIgnoreCase("Garnstart") && startSet) {
+//                                    Log.d(TAG, "Found garnstart");
+                                    if (shape.size() == 1) {
+                                        // Point
+
+                                        serializablePolygon2D.addPoint(shape.get(0));
+                                        shape = new ArrayList<>();
+                                    } else if (shape.size() == 2) {
+
+                                        // line
+                                        serializablePolygon2D.addLine(new Line(shape.get(0), shape.get(1)));
+                                        shape = new ArrayList<>();
+                                    } else {
+
+                                        serializablePolygon2D.addPolygon(new Polygon(shape));
+                                        shape = new ArrayList<>();
+                                    }
+                                    startSet = false;
+                                }
+
+                                if (convertedLine[3].equalsIgnoreCase("Garnstart") && !startSet) {
+//                                    Log.d(TAG, "Adding values garnstart");
+                                    double lat = Double.parseDouble(convertedLine[0]) / 60;
+                                    double lon = Double.parseDouble(convertedLine[1]) / 60;
+                                    currPoint.setNewPointValues(lat, lon);
+                                    shape.add(currPoint);
+                                    startSet = true;
+                                } else if (convertedLine[3].equalsIgnoreCase("Brunsirkel")) {
+//                                    Log.d(TAG, "Adding values brunsirkel");
+                                    double lat = Double.parseDouble(convertedLine[0]) / 60;
+                                    double lon = Double.parseDouble(convertedLine[1]) / 60;
+                                    currPoint.setNewPointValues(lat, lon);
+                                    shape.add(currPoint);
+                                }
+                            }
+
+                            reader.close();
+                            new FiskInfoUtility().serializeFiskInfoPolygon2D(filePath + fileName + "." + format, serializablePolygon2D);
+//                            outputStream = new FileOutputStream(new File(filePath + fileName + "." + format));
+//                            outputStream.write(data);
+
+                            tools = serializablePolygon2D;
+
+//                            tools.printPolygon();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            Log.e(TAG, "Error when trying to serialize file.");
+                            Toast error = Toast.makeText(getActivity(), "Ingen redskaper i området du definerte", Toast.LENGTH_LONG);
+                            error.show();
+                            return;
+                        } finally {
+                            try {
+                                if (outputStream != null) {
+                                    outputStream.close();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+//                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, fileName, format, filePath);
+                    } else {
+                        Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                        return;
+                    }
+
+                } catch (Exception e) {
+                    Log.d(TAG, "Could not download tools file");
+                    Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
+                }
+
                 runScheduledAlarm();
 
 
-                Toast.makeText(
-
-                        getActivity(), toastText, Toast
-
-                                .LENGTH_LONG).
-
-                        show();
+                Toast.makeText(getActivity(), toastText, Toast.LENGTH_LONG).show();
 
                 dialog.dismiss();
 
             }
         });
 
-        if(proximityAlertWatcher != null) {
+        if (proximityAlertWatcher != null) {
             TypedValue outValue = new TypedValue();
             stopCurrentProximityAlertWatcherButton.setVisibility(View.VISIBLE);
 
@@ -446,29 +594,38 @@ public class MapFragment extends Fragment{
             public void run() {
                 // Need to get alarm status and handle kill
                 if (!cacheDeserialized) {
-                    if (checkCacheWriterStatus()) {
-                        String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-                        String directoryName = "FiskInfo";
-                        String filename = "cachedResults";
-                        String filePath = directoryPath + "/" + directoryName + "/" + filename;
-                        tools = new FiskInfoUtility().deserializeFiskInfoPolygon2D(filePath);
-                        cacheDeserialized = true;
-                        // DEMO: add point here for testing/demo purposes
-                         Point point = new Point(69.650543, 18.956831);
-                         tools.addPoint(point);
-                    }
+                    System.out.println("Not deserialized");
+                    String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                    String directoryName = "FiskInfo";
+                    String filename = "collisionCheckToolsFile";
+                    String format = "OLEX";
+                    String filePath = directoryPath + "/" + directoryName + "/" + filename + "." + format;
+                    tools = fiskInfoUtility.deserializeFiskInfoPolygon2D(filePath);
+                    cacheDeserialized = true;
+                    System.out.println("Should now be good, " + tools.getLines().size() + ", " + tools.getPolygons().size() + ", " + tools.getPoints().size());
+//                    tools.printPolygon();
+
+                    // DEMO: add point here for testing/demo purposes
+//                         Point point = new Point(69.650543, 18.956831);
+//                         tools.addPoint(point);
                 } else {
                     if (alarmFiring) {
-                        notifyUserOfProximityAlert();
+//                        Looper.prepare();
+//
+//
+//                        notifyUserOfProximityAlert();
+                        alarmFiring = !alarmFiring;
                     } else {
-                        double latitude, longitude = 0;
+
+                        System.out.println("Checking for collision");
+                        double latitude, longitude;
                         if (mGpsLocationTracker.canGetLocation()) {
                             latitude = mGpsLocationTracker.getLatitude();
                             cachedLat = latitude;
                             longitude = mGpsLocationTracker.getLongitude();
                             cachedLon = longitude;
                             System.out.println("Lat; " + latitude + "lon: " + longitude);
-                            Log.i("GPS-LocationTracker", String.format("latitude: %s", latitude));
+                            Log.i("GPS-LocationTracker", String.format("latitude: %s, ", latitude));
                             Log.i("GPS-LocationTracker", String.format("longitude: %s", longitude));
                         } else {
                             mGpsLocationTracker.showSettingsAlert();
@@ -476,22 +633,19 @@ public class MapFragment extends Fragment{
                         }
                         Point userPosition = new Point(cachedLat, cachedLon);
                         if (!tools.checkCollsionWithPoint(userPosition, Double.parseDouble(cachedDistance))) {
+
+                            System.out.println("No collision yet");
                             return;
                         }
 
                         alarmFiring = true;
                     }
                 }
+
+                System.out.println("BEEP");
             }
 
-        }, getResources().getInteger(R.integer.zero), 3, TimeUnit.SECONDS); // <num1> is initial delay,<num2> is the subsequent delay between each call
-    }
-
-    private boolean checkCacheWriterStatus() {
-        if (cacheWriter != null && cacheWriter.getStatus() == AsyncTask.Status.FINISHED) {
-            return true;
-        }
-        return false;
+        }, getResources().getInteger(R.integer.zero), 3, TimeUnit.SECONDS);
     }
 
     private void notifyUserOfProximityAlert() {
@@ -501,7 +655,7 @@ public class MapFragment extends Fragment{
         Button showOnMapButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_show_on_map_button);
         Button dismissAlertButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_dismiss_button);
 
-        long[] pattern = { 0, 500, 200, 200, 300, 200, 200 };
+        long[] pattern = {0, 500, 200, 200, 300, 200, 200};
 
         vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(pattern, 0);
@@ -512,12 +666,20 @@ public class MapFragment extends Fragment{
 //		}
 //		mediaPlayer.start();
 
-        okButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vibrator.cancel();
+                vibrator = null;
+                dialog.dismiss();
+            }
+        });
 
         showOnMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO: Zoom map to user position.
+                browser.loadUrl("javascript:zoomToUserPosition()");
                 dialog.dismiss();
             }
         });
@@ -537,62 +699,6 @@ public class MapFragment extends Fragment{
         dialog.show();
     }
 
-    private void getMapTools() {
-            // TODO: place in own thread as task is not asynch, and get tools
-
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
-//        Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
-//        System.out.println("This is the body: " + response);
-//
-//        InputStream data = null;
-//        Reader reader = null;
-//        StringWriter writer = null;
-//        String charset = "UTF-8";
-//        byte[] rawData = null;
-//
-//        data = new ByteArrayInputStream(((TypedByteArray)response.getBody()).getBytes());
-//
-//        try {
-//            reader = new InputStreamReader(data, charset);
-//            writer = new StringWriter();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        char[] buffer = new char[10240];
-//        try {
-//            for (int length = 0; (length = reader.read(buffer)) > 0;) {
-//                writer.write(buffer, 0, length);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(writer.toString());
-//        geoJsonFile = writer.toString();
-//        try {
-//            rawData = new FiskInfoUtility().toByteArray(data);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
-
-
-    }
-
-    private void updateMapTools() {
-//        String tools = null;
-//        tools = geoJsonFile;
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Date now = new Date();
-//        String strDate = sdf.format(now);
-//        try {
-//            mTools.setTools(new JSONObject(tools), strDate, getActivity());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -607,9 +713,6 @@ public class MapFragment extends Fragment{
                 return true;
             case R.id.setProximityAlert:
                 createProximityAlertSetupDialog();
-                return true;
-            case R.id.check_polar_low:
-                createPolarLowDialog();
                 return true;
             case R.id.choose_map_layers:
                 createMapLayerSelectionDialog();

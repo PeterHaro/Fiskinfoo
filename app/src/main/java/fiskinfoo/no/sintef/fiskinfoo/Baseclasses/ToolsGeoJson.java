@@ -60,7 +60,7 @@ public class ToolsGeoJson {
             this.versionNumber = versionNumber;
             updated = true;
         } else {
-            //Fuck versions. Forgot to do it unix-time booooh
+            // versions. Forgot to do it unix-time booooh
             this.tools = tools;
             this.versionNumber = versionNumber;
             updated = true;
