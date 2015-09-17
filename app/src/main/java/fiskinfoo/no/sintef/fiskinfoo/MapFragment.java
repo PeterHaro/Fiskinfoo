@@ -519,7 +519,7 @@ public class MapFragment extends Fragment {
                     Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
                 }
 
-                runScheduledAlarm();
+                runScheduledAlarm(getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
 
 
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_LONG).show();
@@ -558,7 +558,7 @@ public class MapFragment extends Fragment {
         dialog.show();
     }
 
-    private void runScheduledAlarm() {
+    private void runScheduledAlarm(int initialDelay, int period) {
         proximityAlertWatcher = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -612,7 +612,7 @@ public class MapFragment extends Fragment {
                 System.out.println("BEEP");
             }
 
-        }, getResources().getInteger(R.integer.zero), 1, TimeUnit.SECONDS);
+        }, initialDelay, period, TimeUnit.SECONDS);
     }
 
     private void notifyUserOfProximityAlert() {
@@ -647,7 +647,11 @@ public class MapFragment extends Fragment {
                         looperPrepared = false;
                         vibrator.cancel();
                         vibrator = null;
+                        proximityAlertWatcher.cancel(true);
+                        proximityAlertWatcher = null;
+
                         dialog.dismiss();
+                        runScheduledAlarm(getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
                     }
                 });
 
@@ -656,9 +660,17 @@ public class MapFragment extends Fragment {
                 showOnMapButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO: Zoom map to user position.
+                        alarmFiring = false;
+                        looperPrepared = false;
+                        vibrator.cancel();
+                        vibrator = null;
+                        proximityAlertWatcher.cancel(true);
+                        proximityAlertWatcher = null;
+
                         browser.loadUrl("javascript:zoomToUserPosition()");
                         dialog.dismiss();
+                        runScheduledAlarm(getResources().getInteger(R.integer.sixty), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
+
                     }
                 });
 

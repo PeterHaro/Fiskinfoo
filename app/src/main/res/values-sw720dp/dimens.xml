@@ -39,8 +39,8 @@ limitations under the License.
     <dimen name="dialog_internal_container_margin_top">5dp</dimen>
     <dimen name="dialog_internal_container_margin_bottom">5dp</dimen>
     <dimen name="dialog_internal_container_large_margin_top">10dp</dimen>
-    <dimen name="bottom_button_container_margin_left">5dp</dimen>
-    <dimen name="bottom_button_container_margin_right">5dp</dimen>
+    <dimen name="bottom_button_container_margin_left">30dp</dimen>
+    <dimen name="bottom_button_container_margin_right">30dp</dimen>
     <dimen name="bottom_button_container_margin_top">15dp</dimen>
     <dimen name="bottom_button_container_margin_bottom">15dp</dimen>
 
@@ -81,7 +81,7 @@ limitations under the License.
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
 
     <!-- FormatRow -->
-    <dimen name="format_row_text_size">20dp</dimen>
+    <dimen name="format_row_text_size">22dp</dimen>
     <dimen name="format_row_text_view_margin_left">50dp</dimen>
     <dimen name="format_row_check_box_margin_left">25dp</dimen>
     <dimen name="format_row_text_view_padding">10dp</dimen>
@@ -91,7 +91,7 @@ limitations under the License.
     <dimen name="checkbox_row_padding_right">20dp</dimen>
 
     <!-- RadioButtonRow -->
-    <dimen name="radio_button_row_text_size">20dp</dimen>
+    <dimen name="radio_button_row_text_size">22dp</dimen>
     <dimen name="radio_button_row_text_view_margin_left">50dp</dimen>
     <dimen name="radio_button_row_check_box_margin_left">25dp</dimen>
     <dimen name="radio_button_row_text_view_padding">10dp</dimen>
@@ -114,8 +114,8 @@ limitations under the License.
     <dimen name="recycle_item_child_margin_right">8dp</dimen>
     <dimen name="recycle_item_child_margin_top">3dp</dimen>
     <dimen name="recycle_item_child_margin_bottom">3dp</dimen>
-    <dimen name="recycle_item_child_padding_top">4dp</dimen>
-    <dimen name="recycle_item_child_padding_bottom">4dp</dimen>
+    <dimen name="recycle_item_child_padding_top">15dp</dimen>
+    <dimen name="recycle_item_child_padding_bottom">15dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_top_left">4dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_top_right">4dp</dimen>
     <dimen name="recycle_item_child_background_corner_radius_bottom_left">4dp</dimen>
@@ -125,24 +125,24 @@ limitations under the License.
     <dimen name="recycle_item_child_title_field_margin_bottom">8dp</dimen>
     <dimen name="recycle_item_child_title_field_margin_top">8dp</dimen>
     <dimen name="recycle_item_child_title_field_text_size">20dp</dimen>
-    <dimen name="recycle_item_child_is_subscribed_check_box_margin_left">10dp</dimen>
-    <dimen name="recycler_item_subscribed_check_box_margin_right">1dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_left">8dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_right">1dp</dimen>
+    <dimen name="recycle_item_child_is_subscribed_check_box_margin_left">20dp</dimen>
+    <dimen name="recycler_item_subscribed_check_box_margin_right">20dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_left">30dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_right">20dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
-    <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
+    <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">8dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_size">15dp</dimen>
     <dimen name="recycle_item_child_download_button_width">40dp</dimen>
     <dimen name="recycle_item_child_download_button_height">40dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_height">2dp</dimen>
-    <dimen name="recycler_item_download_map_button_margin_right">5dp</dimen>
-    <dimen name="recycle_item_child_notification_icon_image_view_margin_right">1dp</dimen>
+    <dimen name="recycler_item_download_map_button_margin_right">50dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_margin_right">20dp</dimen>
     <dimen name="recycle_item_child_notification_icon_image_view_width_width">40dp</dimen>
     <dimen name="recycle_item_child_notification_icon_image_view_width_height">40dp</dimen>
 
     <!-- fragment card view -->
-    <dimen name="card_view_thumbnail_height">150dp</dimen>
+    <dimen name="card_view_thumbnail_height">250dp</dimen>
     <dimen name="card_view_title_text_size">22dp</dimen>
     <dimen name="card_view_title_text_view_padding">8dp</dimen>
     <dimen name="card_view_information_container_margin_top">15dp</dimen>
@@ -153,11 +153,10 @@ limitations under the License.
     <dimen name="card_view_information_row_name_text_view_margin_left">5dp</dimen>
     <dimen name="card_view_notification_icon_width">38dp</dimen>
     <dimen name="card_view_notification_icon_height">38dp</dimen>
-    <dimen name="card_view_notification_icon_margin_right">20dp</dimen>
-    <dimen name="card_view_download_map_button_margin_right">20dp</dimen>
-    <dimen name="card_view_download_map_button_margin_top">5dp</dimen>
+    <dimen name="card_view_notification_icon_margin_right">40dp</dimen>
+    <dimen name="card_view_download_map_button_margin_right">50dp</dimen>
+    <dimen name="card_view_download_map_button_margin_top">10dp</dimen>
     <dimen name="card_view_download_map_button_width">38dp</dimen>
     <dimen name="card_view_download_map_button_height">38dp</dimen>
-    <dimen name="card_view_information_row_text_size">18dp</dimen>
-
+    <dimen name="card_view_information_row_text_size">16dp</dimen>
 </resources>

@@ -97,6 +97,7 @@ limitations under the License.
     <string name="proximity_alert_warning_dismiss">Avslutt varsling</string>
     <string name="show_position_on_map">Vis posisjon på kart</string>
     <string name="show_on_map">Vis i kart</string>
+    <string name="proximity_alert_warning_info">Det er oppdaget et redskap innenfor den oppsatte radiusen.\nTrykk OK for å ignorere. Programmet vil da vente et minutt og gjenoppta kollisjonssjekkingen.\n\tTrykk Vis posisjon på kart for å vise din posisjon på kartet. Programmet vil da vente ett minutt og gjenoppta kollisjonssjekkingen.\n\tTrykk på Avslutt varsling for å ikke lengre motta kollisjonsvarslinger. </string>
 
     <string name="fragment_my_page_tag">MyPage</string>
     <string name="fragment_map_tag">Map</string>
