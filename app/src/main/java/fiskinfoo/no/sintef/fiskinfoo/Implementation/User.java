@@ -45,6 +45,7 @@ public class User implements Parcelable{
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
     private Boolean isAuthenticated; //False == anon user, I.E no permission
+    private boolean isFishingFacilityAuthenticated;
 
     public User() {
         isAuthenticated = false;
@@ -110,6 +111,14 @@ public class User implements Parcelable{
         } else {
             return authentication.access_token;
         }
+    }
+
+    public boolean getIsFishingFacilityAuthenticated() {
+        return isFishingFacilityAuthenticated;
+    }
+
+    public void setIsFishingFacilityAuthenticated(boolean isAuthenticated) {
+        isFishingFacilityAuthenticated = isAuthenticated;
     }
 
     public String getFilePathForExternalStorage() {

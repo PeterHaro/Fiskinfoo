@@ -123,6 +123,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                                         if (response == null) {
                                             Log.d(tag, "RESPONSE == NULL");
                                         }
+
                                         byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                                         if (fiskInfoUtility.isExternalStorageWritable()) {
                                             fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage());

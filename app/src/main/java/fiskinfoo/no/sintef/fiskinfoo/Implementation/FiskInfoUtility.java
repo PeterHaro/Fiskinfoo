@@ -234,12 +234,11 @@ public class FiskInfoUtility {
 
         File directory = filePath == null ? null : new File(filePath);
 
-
-        if(directory == null || !directory.mkdir()) {
-            System.out.println("Could not create provided path, using default.");
+        if(directory == null) {
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             String directoryName = "FiskInfo";
             filePath = directoryPath + "/" + directoryName + "/";
+            Toast.makeText(context, "Kunne ikke nå valgt filplassering, lagrer fil til /Download/FiskInfo", Toast.LENGTH_LONG).show();
         }
 
         try {

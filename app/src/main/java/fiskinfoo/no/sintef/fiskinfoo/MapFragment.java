@@ -229,7 +229,7 @@ public class MapFragment extends Fragment {
 
         public void onPageFinished(WebView view, String url) {
             List<String> layers = user.getActiveLayers();
-            if (user.isTokenValid()) {
+            if (user.isTokenValid() && user.getIsFishingFacilityAuthenticated()) {
                 Log.d(TAG, "USER IS AUTHENTICATED");
                 view.loadUrl("javascript:populateMap(1);");
 

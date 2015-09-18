@@ -154,7 +154,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
             ArrayList<Object> mySubscriptions = new ArrayList<>();
 
-
             for(PropertyDescription subscribable : api.getSubscribable()) {
                 availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
             }
@@ -165,6 +164,12 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
             for(Authorization auth : authorizations) {
                 authMap.put(auth.Id, auth.HasAccess);
+            }
+
+            // TODO: yes, hard coded values are bad, but I'm on a boat so chill.
+            if(authMap.containsKey(9)) {
+                user.setIsFishingFacilityAuthenticated(authMap.get(9));
+                user.writeToSharedPref(getActivity());
             }
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
