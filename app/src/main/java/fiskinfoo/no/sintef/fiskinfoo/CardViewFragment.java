@@ -174,7 +174,7 @@ public class CardViewFragment extends Fragment {
 
             if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
                 row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
-                final TextView dataField = row.getFieldDataTextView();
+                final View dataField = row.getView();
                 final Animation animation = getBlinkAnimation();
 
                 notificationIconButton.setVisibility(View.VISIBLE);
@@ -184,8 +184,8 @@ public class CardViewFragment extends Fragment {
                 notificationIconButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dataField.startAnimation(animation);
                         focusOnView(scrollView, dataField);
+                        dataField.startAnimation(animation);
                     }
                 });
 
@@ -203,8 +203,8 @@ public class CardViewFragment extends Fragment {
                 notificationIconButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dataField.startAnimation(animation);
                         focusOnView(scrollView, dataField);
+                        dataField.startAnimation(animation);
                     }
                 });
 
@@ -348,7 +348,7 @@ public class CardViewFragment extends Fragment {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                scrollView.scrollTo(0, focusView.getBottom());
+                scrollView.scrollTo(0, focusView.getTop());
             }
         });
     }

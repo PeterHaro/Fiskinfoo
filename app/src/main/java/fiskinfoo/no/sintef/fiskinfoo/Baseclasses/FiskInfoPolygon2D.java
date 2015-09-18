@@ -52,7 +52,7 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
         return points;
     }
 
-    public boolean checkCollsionWithPoint(Point point, double distance) {
+    public boolean checkCollisionWithPoint(Point point, double distance) {
         for (Line line : lines) {
             if (line.checkDistanceWithLineAndReportStatus(point, distance)) {
                 return true;

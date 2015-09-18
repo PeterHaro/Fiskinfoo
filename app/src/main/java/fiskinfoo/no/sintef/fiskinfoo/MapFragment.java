@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -98,10 +99,10 @@ public class MapFragment extends Fragment {
     private GpsLocationTracker mGpsLocationTracker;
 
     private Vibrator vibrator;
+    private MediaPlayer mediaPlayer;
     private FiskInfoPolygon2D tools = null;
     private boolean cacheDeserialized = false;
     private boolean alarmFiring = false;
-    private boolean looperPrepared = false;
     protected double cachedLat;
     protected double cachedLon;
     protected double cachedDistance;
@@ -580,32 +581,30 @@ public class MapFragment extends Fragment {
 //                         Point point = new Point(69.650543, 18.956831);
 //                         tools.addPoint(point);
                 } else {
-                    if (alarmFiring) {
-                        if(!looperPrepared) {
-                            Looper.prepare();
-                            looperPrepared = true;
-                            notifyUserOfProximityAlert();
-                        }
-                    } else {
-                        double latitude, longitude;
-                        if (mGpsLocationTracker.canGetLocation()) {
-                            latitude = mGpsLocationTracker.getLatitude();
-                            cachedLat = latitude;
-                            longitude = mGpsLocationTracker.getLongitude();
-                            cachedLon = longitude;
-                            System.out.println("Lat; " + latitude + "lon: " + longitude);
-                            Log.i("GPS-LocationTracker", String.format("latitude: %s, ", latitude));
-                            Log.i("GPS-LocationTracker", String.format("longitude: %s", longitude));
-                        } else {
-                            mGpsLocationTracker.showSettingsAlert();
-                            return;
-                        }
-                        Point userPosition = new Point(cachedLat, cachedLon);
-                        if (!tools.checkCollsionWithPoint(userPosition, cachedDistance)) {
-                            return;
-                        }
+                    if(alarmFiring) {
+                        return;
+                    }
 
+                    double latitude, longitude;
+                    Point userPosition = new Point(cachedLat, cachedLon);
+
+                    if (mGpsLocationTracker.canGetLocation()) {
+                        latitude = mGpsLocationTracker.getLatitude();
+                        cachedLat = latitude;
+                        longitude = mGpsLocationTracker.getLongitude();
+                        cachedLon = longitude;
+                        System.out.println("Lat; " + latitude + "lon: " + longitude);
+                        Log.i("GPS-LocationTracker", String.format("latitude: %s, ", latitude));
+                        Log.i("GPS-LocationTracker", String.format("longitude: %s", longitude));
+                    } else {
+                        mGpsLocationTracker.showSettingsAlert();
+                        return;
+                    }
+
+                    if (tools.checkCollisionWithPoint(userPosition, cachedDistance)) {
                         alarmFiring = true;
+                        Looper.prepare();
+                        notifyUserOfProximityAlert();
                     }
                 }
 
@@ -627,75 +626,70 @@ public class MapFragment extends Fragment {
                 Button showOnMapButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_show_on_map_button);
                 Button dismissAlertButton = (Button) dialog.findViewById(R.id.proximity_alert_warning_dismiss_button);
 
-                long[] pattern = {0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200, 0, 500, 200, 200, 300, 200, 200};
+                long[] pattern = {0, 500, 200, 200, 300, 200, 200};
 
                 vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(pattern, -1);
+                vibrator.vibrate(pattern, 0);
 
-//		MediaPlayer mediaPlayer = MediaPlayer.create(getContext(), R.raw.proximity_warning_sound);
-//		if (mediaPlayer == null) {
-//			return;
-//		}
-//		mediaPlayer.start();
+                mediaPlayer = MediaPlayer.create(getActivity(), R.raw.proximity_warning_sound);
 
-                System.out.println("here");
+                if (mediaPlayer == null) {
+                    return;
+                }
+
+                mediaPlayer.setLooping(true);
+                mediaPlayer.start();
 
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         alarmFiring = false;
-                        looperPrepared = false;
                         vibrator.cancel();
                         vibrator = null;
                         proximityAlertWatcher.cancel(true);
                         proximityAlertWatcher = null;
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
 
                         dialog.dismiss();
-                        runScheduledAlarm(getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
+                        runScheduledAlarm(getResources().getInteger(R.integer.sixty), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
                     }
                 });
-
-                System.out.println("ok");
 
                 showOnMapButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         alarmFiring = false;
-                        looperPrepared = false;
                         vibrator.cancel();
                         vibrator = null;
                         proximityAlertWatcher.cancel(true);
                         proximityAlertWatcher = null;
-
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
                         browser.loadUrl("javascript:zoomToUserPosition()");
+
                         dialog.dismiss();
                         runScheduledAlarm(getResources().getInteger(R.integer.sixty), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
 
                     }
                 });
 
-
-                System.out.println("zoom");
-
                 dismissAlertButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO: Kill background task handling proximity checking and set proximityAlertWatcher to null.
+                        alarmFiring = false;
                         vibrator.cancel();
                         vibrator = null;
                         proximityAlertWatcher.cancel(true);
                         proximityAlertWatcher = null;
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+
                         dialog.dismiss();
                     }
                 });
 
-
-                System.out.println("dismiss");
-
                 dialog.show();
-
-
-                System.out.println("showing");
             } // This is your code
         };
         mainHandler.post(myRunnable);

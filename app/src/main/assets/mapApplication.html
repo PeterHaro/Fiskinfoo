@@ -149,10 +149,71 @@
                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
             });
-            var myStyle = { fill: true, fillColor: "#ff0000", pointRadius: 12, strokeColor: "blue", strokeWidth: 3, };
-            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap");
+
+            var toolStyle = OpenLayers.Util.extend( {}, OpenLayers.Feature.Vector.style[ 'default' ] );
+
+            toolStyle.strokeWidth = '${strokeWidth}';
+            toolStyle.strokeColor = '${toolColor}';
+            toolStyle.fillColor = '${toolColor}';
+            toolStyle.fill = true;
+            toolStyle.pointRadius = 11;
+            toolStyle.fillOpacity = 1;
+            toolStyle.graphicName = "triangle";
+
+            var toolsStyleLayer = new OpenLayers.Style( toolStyle, {
+                context: {
+                    strokeWidth: function(feature) {
+                        if(feature.hasOwnProperty( 'geometry')) {
+                            <!-- There is probably a better way of getting the tool type -->
+                            var type = feature.geometry.toString().split("(")[0];
+
+                            if(type.toLowerCase() === "LineString".toLowerCase()) {
+                                return 10;
+                            } else if(type.toLowerCase() === "Point".toLowerCase()) {
+                                return 1;
+                            } else {
+                                return 5;
+                            }
+                        }
+                    },
+                    toolColor: function(feature) {
+                        if(feature.attributes.tooltypename === "Long line") {
+                            return "#F30F0F";
+                        } else if(feature.attributes.tooltypename === "Nets") {
+                            return "#0881D7";
+                        }  else if(feature.attributes.tooltypename === "Crab pot") {
+                            return "#FF6500";
+                        }  else if(feature.attributes.tooltypename === "Seismic") {
+                            return "#A06C49";
+                        }  else if(feature.attributes.tooltypename === "Danish- / Purse- Seine") {
+                            return "#9933CC";
+                        }  else if(feature.attributes.tooltypename === "Sensor / Cable") {
+                            return "#75A103";
+                        }  else if(feature.attributes.tooltypename === "Mooring system") {
+                            return "#FF42E5";
+                        }  else {
+                            return "#000000";
+                        }
+                    },
+                }
+            });
+
+            var toolsStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 2
+                })
+            });
+
+            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap", {styleMap: toolsStyleMap});
+
             toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
-            toolsVectorLayer.style = myStyle;
+
             map.addLayer(toolsVectorLayer);
             selectFeature = new OpenLayers.Control.SelectFeature(
             toolsVectorLayer, {
@@ -278,7 +339,7 @@
                         yx: { 'EPSG:4326': true }
                     }
                 ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://217.144.66.238:8080/geoserver/peter/wms",
+            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
             {
                 LAYERS: 'peter:points',
                 transparent: true,
@@ -368,7 +429,7 @@
                     yx: { 'EPSG:4326': true }
                 }
             ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://217.144.66.238:8080/geoserver/peter/wms",
+            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
             {
                 LAYERS: 'peter:points',
                 transparent: true,
@@ -390,7 +451,7 @@
             var vesselName;
             var phoneNumber;
             var toolDate;
-            var toolTime;
+            var toolType;
             var position;
             if (feature.data.vesselname != null) {
                 vesselName = "Fartøynavn: " + feature.data.vesselname;
@@ -408,9 +469,9 @@
                 toolDate = "Redskapet ble satt: " + "Ikke tilgjengelig";
             }
             if (feature.data.tooltypename != null) {
-                toolTime = "Redskapstype: " + feature.data.tooltypename;
+                toolType = "Redskapstype: '" + feature.data.tooltypename + "'";
             } else {
-                toolTime = "Redskapstype: " + "Ikke tilgjengelig";
+                toolType = "Redskapstype: " + "Ikke tilgjengelig";
             }
             if(feature.geometry != null) {
                 var wgs84 = feature.geometry.clone();
@@ -421,7 +482,7 @@
             }
             popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
             feature.geometry.getBounds().getCenterLonLat(),
-                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolTime + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
+                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolType + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
             popup.panMapIfOutOfView = true;
             popup.autoSize = true;
             feature.popup = popup;
