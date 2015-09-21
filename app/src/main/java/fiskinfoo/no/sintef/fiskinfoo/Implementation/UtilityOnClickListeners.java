@@ -152,16 +152,31 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getErrorNotificationOnClickListener(final PropertyDescription subscription) {
+    public View.OnClickListener getInformationDialogOnClickListener(final String title, final String info, final int iconId) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(v.getContext())
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(ApiErrorType.getType(subscription.ErrorType).toString())
-                        .setMessage(subscription.ErrorText)
-                        .setPositiveButton(v.getContext().getString(R.string.ok), null)
-                        .show();
+                new UtilityDialogs().getInfoAlertDialog(v.getContext(), title, info, iconId).show();
+            }
+        };
+    }
+
+    @Override
+    public View.OnClickListener getInformationDialogOnClickListener(final int titleId, final int infoId, final int iconId) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new UtilityDialogs().getInfoAlertDialog(v.getContext(), titleId, infoId, iconId).show();
+            }
+        };
+    }
+
+    @Override
+    public View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new UtilityDialogs().getInfoAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
             }
         };
     }

@@ -22,13 +22,13 @@ public enum ApiErrorType {
         String retVal = "";
         switch(this) {
             case NONE:
-                retVal = "none";
+                retVal = "Ingen feil";
                 break;
             case WARNING:
-                retVal = "warning";
+                retVal = "Advarsel";
                 break;
             case ERROR:
-                retVal = "error";
+                retVal = "Error";
                 break;
             default:
                 throw new UnsupportedOperationException("Error type does not exist in the system");

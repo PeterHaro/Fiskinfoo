@@ -55,9 +55,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
-/**
- * TODO: Retain instance on orientation (Alot of work)
- */
 public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     FragmentActivity listener;
     public static final String TAG = "MyPageFragment";
@@ -173,11 +170,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                if(!authMap.get(propertyDescription.Id)) {
-                    continue;
-                }
-
-                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName));
+                boolean isAuthed = authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false;
+                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
@@ -189,7 +183,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for (Subscription subscription : activeSubscriptions) {
-                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName));
+                boolean isAuthed = authMap.get(subscription.Id) != null ? authMap.get(subscription.Id) : false;
+                        SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName), isAuthed);
 
                 mySubscriptions.add(currentSubscription);
             }
@@ -229,16 +224,19 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         return parentObjectList;
     }
 
-    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription) {
+    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
 
-        View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getErrorNotificationOnClickListener(subscription);
-        View.OnClickListener subscriptionSwitchClickListener = onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user);
-        View.OnClickListener downloadButtonOnClickListener = onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG);
+        View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
+        View.OnClickListener subscriptionSwitchClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
+                null;
+        View.OnClickListener downloadButtonOnClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
+                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1);
 
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
         currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
         currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
+        currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
         currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
         currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
@@ -259,13 +257,13 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     }
 
     // INFO: we just treat active subscriptions in the same way as we treat available subscriptions, don't see a reason not to.
-    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable) {
+    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable, boolean canSubscribe) {
         if(subscribable == null) {
             Log.e(TAG, "subscribable is null");
             return null;
         }
 
-        return setupAvailableSubscriptionChildView(subscribable, activeSubscription);
+        return setupAvailableSubscriptionChildView(subscribable, activeSubscription, canSubscribe);
     }
 
     @Override

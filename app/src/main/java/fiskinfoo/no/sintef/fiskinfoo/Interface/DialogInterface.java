@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -36,4 +37,26 @@ public interface DialogInterface {
      * @return
      */
     Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId);
+
+    /**
+     * Return a dialog with the given title, info text, and icon. The dialog defaults to not being cancelled by outside touch.
+     * If no icon is wanted, iconId can be set to -1.
+     * @param context
+     * @param title
+     * @param info
+     * @param iconId
+     * @return
+     */
+    AlertDialog getInfoAlertDialog(Context context, String title, String info, int iconId);
+
+    /**
+     * Return a dialog with the given title, info text, and icon. The dialog defaults to not being cancelled by outside touch.
+     * If no icon is wanted, iconId can be set to -1.
+     * @param context
+     * @param titleId
+     * @param infoId
+     * @param iconId
+     * @return
+     */
+    AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId, int iconId);
 }

@@ -159,4 +159,10 @@ limitations under the License.
     <dimen name="card_view_download_map_button_width">38dp</dimen>
     <dimen name="card_view_download_map_button_height">38dp</dimen>
     <dimen name="card_view_information_row_text_size">16dp</dimen>
+
+    <!-- Alert dialog -->
+    <dimen name="hyperlink_alert_dialog_margin_left">10dp</dimen>
+    <dimen name="hyperlink_alert_dialog_margin_right">10dp</dimen>
+    <dimen name="hyperlink_alert_dialog_margin_top">10dp</dimen>
+    <dimen name="hyperlink_alert_dialog_margin_bottom">10dp</dimen>
 </resources>

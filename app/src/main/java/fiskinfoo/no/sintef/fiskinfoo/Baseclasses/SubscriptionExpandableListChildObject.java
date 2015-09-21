@@ -33,6 +33,7 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
 
     private String mLastUpdated;
     private boolean isSubscribed;
+    private boolean isAuthorized;
     private ApiErrorType errorType;
 
     public SubscriptionExpandableListChildObject() {
@@ -69,6 +70,14 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
         isSubscribed = subscribed;
         setSubscribedSwitchValue(subscribed);
     }
+    public boolean getAuthorized() {
+        return isAuthorized;
+    }
+
+    public void setAuthorized(boolean authorized) {
+        isAuthorized = authorized;
+    }
+
 
     public void setDownloadMapLayerButton(Button button) {
         mDownloadMapLayerButton = button;

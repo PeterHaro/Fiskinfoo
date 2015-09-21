@@ -156,6 +156,9 @@ limitations under the License.
     <string name="see_more_info">Les mer her.</string>
     <string name="update_frequency_not_available">Oppdateringsfrekvens er ikke tilgjengelig for dette kartlaget.</string>
     <string name="about_partners_base_address">https://www.barentswatch.no</string>
+    <string name="unauthorized_subscription">Din bruker er ikke autorisert til å abonnere på dette kartet. Du kan finne mer informasjon om dette ved å gå til http://www.barentswatch.no/kartplotter</string>
+    <string name="unauthorized_download">Din bruker er ikke autorisert til å laste ned dette kartet. Du kan finne mer informasjon om dette ved å gå til http://www.barentswatch.no/kartplotter</string>
+    <string name="unauthorized_user">Din bruker er ikke autorisert til å laste ned eller abonnere på dette kartet. Du kan finne mer informasjon om dette ved å gå til http://www.barentswatch.no/kartplotter</string>
 
     <string-array name="map_layer_names_array">
         <item>Redskap</item>

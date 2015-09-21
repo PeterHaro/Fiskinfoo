@@ -552,8 +552,6 @@ public class MapFragment extends Fragment {
             });
         }
 
-        System.out.println("size: " + String.valueOf(stopCurrentProximityAlertWatcherButton.getTextSize()));
-
         cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
 
         dialog.show();
@@ -566,7 +564,6 @@ public class MapFragment extends Fragment {
             public void run() {
                 // Need to get alarm status and handle kill
                 if (!cacheDeserialized) {
-                    System.out.println("Not deserialized");
                     String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
                     String directoryName = "FiskInfo";
                     String filename = "collisionCheckToolsFile";
@@ -574,9 +571,6 @@ public class MapFragment extends Fragment {
                     String filePath = directoryPath + "/" + directoryName + "/" + filename + "." + format;
                     tools = fiskInfoUtility.deserializeFiskInfoPolygon2D(filePath);
                     cacheDeserialized = true;
-                    System.out.println("Should now be good, " + tools.getLines().size() + ", " + tools.getPolygons().size() + ", " + tools.getPoints().size());
-//                    tools.printPolygon();
-
                     // DEMO: add point here for testing/demo purposes
 //                         Point point = new Point(69.650543, 18.956831);
 //                         tools.addPoint(point);
@@ -593,7 +587,6 @@ public class MapFragment extends Fragment {
                         cachedLat = latitude;
                         longitude = mGpsLocationTracker.getLongitude();
                         cachedLon = longitude;
-                        System.out.println("Lat; " + latitude + "lon: " + longitude);
                         Log.i("GPS-LocationTracker", String.format("latitude: %s, ", latitude));
                         Log.i("GPS-LocationTracker", String.format("longitude: %s", longitude));
                     } else {

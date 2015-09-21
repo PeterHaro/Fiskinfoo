@@ -14,11 +14,14 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.HyperlinkAlertDialog;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -45,5 +48,16 @@ public class UtilityDialogs implements DialogInterface{
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         return dialog;
+    }
+
+    @Override
+    public AlertDialog getInfoAlertDialog(Context context, String title, String info, int iconId) {
+        return HyperlinkAlertDialog.create(context, title, info, iconId);
+
+    }
+
+    @Override
+    public AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId, int iconId) {
+        return HyperlinkAlertDialog.create(context, titleId, infoId, iconId);
     }
 }
