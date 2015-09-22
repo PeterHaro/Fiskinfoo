@@ -183,8 +183,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for (Subscription subscription : activeSubscriptions) {
-                boolean isAuthed = authMap.get(subscription.Id) != null ? authMap.get(subscription.Id) : false;
-                        SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName), isAuthed);
+                int id = availableSubscriptionsMap.get(subscription.GeoDataServiceName) != null ? availableSubscriptionsMap.get(subscription.GeoDataServiceName).Id : -1;
+                boolean isAuthed = authMap.get(id) != null ? authMap.get(id) : false;
+                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName), isAuthed);
 
                 mySubscriptions.add(currentSubscription);
             }

@@ -38,11 +38,35 @@ public class UtilityDialogs implements DialogInterface{
     }
 
     @Override
+    public Dialog getDialog(Context context, int layoutId, String title) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(layoutId);
+        dialog.setTitle(title);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        return dialog;
+    }
+
+    @Override
     public Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
         dialog.setContentView(layoutId);
         dialog.setTitle(titleId);
+        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ikon_kart_til_din_kartplotter);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        return dialog;
+    }
+
+    @Override
+    public Dialog getDialogWithTitleIcon(Context context, int layoutId, String title, int iconId) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        dialog.setContentView(layoutId);
+        dialog.setTitle(title);
         dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ikon_kart_til_din_kartplotter);
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);

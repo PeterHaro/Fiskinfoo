@@ -85,11 +85,17 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
             @Override
             public void onClick(View v) {
-                DialogInterface dialogInterface = new UtilityDialogs();
                 OnclickListenerInterface onClickListenerInterface = new UtilityOnClickListeners();
                 final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
+                final Dialog dialog;
 
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_download_map_layer, R.string.download_map_layer_dialog_title);
+                int iconId = fiskInfoUtility.subscriptionApiNameToIconId(subscription.ApiName);
+
+                if(iconId != -1) {
+                    dialog = new UtilityDialogs().getDialogWithTitleIcon(v.getContext(), R.layout.dialog_download_map_layer, subscription.Name, iconId);
+                } else {
+                    dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_download_map_layer, subscription.Name);
+                }
 
                 final Button downloadButton = (Button) dialog.findViewById(R.id.select_download_format_download_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
@@ -186,10 +192,18 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
         return new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                DialogInterface dialogInterface = new UtilityDialogs();
                 UtilityRowsInterface utilityRowsInterface = new UtilityRows();
+                final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
 
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_manage_subscription, R.string.update_subscriptions);
+                final Dialog dialog;
+
+                int iconId = fiskInfoUtility.subscriptionApiNameToIconId(subscription.ApiName);
+
+                if(iconId != -1) {
+                    dialog = new UtilityDialogs().getDialogWithTitleIcon(v.getContext(), R.layout.dialog_manage_subscription, subscription.Name, iconId);
+                } else {
+                    dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_download_map_layer, subscription.Name);
+                }
 
                 final Switch subscribedSwitch = (Switch) dialog.findViewById(R.id.manage_subscription_switch);
                 final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);

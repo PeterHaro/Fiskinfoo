@@ -213,6 +213,30 @@ public class FiskInfoUtility {
         }
     }
 
+    public int subscriptionApiNameToIconId(String apiName) {
+        int retVal = -1;
+
+        switch(apiName.toLowerCase()) {
+            case "fishingfacility":
+                retVal = R.drawable.ikon_kystfiske;
+                break;
+            case "iceedge":
+                retVal = R.drawable.ikon_is_tjenester;
+                break;
+            case "npdfacility":
+                retVal = R.drawable.ikon_olje_og_gass;
+                break;
+            case "npdsurveyplanned":
+                retVal = R.drawable.ikon_olje_og_gass;
+                break;
+            case "npdsurveyongoing":
+                retVal = R.drawable.ikon_olje_og_gass;
+                break;
+        }
+
+        return retVal;
+    }
+
     /**
      * Checks if external storage is available for read and write.
      *

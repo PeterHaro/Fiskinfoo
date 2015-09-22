@@ -29,6 +29,15 @@ public interface DialogInterface {
     Dialog getDialog(Context context, int layoutId, int titleId);
 
     /**
+     * Return a dialog with the given layout and title. The dialog defaults to not being cancelled by outside touch.
+     * @param context
+     * @param layoutId
+     * @param title
+     * @return
+     */
+    Dialog getDialog(Context context, int layoutId, String title);
+
+    /**
      * Return a dialog with the given layout, title, and icon. The dialog defaults to not being cancelled by outside touch.
      * @param context
      * @param layoutId
@@ -37,6 +46,16 @@ public interface DialogInterface {
      * @return
      */
     Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId);
+
+    /**
+     * Return a dialog with the given layout, title, and icon. The dialog defaults to not being cancelled by outside touch.
+     * @param context
+     * @param layoutId
+     * @param title
+     * @param iconId
+     * @return
+     */
+    Dialog getDialogWithTitleIcon(Context context, int layoutId, String title, int iconId);
 
     /**
      * Return a dialog with the given title, info text, and icon. The dialog defaults to not being cancelled by outside touch.
