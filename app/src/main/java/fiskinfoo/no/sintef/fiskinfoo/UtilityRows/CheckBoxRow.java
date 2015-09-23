@@ -21,24 +21,24 @@ import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class CheckBoxFormatRow extends BaseTableRow {
+public class CheckBoxRow extends BaseTableRow {
     private TextView mTextView;
     private CheckBox mCheckBox;
 
-    public CheckBoxFormatRow(Context context, String format) {
-        super(context, R.layout.utility_row_format_check_box_row);
+    public CheckBoxRow(Context context, String format) {
+        super(context, R.layout.utility_row_check_box_row);
 
-        mTextView = (TextView) getView().findViewById(R.id.format_row_text_view);
-        mCheckBox = (CheckBox) getView().findViewById(R.id.format_row_check_box);
+        mTextView = (TextView) getView().findViewById(R.id.check_box_row_text_view);
+        mCheckBox = (CheckBox) getView().findViewById(R.id.check_box_row_check_box);
 
         mTextView.setText(format);
     }
 
-    public CheckBoxFormatRow(Context context, String buttonText, boolean isChecked) {
-        super(context, R.layout.utility_row_format_text_view_row);
+    public CheckBoxRow(Context context, String buttonText, boolean isChecked) {
+        super(context, R.layout.utility_row_check_box_row);
 
-        mTextView = (TextView) getView().findViewById(R.id.format_row_text_view);
-        mCheckBox = (CheckBox) getView().findViewById(R.id.format_row_check_box);
+        mTextView = (TextView) getView().findViewById(R.id.check_box_row_text_view);
+        mCheckBox = (CheckBox) getView().findViewById(R.id.check_box_row_check_box);
 
         mTextView.setText(buttonText);
         mCheckBox.setChecked(isChecked);

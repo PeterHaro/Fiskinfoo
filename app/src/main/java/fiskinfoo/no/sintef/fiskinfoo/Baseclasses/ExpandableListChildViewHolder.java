@@ -47,7 +47,6 @@ public class ExpandableListChildViewHolder extends ChildViewHolder{
 
         dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
 
-
         dataText = (TextView) itemView.findViewById(R.id.recycler_child_item_title_text_view);
         lastUpdatedTextView = (TextView) itemView.findViewById(R.id.recycler_child_last_updated_text_view);
         subscribedCheckBox = (CheckBox) itemView.findViewById(R.id.recycle_child_view_subscribed_check_box);

@@ -44,6 +44,7 @@ limitations under the License.
 
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/map_layers_checkbox_layout"
@@ -57,6 +58,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/select_map_layers_update_map_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -65,6 +67,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/select_map_layers_cancel_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

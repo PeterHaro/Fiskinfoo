@@ -81,7 +81,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import retrofit.client.Response;
 import retrofit.mime.TypedInput;
 
@@ -258,7 +258,7 @@ public class MapFragment extends Fragment {
 
 
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
-        final List<MapLayerCheckBoxRow> rows = new ArrayList<>();
+        final List<CheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
         LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
@@ -269,7 +269,7 @@ public class MapFragment extends Fragment {
             boolean isActive;
             isActive = layer.isVisible;
 
-            MapLayerCheckBoxRow row = utilityRowsInterface.getMapLayerCheckBoxRow(getActivity(), isActive, layer.name);
+            CheckBoxRow row = utilityRowsInterface.getCheckBoxRow(getActivity(), layer.name, isActive);
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);

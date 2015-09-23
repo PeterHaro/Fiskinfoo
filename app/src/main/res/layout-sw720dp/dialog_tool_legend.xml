@@ -44,6 +44,7 @@ limitations under the License.
 
         <LinearLayout
             android:id="@+id/tool_legend_bottom_button_container"
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -63,6 +64,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/tool_legend_dismiss_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

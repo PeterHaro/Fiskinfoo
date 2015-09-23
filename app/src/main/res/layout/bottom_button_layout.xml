@@ -12,6 +12,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <LinearLayout
+    android:id="@+id/bottom_button_container"
+    style="?android:attr/buttonBarStyle"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -22,7 +24,6 @@ limitations under the License.
     android:orientation="horizontal"
     android:paddingBottom="1.0dip"
     android:paddingLeft="4.0dip"
-    android:id="@+id/bottom_button_container"
     android:paddingRight="4.0dip"
     android:paddingTop="5.0dip">
 

@@ -14,9 +14,9 @@ limitations under the License.
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_height="match_parent">
+            android:layout_marginRight="@dimen/activity_horizontal_margin">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -25,12 +25,12 @@ limitations under the License.
         <TextView
             android:id="@+id/choose_map_layers_info_text_view"
             android:layout_width="wrap_content"
-            android:layout_marginTop="@dimen/select_map_layer_info_text_view_margin_top"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/map_layer_linear_layout_margin_right"
             android:layout_marginLeft="@dimen/map_layer_linear_layout_margin_left"
             android:layout_marginRight="@dimen/map_layer_linear_layout_margin_right"
             android:layout_marginStart="@dimen/map_layer_linear_layout_margin_left"
+            android:layout_marginTop="@dimen/select_map_layer_info_text_view_margin_top"
             android:text="@string/choose_map_layers_info"/>
 
         <LinearLayout
@@ -39,15 +39,16 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_below="@+id/choose_map_layers_info_text_view"
             android:layout_marginEnd="@dimen/map_layer_linear_layout_margin_right"
-            android:layout_marginTop="@dimen/map_layer_linear_layout_margin_top"
             android:layout_marginLeft="@dimen/map_layer_linear_layout_margin_left"
             android:layout_marginRight="@dimen/map_layer_linear_layout_margin_right"
             android:layout_marginStart="@dimen/map_layer_linear_layout_margin_left"
+            android:layout_marginTop="@dimen/map_layer_linear_layout_margin_top"
             android:orientation="vertical">
         </LinearLayout>
 
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -67,6 +68,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/select_map_layers_update_map_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -75,6 +77,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/select_map_layers_cancel_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

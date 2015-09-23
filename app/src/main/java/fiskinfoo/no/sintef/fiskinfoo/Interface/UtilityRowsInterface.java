@@ -15,25 +15,20 @@
 package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.view.View;
 
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 
 public interface UtilityRowsInterface {
     ToolLegendRow getToolLegendRow(Context context, int toolColor, String toolName);
-    MapLayerCheckBoxRow getMapLayerCheckBoxRow(Context context, boolean isChecked, String layerName);
     SettingsButtonRow getSettingsButtonRow(Context context, String buttonText);
     SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener);
-    FormatRow getFormatRow(Context context, String formatName);
-    CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName);
-    CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName, boolean isChecked);
+    CheckBoxRow getCheckBoxRow(Context context, String text);
+    CheckBoxRow getCheckBoxRow(Context context, String text, boolean isChecked);
     CardViewInformationRow getCardViewInformationRow(Context context, String fieldName, String fieldData, boolean indentData);
     CardViewInformationRow getCardViewInformationRow(Context context, String fieldName, String fieldData, boolean indentData, int textColor);
     RadioButtonRow getRadioButtonRow(Context context, String item);

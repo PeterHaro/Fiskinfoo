@@ -25,9 +25,10 @@ limitations under the License.
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            style="?android:attr/buttonBarStyle"
             android:layout_marginBottom="@dimen/bottom_button_container_margin_bottom"
-            android:layout_marginLeft="@dimen/bottom_button_container_margin_left"
-            android:layout_marginRight="@dimen/bottom_button_container_margin_right"
+            android:layout_marginStart="@dimen/bottom_button_container_margin_left"
+            android:layout_marginEnd="@dimen/bottom_button_container_margin_right"
             android:layout_marginTop="@dimen/bottom_button_container_margin_top"
             android:orientation="horizontal"
             android:paddingBottom="1.0dip"
@@ -37,6 +38,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/polar_low_ok_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

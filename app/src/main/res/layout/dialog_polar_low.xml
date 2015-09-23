@@ -23,6 +23,7 @@ limitations under the License.
         android:layout_height="wrap_content">
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/bottom_button_container_margin_bottom"
@@ -37,6 +38,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/polar_low_ok_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

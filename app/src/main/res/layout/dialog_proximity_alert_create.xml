@@ -79,17 +79,18 @@ limitations under the License.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:textStyle="normal"
                 android:layout_below="@+id/create_proximity_alert_format_text_view"
                 android:layout_marginLeft="@dimen/proximity_alert_spinner_margin_left"
                 android:layout_marginTop="@dimen/proximity_alert_spinner_margin_left"
-                android:text="@string/range_format_meters"/>
+                android:text="@string/range_format_meters"
+                android:textStyle="normal"/>
 
         </RelativeLayout>
 
 
         <LinearLayout
             android:id="@+id/create_proximity_alert_bottom_button_container"
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/create_proximity_alert_top_container"
@@ -103,6 +104,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/create_proximity_alert_create_alert_watcher_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -111,6 +113,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/create_proximity_alert_stop_existing_alert_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -120,6 +123,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/create_proximity_alert_cancel_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"

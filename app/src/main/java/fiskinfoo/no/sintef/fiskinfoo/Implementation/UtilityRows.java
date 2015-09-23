@@ -19,9 +19,7 @@ import android.view.View;
 
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxFormatRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.FormatRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.MapLayerCheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
@@ -30,11 +28,6 @@ public class UtilityRows implements UtilityRowsInterface {
     @Override
     public ToolLegendRow getToolLegendRow(Context context, int toolColor, String toolName) {
         return new ToolLegendRow(context, toolColor, toolName);
-    }
-
-    @Override
-    public MapLayerCheckBoxRow getMapLayerCheckBoxRow(Context context, boolean isChecked, String layerName) {
-        return new MapLayerCheckBoxRow(context, isChecked, layerName);
     }
 
     @Override
@@ -48,18 +41,13 @@ public class UtilityRows implements UtilityRowsInterface {
     }
 
     @Override
-    public FormatRow getFormatRow(Context context, String formatName) {
-        return new FormatRow(context, formatName);
+    public CheckBoxRow getCheckBoxRow(Context context, String text) {
+        return new CheckBoxRow(context, text);
     }
 
     @Override
-    public CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName) {
-        return new CheckBoxFormatRow(context, formatName);
-    }
-
-    @Override
-    public CheckBoxFormatRow getCheckBoxFormatRow(Context context, String formatName, boolean isChecked) {
-        return new CheckBoxFormatRow(context, formatName, isChecked);
+    public CheckBoxRow getCheckBoxRow(Context context, String text, boolean isChecked) {
+        return new CheckBoxRow(context, text, isChecked);
     }
 
     @Override

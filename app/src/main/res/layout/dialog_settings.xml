@@ -30,10 +30,11 @@ limitations under the License.
         <LinearLayout
             android:id="@+id/settings_dialog_fields_container"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content"></LinearLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/settings_dialog_fields_container"
@@ -46,6 +47,7 @@ limitations under the License.
 
             <Button
                 android:id="@+id/settings_dialog_close_button"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
