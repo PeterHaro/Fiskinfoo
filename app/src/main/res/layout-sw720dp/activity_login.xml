@@ -55,11 +55,21 @@ limitations under the License.
             android:layout_below="@+id/login_logo_view"
             android:layout_marginTop="@dimen/activity_vertical_margin">
 
+            <TextView
+                android:id="@+id/login_error_text_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:gravity="center"
+                android:textSize="@dimen/login_network_error_text_size"
+                android:visibility="gone"/>
+
             <AutoCompleteTextView
                 android:id="@+id/email_sign_in_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_below="@+id/login_error_text_field"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:hint="@string/prompt_email"
                 android:imeOptions="actionNext"
@@ -109,7 +119,7 @@ limitations under the License.
                 android:id="@+id/forgotten_password_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/sign_in_button"
+                android:layout_alignStart="@+id/sign_in_button"
                 android:layout_below="@+id/sign_in_button"
                 android:layout_marginTop="18dp"
                 android:text="@string/action_forgot_password"
@@ -120,7 +130,7 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/forgotten_password_text_view"
-                android:layout_alignRight="@+id/sign_in_button"
+                android:layout_alignEnd="@+id/sign_in_button"
                 android:text="@string/action_sign_up"
                 android:textColor="@color/hyperlink_blue"/>
 

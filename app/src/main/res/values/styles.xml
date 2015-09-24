@@ -20,6 +20,10 @@ limitations under the License.
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="tool_bar_style" >
+        <item name="android:textSize">30sp</item>
+    </style>
+
     <!-- Colours -->
     <color name="border_black">#000000</color>
     <color name="text_white">#FFFFFF</color>

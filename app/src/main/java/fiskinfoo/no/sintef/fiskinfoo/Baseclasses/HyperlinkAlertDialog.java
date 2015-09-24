@@ -32,18 +32,40 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class HyperlinkAlertDialog {
 
-    public static AlertDialog create(Context context, String title, String message, int iconId) {
-//        final TextView messageTextView = new TextView(context);
-//        final SpannableString s =
-//                new SpannableString(message);
-//        Linkify.addLinks(s, Linkify.WEB_URLS);
-//        messageTextView.setText(s);
-//        messageTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
+    public static AlertDialog create(Context context, String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle(title);
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ok, null);
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        TextView messageTextView = (TextView) inflater.inflate(R.layout.hyperlink_alert_dialog_text_view, null);
+
+        messageTextView.setPadding(30, 20, 30, 20);
+
+        if(!message.contains("href")) {
+            final SpannableString spannableString = new SpannableString(message);
+            Linkify.addLinks(spannableString, Linkify.WEB_URLS);
+            messageTextView.setText(spannableString);
+            messageTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            messageTextView.setMovementMethod(LinkMovementMethod.getInstance());
+            messageTextView.setText(Html.fromHtml(message));
+        }
+
+        builder.setView(messageTextView);
+
+        return builder.create();
+    }
+
+    public static AlertDialog create(Context context, String title, String message, int iconId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
         if(iconId != -1) {
             builder.setIcon(iconId);
         }
+
         builder.setTitle(title);
         builder.setCancelable(false);
         builder.setPositiveButton(R.string.ok, null);
@@ -58,28 +80,50 @@ public class HyperlinkAlertDialog {
 
         AlertDialog dialog = builder.create();
 
+        return dialog;
+    }
 
+    public static AlertDialog create(Context context, int titleId, int messageId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle(titleId);
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ok, null);
+
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        TextView messageView = (TextView) inflater.inflate(R.layout.hyperlink_alert_dialog_text_view, null);
+        final SpannableString spannableString = new SpannableString(context.getString(messageId));
+        Linkify.addLinks(spannableString, Linkify.WEB_URLS);
+        messageView.setText(spannableString);
+        messageView.setMovementMethod(LinkMovementMethod.getInstance());
+        builder.setView(messageView);
+
+        AlertDialog dialog = builder.create();
 
         return dialog;
     }
 
     public static AlertDialog create(Context context, int titleId, int messageId, int iconId) {
-        final TextView messageTextView = new TextView(context);
-        final SpannableString s =
-                new SpannableString(context.getString(messageId));
-        Linkify.addLinks(s, Linkify.WEB_URLS);
-        messageTextView.setText(s);
-        messageTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
         if(iconId != -1) {
             builder.setIcon(iconId);
         }
+
         builder.setTitle(titleId);
         builder.setCancelable(false);
         builder.setPositiveButton(R.string.ok, null);
-        builder.setView(messageTextView);
 
-        return builder.create();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        TextView messageView = (TextView) inflater.inflate(R.layout.hyperlink_alert_dialog_text_view, null);
+        final SpannableString spannableString = new SpannableString(context.getString(messageId));
+        Linkify.addLinks(spannableString, Linkify.WEB_URLS);
+        messageView.setText(spannableString);
+        messageView.setMovementMethod(LinkMovementMethod.getInstance());
+        builder.setView(messageView);
+
+        AlertDialog dialog = builder.create();
+
+        return dialog;
     }
 }

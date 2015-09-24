@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/recycle_view"
+    <TextView
+        android:id="@+id/my_page_network_error_text_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/my_page_network_error_text_view_margin_bottom"
+        android:layout_marginTop="@dimen/my_page_network_error_text_view_margin_top"
+        android:gravity="center"
+        android:textSize="@dimen/my_page_network_error_text_size"
+        android:visibility="gone"
+        />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/my_page_swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/my_page_network_error_text_view">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycle_view"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

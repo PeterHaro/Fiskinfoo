@@ -19,6 +19,7 @@
             app:tabIndicatorColor="@color/bright_foreground_material_dark"
             app:tabTextColor="@color/passive_orange"
             app:tabGravity="center"
+            app:tabTextAppearance="@style/tool_bar_style"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/bright_foreground_material_dark"/>
     </android.support.v7.widget.Toolbar>

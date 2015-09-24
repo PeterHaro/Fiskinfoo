@@ -20,12 +20,14 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -62,6 +64,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private MyPageExpandableListAdapter myPageExpandableListAdapter;
     private ExpandableListAdapterChildOnClickListener childOnClickListener;
     private RecyclerView mCRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private TextView mNetworkErrorTextView;
     private DialogInterface dialogInterface;
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -95,6 +99,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
         mCRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mCRecyclerView.setAdapter(myPageExpandableListAdapter);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.my_page_swipe_refresh_layout);
+        mNetworkErrorTextView = (TextView) v.findViewById(R.id.my_page_network_error_text_view);
         return v;
     }
 
@@ -115,6 +121,25 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
         }
 
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // TODO: Will not work if token has expired, should look into fixing this in general
+
+                if(!(fiskInfoUtility.isNetworkAvailable(getActivity()))) {
+                    toggleNetworkErrorTextView(false);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                } else {
+                    toggleNetworkErrorTextView(true);
+                }
+
+                ArrayList<ParentObject> data = fetchMyPage();
+                myPageExpandableListAdapter = new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
+                mCRecyclerView.setAdapter(myPageExpandableListAdapter);
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -142,7 +167,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             StrictMode.setThreadPolicy(policy);
             List<PropertyDescription> availableSubscriptions = api.getSubscribable();
 //            List<String> myWarnings = new ArrayList<>(); //TODO: Tie in polar low warning
-            List<Subscription> activeSubscriptions = api.getSubscriptions();
+//            List<Subscription> activeSubscriptions = api.getSubscriptions();
             List<Authorization> authorizations = api.getAuthorization();
             Map<Integer, Boolean> authMap = new HashMap<>();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
@@ -163,11 +188,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                 authMap.put(auth.Id, auth.HasAccess);
             }
 
-            // TODO: yes, hard coded values are bad, but I'm on a boat so chill.
-            if(authMap.containsKey(9)) {
-                user.setIsFishingFacilityAuthenticated(authMap.get(9));
-                user.writeToSharedPref(getActivity());
-            }
+            // Check and set access to fishingfacility data so we know this when loading the map later.
+            user.setIsFishingFacilityAuthenticated(authMap.get(availableSubscriptionsMap.containsKey(getString(R.string.fishing_facility_api_name)) == true ? availableSubscriptionsMap.get(getString(R.string.fishing_facility_api_name)).Id : -1));
+            user.writeToSharedPref(getActivity());
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
                 boolean isAuthed = authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false;
@@ -214,9 +237,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 //            parentObjectList.add(warningParent);
 //            parentObjectList.add(subscriptionParent);
 
-            childOnClickListener.setSubscriptions(activeSubscriptions);
+            childOnClickListener.setPropertyDescriptions(availableSubscriptions);
 //            childOnClickListener.setWarnings(myWarnings);
-//            childOnClickListener.setPropertyDescriptions(availableSubscriptions);
+//            childOnClickListener.setSubscriptions(activeSubscriptions);
 
         } catch (Exception e) {
             Log.d(TAG, "Exception occured: " + e.toString());
@@ -355,5 +378,13 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         return cardViewFragment;
     }
 
-
+    public void toggleNetworkErrorTextView(boolean hasInternet) {
+        if(!hasInternet) {
+            mNetworkErrorTextView.setText(R.string.no_internet_access);
+            mNetworkErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
+            mNetworkErrorTextView.setVisibility(View.VISIBLE);
+        } else {
+            mNetworkErrorTextView.setVisibility(View.GONE);
+        }
+    }
 }

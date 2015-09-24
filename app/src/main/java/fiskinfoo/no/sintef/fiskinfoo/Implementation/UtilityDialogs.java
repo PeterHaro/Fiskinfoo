@@ -81,6 +81,17 @@ public class UtilityDialogs implements DialogInterface{
     }
 
     @Override
+    public AlertDialog getInfoAlertDialog(Context context, String title, String info) {
+        return HyperlinkAlertDialog.create(context, title, info);
+
+    }
+
+    @Override
+    public AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId) {
+        return HyperlinkAlertDialog.create(context, titleId, infoId);
+    }
+
+    @Override
     public AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId, int iconId) {
         return HyperlinkAlertDialog.create(context, titleId, infoId, iconId);
     }

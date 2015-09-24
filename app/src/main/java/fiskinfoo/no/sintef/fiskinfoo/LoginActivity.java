@@ -70,21 +70,25 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView mErrorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mErrorTextView = (TextView) findViewById(R.id.login_error_text_field);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email_sign_in_edit_text);
+        mPasswordView = (EditText) findViewById(R.id.password_sign_in_edit_text);
+
         //Skip login form if the user requested it
         user = new User();
+
         loginUserIfStored();
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email_sign_in_edit_text);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password_sign_in_edit_text);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -130,7 +134,16 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             Log.d(TAG, "Could not find user");
             return;
         }
+
         user = User.readFromSharedPref(this);
+
+        if(!(new FiskInfoUtility().isNetworkAvailable(this))) {
+            toggleInternetErrorText(false);
+            mEmailView.setText(user.getUsername());
+            mPasswordView.setText(user.getPassword());
+            return;
+        }
+
         if(!user.isTokenValid()) {
             LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
             loginTask.execute((Void) null);
@@ -161,6 +174,11 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+
+        if(!(new FiskInfoUtility().isNetworkAvailable(this))) {
+            toggleInternetErrorText(true);
+            return;
+        }
 
         boolean cancel = false;
         View focusView = null;
@@ -193,6 +211,16 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+        }
+    }
+
+    public void toggleInternetErrorText(boolean hasInternet) {
+        if(!hasInternet) {
+            mErrorTextView.setText(R.string.no_internet_access);
+            mErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
+            mErrorTextView.setVisibility(View.VISIBLE);
+        } else {
+            mErrorTextView.setVisibility(View.GONE);
         }
     }
 

@@ -290,6 +290,11 @@ public class MapFragment extends Fragment {
                 user.setActiveLayers(layersList);
                 user.writeToSharedPref(getActivity());
                 dialog.dismiss();
+
+                if(layersList.contains(getString(R.string.fishing_facility_name)) && !user.getIsFishingFacilityAuthenticated()) {
+                    dialogInterface.getInfoAlertDialog(getActivity(), getString(R.string.about_fishing_facility_title), getString(R.string.about_fishing_facility_details)).show();
+                }
+
                 JSONArray json = new JSONArray(layersList);
                 browser.loadUrl("javascript:toggleLayers(" + json + ")");
 
@@ -342,7 +347,6 @@ public class MapFragment extends Fragment {
                 }
             }
         });
-
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -399,6 +403,8 @@ public class MapFragment extends Fragment {
                 } else {
                     cachedDistance = Double.valueOf(radiusEditText.getText().toString());
                 }
+
+                dialog.dismiss();
 
                 Response response;
 
@@ -522,11 +528,7 @@ public class MapFragment extends Fragment {
 
                 runScheduledAlarm(getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.proximity_alert_interval_time_seconds));
 
-
                 Toast.makeText(getActivity(), toastText, Toast.LENGTH_LONG).show();
-
-                dialog.dismiss();
-
             }
         });
 

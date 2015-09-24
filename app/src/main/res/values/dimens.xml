@@ -22,6 +22,7 @@ limitations under the License.
     <dimen name="login_logo_width">550dp</dimen>
     <dimen name="login_logo_height">105dp</dimen>
     <dimen name="seek_bar_label_length">70dp</dimen>
+    <dimen name="login_network_error_text_size">20sp</dimen>
 
     <!-- File dialog -->
     <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
@@ -157,6 +158,11 @@ limitations under the License.
     <dimen name="card_view_download_map_button_width">38dp</dimen>
     <dimen name="card_view_download_map_button_height">38dp</dimen>
     <dimen name="card_view_information_row_text_size">18sp</dimen>
+
+    <!-- MyPage fragment -->
+    <dimen name="my_page_network_error_text_size">20sp</dimen>
+    <dimen name="my_page_network_error_text_view_margin_top">15dp</dimen>
+    <dimen name="my_page_network_error_text_view_margin_bottom">15dp</dimen>
 
     <!-- Alert dialog -->
     <dimen name="hyperlink_alert_dialog_margin_left">10dp</dimen>
