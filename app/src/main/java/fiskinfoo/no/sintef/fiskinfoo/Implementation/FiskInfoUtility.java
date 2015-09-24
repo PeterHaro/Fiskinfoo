@@ -270,16 +270,13 @@ public class FiskInfoUtility {
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             String directoryName = "FiskInfo";
             filePath = directoryPath + "/" + directoryName + "/";
-            Toast.makeText(context, "Kunne ikke nå valgt filplassering, lagrer fil til /Download/FiskInfo", Toast.LENGTH_LONG).show();
         }
 
         try {
             outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
             outputStream.write(data);
 
-            Toast.makeText(context, R.string.disk_write_completed, Toast.LENGTH_LONG).show();
-            System.out.println("file write complete");
-
+            Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             e.printStackTrace();

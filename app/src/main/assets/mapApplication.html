@@ -156,7 +156,7 @@
             toolStyle.strokeColor = '${toolColor}';
             toolStyle.fillColor = '${toolColor}';
             toolStyle.fill = true;
-            toolStyle.pointRadius = 11;
+            toolStyle.pointRadius = '${pointRadius}';
             toolStyle.fillOpacity = 1;
             toolStyle.graphicName = "triangle";
 
@@ -166,15 +166,20 @@
                         if(feature.hasOwnProperty( 'geometry')) {
                             <!-- There is probably a better way of getting the tool type -->
                             var type = feature.geometry.toString().split("(")[0];
-
+                            var retVal;
                             if(type.toLowerCase() === "LineString".toLowerCase()) {
-                                return 10;
+                                retVal = map.getZoom() > 7 ? 10 : 1;
                             } else if(type.toLowerCase() === "Point".toLowerCase()) {
-                                return 1;
+                                retVal = map.getZoom() > 7 ? 1 : 1;
                             } else {
-                                return 5;
+                                retVal = 4;
                             }
+                            return retVal;
                         }
+                    },
+                    pointRadius: function(feature) {
+                            var retVal = map.getZoom() > 7 ? 11 : 3;
+                            return retVal;
                     },
                     toolColor: function(feature) {
                         if(feature.attributes.tooltypename === "Long line") {
