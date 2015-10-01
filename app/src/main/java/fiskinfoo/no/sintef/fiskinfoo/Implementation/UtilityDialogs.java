@@ -75,24 +75,48 @@ public class UtilityDialogs implements DialogInterface{
     }
 
     @Override
-    public AlertDialog getInfoAlertDialog(Context context, String title, String info, int iconId) {
+    public AlertDialog getAlertDialog(Context context, String title, String message, int iconId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, null);
+        if(iconId != -1) {
+            builder.setIcon(iconId);
+        }
+        return builder.create();
+    }
+
+    @Override
+    public AlertDialog getAlertDialog(Context context, int titleId, int messageId, int iconId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(titleId)
+                .setMessage(messageId)
+                .setPositiveButton(R.string.ok, null);
+        if(iconId != -1) {
+            builder.setIcon(iconId);
+        }
+        return builder.create();
+    }
+
+    @Override
+    public AlertDialog getHyperlinkAlertDialog(Context context, String title, String info, int iconId) {
         return HyperlinkAlertDialog.create(context, title, info, iconId);
 
     }
 
     @Override
-    public AlertDialog getInfoAlertDialog(Context context, String title, String info) {
-        return HyperlinkAlertDialog.create(context, title, info);
+    public AlertDialog getHyperlinkAlertDialog(Context context, String title, String message) {
+        return HyperlinkAlertDialog.create(context, title, message);
 
     }
 
     @Override
-    public AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId) {
+    public AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId) {
         return HyperlinkAlertDialog.create(context, titleId, infoId);
     }
 
     @Override
-    public AlertDialog getInfoAlertDialog(Context context, int titleId, int infoId, int iconId) {
+    public AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId, int iconId) {
         return HyperlinkAlertDialog.create(context, titleId, infoId, iconId);
     }
 }

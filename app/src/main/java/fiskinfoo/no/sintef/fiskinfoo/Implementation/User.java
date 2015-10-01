@@ -24,7 +24,10 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.OfflineCache;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
 
 public class User implements Parcelable{
@@ -44,11 +47,13 @@ public class User implements Parcelable{
     private List<String> activeLayers;
     private List<String> mySubscriptions;
     private List<String> availableSubscriptions;
-    private Boolean isAuthenticated; //False == anon user, I.E no permission
+    private boolean isAuthenticated; //False == anon user, I.E no permission
     private boolean isFishingFacilityAuthenticated;
+    private OfflineCache offlineCache;
+
 
     public User() {
-        isAuthenticated = false;
+        offlineCache = new OfflineCache();
     }
 
     protected User(Parcel in) {
@@ -60,6 +65,9 @@ public class User implements Parcelable{
         activeLayers = in.createStringArrayList();
         mySubscriptions = in.createStringArrayList();
         availableSubscriptions = in.createStringArrayList();
+        isAuthenticated = in.readByte() != 0;
+        isFishingFacilityAuthenticated = in.readByte() != 0;
+        offlineCache = in.readParcelable(OfflineCache.class.getClassLoader());
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -82,6 +90,7 @@ public class User implements Parcelable{
         if(authentication == null) {
             return false;
         }
+
         if ((System.currentTimeMillis() / 1000L) - previousAuthenticationTimeStamp > (authentication.expires_in + 600)) {
             return false;
         } else {
@@ -138,7 +147,7 @@ public class User implements Parcelable{
     }
 
 
-    public Boolean isAuthenticated() {
+    public Boolean getIsAuthenticated() {
         return isAuthenticated;
     }
 
@@ -196,6 +205,25 @@ public class User implements Parcelable{
         this.authentication = authentication;
     }
 
+    public boolean getOfflineMode() {
+        return (offlineCache.getisActive());
+    }
+
+    public void setOfflineMode(boolean isOffline) {
+        offlineCache.setActive(isOffline);
+    }
+
+    public void updateOfflineCache(String name, String date) {
+        offlineCache.setLatestVersion(name, date);
+    }
+
+    public Set<Map.Entry<String, String>> getOfflineCacheEntries() {
+        return offlineCache.getEntries();
+    }
+
+    public String getLastUpdatedOfflineCacheTime(String name) {
+        return offlineCache.getLatestVersion(name);
+    }
 
     @Override
     public int describeContents() {
@@ -212,5 +240,8 @@ public class User implements Parcelable{
         dest.writeStringList(activeLayers);
         dest.writeStringList(mySubscriptions);
         dest.writeStringList(availableSubscriptions);
+        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
+        dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
+        dest.writeParcelable(offlineCache, flags);
     }
 }

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -32,15 +33,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
@@ -49,6 +58,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authori
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
@@ -57,6 +67,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -66,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
     private UtilityDialogs dialogInterface;
     private FiskInfoUtility fiskInfoUtility;
     private User user;
-    private boolean proximityAlerterRunning = false;
+    private ScheduledFuture offlineModeBackGroundThread;
+    private RelativeLayout toolbarOfflineModeView;
+    boolean offlineModeLooperPrepared = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "did not receive user");
         }
 
-        setupToolbar();
         utilityRowsInterface = new UtilityRows();
         onClickListenerInterface = new UtilityOnClickListeners();
         dialogInterface = new UtilityDialogs();
         fiskInfoUtility = new FiskInfoUtility();
+        setupToolbar();
     }
 
     private void setupToolbar() {
@@ -91,6 +104,15 @@ public class MainActivity extends AppCompatActivity {
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
+
+        toolbarOfflineModeView = (RelativeLayout) toolbar.findViewById(R.id.toolbar_offline_mode_container);
+
+        if(user.getOfflineMode()) {
+            initAndStartOfflineModeBackgroundThread();
+        }
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
     }
 
     private void setupTabsInToolbar(TabLayout tl) {
@@ -186,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
                 selectedFormat.set(listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition));
 
                 LinearLayout currentlySelected = (LinearLayout) parent.findViewWithTag("currentlySelectedRow");
-                if(currentlySelected != null) {
+                if (currentlySelected != null) {
                     currentlySelected.getChildAt(0).setBackgroundColor(Color.WHITE);
                     currentlySelected.setTag(null);
                 }
 
-                ((LinearLayout)v).getChildAt(0).setBackgroundColor(Color.rgb(214, 214, 214));
+                ((LinearLayout) v).getChildAt(0).setBackgroundColor(Color.rgb(214, 214, 214));
                 v.setTag("currentlySelectedRow");
                 return true;
             }
@@ -203,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 String format = selectedFormat.get();
                 Response response = null;
 
-                if(apiName == null || format == null) {
+                if (apiName == null || format == null) {
                     Toast.makeText(v.getContext(), R.string.error_no_format_selected, Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -214,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "RESPONSE == NULL");
                     }
                     byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-                    if(fiskInfoUtility.isExternalStorageWritable()) {
+                    if (fiskInfoUtility.isExternalStorageWritable()) {
                         fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage());
                     } else {
                         Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
@@ -222,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                } catch(Exception e) {
+                } catch (Exception e) {
                     Log.d(TAG, "Could not download with ApiName: " + apiName + "  and format: " + format);
                 }
                 dialog.dismiss();
@@ -239,26 +261,27 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.settings_dialog_fields_container);
         Button closeDialogButton = (Button) dialog.findViewById(R.id.settings_dialog_close_button);
+        SettingsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
+        SwitchAndButtonRow toggleOfflineModeRow = utilityRowsInterface.getSwitchAndButtonRow(this, getString(R.string.offline_mode));
+        SettingsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
 
-        SettingsButtonRow setDownloadPathButton = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
-        SettingsButtonRow logOutButton = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
+        String offlineModeInfo;
 
-        setDownloadPathButton.setButtonOnClickListener(new View.OnClickListener() {
+        setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createSetFileDownloadPathDialog();
             }
         });
 
-        logOutButton.setButtonOnClickListener(new View.OnClickListener() {
+        logOutButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(v.getContext())
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setTitle(getString(R.string.log_out))
                         .setMessage(getString(R.string.confirm_log_out))
-                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener()
-                        {
+                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 userLogout();
@@ -270,12 +293,124 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        linearLayout.addView(setDownloadPathButton.getView());
-        linearLayout.addView(logOutButton.getView());
+        offlineModeInfo = getString(R.string.offline_mode_info);
+
+        if(user.getOfflineCacheEntries().size() > 0) {
+            offlineModeInfo += "\n\n" + "Følgende kartlag er lagret:\n";
+        }
+
+        for (Map.Entry<String, String> entry : user.getOfflineCacheEntries())
+        {
+            offlineModeInfo += entry.getKey() + ": \n\t\t\t" + entry.getValue().replace("T", " ") + "\n";
+        }
+
+        toggleOfflineModeRow.setButtonOnClickListener(onClickListenerInterface.getInformationDialogOnClickListener(getString(R.string.offline_mode), offlineModeInfo, android.R.drawable.ic_dialog_info));
+
+        toggleOfflineModeRow.setChecked(user.getOfflineMode());
+        toggleOfflineModeRow.setSwitchOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                user.setOfflineMode(isChecked);
+                user.writeToSharedPref(buttonView.getContext());
+
+                if (isChecked) {
+                    initAndStartOfflineModeBackgroundThread();
+                    Toast.makeText(buttonView.getContext(), R.string.offline_mode_activated, Toast.LENGTH_LONG).show();
+                } else {
+                    stopOfflineModeBackgroundThread();
+                    Toast.makeText(buttonView.getContext(), R.string.offline_mode_deactivated, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        linearLayout.addView(toggleOfflineModeRow.getView());
+        linearLayout.addView(setDownloadPathButtonRow.getView());
+        linearLayout.addView(logOutButtonRow.getView());
 
         closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
 
         dialog.show();
+    }
+
+    private void stopOfflineModeBackgroundThread() {
+        if (offlineModeBackGroundThread != null) {
+            offlineModeBackGroundThread.cancel(true);
+            offlineModeBackGroundThread = null;
+            offlineModeLooperPrepared = false;
+        }
+
+        toolbarOfflineModeView.setVisibility(View.GONE);
+    }
+
+    private void initAndStartOfflineModeBackgroundThread() {
+        View.OnClickListener onClickListener = onClickListenerInterface.getOfflineModeInformationIconOnClickListener(user);
+
+        toolbarOfflineModeView.setOnClickListener(onClickListener);
+
+        offlineModeBackGroundThread = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                BarentswatchApi barentswatchApi = new BarentswatchApi();
+                IBarentswatchApi api = barentswatchApi.getApi();
+                List<PropertyDescription> subscribables;
+                Response response;
+                String downloadPath;
+                String format = "JSON";
+                byte[] data = null;
+                Date lastUpdated = null;
+                Date lastUpdatedCache = null;
+                String lastUpdatedCacheValue;
+
+                subscribables = api.getSubscribable();
+                downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+
+                if(!offlineModeLooperPrepared) {
+                    Looper.prepare();
+                    offlineModeLooperPrepared = true;
+                }
+
+                for(PropertyDescription subscribable : subscribables) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    lastUpdatedCacheValue = user.getLastUpdatedOfflineCacheTime(subscribable.Name) != null ? user.getLastUpdatedOfflineCacheTime(subscribable.Name) : "2000-00-00T00:00:00";
+
+                    try {
+                        lastUpdated = simpleDateFormat.parse(subscribable.LastUpdated);
+                        lastUpdatedCache = simpleDateFormat.parse(lastUpdatedCacheValue);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "Invalid datetime provided");
+                        continue;
+                    }
+
+                    if(lastUpdated.getTime() > lastUpdatedCache.getTime()){
+                    } else {
+                        continue;
+                    }
+
+                    response = api.geoDataDownload(subscribable.ApiName, format);
+
+                    if(response.getStatus() != 200) {
+                        Log.i(TAG, "Download failed");
+                        continue;
+                    }
+
+                    try {
+                        data = FiskInfoUtility.toByteArray(response.getBody().in());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath);
+                    user.updateOfflineCache(subscribable.Name, subscribable.LastUpdated);
+                }
+
+                user.writeToSharedPref(getBaseContext());
+                Log.i(TAG, "Offline mode update");
+                System.out.println("BEEP");
+            }
+        }, getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.offline_mode_interval_time_seconds), TimeUnit.SECONDS);
+
+        toolbarOfflineModeView.setVisibility(View.VISIBLE);
     }
 
     private void userLogout() {

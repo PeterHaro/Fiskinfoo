@@ -22,10 +22,10 @@ public enum ApiErrorType {
         String retVal = "";
         switch(this) {
             case NONE:
-                retVal = "Ingen feil";
+                retVal = "none";
                 break;
             case WARNING:
-                retVal = "Advarsel";
+                retVal = "Warning";
                 break;
             case ERROR:
                 retVal = "Error";

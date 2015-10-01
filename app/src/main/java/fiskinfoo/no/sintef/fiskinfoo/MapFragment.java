@@ -184,7 +184,11 @@ public class MapFragment extends Fragment {
 
         });
 
-        browser.loadUrl("file:///android_asset/mapApplication.html");
+        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+            browser.loadUrl("file:///android_asset/mapApplication.html");
+        } else {
+            browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
+        }
     }
 
     public class JavaScriptInterface {
@@ -205,6 +209,7 @@ public class MapFragment extends Fragment {
             try {
                 layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
+                e.printStackTrace();
                 //TODO
             }
         }
@@ -292,7 +297,7 @@ public class MapFragment extends Fragment {
                 dialog.dismiss();
 
                 if(layersList.contains(getString(R.string.fishing_facility_name)) && !user.getIsFishingFacilityAuthenticated()) {
-                    dialogInterface.getInfoAlertDialog(getActivity(), getString(R.string.about_fishing_facility_title), getString(R.string.about_fishing_facility_details)).show();
+                    dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.about_fishing_facility_title), getString(R.string.about_fishing_facility_details)).show();
                 }
 
                 JSONArray json = new JSONArray(layersList);
@@ -371,7 +376,6 @@ public class MapFragment extends Fragment {
         setProximityAlertWatcherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: implement
                 String toastText;
 
                 if (proximityAlertWatcher == null) {
@@ -688,8 +692,6 @@ public class MapFragment extends Fragment {
             } // This is your code
         };
         mainHandler.post(myRunnable);
-
-
     }
 
     @Override

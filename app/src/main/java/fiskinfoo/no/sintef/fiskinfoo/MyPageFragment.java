@@ -251,11 +251,16 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
 
-        View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
         View.OnClickListener subscriptionSwitchClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null;
+
         View.OnClickListener downloadButtonOnClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1);
+
+        if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
+            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
+            currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
+        }
 
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
         currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
@@ -265,7 +270,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
         currentPropertyDescriptionChildObject.setErrorType(ApiErrorType.getType(subscription.ErrorType));
-        currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
 
         return currentPropertyDescriptionChildObject;
     }

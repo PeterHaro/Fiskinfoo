@@ -20,6 +20,8 @@ limitations under the License.
     <integer name="proximity_alert_minimum_warning_range_meters">50</integer>
     <integer name="proximity_alert_interval_time_seconds">30</integer>
 
+    <integer name="offline_mode_interval_time_seconds">1800</integer>
+
     <integer name="subscription_name_cut_off_length">10</integer>
     <integer name="subscription_name_shortened_name_length">12</integer>
 

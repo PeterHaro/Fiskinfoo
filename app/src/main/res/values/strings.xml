@@ -26,6 +26,7 @@ limitations under the License.
     <string name="update">Oppdater</string>
     <string name="placeholder_string">Placeholder</string>
     <string name="no_internet_access">Ingen internett-tilgang</string>
+    <string name="map_to_plotter">Kart til din kartplotter</string>
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -111,8 +112,12 @@ limitations under the License.
     <string name="close_settings">Lukk innstillingsvindu</string>
     <string name="settings">Innstillinger</string>
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
-    <string name="map_to_plotter">Kart til din kartplotter</string>
-
+    <string name="offline_mode">Offline-modus</string>
+    <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.</string>
+    <string name="offline_mode_info_downloads">Under kan du se hvilke kartlag som er lagret for øyeblikket, samt når disse sist ble oppdatert:</string>
+    <string name="offline_mode_activated">Offline-modus aktivert</string>
+    <string name="offline_mode_deactivated">Offline-modus stoppet</string>
+    <string name="offline_mode_active">Offline-modus aktiv</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Epostadresse</string>

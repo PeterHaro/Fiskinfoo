@@ -329,7 +329,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
-                System.out.println("Seems OK: " + auth.access_token);
                 return auth.access_token != null ? true : false;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
@@ -342,14 +341,14 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mAuthTask = null;
             showProgress(false);
             if (success) {
-                System.out.println("Found success");
-
                 user.setAuthentication(true);
                 user.setUsername(mEmail);
                 user.setPassword(mPassword);
                 user.setAuthentication(authenticationResponse.get());
                 user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
-                user.setActiveLayers(new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.map_layer_names_array))));
+                if(user.getActiveLayers() == null) {
+                    user.setActiveLayers(new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.map_layer_names_array))));
+                }
                 if(storeUserToDisk.isChecked()) {
                     user.rememberUser(LoginActivity.this);
                     user.writeToSharedPref(LoginActivity.this);

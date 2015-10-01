@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Barentswatch FiskInfo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" defer="defer" src="http://openlayers.org/api/OpenLayers.js"></script>
+    <script>
+        var map;
+        var ls;
+        var mFeature;
+        var selectFeature;
+        var geoJson = null;
+        var token = null;
+        var sensor = false;
+        var format = "image/jpeg";
+        window.onload = function () {
+            init();
+        }
+        var init = function () {
+            // create map
+            map = new OpenLayers.Map({
+                div: "map",
+                theme: null,
+                projection: 'EPSG:3857',
+                controls: [
+                    new OpenLayers.Control.Attribution(),
+                    new OpenLayers.Control.TouchNavigation({
+                        dragPanOptions: {
+                            enableKinetic: true
+                        }
+                    }),
+                    new OpenLayers.Control.Zoom()
+                ],
+                layers: [
+                    new OpenLayers.Layer.WMS(
+	      		"Grunnkart", "http://opencache.statkart.no/gatekeeper/gk/gk.open?",
+		      	{ layers: 'sjo_hovedkart2', format: 'image/png' },
+                        { 'displayInLayerSwitcher': false }, {
+                            isBaseLayer: true
+                        }
+
+	      	)
+                ],
+                center: new OpenLayers.LonLat(15, 66.5).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
+                zoom: 5
+            });
+        };
+
+        function populateMap(authenticated) {
+            if (authenticated === 1) {
+                map.addLayers(populateAuthenticatedUser());
+                var mToken = getToken();
+                corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
+            } else {
+                map.addLayers(populateAllAvailableWmsLayers());
+            }
+            toggleAllLayersInvisible();
+        }
+
+        function Container(name, isVisible) {
+            this.name = name;
+            this.isVisible = isVisible;
+        }
+
+        function getLayersAndState() {
+            var retval = [];
+            var layerArray = getLayers();
+            for (var i = 0; i < layerArray.length; i++) {
+                if (getLayerVisibilityByName(layerArray[i])) {
+                    var c = new Container(layerArray[i], true);
+                    retval.push(c);
+                } else {
+                    var co = new Container(layerArray[i], false);
+                    retval.push(co);
+                }
+            }
+            message = JSON.stringify(retval);
+            Android.setMessage(message);
+        }
+
+        function toggleLayers(layers) {
+            toggleAllLayersInvisible();
+            for (var i = 0; i < layers.length; i++) {
+                toggleLayerVisibilityByName(layers[i], true);
+            }
+        }
+
+        function corsErrBack(error) {
+            var i = 5;
+            alert(error);
+        }
+
+        /**
+         * Make a X-Domain request to url and callback.
+         *
+         * @param url {String}
+         * @param method {String} HTTP verb ('GET', 'POST', 'DELETE', etc.)
+         * @param data {String} request body
+         * @param callback {Function} to callback on completion
+         * @param errback {Function} to callback on error
+         */
+        function corsRequest(url, method, data, callback, errback, authToken) {
+            var req;
+            var token = null;
+            if (authToken !== null) {
+                if (typeof authToken !== 'undefined') {
+                    token = authToken;
+                }
+            }
+            if (XMLHttpRequest) {
+                req = new XMLHttpRequest();
+                if ('withCredentials' in req) {
+                    req.open(method, url, true);
+                    req.setRequestHeader('Authorization',
+                        'Bearer ' + token)
+                    req.onerror = errback;
+                    req.onreadystatechange = function () {
+                        if (req.readyState === 4) {
+                            if (req.status >= 200 && req.status < 400) {
+                                callback(req.responseText);
+                            } else {
+                                errback(new Error('Response returned with non-OK status'));
+                            }
+                        }
+                    };
+                    req.send(data);
+                }
+            } else if (XDomainRequest) {
+                req = new XDomainRequest();
+                req.open(method, url);
+                req.onerror = errback;
+                req.onload = function () {
+                    callback(req.responseText);
+                };
+                req.send(data);
+            } else {
+                errback(new Error('CORS not supported'));
+            }
+        }
+
+        function getToken() {
+            token = Android.getToken();
+            return token;
+        }
+
+        function parseGeoJsonResponse(data) {
+            geoJson = data;
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            var toolStyle = OpenLayers.Util.extend( {}, OpenLayers.Feature.Vector.style[ 'default' ] );
+
+            toolStyle.strokeWidth = '${strokeWidth}';
+            toolStyle.strokeColor = '${toolColor}';
+            toolStyle.fillColor = '${toolColor}';
+            toolStyle.fill = true;
+            toolStyle.pointRadius = '${pointRadius}';
+            toolStyle.fillOpacity = 1;
+            toolStyle.graphicName = "triangle";
+
+            var toolsStyleLayer = new OpenLayers.Style( toolStyle, {
+                context: {
+                    strokeWidth: function(feature) {
+                        if(feature.hasOwnProperty( 'geometry')) {
+                            <!-- There is probably a better way of getting the tool type -->
+                            var type = feature.geometry.toString().split("(")[0];
+                            var retVal;
+                            if(type.toLowerCase() === "LineString".toLowerCase()) {
+                                retVal = map.getZoom() > 7 ? 10 : 1;
+                            } else if(type.toLowerCase() === "Point".toLowerCase()) {
+                                retVal = map.getZoom() > 7 ? 1 : 1;
+                            } else {
+                                retVal = 4;
+                            }
+                            return retVal;
+                        }
+                    },
+                    pointRadius: function(feature) {
+                            var retVal = map.getZoom() > 7 ? 11 : 3;
+                            return retVal;
+                    },
+                    toolColor: function(feature) {
+                        if(feature.attributes.tooltypename === "Long line") {
+                            return "#F30F0F";
+                        } else if(feature.attributes.tooltypename === "Nets") {
+                            return "#0881D7";
+                        }  else if(feature.attributes.tooltypename === "Crab pot") {
+                            return "#FF6500";
+                        }  else if(feature.attributes.tooltypename === "Seismic") {
+                            return "#A06C49";
+                        }  else if(feature.attributes.tooltypename === "Danish- / Purse- Seine") {
+                            return "#9933CC";
+                        }  else if(feature.attributes.tooltypename === "Sensor / Cable") {
+                            return "#75A103";
+                        }  else if(feature.attributes.tooltypename === "Mooring system") {
+                            return "#FF42E5";
+                        }  else {
+                            return "#000000";
+                        }
+                    },
+                }
+            });
+
+            var toolsStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 2
+                })
+            });
+
+            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap", {styleMap: toolsStyleMap});
+
+            toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
+
+            map.addLayer(toolsVectorLayer);
+            selectFeature = new OpenLayers.Control.SelectFeature(
+            toolsVectorLayer, {
+                onSelect: clickNotice,
+                onUnselect: onPopupFeatureUnselect,
+                autoActivate: true
+            });
+            map.addControl(selectFeature);
+        }
+
+        function getLayers() {
+            var mLayers = map.layers;
+            var retval = [];
+            for (var a = 0; a < mLayers.length; a++) {
+                retval.push(mLayers[a].name);
+            };
+            return retval;
+        }
+
+        function getLayerVisibilityByName(name) {
+            var layer = map.getLayersByName(name)[0];
+            return layer.visibility;
+        }
+
+        function toggleAllLayersInvisible() {
+            var layers = getLayers();
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i] === "Grunnkart") {
+                    continue;
+                }
+                toggleLayerVisibilityByName(layers[i], false);
+            }
+        }
+
+        function toggleLayerVisibilityByName(name, visibility) {
+            var layer = map.getLayersByName(name)[0];
+            layer.setVisibility(visibility);
+        }
+
+        function populateAllAvailableWmsLayers() {
+            var layers = [
+                 new OpenLayers.Layer.WMS(
+                    "Redskap", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:fishingfacility_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }), new OpenLayers.Layer.WMS(
+                    "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:iceedge_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:npdfacility_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:npdsurveyongoing_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bwdev:npdsurveyplanned_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
+            {
+                LAYERS: 'peter:points',
+                transparent: true,
+                STYLES: '',
+                format: format
+            },
+            {
+                singleTile: true,
+                ratio: 1,
+                isBaseLayer: false,
+                yx: { 'EPSG:4326': true }
+            }
+        )];
+            return layers;
+        }
+
+        function populateAuthenticatedUser() {
+            var layers = [
+                new OpenLayers.Layer.WMS(
+                "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:iceedge_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bw:npdfacility_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:npdsurveyongoing_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bwdev:npdsurveyplanned_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
+            {
+                LAYERS: 'peter:points',
+                transparent: true,
+                STYLES: 'strike_probability',
+                format: format
+            },
+            {
+                singleTile: true,
+                ratio: 1,
+                isBaseLayer: false,
+                yx: { 'EPSG:4326': true }
+            }
+        )];
+            return layers;
+        }
+
+        function clickNotice(feature) {
+            mFeature = feature;
+            var vesselName;
+            var phoneNumber;
+            var toolDate;
+            var toolType;
+            var position;
+            if (feature.data.vesselname != null) {
+                vesselName = "Fartøynavn: " + feature.data.vesselname;
+            } else {
+                vesselName = "Fartøynavn: " + "Ikke tilgjengelig";
+            }
+            if (feature.data.vesselphone != null) {
+                phoneNumber = "Telefonnummer: " + feature.data.vesselphone;
+            } else {
+                phoneNumber = "Telefonnummer: " + "Ikke tilgjengelig";
+            }
+            if (feature.data.setupdatetime != null) {
+                toolDate = "Redskapet ble satt: " + feature.data.setupdatetime.replace(/[^\d.:-]/g, ' ');
+            } else {
+                toolDate = "Redskapet ble satt: " + "Ikke tilgjengelig";
+            }
+            if (feature.data.tooltypename != null) {
+                toolType = "Redskapstype: '" + feature.data.tooltypename + "'";
+            } else {
+                toolType = "Redskapstype: " + "Ikke tilgjengelig";
+            }
+            if(feature.geometry != null) {
+                var wgs84 = feature.geometry.clone();
+                wgs84.transform("EPSG:900913", "EPSG:4326");
+                position = "Posisjon: " + wgs84.getBounds().getCenterLonLat().lat + ", " + wgs84.getBounds().getCenterLonLat().lon;
+            } else {
+                position = "Posisjon: " + "Ikke tilgjengelig";
+            }
+            popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+            feature.geometry.getBounds().getCenterLonLat(),
+                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolType + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
+            popup.panMapIfOutOfView = true;
+            popup.autoSize = true;
+            feature.popup = popup;
+            map.addPopup(popup);
+
+        }
+
+        function onPopupFeatureUnselect(feature) {
+            map.removePopup(feature.popup);
+            feature.popup.destroy();
+            feature.popup = null;
+        }
+
+        function onPopupClose(evt) {
+            selectFeature.unselect(mFeature);
+        }
+
+        function populateUserPosition(callback) {
+            /*Based on W3C standards specification: http://dev.w3.org/geo/api/spec-source.html */
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(callback, fail, { timeout: 60000 });
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+        function zoomToUserPosition() {
+            sensor = populateUserPosition(function (position) {
+                var userPosition = new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+                map.setCenter(userPosition, 14);
+            });
+        }
+
+        function fail() {
+            alert("Venligst sjekk om du har internett forbindelse");
+        }
+
+    </script>
+    <style>
+        html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        }
+
+        @media only screen and (max-width: 600px) {
+        html, body {
+        height: 100%;
+        }
+        }
+
+        p {
+        margin: 0;
+        }
+
+        #map {
+        width: 100%;
+        position: relative;
+        height: 100%;
+        }
+
+        .olControlAttribution {
+        position: absolute;
+        font-size: 10px;
+        bottom: 0 !important;
+        right: 0 !important;
+        background: rgba(0,0,0,0.1);
+        font-family: Arial;
+        padding: 2px 4px;
+        border-radius: 5px 0 0 0;
+        }
+
+        #Redskapsinformasjon_close {
+        background-color: cornflowerblue;
+        }
+
+        #Redskapsinformasjon_close:before {
+        content: "X";
+        text-align: center;
+        }
+
+        #title, #tags, #shortdesc {
+        display: none;
+        }
+
+        div.olControlZoom {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(255,255,255,0.4);
+        border-radius: 4px;
+        padding: 2px;
+        }
+
+        * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        div.olControlZoom a {
+        display: block;
+        margin: 1px;
+        padding: 0;
+        color: white;
+        font-size: 28px;
+        font-family: sans-serif;
+        font-weight: bold;
+        text-decoration: none;
+        text-align: center;
+        height: 32px;
+        width: 32px;
+        line-height: 28px;
+        text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        background: #130085; /* fallback for IE - IE6 requires background shorthand*/
+        background: rgba(0, 60, 136, 0.5);
+        filter: alpha(opacity=80);
+        }
+
+        a.olControlZoomIn {
+        border-radius: 4px 4px 0 0;
+        }
+
+        a.olControlZoomOut {
+        border-radius: 0 0 4px 4px;
+        }
+
+        div.olControlZoom a:hover {
+        background: #130085; /* fallback for IE */
+        background: rgba(0, 60, 136, 0.7);
+        filter: alpha(opacity=100);
+        }
+
+        @media only screen and (max-width: 600px) {
+        div.olControlZoom a:hover {
+        background: rgba(0, 60, 136, 0.5);
+        }
+        }
+
+        div.olMapViewport {
+        -ms-touch-action: none;
+        }
+
+        .olLayerGrid .olTileImage {
+        -webkit-transition: opacity 0.2s linear;
+        -moz-transition: opacity 0.2s linear;
+        -o-transition: opacity 0.2s linear;
+        transition: opacity 0.2s linear;
+        }
+        /* Turn on GPU support where available */
+        .olTileImage {
+        -webkit-transform: translateZ(0);
+        -moz-transform: translateZ(0);
+        -o-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        -ms-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        -moz-perspective: 1000;
+        -ms-perspective: 1000;
+        perspective: 1000;
+        }
+    </style>
+
+</head>
+<body>
+<h1 id="title">FiskInfo test av redskapskartet</h1>
+<div id="tags">
+    mobile
+</div>
+<p id="shortdesc">
+    FiskInfo Karttjeneste
+</p>
+<div id="map"></div>
+</body>
+</html>

@@ -32,6 +32,13 @@ public class CheckBoxRow extends BaseTableRow {
         mCheckBox = (CheckBox) getView().findViewById(R.id.check_box_row_check_box);
 
         mTextView.setText(format);
+
+        getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCheckBox.setChecked(!mCheckBox.isChecked());
+            }
+        });
     }
 
     public CheckBoxRow(Context context, String buttonText, boolean isChecked) {
@@ -42,6 +49,13 @@ public class CheckBoxRow extends BaseTableRow {
 
         mTextView.setText(buttonText);
         mCheckBox.setChecked(isChecked);
+
+        getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCheckBox.setChecked(!mCheckBox.isChecked());
+            }
+        });
     }
 
     public void setText(String buttonText) {

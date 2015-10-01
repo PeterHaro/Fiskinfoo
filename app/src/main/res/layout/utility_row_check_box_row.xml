@@ -14,7 +14,9 @@ limitations under the License.
 
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content">
+          android:layout_height="wrap_content"
+          android:paddingBottom="@dimen/check_box_row_padding_bottom"
+          android:paddingTop="@dimen/check_box_row_padding_top">
 
     <CheckBox
         android:id="@+id/check_box_row_check_box"
@@ -23,8 +25,8 @@ limitations under the License.
         android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
         android:layout_marginLeft="@dimen/check_box_row_check_box_margin_left"
         android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-        android:duplicateParentState="true"
-        />
+        android:clickable="false"
+        android:duplicateParentState="true"/>
 
     <TextView
         android:id="@+id/check_box_row_text_view"

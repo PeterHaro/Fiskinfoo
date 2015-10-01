@@ -57,11 +57,11 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getShowToastListener(final Context context, final String toastString) {
+    public View.OnClickListener getShowToastListener(final Context context, final String message) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, toastString, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             }
         };
     }
@@ -145,33 +145,68 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getInformationDialogOnClickListener(final String title, final String info, final int iconId) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new UtilityDialogs().getInfoAlertDialog(v.getContext(), title, info, iconId).show();
-            }
-        };
+    public View.OnClickListener getInformationDialogOnClickListener(final String title, final String message, final int iconId) {
+        View.OnClickListener onClickListener;
+
+        if(message.contains("href") || message.contains("www.")) {
+            onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), title, message, iconId).show();
+                }
+            };
+        } else {
+            onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new UtilityDialogs().getAlertDialog(v.getContext(), title, message, iconId).show();
+                }
+            };
+        }
+
+        return onClickListener;
     }
 
     @Override
-    public View.OnClickListener getInformationDialogOnClickListener(final int titleId, final int infoId, final int iconId) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new UtilityDialogs().getInfoAlertDialog(v.getContext(), titleId, infoId, iconId).show();
-            }
-        };
+    public View.OnClickListener getInformationDialogOnClickListener(final int titleId, final int messageId, final int iconId) {
+        View.OnClickListener onClickListener;
+
+            onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String message = v.getResources().getString(messageId);
+                    if(message.contains("href") || message.contains("www.")) {
+                        new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), titleId, messageId, iconId).show();
+                    } else {
+                        new UtilityDialogs().getAlertDialog(v.getContext(), titleId, messageId, iconId).show();
+                    }
+                }
+            };
+
+        return onClickListener;
     }
 
     @Override
     public View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new UtilityDialogs().getInfoAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
-            }
-        };
+        View.OnClickListener onClickListener;
+
+        if(subscription.ErrorText.contains("href") || subscription.ErrorText.contains("www.")) {
+            onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
+                }
+            };
+        } else {
+            onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new UtilityDialogs().getAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
+                }
+            };
+        }
+
+        return onClickListener;
     }
 
     @Override
@@ -338,4 +373,27 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
             }
         };
     }
+
+    @Override
+    public View.OnClickListener getOfflineModeInformationIconOnClickListener(final User user) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String offlineModeInfo = v.getResources().getString(R.string.offline_mode_info);
+
+                if(user.getOfflineCacheEntries().size() > 0) {
+                    offlineModeInfo += "\n\n" + v.getResources().getString(R.string.offline_mode_info_downloads) + "\n";
+                }
+
+                for (Map.Entry<String, String> entry : user.getOfflineCacheEntries())
+                {
+                    offlineModeInfo += entry.getKey() + ": \n\t\t\t" + entry.getValue().replace("T", " ") + "\n";
+                }
+
+                new UtilityDialogs().getAlertDialog(v.getContext(), v.getResources().getString(R.string.offline_mode), offlineModeInfo, android.R.drawable.ic_dialog_info).show();
+            }
+        };
+    }
+
+
 }

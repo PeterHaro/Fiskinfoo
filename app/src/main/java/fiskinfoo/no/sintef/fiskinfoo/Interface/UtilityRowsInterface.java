@@ -16,11 +16,13 @@ package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 
 public interface UtilityRowsInterface {
@@ -32,4 +34,8 @@ public interface UtilityRowsInterface {
     CardViewInformationRow getCardViewInformationRow(Context context, String fieldName, String fieldData, boolean indentData);
     CardViewInformationRow getCardViewInformationRow(Context context, String fieldName, String fieldData, boolean indentData, int textColor);
     RadioButtonRow getRadioButtonRow(Context context, String item);
+    SwitchAndButtonRow getSwitchAndButtonRow(Context context, int titleId);
+    SwitchAndButtonRow getSwitchAndButtonRow(Context context, String title);
+    SwitchAndButtonRow getSwitchAndButtonRow(Context context, int titleId, CompoundButton.OnCheckedChangeListener onCheckedChangeListener, View.OnClickListener onClickListener);
+    SwitchAndButtonRow getSwitchAndButtonRow(Context context, String title, CompoundButton.OnCheckedChangeListener onCheckedChangeListener, View.OnClickListener onClickListener);
 }

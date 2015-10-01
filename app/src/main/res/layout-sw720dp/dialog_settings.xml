@@ -31,6 +31,8 @@ limitations under the License.
             android:id="@+id/settings_dialog_fields_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/settings_row_container_margin_left"
+            android:layout_marginEnd="@dimen/settings_row_container_margin_right"
             android:orientation="vertical"></LinearLayout>
 
         <LinearLayout

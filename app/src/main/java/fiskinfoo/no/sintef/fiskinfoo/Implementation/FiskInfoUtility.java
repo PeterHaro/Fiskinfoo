@@ -259,12 +259,17 @@ public class FiskInfoUtility {
         }
     }
 
-    public void writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath) {
+    public boolean writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath) {
         String filePath;
         OutputStream outputStream = null;
         filePath = downloadSavePath;
+        boolean success = false;
 
         File directory = filePath == null ? null : new File(filePath);
+
+        if(directory != null && !directory.isDirectory()) {
+            directory.mkdirs();
+        }
 
         if(directory == null) {
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
@@ -277,6 +282,7 @@ public class FiskInfoUtility {
             outputStream.write(data);
 
             Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+            success = true;
         } catch (IOException e) {
             Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -288,6 +294,7 @@ public class FiskInfoUtility {
                     e.printStackTrace();
                 }
             }
+            return success;
         }
     }
 
