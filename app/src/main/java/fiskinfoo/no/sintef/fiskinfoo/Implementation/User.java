@@ -22,7 +22,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,15 +86,7 @@ public class User implements Parcelable{
     }
 
     public boolean isTokenValid() {
-        if(authentication == null) {
-            return false;
-        }
-
-        if ((System.currentTimeMillis() / 1000L) - previousAuthenticationTimeStamp > (authentication.expires_in + 600)) {
-            return false;
-        } else {
-            return true;
-        }
+        return authentication != null && (System.currentTimeMillis() / 1000L) - previousAuthenticationTimeStamp <= (authentication.expires_in + 600);
     }
 
     public void setUsername(String username) {
@@ -147,6 +138,7 @@ public class User implements Parcelable{
     }
 
 
+    @SuppressWarnings("unused")
     public Boolean getIsAuthenticated() {
         return isAuthenticated;
     }
@@ -164,7 +156,7 @@ public class User implements Parcelable{
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(EXISTS, true);
-        editor.commit();
+        editor.apply();
     }
 
     public static void forgetUser(Context context) {
@@ -181,7 +173,7 @@ public class User implements Parcelable{
         String serializedData = serialize();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREFS_KEY, serializedData);
-        editor.commit();
+        editor.apply();
     }
 
     static public User deSerialize(String serializedUser) {
@@ -196,7 +188,7 @@ public class User implements Parcelable{
         return deSerialize(serializedDataFromPreference);
     }
 
-
+    @SuppressWarnings("unused")
     public Authentication getAuthentication() {
         return authentication;
     }

@@ -156,14 +156,14 @@ limitations under the License.
     <dimen name="recycle_item_child_last_updated_text_view_margin_top">3dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_view_margin_bottom">3dp</dimen>
     <dimen name="recycle_item_child_last_updated_text_size">15sp</dimen>
-    <dimen name="recycle_item_child_download_button_width">40dp</dimen>
-    <dimen name="recycle_item_child_download_button_height">40dp</dimen>
+    <dimen name="recycle_item_child_download_button_width">32dp</dimen>
+    <dimen name="recycle_item_child_download_button_height">32dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_margin_top">6dp</dimen>
     <dimen name="recycle_item_child_separator_line_view_height">2dp</dimen>
     <dimen name="recycler_item_download_map_button_margin_right">5dp</dimen>
     <dimen name="recycle_item_child_notification_icon_image_view_margin_right">1dp</dimen>
-    <dimen name="recycle_item_child_notification_icon_image_view_width_width">32dp</dimen>
-    <dimen name="recycle_item_child_notification_icon_image_view_width_height">32dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_width_width">30dp</dimen>
+    <dimen name="recycle_item_child_notification_icon_image_view_width_height">30dp</dimen>
 
     <!-- fragment card view -->
     <dimen name="card_view_thumbnail_height">150dp</dimen>
@@ -175,8 +175,8 @@ limitations under the License.
     <dimen name="card_view_information_container_margin_right">10dp</dimen>
     <dimen name="card_view_information_row_data_text_view_margin_left">20dp</dimen>
     <dimen name="card_view_information_row_name_text_view_margin_left">5dp</dimen>
-    <dimen name="card_view_notification_icon_width">38dp</dimen>
-    <dimen name="card_view_notification_icon_height">38dp</dimen>
+    <dimen name="card_view_notification_icon_width">30dp</dimen>
+    <dimen name="card_view_notification_icon_height">30dp</dimen>
     <dimen name="card_view_notification_icon_margin_right">20dp</dimen>
     <dimen name="card_view_download_map_button_margin_right">20dp</dimen>
     <dimen name="card_view_download_map_button_margin_top">5dp</dimen>

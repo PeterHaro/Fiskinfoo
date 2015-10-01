@@ -27,6 +27,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 
 
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -41,16 +42,6 @@ public class GpsLocationTracker extends Service implements LocationListener {
      * context of calling class
      */
     private Context mContext;
-
-    /**
-     * flag for gps status
-     */
-    private boolean isGpsEnabled = false;
-
-    /**
-     * flag for network status
-     */
-    private boolean isNetworkEnabled = false;
 
     /**
      * flag for gps
@@ -106,11 +97,18 @@ public class GpsLocationTracker extends Service implements LocationListener {
 
             mLocationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
 			/* getting status of the gps */
-            isGpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            /*
+      flag for gps status
+     */
+            boolean isGpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			/* getting status of network provider */
-            isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            /*
+      flag for network status
+     */
+            boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if (!isGpsEnabled && !isNetworkEnabled) {
 				/* no location provider enabled */
+                Log.i("GPS", "No location provider");
             } else {
                 this.canGetLocation = true;
 				/* getting location from network provider */
@@ -148,6 +146,7 @@ public class GpsLocationTracker extends Service implements LocationListener {
     /**
      * call this function to stop using gps in your application
      */
+    @SuppressWarnings("unused")
     public void stopUsingGps() {
         if (mLocationManager != null) {
             mLocationManager.removeUpdates(GpsLocationTracker.this);

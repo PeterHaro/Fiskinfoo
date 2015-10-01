@@ -15,5 +15,5 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 public enum ExpandableListChildType {
-    EXPANDABLE_LIST_CHILD_OBJECT, SUBSCRIPTION_EXPANDABLE_LIST_CHILD_OBJECT;
+    EXPANDABLE_LIST_CHILD_OBJECT, SUBSCRIPTION_EXPANDABLE_LIST_CHILD_OBJECT
 }

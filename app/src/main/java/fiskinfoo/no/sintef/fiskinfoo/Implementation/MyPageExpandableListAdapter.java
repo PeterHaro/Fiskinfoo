@@ -31,6 +31,7 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * @param context        for inflating views
      * @param parentItemList the list of parent items to be displayed in the RecyclerView
      */
+    @SuppressWarnings("unused")
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList) {
         super(context, parentItemList);
         mInflater = LayoutInflater.from(context);
@@ -51,6 +52,7 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * @param parentItemList        the list of parent items to be displayed in the RecyclerView
      * @param customClickableViewId the id of the view that triggers the expansion
      */
+    @SuppressWarnings("unused")
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList,
                                        int customClickableViewId) {
         super(context, parentItemList, customClickableViewId);
@@ -67,6 +69,7 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
      * @param customClickableViewId the id of the view that triggers the expansion
      * @param animationDuration     the duration (in ms) of the rotation animation
      */
+    @SuppressWarnings("unused")
     public MyPageExpandableListAdapter(Context context, List<ParentObject> parentItemList,
                                        int customClickableViewId, long animationDuration) {
         super(context, parentItemList, customClickableViewId, animationDuration);
@@ -134,10 +137,6 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
                 Log.e("Unknown type", "Type not supported");
         }
 
-    }
-
-    public void setChildrenOnClickListener(View.OnClickListener childrenOnClickListener) {
-        this.childrenOnClickListener = childrenOnClickListener;
     }
 
     private void bindChildViewHolder(ExpandableListChildViewHolder childViewHolder, Object childObject) {

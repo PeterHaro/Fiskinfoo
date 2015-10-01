@@ -23,9 +23,9 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
     List<Point> points;
 
     public FiskInfoPolygon2D() {
-        this.lines = new ArrayList<Line>();
-        this.polygons = new ArrayList<Polygon>();
-        this.points = new ArrayList<Point>();
+        this.lines = new ArrayList<>();
+        this.polygons = new ArrayList<>();
+        this.points = new ArrayList<>();
     }
 
     public void addLine(Line line) {
@@ -40,14 +40,17 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
         points.add(point);
     }
 
+    @SuppressWarnings("unused")
     public List<Line> getLines() {
         return lines;
     }
 
+    @SuppressWarnings("unused")
     public List<Polygon> getPolygons() {
         return polygons;
     }
 
+    @SuppressWarnings("unused")
     public List<Point> getPoints() {
         return points;
     }
@@ -62,7 +65,7 @@ public class FiskInfoPolygon2D implements java.io.Serializable {
         for (Polygon polygon : polygons) {
             List<Point> vertices = polygon.getVertices();
             Point currPoint = vertices.get(0);
-            Point prevPoint = null;
+            Point prevPoint;
             for (int i = 1; i < vertices.size() - 1; i++) {
                 prevPoint = currPoint;
                 currPoint = vertices.get(i);

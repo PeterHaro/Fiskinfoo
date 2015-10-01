@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
@@ -46,8 +47,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
@@ -64,7 +63,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private static final String TAG = "LoginActivity::";
     private UserLoginTask mAuthTask = null;
     private User user;
-    private BarentswatchApi barentswatchApi;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -99,7 +97,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 return false;
             }
         });
-        barentswatchApi = new BarentswatchApi();
 
         Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
@@ -229,6 +226,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      * @param password
      *  The password must be greater than 6, ensure compat with bw
      * @return
+     *  Whether the password is valid or not
      */
     private boolean isPasswordValid(String password) {
         return password.length() >= 7;
@@ -276,7 +274,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
+        List<String> emails = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
@@ -295,7 +293,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         String[] PROJECTION = { ContactsContract.CommonDataKinds.Email.ADDRESS, ContactsContract.CommonDataKinds.Email.IS_PRIMARY, };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
@@ -329,7 +326,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
-                return auth.access_token != null ? true : false;
+                return auth.access_token != null;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
                 return false;
@@ -350,7 +347,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                     user.setActiveLayers(new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.map_layer_names_array))));
                 }
                 if(storeUserToDisk.isChecked()) {
-                    user.rememberUser(LoginActivity.this);
+                    User.rememberUser(LoginActivity.this);
                     user.writeToSharedPref(LoginActivity.this);
                 } else {
                     User.forgetUser(LoginActivity.this);
@@ -397,7 +394,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             if (success) {
                 user.setAuthentication(authenticationResponse.get());
                 user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
-                user.rememberUser((LoginActivity.this));
+                User.rememberUser((LoginActivity.this));
                 user.writeToSharedPref(LoginActivity.this);
                 changeActivity(MainActivity.class, user);
 
@@ -415,6 +412,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      * Represents an asynchronous registration task used to register the user.
      * TODO: attempt to create a user through network service.
      */
+    @SuppressWarnings("unused")
     public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -451,6 +449,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 changeActivity(MainActivity.class);
 
             } else {
+                // TODO: inform user that account creation failed.
+                Toast.makeText(getBaseContext(), getString(R.string.error_account_creation_failed), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -465,6 +465,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
      * Represents an asynchronous registration task used to register the user.
      * TODO: attempt to recover password
      */
+    @SuppressWarnings("unused")
     public class recoverPasswordTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
@@ -498,6 +499,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
             } else {
                 // failed to request password reset.
+                // TODO: give user feedback that reset request failed
+                Toast.makeText(getBaseContext(), getString(R.string.error_password_reset_failed), Toast.LENGTH_LONG).show();
             }
         }
 

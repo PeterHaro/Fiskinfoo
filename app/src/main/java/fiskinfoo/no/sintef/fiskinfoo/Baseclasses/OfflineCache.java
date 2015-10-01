@@ -34,6 +34,7 @@ public class OfflineCache implements Parcelable {
 
     public OfflineCache(Parcel in) {
         Bundle bundle = in.readBundle();
+
         cache = (Map<String, String>) bundle.getSerializable("cache");
         isActive = in.readByte() != 0;
     }

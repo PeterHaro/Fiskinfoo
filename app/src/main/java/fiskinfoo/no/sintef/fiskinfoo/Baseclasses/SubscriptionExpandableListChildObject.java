@@ -17,7 +17,6 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
@@ -40,6 +39,16 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
         super(ExpandableListChildType.SUBSCRIPTION_EXPANDABLE_LIST_CHILD_OBJECT);
     }
 
+    @SuppressWarnings("unused")
+    public TextView getmLastUpdatedTextView() {
+        return mLastUpdatedTextView;
+    }
+
+    @SuppressWarnings("unused")
+    public void setmLastUpdatedTextView(TextView mLastUpdatedTextView) {
+        this.mLastUpdatedTextView = mLastUpdatedTextView;
+    }
+
     public String getLastUpdatedText() {
         return mLastUpdated;
     }
@@ -48,10 +57,12 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
         mLastUpdated = childText;
     }
 
+    @SuppressWarnings("unused")
     public void setLastUpdatedTextView(TextView textView) {
         this.mLastUpdatedTextView = textView;
     }
 
+    @SuppressWarnings("unused")
     public void setSubscribedSwitch(CheckBox subscribedCheckBox) {
         mSubscribedCheckBox = subscribedCheckBox;
     }
@@ -79,10 +90,12 @@ public class SubscriptionExpandableListChildObject extends ExpandableListChildOb
     }
 
 
+    @SuppressWarnings("unused")
     public void setDownloadMapLayerButton(Button button) {
         mDownloadMapLayerButton = button;
     }
 
+    @SuppressWarnings("unused")
     public void setDownloadMapLayerButtonOnClickListener(View.OnClickListener onClickListener) {
         if(mDownloadMapLayerButton != null && onClickListener != null) {
             mDownloadMapLayerButton.setOnClickListener(onClickListener);

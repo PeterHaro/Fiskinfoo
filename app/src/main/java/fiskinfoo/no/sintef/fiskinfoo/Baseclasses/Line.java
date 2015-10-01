@@ -35,17 +35,17 @@ public class Line implements java.io.Serializable{
     /**
      * Only use this when you are so close to the point that the curvature of the earth almost does not affect results.
      * @param point
+     *      The point to measure against
      * @param distance
+     *      The distance to compare to
      * @return
+     *      Whether the distance between the given point and current line is greater than the given distance
      */
     public boolean checkDistanceWithLineLegacy(Point point, double distance) {
         double denominator = Math.abs((this.dy * point.getLatitude()) - (this.dx * point.getLongitude()) - (this.start.getLatitude() * this.stop.getLongitude()) + (this.stop.getLatitude() * this.start.getLongitude()));
         double distanceInDegrees = denominator / Math.sqrt(((this.dx * this.dx) + (this.dy * this.dy)));
         double distanceMeters = computeLengthOfDegrees(distanceInDegrees);
-        if (distanceMeters - distance < 0) {
-            return true;
-        }
-        return false;
+        return distanceMeters - distance < 0;
     }
 
     public boolean checkDistanceWithLineAndReportStatus(Point point, double distance) {
@@ -54,11 +54,7 @@ public class Line implements java.io.Serializable{
         } else {
             Distance a = point.inverseCalculation(start);
             Distance b = point.inverseCalculation(stop);
-            if (a.distance - distance < 0 || b.distance - distance < 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return a.distance - distance < 0 || b.distance - distance < 0;
         }
     }
 
@@ -75,10 +71,10 @@ public class Line implements java.io.Serializable{
         double p3 = 0.118; // longitude calculation term 3
 
         double latLen = m1 + (m2 * Math.cos(2 * lat)) + (m3 * Math.cos(4 * lat)) + (m4 * Math.cos(6 * lat));
+        @SuppressWarnings("unused")
         double lonLen = (p1 * Math.cos(lat)) + (p2 * Math.cos(3 * lat)) + (p3 * Math.cos(5 * lat));
 
-        double latMeters = Math.round(latLen);
-        return latMeters;
+        return (double) Math.round(latLen);
 
     }
 }

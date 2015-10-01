@@ -19,7 +19,7 @@ public enum ProjectionType {
 
     @Override
     public String toString() {
-        String retVal = "";
+        String retVal;
         switch(this) {
             case EPSG_3857:
                 retVal = "EPSG:3857";

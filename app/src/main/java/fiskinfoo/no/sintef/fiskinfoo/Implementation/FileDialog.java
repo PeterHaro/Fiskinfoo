@@ -17,7 +17,9 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -67,14 +69,12 @@ public class FileDialog extends ListActivity {
     private String parentPath;
     private String currentPath = ROOT;
 
-    private int selectionMode = SelectionMode.MODE_CREATE;
-
     private String[] formatFilter = null;
 
     private boolean canSelectDir = false;
 
     private File selectedFile;
-    private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
+    private HashMap<String, Integer> lastPositions = new HashMap<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,7 +113,7 @@ public class FileDialog extends ListActivity {
             }
         });
 
-        selectionMode = getIntent().getIntExtra(SELECTION_MODE, SelectionMode.MODE_CREATE);
+        int selectionMode = getIntent().getIntExtra(SELECTION_MODE, SelectionMode.MODE_CREATE);
 
         formatFilter = getIntent().getStringArrayExtra(FORMAT_FILTER);
 
@@ -145,8 +145,8 @@ public class FileDialog extends ListActivity {
                 if (mFileName.getText().length() > 0) {
                     File directory = new File(currentPath + "/" + mFileName.getText());
 
-                    if (!(directory.exists())) {
-                        directory.mkdirs();
+                    if (!(directory.exists()) && !directory.mkdirs()) {
+                        Log.e("FileDialog", "Cannot create directory");
                     }
 
                     getIntent().putExtra(RESULT_PATH, currentPath + "/" + mFileName.getText());
@@ -170,8 +170,7 @@ public class FileDialog extends ListActivity {
         String startPath = getIntent().getStringExtra(START_PATH);
         startPath = startPath != null ? startPath : ROOT;
         if (canSelectDir) {
-            File file = new File(startPath);
-            selectedFile = file;
+            selectedFile = new File(startPath);
             selectButton.setEnabled(true);
         }
         getDir(startPath);
@@ -195,9 +194,8 @@ public class FileDialog extends ListActivity {
 
         currentPath = dirPath;
 
-        final List<String> item = new ArrayList<String>();
-        path = new ArrayList<String>();
-        mList = new ArrayList<HashMap<String, Object>>();
+        path = new ArrayList<>();
+        mList = new ArrayList<>();
 
         File f = new File(currentPath);
         File[] files = f.listFiles();
@@ -210,21 +208,19 @@ public class FileDialog extends ListActivity {
 
         if (!currentPath.equals(ROOT)) {
 
-            item.add(ROOT);
             addItem(ROOT, R.drawable.folder);
             path.add(ROOT);
 
-            item.add("../");
             addItem("../", R.drawable.folder);
             path.add(f.getParent());
             parentPath = f.getParent();
 
         }
 
-        TreeMap<String, String> dirsMap = new TreeMap<String, String>();
-        TreeMap<String, String> dirsPathMap = new TreeMap<String, String>();
-        TreeMap<String, String> filesMap = new TreeMap<String, String>();
-        TreeMap<String, String> filesPathMap = new TreeMap<String, String>();
+        TreeMap<String, String> dirsMap = new TreeMap<>();
+        TreeMap<String, String> dirsPathMap = new TreeMap<>();
+        TreeMap<String, String> filesMap = new TreeMap<>();
+        TreeMap<String, String> filesPathMap = new TreeMap<>();
         for (File file : files) {
             if (file.isDirectory()) {
                 String dirName = file.getName();
@@ -235,8 +231,8 @@ public class FileDialog extends ListActivity {
                 final String fileNameLwr = fileName.toLowerCase();
                 if (formatFilter != null) {
                     boolean contains = false;
-                    for (int i = 0; i < formatFilter.length; i++) {
-                        final String formatLwr = formatFilter[i].toLowerCase();
+                    for (String aFormatFilter : formatFilter) {
+                        final String formatLwr = aFormatFilter.toLowerCase();
                         if (fileNameLwr.endsWith(formatLwr)) {
                             contains = true;
                             break;
@@ -252,8 +248,6 @@ public class FileDialog extends ListActivity {
                 }
             }
         }
-        item.addAll(dirsMap.tailMap("").values());
-        item.addAll(filesMap.tailMap("").values());
         path.addAll(dirsPathMap.tailMap("").values());
         path.addAll(filesPathMap.tailMap("").values());
 
@@ -275,7 +269,7 @@ public class FileDialog extends ListActivity {
     }
 
     private void addItem(String fileName, int imageId) {
-        HashMap<String, Object> item = new HashMap<String, Object>();
+        HashMap<String, Object> item = new HashMap<>();
         item.put(ITEM_KEY, fileName);
         item.put(ITEM_IMAGE, imageId);
         mList.add(item);
@@ -316,7 +310,7 @@ public class FileDialog extends ListActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             selectButton.setEnabled(false);
 

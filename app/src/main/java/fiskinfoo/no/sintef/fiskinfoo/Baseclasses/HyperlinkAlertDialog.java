@@ -21,12 +21,7 @@ import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -78,9 +73,7 @@ public class HyperlinkAlertDialog {
         messageView.setMovementMethod(LinkMovementMethod.getInstance());
         builder.setView(messageView);
 
-        AlertDialog dialog = builder.create();
-
-        return dialog;
+        return builder.create();
     }
 
     public static AlertDialog create(Context context, int titleId, int messageId) {
@@ -98,9 +91,7 @@ public class HyperlinkAlertDialog {
         messageView.setMovementMethod(LinkMovementMethod.getInstance());
         builder.setView(messageView);
 
-        AlertDialog dialog = builder.create();
-
-        return dialog;
+        return builder.create();
     }
 
     public static AlertDialog create(Context context, int titleId, int messageId, int iconId) {
@@ -122,8 +113,6 @@ public class HyperlinkAlertDialog {
         messageView.setMovementMethod(LinkMovementMethod.getInstance());
         builder.setView(messageView);
 
-        AlertDialog dialog = builder.create();
-
-        return dialog;
+        return builder.create();
     }
 }

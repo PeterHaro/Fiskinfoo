@@ -60,6 +60,7 @@ public class Point implements java.io.Serializable{
      * @throws java.lang.NullPointerException
      *             if the parameter is null
      */
+    @SuppressWarnings("unused")
     public float azimuthTo(Point to) {
         double lat1 = getLatitude();
         double lon1 = getLongitude();
@@ -118,18 +119,18 @@ public class Point implements java.io.Serializable{
 
     public boolean checkDistanceBetweenTwoPoints(Point point, double unacceptableDistance) {
         double distance = this.distance(point);
-        if (distance - unacceptableDistance < 0) {
-            return true;
-        }
-        return false;
+        return distance - unacceptableDistance < 0;
 
     }
 
     /**
      * Calculate _initial_ bearing, which is the same as the forward azimuth
      * @param to
+     *      point
      * @return
+     *      initial bearing
      */
+    @SuppressWarnings("unused")
     public double bearing(Point to) {
         double initialPhi = Math.toRadians(lat), latidueInRadians = Math.toRadians(to.getLatitude());
         double deltaLambda = Math.toRadians((to.getLongitude()-this.lon));
@@ -149,9 +150,10 @@ public class Point implements java.io.Serializable{
     /**
      * Calculates INVERSE vincenty, to support more than WSG-84 replace the cases of the magic numbers in f, a, b  with a datum representation scaling factor from wsg-84 to whatever datum you'd like. Probably as input param
      * @param to
+     *      point
      * @return
      *
-     * https://en.wikipedia.org/wiki/Vincenty%27s_formulae I HAVE NO IDEA WHAT I AM DOING
+     * https://en.wikipedia.org/wiki/Vincenty%27s_formulae
      */
     public Distance inverseCalculation(Point to) {
         double phiOne = Math.toRadians(this.getLatitude()), lambda1 = Math.toRadians(this.getLongitude());

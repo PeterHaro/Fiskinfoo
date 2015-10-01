@@ -14,6 +14,8 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +26,14 @@ public class FiskinfoScheduledTaskExecutor extends ScheduledThreadPoolExecutor {
         super(corePoolSize);
     }
 
+    @NonNull
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
         return super.scheduleAtFixedRate(wrapRunnable(command), initialDelay, period, unit);
     }
 
 
+    @NonNull
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
         return super.scheduleWithFixedDelay(wrapRunnable(command), initialDelay, delay, unit);

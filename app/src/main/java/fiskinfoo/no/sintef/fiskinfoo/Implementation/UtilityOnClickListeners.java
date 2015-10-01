@@ -115,11 +115,12 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                                         response = api.geoDataDownload(subscription.ApiName, downloadFormat);
                                         if (response == null) {
                                             Log.d(tag, "RESPONSE == NULL");
+                                            throw new NullPointerException();
                                         }
 
                                         byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                                         if (fiskInfoUtility.isExternalStorageWritable()) {
-                                            fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage());
+                                            fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
                                         } else {
                                             Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                                         }
@@ -235,7 +236,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 
                 final boolean isSubscribed = activeSubscription != null;
-                final Map<String, String> subscriptionFrequencies = new HashMap();
+                final Map<String, String> subscriptionFrequencies = new HashMap<>();
 
                 dialog.setTitle(subscription.Name);
 
@@ -287,7 +288,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     public void onClick(View subscribeButton) {
                         String subscriptionFormat = null;
                         String subscriptionInterval = null;
-                        String subscriptionEmail = null;
+                        String subscriptionEmail;
 
                         BarentswatchApi barentswatchApi = new BarentswatchApi();
                         barentswatchApi.setAccesToken(user.getToken());
@@ -319,7 +320,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                         subscriptionEmail = subscriptionEmailEditText.getText().toString();
 
-                        if(subscriptionEmail == null || !(new FiskInfoUtility().isEmailValid(subscriptionEmail))) {
+                        if(!(new FiskInfoUtility().isEmailValid(subscriptionEmail))) {
                             Toast.makeText(v.getContext(), v.getContext().getString(R.string.error_invalid_email), Toast.LENGTH_LONG).show();
                             return;
                         }

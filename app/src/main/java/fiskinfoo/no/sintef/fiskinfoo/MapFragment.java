@@ -59,7 +59,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -160,7 +159,9 @@ public class MapFragment extends Fragment {
 
     @SuppressLint({"SetJavaScriptEnabled"})
     private void configureWebParametersAndLoadDefaultMapApplication() {
-        browser = new WebView(getActivity());
+        if(getView() == null) {
+            throw new NullPointerException();
+        }
         browser = (WebView) getView().findViewById(R.id.browserWebView);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setDomStorageEnabled(true);
@@ -198,6 +199,7 @@ public class MapFragment extends Fragment {
             mContext = context;
         }
 
+        @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
         public String getToken() {
             return user.getToken();
@@ -216,6 +218,7 @@ public class MapFragment extends Fragment {
 
     }
 
+    @SuppressWarnings("unused")
     private void getLayers() {
         browser.loadUrl("javascript:alert(getLayers())");
     }
@@ -426,14 +429,14 @@ public class MapFragment extends Fragment {
                     }
 
                     if (fiskInfoUtility.isExternalStorageWritable()) {
-                        OutputStream outputStream = null;
                         String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
                         String directoryName = "FiskInfo";
                         filePath = directoryPath + "/" + directoryName + "/";
+                        InputStream zippedInputStream = null;
 
                         try {
                             TypedInput responseInput = response.getBody();
-                            InputStream zippedInputStream = responseInput.in();
+                            zippedInputStream = responseInput.in();
                             zippedInputStream = new GZIPInputStream(zippedInputStream);
 
                             InputSource inputSource = new InputSource(zippedInputStream);
@@ -512,8 +515,8 @@ public class MapFragment extends Fragment {
                             return;
                         } finally {
                             try {
-                                if (outputStream != null) {
-                                    outputStream.close();
+                                if (zippedInputStream != null) {
+                                    zippedInputStream.close();
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();

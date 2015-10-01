@@ -19,7 +19,7 @@ public enum ToolType {
 
     @Override
     public String toString() {
-        String retVal = "";
+        String retVal;
         switch(this) {
             case LONG_LINE:
                 retVal = "Long line";
@@ -52,7 +52,7 @@ public enum ToolType {
     }
 
     public int getHexValue() {
-        int retVal = -1;
+        int retVal;
         switch(this) {
             case LONG_LINE:
                 retVal = 0xFFF30F0F;

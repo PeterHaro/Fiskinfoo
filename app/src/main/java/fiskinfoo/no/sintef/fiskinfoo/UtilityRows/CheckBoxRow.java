@@ -70,6 +70,7 @@ public class CheckBoxRow extends BaseTableRow {
         mTextView.setOnClickListener(onClickListener);
     }
 
+    @SuppressWarnings("unused")
     public void setChecked(boolean isChecked) {
         if(mCheckBox != null) {
             mCheckBox.setChecked(isChecked);
@@ -77,10 +78,6 @@ public class CheckBoxRow extends BaseTableRow {
     }
 
     public boolean isChecked() {
-        if(mCheckBox != null ) {
-            return mCheckBox.isChecked();
-        } else {
-            return false;
-        }
+        return mCheckBox != null && mCheckBox.isChecked();
     }
 }

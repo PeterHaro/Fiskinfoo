@@ -49,11 +49,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscri
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
@@ -66,8 +62,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private RecyclerView mCRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mNetworkErrorTextView;
-    private DialogInterface dialogInterface;
-    private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
     private FiskInfoUtility fiskInfoUtility;
 
@@ -82,8 +76,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         super.onCreate(savedInstanceState);
         user = getArguments().getParcelable("user");
         childOnClickListener = new ExpandableListAdapterChildOnClickListener();
-        dialogInterface = new UtilityDialogs();
-        utilityRowsInterface = new UtilityRows();
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
     }
@@ -152,7 +144,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         if(mCRecyclerView != null) {
             ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
             Parcelable layoutState = mCRecyclerView.getLayoutManager().onSaveInstanceState();
-            outState.putParcelable("recycleLayout", layoutState);
+            if(outState != null) {
+                outState.putParcelable("recycleLayout", layoutState);
+            }
         }
 
     }
@@ -189,11 +183,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             // Check and set access to fishingfacility data so we know this when loading the map later.
-            user.setIsFishingFacilityAuthenticated(authMap.get(availableSubscriptionsMap.containsKey(getString(R.string.fishing_facility_api_name)) == true ? availableSubscriptionsMap.get(getString(R.string.fishing_facility_api_name)).Id : -1));
+            user.setIsFishingFacilityAuthenticated(authMap.get(availableSubscriptionsMap.containsKey(getString(R.string.fishing_facility_api_name)) ? availableSubscriptionsMap.get(getString(R.string.fishing_facility_api_name)).Id : -1));
             user.writeToSharedPref(getActivity());
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                boolean isAuthed = authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false;
+                boolean isAuthed = (authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false);
                 SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
@@ -251,11 +245,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
 
-        View.OnClickListener subscriptionSwitchClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
-                null;
+        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
+                null);
 
-        View.OnClickListener downloadButtonOnClickListener = canSubscribe == true ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
-                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1);
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
+                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
             View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
@@ -275,24 +269,24 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     }
 
 
-    private SubscriptionExpandableListChildObject setupWarningChildView(final String subscription) {
-        SubscriptionExpandableListChildObject currentWarningObject = new SubscriptionExpandableListChildObject();
-        currentWarningObject.setTitleText(subscription);
-        currentWarningObject.setLastUpdatedText("");
-        currentWarningObject.setIsSubscribed(true);
-
-        return currentWarningObject;
-    }
+//    private SubscriptionExpandableListChildObject setupWarningChildView(final String subscription) {
+//        SubscriptionExpandableListChildObject currentWarningObject = new SubscriptionExpandableListChildObject();
+//        currentWarningObject.setTitleText(subscription);
+//        currentWarningObject.setLastUpdatedText("");
+//        currentWarningObject.setIsSubscribed(true);
+//
+//        return currentWarningObject;
+//    }
 
     // INFO: we just treat active subscriptions in the same way as we treat available subscriptions, don't see a reason not to.
-    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable, boolean canSubscribe) {
-        if(subscribable == null) {
-            Log.e(TAG, "subscribable is null");
-            return null;
-        }
-
-        return setupAvailableSubscriptionChildView(subscribable, activeSubscription, canSubscribe);
-    }
+//    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable, boolean canSubscribe) {
+//        if(subscribable == null) {
+//            Log.e(TAG, "subscribable is null");
+//            return null;
+//        }
+//
+//        return setupAvailableSubscriptionChildView(subscribable, activeSubscription, canSubscribe);
+//    }
 
     @Override
     public void onRecyclerViewItemExpanded(int position) {
@@ -316,13 +310,13 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             this.propertyDescriptions = propertyDescriptions;
         }
 
-        public void setWarnings(List<String> warnings) {
-            this.warnings = warnings;
-        }
-
-        public void setSubscriptions(List<Subscription> subscriptions) {
-            this.subscriptions = subscriptions;
-        }
+//        public void setWarnings(List<String> warnings) {
+//            this.warnings = warnings;
+//        }
+//
+//        public void setSubscriptions(List<Subscription> subscriptions) {
+//            this.subscriptions = subscriptions;
+//        }
 
         @Override
         public void onClick(View v) {
@@ -354,7 +348,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             if (!found) {
                 for (Subscription subscription : subscriptions) {
                     if (subscription.GeoDataServiceName.equals(identifier)) {
-                        found = true;
                         object = (new JsonParser()).parse(gson.toJson(subscription)).getAsJsonObject();
                         type += "sub";
                         break;

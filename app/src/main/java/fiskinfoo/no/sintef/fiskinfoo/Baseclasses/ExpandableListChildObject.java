@@ -64,6 +64,7 @@ public class ExpandableListChildObject {
         }
     }
 
+    @SuppressWarnings("unused")
     public ViewParent getParentViewHolder() {
         return mTitleTextView == null ? null : mTitleTextView.getParent();
     }

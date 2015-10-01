@@ -7,39 +7,31 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.StreamCorruptedException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
 import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -101,7 +93,7 @@ public class FiskInfoUtility {
     public static long copyLarge(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long count = 0;
-        int n = 0;
+        int n;
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
             count += n;
@@ -140,7 +132,9 @@ public class FiskInfoUtility {
      * @param numberofDecimals
      *            Number of decimals of the truncated number
      * @return
+     *            The truncated number.
      */
+    @SuppressWarnings("unused")
     public Double truncateDecimal(double number, int numberofDecimals) {
         if (number > 0) {
             return new BigDecimal(String.valueOf(number)).setScale(numberofDecimals, BigDecimal.ROUND_FLOOR).doubleValue();
@@ -192,6 +186,7 @@ public class FiskInfoUtility {
      *            The fields from the subscriptions to retrieve and store in the
      *            <code>ExpandableListAdapater</code>
      */
+    @SuppressWarnings("unused")
     public void appendSubscriptionItemsToView(JSONArray subscriptions, List<String> field, List<String> fieldsToExtract) {
         if ((subscriptions == null) || (subscriptions.isNull(0))) {
             return;
@@ -252,14 +247,11 @@ public class FiskInfoUtility {
      */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    public boolean writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath) {
+    public boolean writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
         String filePath;
         OutputStream outputStream = null;
         filePath = downloadSavePath;
@@ -267,8 +259,11 @@ public class FiskInfoUtility {
 
         File directory = filePath == null ? null : new File(filePath);
 
-        if(directory != null && !directory.isDirectory()) {
-            directory.mkdirs();
+        if(directory != null && !directory.isDirectory() && !directory.mkdirs()) {
+           if(showToasts) {
+               Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+           }
+            return false;
         }
 
         if(directory == null) {
@@ -281,10 +276,15 @@ public class FiskInfoUtility {
             outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
             outputStream.write(data);
 
-            Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+            if(showToasts) {
+                Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+            }
+
             success = true;
         } catch (IOException e) {
-            Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+            if(showToasts) {
+                Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+            }
             e.printStackTrace();
         } finally {
             if (outputStream != null) {
@@ -294,8 +294,9 @@ public class FiskInfoUtility {
                     e.printStackTrace();
                 }
             }
-            return success;
         }
+
+        return success;
     }
 
     /**
@@ -316,9 +317,7 @@ public class FiskInfoUtility {
             out.close();
             fileOut.close();
             Log.d("FiskInfo", "Serialization successfull, the data should be stored in the specified path");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -347,10 +346,6 @@ public class FiskInfoUtility {
             fileIn.close();
             Log.d("FiskInfo", "Deserialization successful, the data should be stored in the input class");
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (StreamCorruptedException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -361,9 +356,9 @@ public class FiskInfoUtility {
         return polygon;
     }
 
-
+    @SuppressWarnings("unused")
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz");
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
         if (input.endsWith("Z")) {
             input = input.substring(0, input.length() - 1) + "GMT-00:00";
         } else {
@@ -375,8 +370,9 @@ public class FiskInfoUtility {
         return sdf.parse(input);
     }
 
+    @SuppressWarnings("unused")
     public static String iso08601ToString(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz");
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
         TimeZone timeZone = TimeZone.getTimeZone("UTC");
         sdf.setTimeZone(timeZone);
         String output = sdf.format(date);
@@ -391,9 +387,13 @@ public class FiskInfoUtility {
      * regards to the given projection.
      *
      * @param coordinates
+     *      The coordinates to check
      * @param projection
+     *      The coordinate projection used
      * @return
+     *      Whether coordinate format is valid or not
      */
+    @SuppressWarnings("unused")
     public boolean checkCoordinates(String coordinates, ProjectionType projection) {
         boolean retVal = false;
         System.out.println("coords: " + coordinates);
@@ -434,15 +434,9 @@ public class FiskInfoUtility {
             double EPSG3857MinY = -20048966.10;
             double EPSG3857MaxY = 20048966.10;
 
-            if (latitude < EPSG3857MinX || latitude > EPSG3857MaxX || longitude < EPSG3857MinY || longitude > EPSG3857MaxY) {
-                return false;
-            }
+            return !(latitude < EPSG3857MinX || latitude > EPSG3857MaxX || longitude < EPSG3857MinY || longitude > EPSG3857MaxY);
 
-            return true;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -458,15 +452,9 @@ public class FiskInfoUtility {
             double EPSG4326MinY = -90.0;
             double EPSG4326MaxY = 90.0;
 
-            if (latitude < EPSG4326MinX || latitude > EPSG4326MaxX || longitude < EPSG4326MinY || longitude > EPSG4326MaxY) {
-                return false;
-            }
+            return !(latitude < EPSG4326MinX || latitude > EPSG4326MaxX || longitude < EPSG4326MinY || longitude > EPSG4326MaxY);
 
-            return true;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -482,15 +470,9 @@ public class FiskInfoUtility {
             double EPSG23030MinY = 3982627.8377;
             double EPSG23030MaxY = 7095075.2268;
 
-            if (latitude < EPSG23030MinX || latitude > EPSG23030MaxX || longitude < EPSG23030MinY || longitude > EPSG23030MaxY) {
-                return false;
-            }
+            return !(latitude < EPSG23030MinX || latitude > EPSG23030MaxX || longitude < EPSG23030MinY || longitude > EPSG23030MaxY);
 
-            return true;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -511,15 +493,9 @@ public class FiskInfoUtility {
             double EPSG900913MinY = -20037508.34;
             double EPSG900913MaxY = 20037508.34;
 
-            if (latitude < EPSG900913MinX || latitude > EPSG900913MaxX || longitude < EPSG900913MinY || longitude > EPSG900913MaxY) {
-                return false;
-            }
+            return !(latitude < EPSG900913MinX || latitude > EPSG900913MaxX || longitude < EPSG900913MinY || longitude > EPSG900913MaxY);
 
-            return true;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

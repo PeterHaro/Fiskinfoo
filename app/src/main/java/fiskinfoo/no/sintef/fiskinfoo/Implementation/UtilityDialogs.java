@@ -21,7 +21,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.HyperlinkAlertDialog;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 

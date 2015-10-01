@@ -37,6 +37,7 @@ public class ExpandableListParentObject implements ParentObject {
         mParentText = parentText;
     }
 
+    @SuppressWarnings("unused")
     public int getParentNumber() {
         return mParentNumber;
     }

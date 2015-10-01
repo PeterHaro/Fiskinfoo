@@ -53,6 +53,7 @@ public class RadioButtonRow extends BaseTableRow {
         return mTextView.getText().toString();
     }
 
+    @SuppressWarnings("unused")
     public boolean isSelected( ) {
         return mRadioButton.isSelected();
     }

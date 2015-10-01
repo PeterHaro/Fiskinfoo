@@ -16,7 +16,6 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -58,18 +57,22 @@ public class CardViewInformationRow extends BaseTableRow {
         fieldDataTextView.setTextColor(textColor);
     }
 
+    @SuppressWarnings("unused")
     public void setFieldName(String fieldName) {
         fieldNameTextView.setText(fieldName);
     }
 
+    @SuppressWarnings("unused")
     public String getFieldName() {
         return fieldNameTextView.getText().toString();
     }
 
+    @SuppressWarnings("unused")
     public void setFieldData(String fieldData) {
         fieldDataTextView.setText("\t\t" + fieldData);
     }
 
+    @SuppressWarnings("unused")
     public String getFieldData() {
         return fieldDataTextView.getText().toString();
     }

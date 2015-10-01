@@ -20,20 +20,23 @@ import java.util.List;
 public class Polygon implements java.io.Serializable {
     List<Point> vertices;
 
+    @SuppressWarnings("unused")
     public Polygon() {
-        vertices = new LinkedList<Point>();
+        vertices = new LinkedList<>();
     }
 
     public Polygon(List<Point> Vertices) {
         vertices = Vertices;
     }
 
+    @SuppressWarnings("unused")
     public void setVertices(List<Point> Vertices) {
         for(Point vert : Vertices) {
             vertices.add(vert);
         }
     }
 
+    @SuppressWarnings("unused")
     public void addVertex(Point point) {
         vertices.add(point);
     }

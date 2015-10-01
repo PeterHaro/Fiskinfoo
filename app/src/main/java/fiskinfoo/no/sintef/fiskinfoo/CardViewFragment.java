@@ -1,12 +1,10 @@
 package fiskinfoo.no.sintef.fiskinfoo;
 
-import android.app.Dialog;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -18,7 +16,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -28,7 +25,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
@@ -37,7 +33,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
@@ -52,10 +47,8 @@ public class CardViewFragment extends Fragment {
     private Subscription subscription = null;
     private String warning = null;
     private PropertyDescription propertyDescription = null;
-    private String type = null;
     private UtilityRows utilityRows;
     private UtilityOnClickListeners utilityOnClickListeners;
-    private UtilityDialogs utilityDialogs;
     List<Integer> takenIds;
     //END HINT
 
@@ -77,27 +70,34 @@ public class CardViewFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        String type;
         super.onCreate(savedInstanceState);
         user = getArguments().getParcelable("user");
         type = getArguments().getString("type");
         Log.d(TAG, type);
         Gson gson = new Gson();
+
+        if(type == null) {
+            return;
+        }
+
         switch(type) {
-            case"sub":
+            case "sub":
                 subscription = gson.fromJson(getArguments().getString("args"), Subscription.class);
                 break;
-            case"pd":
+            case "pd":
                 propertyDescription = gson.fromJson(getArguments().getString("args"), PropertyDescription.class);
                 break;
-            case"warning":
+            case "warning":
                 warning = getArguments().getString("args");
                 break;
             default:
                 Log.d(TAG, "INVALID type of object sent to cardview");
         }
+
         utilityRows = new UtilityRows();
         utilityOnClickListeners = new UtilityOnClickListeners();
-        utilityDialogs = new UtilityDialogs();
     }
 
     @Override
@@ -228,7 +228,8 @@ public class CardViewFragment extends Fragment {
             StringBuilder stringBuilder = new StringBuilder();
 
             for(String format : propertyDescription.Formats) {
-                stringBuilder.append(format + "\n");
+                stringBuilder.append(format);
+                stringBuilder.append("\n");
             }
 
             row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
@@ -236,7 +237,8 @@ public class CardViewFragment extends Fragment {
 
             stringBuilder.setLength(0);
             for(String interval : propertyDescription.SubscriptionInterval) {
-                stringBuilder.append(SubscriptionInterval.getType(interval).toString() + "\n");
+                stringBuilder.append(SubscriptionInterval.getType(interval).toString());
+                stringBuilder.append("\n");
             }
 
             row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), stringBuilder.toString().trim(), false);
@@ -322,16 +324,13 @@ public class CardViewFragment extends Fragment {
     }
 
     private static int randInt(int min, int max) {
-
         // NOTE: Usually this should be a field rather than a method
         // variable so that it is not re-seeded every call.
         Random rand = new Random();
 
         // nextInt is normally exclusive of the top value,
         // so add 1 to make it inclusive
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return rand.nextInt((max - min) + 1) + min;
     }
 
     public Animation getBlinkAnimation(){
@@ -344,7 +343,7 @@ public class CardViewFragment extends Fragment {
         return animation;
     }
 
-    private final void focusOnView(final View scrollView, final View focusView){
+    private void focusOnView(final View scrollView, final View focusView){
         new Handler().post(new Runnable() {
             @Override
             public void run() {

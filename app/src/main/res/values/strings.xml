@@ -18,7 +18,7 @@ limitations under the License.
     <!-- General strings -->
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Avbryt</string>
     <string name="zero_number">0</string>
     <string name="yes">Ja</string>
@@ -127,6 +127,8 @@ limitations under the License.
     <string name="error_invalid_email">Ugyldig epostadresse</string>
     <string name="error_invalid_password">Passordet er for kort</string>
     <string name="error_incorrect_password">Feil passord</string>
+    <string name="error_account_creation_failed">Oppretting av ny bruker feilet</string>
+    <string name="error_password_reset_failed">Gjenoppretting av passordet feilet</string>
     <string name="error_field_required">Dette feltet er påkrevd</string>
     <string name="action_forgot_password">Glemt passord</string>
     <string name="action_sign_up">Registrer bruker</string>

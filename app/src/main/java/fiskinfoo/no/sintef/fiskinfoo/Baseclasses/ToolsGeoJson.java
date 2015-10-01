@@ -19,11 +19,13 @@ import android.content.SharedPreferences;
 
 import org.json.JSONObject;
 
+@SuppressWarnings("unused")
 public class ToolsGeoJson {
     private JSONObject tools;
     private String versionNumber;
     public static final String INVALID_VERSION = "INVALID VERSION";
 
+    @SuppressWarnings("unused")
     public ToolsGeoJson(Context mContext) {
         //check if exists
         SharedPreferences prefs = mContext.getSharedPreferences("no.barentswatch.fiskinfo", Context.MODE_PRIVATE);
@@ -54,24 +56,19 @@ public class ToolsGeoJson {
     }
 
     public void setTools(JSONObject tools, String versionNumber, Context mContext) {
-        Boolean updated = false;
-        if (this.versionNumber == INVALID_VERSION) {
+        if (this.versionNumber.equals(INVALID_VERSION)) {
             this.tools = tools;
             this.versionNumber = versionNumber;
-            updated = true;
         } else {
             // versions. Forgot to do it unix-time booooh
             this.tools = tools;
             this.versionNumber = versionNumber;
-            updated = true;
+        }
 
-        }
-        if (updated) {
-            SharedPreferences.Editor editor = mContext.getSharedPreferences("no.barentswatch.fiskinfo", Context.MODE_PRIVATE).edit();
-            editor.putString("toolsGeoJson", tools.toString());
-            editor.putString("toolsVersionNumber", this.versionNumber);
-            editor.putBoolean("geoJson", true);
-            editor.commit();
-        }
+        SharedPreferences.Editor editor = mContext.getSharedPreferences("no.barentswatch.fiskinfo", Context.MODE_PRIVATE).edit();
+        editor.putString("toolsGeoJson", tools.toString());
+        editor.putString("toolsVersionNumber", this.versionNumber);
+        editor.putBoolean("geoJson", true);
+        editor.apply();
     }
 }

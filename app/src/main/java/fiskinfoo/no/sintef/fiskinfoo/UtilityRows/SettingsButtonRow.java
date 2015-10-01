@@ -41,16 +41,17 @@ public class SettingsButtonRow extends BaseTableRow {
 
     }
 
+    @SuppressWarnings("unused")
     public String getButtonText() {
         return mButton.getText().toString();
     }
 
+    @SuppressWarnings("unused")
     public void setButtonText(String buttonText) {
         mButton.setText(buttonText);
     }
 
-    public void setButtonOnClickListener(View.OnClickListener oncClickListener)
-    {
+    public void setButtonOnClickListener(View.OnClickListener oncClickListener) {
         mButton.setOnClickListener(oncClickListener);
     }
 

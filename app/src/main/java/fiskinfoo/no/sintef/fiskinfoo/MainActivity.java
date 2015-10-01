@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -44,9 +45,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -111,7 +114,10 @@ public class MainActivity extends AppCompatActivity {
             initAndStartOfflineModeBackgroundThread();
         }
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
     }
 
@@ -168,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         barentswatchApi.setAccesToken(user.getToken());
         final IBarentswatchApi api = barentswatchApi.getApi();
 
-
+        @SuppressWarnings("unused")
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); //TODO: REMOVE AT PRODUCTION THIS ALLOWS DEBUGGING ASYNC HTTP-REQUESTS
         List<PropertyDescription> availableSubscriptions = null;
         List<Authorization> authorizations = null;
@@ -193,9 +199,8 @@ public class MainActivity extends AppCompatActivity {
             listDataHeader.add(availableSubscriptions.get(i).Name);
             nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
             List<String> availableFormats = new ArrayList<>();
-            for(String format : availableSubscriptions.get(i).Formats) {
-                availableFormats.add(format);
-            }
+
+            availableFormats.addAll(Arrays.asList(availableSubscriptions.get(i).Formats));
             listDataChild.put(listDataHeader.get(i), availableFormats);
         }
 
@@ -223,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String apiName = nameToApi.get(selectedHeader.get());
                 String format = selectedFormat.get();
-                Response response = null;
+                Response response;
 
                 if (apiName == null || format == null) {
                     Toast.makeText(v.getContext(), R.string.error_no_format_selected, Toast.LENGTH_LONG).show();
@@ -234,10 +239,11 @@ public class MainActivity extends AppCompatActivity {
                     response = api.geoDataDownload(apiName, format);
                     if (response == null) {
                         Log.d(TAG, "RESPONSE == NULL");
+                        throw new NullPointerException();
                     }
                     byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                     if (fiskInfoUtility.isExternalStorageWritable()) {
-                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage());
+                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage(), true);
                     } else {
                         Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
@@ -357,8 +363,8 @@ public class MainActivity extends AppCompatActivity {
                 String downloadPath;
                 String format = "JSON";
                 byte[] data = null;
-                Date lastUpdated = null;
-                Date lastUpdatedCache = null;
+                Date lastUpdated;
+                Date lastUpdatedCache;
                 String lastUpdatedCacheValue;
 
                 subscribables = api.getSubscribable();
@@ -370,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 for(PropertyDescription subscribable : subscribables) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
                     lastUpdatedCacheValue = user.getLastUpdatedOfflineCacheTime(subscribable.Name) != null ? user.getLastUpdatedOfflineCacheTime(subscribable.Name) : "2000-00-00T00:00:00";
 
                     try {
@@ -382,8 +388,7 @@ public class MainActivity extends AppCompatActivity {
                         continue;
                     }
 
-                    if(lastUpdated.getTime() > lastUpdatedCache.getTime()){
-                    } else {
+                    if(lastUpdated.getTime() <= lastUpdatedCache.getTime()){
                         continue;
                     }
 
@@ -400,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath);
+                    new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath, false);
                     user.updateOfflineCache(subscribable.Name, subscribable.LastUpdated);
                 }
 
@@ -439,11 +444,7 @@ public class MainActivity extends AppCompatActivity {
             Toast mToast = Toast.makeText(this, "SELECTED FILEPATH AT: " + filePath, Toast.LENGTH_LONG);
             user.writeToSharedPref(this);
             mToast.show();
-
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-
         }
-
     }
 
     private Fragment createFragment(String tag) {
