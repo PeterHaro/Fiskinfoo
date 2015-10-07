@@ -18,6 +18,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+
 public interface DialogInterface {
     /**
      * Return a dialog with the given layout and title. The dialog defaults to not being cancelled by outside touch.
@@ -116,4 +118,20 @@ public interface DialogInterface {
      * @return
      */
     AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId, int iconId);
+
+    /**
+     *
+     * @param context
+     * @param messageId
+     * @return
+     */
+    Dialog getLoadingDialog(Context context, int messageId);
+
+    /**
+     *
+     * @param context
+     * @param message
+     * @return
+     */
+    Dialog getLoadingDialog(Context context, String message);
 }

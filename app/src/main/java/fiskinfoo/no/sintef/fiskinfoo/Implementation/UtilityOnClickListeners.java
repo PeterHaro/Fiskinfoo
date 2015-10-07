@@ -32,6 +32,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Map;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -42,6 +43,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscri
 import fiskinfoo.no.sintef.fiskinfoo.Interface.OnclickListenerInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import retrofit.client.Response;
 
@@ -380,18 +382,39 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String offlineModeInfo = v.getResources().getString(R.string.offline_mode_info);
+                Dialog dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_offline_mode_info, R.string.offline_mode);
+                TextView textView = (TextView) dialog.findViewById(R.id.offline_mode_info_dialog_text_view);
+                LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.offline_mode_info_dialog_linear_layout);
+                Button okButton = (Button) dialog.findViewById(R.id.offline_mode_info_dialog_dismiss_button);
 
-                if(user.getOfflineCacheEntries().size() > 0) {
-                    offlineModeInfo += "\n\n" + v.getResources().getString(R.string.offline_mode_info_downloads) + "\n";
+                textView.setText(R.string.offline_mode_info);
+
+                for (final SubscriptionEntry entry : user.getSubscriptionCacheEntries()) {
+                    final InfoSwitchRow row = new InfoSwitchRow(v.getContext(), entry.mName, entry.mLastUpdated.replace("T", "\n"));
+
+                    row.setChecked(entry.mOfflineActive);
+                    row.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            SubscriptionEntry newEntry = new SubscriptionEntry(entry.mName, entry.mLastUpdated, isChecked);
+                            user.setSubscriptionCacheEntry(entry.mName, newEntry);
+                            user.writeToSharedPref(buttonView.getContext());
+                        }
+                    });
+
+                    row.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            row.setChecked(!row.isChecked());
+                        }
+                    });
+
+                    linearLayout.addView(row.getView());
                 }
 
-                for (Map.Entry<String, String> entry : user.getOfflineCacheEntries())
-                {
-                    offlineModeInfo += entry.getKey() + ": \n\t\t\t" + entry.getValue().replace("T", " ") + "\n";
-                }
+                okButton.setOnClickListener(new UtilityOnClickListeners().getDismissDialogListener(dialog));
 
-                new UtilityDialogs().getAlertDialog(v.getContext(), v.getResources().getString(R.string.offline_mode), offlineModeInfo, android.R.drawable.ic_dialog_info).show();
+                dialog.show();
             }
         };
     }

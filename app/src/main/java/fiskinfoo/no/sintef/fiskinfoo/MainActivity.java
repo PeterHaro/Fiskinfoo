@@ -56,6 +56,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
@@ -277,8 +278,6 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         SwitchAndButtonRow toggleOfflineModeRow = utilityRowsInterface.getSwitchAndButtonRow(this, getString(R.string.offline_mode));
         SettingsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
 
-        String offlineModeInfo;
-
         setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -305,19 +304,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         });
 
-        offlineModeInfo = getString(R.string.offline_mode_info);
-
-        if(user.getOfflineCacheEntries().size() > 0) {
-            offlineModeInfo += "\n\n" + "Følgende kartlag er lagret:\n";
-        }
-
-        for (Map.Entry<String, String> entry : user.getOfflineCacheEntries())
-        {
-            offlineModeInfo += entry.getKey() + ": \n\t\t\t" + entry.getValue().replace("T", " ") + "\n";
-        }
-
-        toggleOfflineModeRow.setButtonOnClickListener(onClickListenerInterface.getInformationDialogOnClickListener(getString(R.string.offline_mode), offlineModeInfo, android.R.drawable.ic_dialog_info));
-
+        toggleOfflineModeRow.setButtonOnClickListener(onClickListenerInterface.getOfflineModeInformationIconOnClickListener(user));
         toggleOfflineModeRow.setChecked(user.getOfflineMode());
         toggleOfflineModeRow.setSwitchOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -369,9 +356,8 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 String downloadPath;
                 String format = "JSON";
                 byte[] data = null;
-                Date lastUpdated;
-                Date lastUpdatedCache;
-                String lastUpdatedCacheValue;
+                Date lastUpdatedDateTime;
+                Date lastUpdatedCacheDateTime;
 
                 subscribables = api.getSubscribable();
                 downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
@@ -382,19 +368,24 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 }
 
                 for(PropertyDescription subscribable : subscribables) {
+                    SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.Name);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                    lastUpdatedCacheValue = user.getLastUpdatedOfflineCacheTime(subscribable.Name) != null ? user.getLastUpdatedOfflineCacheTime(subscribable.Name) : "2000-00-00T00:00:00";
+                    boolean success;
+
+                    if(cacheEntry == null || !cacheEntry.mOfflineActive) {
+                        continue;
+                    }
 
                     try {
-                        lastUpdated = simpleDateFormat.parse(subscribable.LastUpdated);
-                        lastUpdatedCache = simpleDateFormat.parse(lastUpdatedCacheValue);
+                        lastUpdatedDateTime = simpleDateFormat.parse(subscribable.LastUpdated);
+                        lastUpdatedCacheDateTime = simpleDateFormat.parse(cacheEntry.mLastUpdated.equals(getBaseContext().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cacheEntry.mLastUpdated);
                     } catch (ParseException e) {
                         e.printStackTrace();
                         Log.e(TAG, "Invalid datetime provided");
                         continue;
                     }
 
-                    if(lastUpdated.getTime() <= lastUpdatedCache.getTime()){
+                    if(lastUpdatedDateTime.getTime() <= lastUpdatedCacheDateTime.getTime()){
                         continue;
                     }
 
@@ -411,8 +402,12 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                         e.printStackTrace();
                     }
 
-                    new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath, false);
-                    user.updateOfflineCache(subscribable.Name, subscribable.LastUpdated);
+                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath, false);
+
+                    if(success) {
+                        cacheEntry.mLastUpdated = subscribable.LastUpdated;
+                        user.setSubscriptionCacheEntry(subscribable.Name, cacheEntry);
+                    }
                 }
 
                 user.writeToSharedPref(getBaseContext());

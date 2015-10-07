@@ -48,9 +48,8 @@
 
         function populateMap(authenticated) {
             if (authenticated === 1) {
-                map.addLayers(populateAuthenticatedUser());
-                var mToken = getToken();
-                corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
+                map.addLayers(populateUser());
+                parseGeoJsonResponse();
             } else {
                 map.addLayers(populateAllAvailableWmsLayers());
             }
@@ -143,8 +142,14 @@
             return token;
         }
 
-        function parseGeoJsonResponse(data) {
-            geoJson = data;
+        function getJsonFile(fileName) {
+            var jsonFile = Android.getGeoJSONFile(fileName);
+            return JSON.parse(jsonFile);
+        }
+
+        function parseGeoJsonResponse() {
+            geoJson = getJsonFile("fishingfacility");
+
             var geoJsonFormat = new OpenLayers.Format.GeoJSON({
                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -215,13 +220,11 @@
                 })
             });
 
-            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap", {styleMap: toolsStyleMap});
+            map.getLayersByName("Redskap")[0].styleMap = toolsStyleMap;
+            map.getLayersByName("Redskap")[0].addFeatures(geoJsonFormat.read(geoJson));
 
-            toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
-
-            map.addLayer(toolsVectorLayer);
             selectFeature = new OpenLayers.Control.SelectFeature(
-            toolsVectorLayer, {
+            map.getLayersByName("Redskap")[0], {
                 onSelect: clickNotice,
                 onUnselect: onPopupFeatureUnselect,
                 autoActivate: true
@@ -258,110 +261,7 @@
             layer.setVisibility(visibility);
         }
 
-        function populateAllAvailableWmsLayers() {
-            var layers = [
-                 new OpenLayers.Layer.WMS(
-                    "Redskap", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bwdev:fishingfacility_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }), new OpenLayers.Layer.WMS(
-                    "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bwdev:waveforecast_area_iso_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }
-                ), new OpenLayers.Layer.WMS(
-                    "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bwdev:iceedge_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }
-                ), new OpenLayers.Layer.WMS(
-                    "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bw:npdfacility_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }
-                ), new OpenLayers.Layer.WMS(
-                    "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bwdev:npdsurveyongoing_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }
-                ), new OpenLayers.Layer.WMS(
-                    "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
-                    {
-                        LAYERS: 'bwdev:npdsurveyplanned_latest',
-                        transparent: true,
-                        STYLES: '',
-                        format: format
-                    },
-                    {
-                        singleTile: true,
-                        ratio: 1,
-                        isBaseLayer: false,
-                        yx: { 'EPSG:4326': true }
-                    }
-                ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
-            {
-                LAYERS: 'peter:points',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        )];
-            return layers;
-        }
-
-        function populateAuthenticatedUser() {
+        function populateUser() {
             var layers = [
                 new OpenLayers.Layer.WMS(
                 "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
@@ -434,20 +334,21 @@
                     yx: { 'EPSG:4326': true }
                 }
             ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
-            {
-                LAYERS: 'peter:points',
-                transparent: true,
-                STYLES: 'strike_probability',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        )];
+                "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
+                {
+                    LAYERS: 'peter:points',
+                    transparent: true,
+                    STYLES: 'strike_probability',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.Vector("Redskap")
+        ];
             return layers;
         }
 

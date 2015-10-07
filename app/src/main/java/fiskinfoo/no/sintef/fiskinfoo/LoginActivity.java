@@ -145,7 +145,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
             loginTask.execute((Void) null);
         } else {
-            Log.d(TAG, "Token not valid");
+            Log.d(TAG, "Token valid");
         }
         changeActivity(MainActivity.class, user);
     }

@@ -51,11 +51,14 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -189,6 +192,7 @@ public class MapFragment extends Fragment {
             browser.loadUrl("file:///android_asset/mapApplication.html");
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
+            dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
         }
     }
 
@@ -214,6 +218,40 @@ public class MapFragment extends Fragment {
                 e.printStackTrace();
                 //TODO
             }
+        }
+
+        // Note: Would pass a JSONObject, but for some reason the mapApplication fails at receiving so sending as string instead.
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public String getGeoJSONFile(String fileName) {
+            String directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+
+            File file = new File(directoryFilePath + fileName + ".JSON");
+            StringBuilder jsonString = new StringBuilder();
+            BufferedReader bufferReader = null;
+
+            try {
+                bufferReader = new BufferedReader(new FileReader(file));
+                String line;
+
+                while ((line = bufferReader.readLine()) != null) {
+                    jsonString.append(line);
+                    jsonString.append('\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                    if(bufferReader != null) {
+                        try {
+                            bufferReader.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+            }
+
+            return jsonString.toString();
         }
 
     }
@@ -256,11 +294,11 @@ public class MapFragment extends Fragment {
                     getLayersAndVisibility();
                 }
             }, 3000);
-
         }
 
     }
 
+    //
     private void createMapLayerSelectionDialog() {
         if(layersAndVisibility == null) {
             getLayersAndVisibility();
@@ -700,11 +738,20 @@ public class MapFragment extends Fragment {
         mainHandler.post(myRunnable);
     }
 
+    public void updateMap() {
+        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+            browser.loadUrl("file:///android_asset/mapApplication.html");
+        } else {
+            browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
+            dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.update_map:
-                browser.loadUrl("file:///android_asset/mapApplication.html");
+                updateMap();
                 return true;
             case R.id.zoom_to_user_position:
                 browser.loadUrl("javascript:zoomToUserPosition()");

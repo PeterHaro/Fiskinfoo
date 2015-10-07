@@ -199,7 +199,7 @@
                         }  else {
                             return "#000000";
                         }
-                    },
+                    }
                 }
             });
 
@@ -215,13 +215,11 @@
                 })
             });
 
-            var toolsVectorLayer = new OpenLayers.Layer.Vector("Redskap", {styleMap: toolsStyleMap});
+            map.getLayersByName("Redskap")[0].styleMap = toolsStyleMap;
+            map.getLayersByName("Redskap")[0].addFeatures(geoJsonFormat.read(geoJson));
 
-            toolsVectorLayer.addFeatures(geoJsonFormat.read(geoJson));
-
-            map.addLayer(toolsVectorLayer);
             selectFeature = new OpenLayers.Control.SelectFeature(
-            toolsVectorLayer, {
+            map.getLayersByName("Redskap")[0], {
                 onSelect: clickNotice,
                 onUnselect: onPopupFeatureUnselect,
                 autoActivate: true
@@ -434,20 +432,22 @@
                     yx: { 'EPSG:4326': true }
                 }
             ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
-            {
-                LAYERS: 'peter:points',
-                transparent: true,
-                STYLES: 'strike_probability',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        )];
+                "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
+                {
+                    LAYERS: 'peter:points',
+                    transparent: true,
+                    STYLES: 'strike_probability',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.Vector("Redskap")
+
+        ];
             return layers;
         }
 

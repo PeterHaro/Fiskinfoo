@@ -16,18 +16,22 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.OfflineCache;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
+import retrofit.http.HEAD;
 
 public class User implements Parcelable{
     private static final String PREFS_NAME = "no.sintef.fiskinfo";
@@ -48,13 +52,14 @@ public class User implements Parcelable{
     private List<String> availableSubscriptions;
     private boolean isAuthenticated; //False == anon user, I.E no permission
     private boolean isFishingFacilityAuthenticated;
-    private OfflineCache offlineCache;
     private ToolLog toolLog;
+    private Map<String, SubscriptionEntry> subscriptionCache;
+    private boolean offlineModeActive = false;
 
     public User() {
         isAuthenticated = false;
         toolLog = new ToolLog();
-        offlineCache = new OfflineCache();
+        subscriptionCache = new HashMap<>();
     }
 
     protected User(Parcel in) {
@@ -68,8 +73,11 @@ public class User implements Parcelable{
         availableSubscriptions = in.createStringArrayList();
         isAuthenticated = in.readByte() != 0;
         isFishingFacilityAuthenticated = in.readByte() != 0;
-        offlineCache = in.readParcelable(OfflineCache.class.getClassLoader());
         toolLog = in.readParcelable(ToolLog.class.getClassLoader());
+        Bundle bundle = in.readBundle();
+        bundle.setClassLoader(SubscriptionEntry.class.getClassLoader());
+        subscriptionCache = (Map<String, SubscriptionEntry>) bundle.getSerializable("cache");
+        offlineModeActive = in.readByte() != 0;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -205,23 +213,23 @@ public class User implements Parcelable{
     }
 
     public boolean getOfflineMode() {
-        return (offlineCache.getisActive());
+        return offlineModeActive;
     }
 
-    public void setOfflineMode(boolean isOffline) {
-        offlineCache.setActive(isOffline);
+    public void setOfflineMode(boolean active) {
+        offlineModeActive = active;
     }
 
-    public void updateOfflineCache(String name, String date) {
-        offlineCache.setLatestVersion(name, date);
+    public Collection<SubscriptionEntry> getSubscriptionCacheEntries() {
+        return subscriptionCache.values();
     }
 
-    public Set<Map.Entry<String, String>> getOfflineCacheEntries() {
-        return offlineCache.getEntries();
+    public SubscriptionEntry getSubscriptionCacheEntry(String name) {
+        return subscriptionCache.get(name);
     }
 
-    public String getLastUpdatedOfflineCacheTime(String name) {
-        return offlineCache.getLatestVersion(name);
+    public void setSubscriptionCacheEntry(String name, SubscriptionEntry entry) {
+        subscriptionCache.put(name, entry);
     }
 
     @Override
@@ -241,7 +249,10 @@ public class User implements Parcelable{
         dest.writeStringList(availableSubscriptions);
         dest.writeByte((byte) (isAuthenticated ? 1 : 0));
         dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
-        dest.writeParcelable(offlineCache, flags);
         dest.writeParcelable(toolLog, flags);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("cache", (Serializable) subscriptionCache);
+        dest.writeBundle(bundle);
+        dest.writeByte((byte) (offlineModeActive ? 1 : 0));
     }
 }

@@ -19,6 +19,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.HyperlinkAlertDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
@@ -117,5 +120,33 @@ public class UtilityDialogs implements DialogInterface{
     @Override
     public AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId, int iconId) {
         return HyperlinkAlertDialog.create(context, titleId, infoId, iconId);
+    }
+
+    @Override
+    public Dialog getLoadingDialog(Context context, int messageId) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_loading);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        TextView messageTextView = (TextView) dialog.findViewById(R.id.loading_dialog_info_text_view);
+        messageTextView.setText(messageId);
+
+        return dialog;
+    }
+
+    @Override
+    public Dialog getLoadingDialog(Context context, String message) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_loading);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        TextView messageTextView = (TextView) dialog.findViewById(R.id.loading_dialog_info_text_view);
+        messageTextView.setText(message);
+
+        return dialog;
     }
 }

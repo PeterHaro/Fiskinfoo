@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
@@ -172,6 +173,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
             for(PropertyDescription subscribable : api.getSubscribable()) {
                 availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
+
+                if(user.getSubscriptionCacheEntry(subscribable.Name) == null) {
+                    SubscriptionEntry entry = new SubscriptionEntry(subscribable.Name, getString(R.string.abbreviation_na));
+                    user.setSubscriptionCacheEntry(subscribable.Name, entry);
+                }
             }
 
             for(Subscription subscription : api.getSubscriptions()) {

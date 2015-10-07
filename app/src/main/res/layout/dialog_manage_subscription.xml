@@ -27,9 +27,7 @@ limitations under the License.
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:paddingBottom="@dimen/dialog_internal_container_margin_bottom"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin">
+        android:paddingBottom="@dimen/dialog_internal_container_margin_bottom">
 
         <RelativeLayout
             android:id="@+id/manage_subscription_main_container"

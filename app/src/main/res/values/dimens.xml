@@ -67,6 +67,12 @@ limitations under the License.
     <dimen name="select_map_layer_info_text_view_margin_left">10dp</dimen>
     <dimen name="select_map_layer_info_text_view_margin_right">10dp</dimen>
 
+    <!-- Map loading dialog -->
+    <dimen name="loading_dialog_margin_bottom">20dp</dimen>
+    <dimen name="loading_dialog_margin_left">30dp</dimen>
+    <dimen name="loading_dialog_margin_right">30dp</dimen>
+    <dimen name="loading_dialog_margin_top">20dp</dimen>
+
     <!-- Manage subscription dialog margins -->
     <dimen name="manage_subscription_margin_top">10dp</dimen>
     <dimen name="manage_subscription_title_margin_top">20dp</dimen>
@@ -132,6 +138,14 @@ limitations under the License.
     <dimen name="switch_and_button_row_button_margin_left">10dp</dimen>
     <dimen name="switch_and_button_row_button_margin_right">15dp</dimen>
     <dimen name="switch_and_button_row_button_margin_top">5dp</dimen>
+
+    <!-- InfoSwitchRow -->
+    <dimen name="switch_info_row_padding_bottom">7dp</dimen>
+    <dimen name="switch_info_row_padding_top">7dp</dimen>
+    <dimen name="switch_info_row_switch_margin_left">20dp</dimen>
+    <dimen name="switch_info_row_switch_margin_right">20dp</dimen>
+    <dimen name="switch_info_row_text_view_margin_left">20dp</dimen>
+    <dimen name="switch_info_row_text_view_margin_right">20dp</dimen>
 
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>

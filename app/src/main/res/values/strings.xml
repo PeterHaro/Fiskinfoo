@@ -27,6 +27,7 @@ limitations under the License.
     <string name="placeholder_string">Placeholder</string>
     <string name="no_internet_access">Ingen internett-tilgang</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
+    <string name="abbreviation_na">n.a.</string>
 
     <string name="date_colon">Dato:</string>
 
@@ -56,6 +57,11 @@ limitations under the License.
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
     <string name="tool_legend">Tegnforklaring for redskaper</string>
+    <string name="map_loading">Laster inn kart</string>
+    <string name="map_loading_info">Vennligst vent mens kartet lastes inn.</string>
+    <string name="loading_map_layers">Laster inn kartlag.</string>
+    <string name="offline_mode_map_used_title">Offlinemodus</string>
+    <string name="offline_mode_map_used_info">Da det ser ut til at du ikke har internett-tilgang prøver appen å benytte kart som har blitt lastet ned mens appen var i offlinemodus.</string>
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>
@@ -116,8 +122,8 @@ limitations under the License.
     <string name="settings">Innstillinger</string>
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
     <string name="offline_mode">Offline-modus</string>
-    <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.</string>
-    <string name="offline_mode_info_downloads">Under kan du se hvilke kartlag som er lagret for øyeblikket, samt når disse sist ble oppdatert:</string>
+    <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.\n\nUnder kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
+    <string name="offline_mode_info_downloads">Under kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
     <string name="offline_mode_activated">Offline-modus aktivert</string>
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
