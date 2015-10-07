@@ -90,9 +90,9 @@ public class MapFragment extends Fragment {
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
+    private UtilityRowsInterface rowsInterface;
     private FiskInfoUtility fiskInfoUtility;
     private UtilityDialogs dialogInterface;
-    private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
     private ScheduledFuture proximityAlertWatcher;
     private GpsLocationTracker mGpsLocationTracker;
@@ -152,7 +152,7 @@ public class MapFragment extends Fragment {
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
-        utilityRowsInterface = new UtilityRows();
+        rowsInterface = new UtilityRows();
 
         configureWebParametersAndLoadDefaultMapApplication();
     }
@@ -262,8 +262,11 @@ public class MapFragment extends Fragment {
     }
 
     private void createMapLayerSelectionDialog() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
+        if(layersAndVisibility == null) {
+            getLayersAndVisibility();
+        }
 
+        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
 
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
         final List<CheckBoxRow> rows = new ArrayList<>();
@@ -277,7 +280,7 @@ public class MapFragment extends Fragment {
             boolean isActive;
             isActive = layer.isVisible;
 
-            CheckBoxRow row = utilityRowsInterface.getCheckBoxRow(getActivity(), layer.name, isActive);
+            CheckBoxRow row = rowsInterface.getCheckBoxRow(getActivity(), layer.name, isActive);
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);
@@ -322,7 +325,7 @@ public class MapFragment extends Fragment {
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
         for (ToolType toolType : ToolType.values()) {
-            View toolLegendRow = utilityRowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
+            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
             tableLayout.addView(toolLegendRow);
         }
 
@@ -718,5 +721,23 @@ public class MapFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //getAllVesselNames
+    private void createSearchDialog() {
+        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_tool_legend, R.string.tool_legend);
+
+        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.message_dialog_mandatory_fields_container);
+        Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
+
+        for (ToolType toolType : ToolType.values()) {
+            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
+            tableLayout.addView(toolLegendRow);
+        }
+
+        dismissButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+
+        dialog.show();
+
     }
 }

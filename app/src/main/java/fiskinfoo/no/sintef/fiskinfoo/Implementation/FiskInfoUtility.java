@@ -7,6 +7,9 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.content.res.Resources;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -356,7 +360,48 @@ public class FiskInfoUtility {
         return polygon;
     }
 
-    @SuppressWarnings("unused")
+
+    // Compare dates from strings
+    // -----------------------------------------------------------------------
+    /**
+     * <p>
+     * <b> public int compare(mDate, dateToCOmpareWith, format) </b>
+     * </p>
+     *
+     * Compares two dates with each other using the rules of the given date
+     * format.
+     *
+     * @param mDate
+     *            The date you want to compare
+     * @param dateToCompareWith
+     *            The date comparing with
+     * @param format
+     *            An accepted format which must be valid for a
+     *            <code>SimpleDateFormat</code>
+     * @return <p>
+     *         returns 0 if the dates are equal
+     *         </p>
+     *         <p>
+     *         returns > 0 if mDate is larger then the date to compare with
+     *         </p>
+     *         <p>
+     *         returns < 0 if mDate is smaller then the date to compare with
+     *         </p>
+     */
+    public static int compareDates(String mDate, String dateToCompareWith, String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        Date date1 = null;
+        Date date2 = null;
+        try {
+            date1 = sdf.parse(mDate);
+            date2 = sdf.parse(dateToCompareWith);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date1.compareTo(date2);
+    }
+
+
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
         if (input.endsWith("Z")) {
@@ -500,4 +545,27 @@ public class FiskInfoUtility {
             return false;
         }
     }
+
+    /**
+     * Convert Dp to Pixel
+     */
+    public static int dpToPx(float dp, Resources resources){
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
+        return (int) px;
+    }
+
+    public static int getRelativeTop(View myView) {
+        if(myView.getId() == android.R.id.content)
+            return myView.getTop();
+        else
+            return myView.getTop() + getRelativeTop((View) myView.getParent());
+    }
+
+    public static int getRelativeLeft(View myView) {
+        if(myView.getId() == android.R.id.content)
+            return myView.getLeft();
+        else
+            return myView.getLeft() + getRelativeLeft((View) myView.getParent());
+    }
+
 }

@@ -49,9 +49,11 @@ public class User implements Parcelable{
     private boolean isAuthenticated; //False == anon user, I.E no permission
     private boolean isFishingFacilityAuthenticated;
     private OfflineCache offlineCache;
-
+    private ToolLog toolLog;
 
     public User() {
+        isAuthenticated = false;
+        toolLog = new ToolLog();
         offlineCache = new OfflineCache();
     }
 
@@ -67,6 +69,7 @@ public class User implements Parcelable{
         isAuthenticated = in.readByte() != 0;
         isFishingFacilityAuthenticated = in.readByte() != 0;
         offlineCache = in.readParcelable(OfflineCache.class.getClassLoader());
+        toolLog = in.readParcelable(ToolLog.class.getClassLoader());
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -87,6 +90,10 @@ public class User implements Parcelable{
 
     public boolean isTokenValid() {
         return authentication != null && (System.currentTimeMillis() / 1000L) - previousAuthenticationTimeStamp <= (authentication.expires_in + 600);
+    }
+
+    public ToolLog getToolLog() {
+        return toolLog;
     }
 
     public void setUsername(String username) {
@@ -235,5 +242,6 @@ public class User implements Parcelable{
         dest.writeByte((byte) (isAuthenticated ? 1 : 0));
         dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
         dest.writeParcelable(offlineCache, flags);
+        dest.writeParcelable(toolLog, flags);
     }
 }

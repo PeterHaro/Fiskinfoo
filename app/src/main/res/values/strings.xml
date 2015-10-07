@@ -28,6 +28,8 @@ limitations under the License.
     <string name="no_internet_access">Ingen internett-tilgang</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
 
+    <string name="date_colon">Dato:</string>
+
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
     <string name="select">Velg</string>
@@ -41,6 +43,7 @@ limitations under the License.
     <!-- Tab strings -->
     <string name="my_page">Min side</string>
     <string name="map">Kart</string>
+    <string name="register_tool">Redskapsregistrering</string>
 
     <!-- MyPage fragment strings -->
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
@@ -198,5 +201,20 @@ limitations under the License.
         <item>Warning:Advarsel</item>
         <item>Error:Feil</item>
     </string-array>
+
+    <!-- Register tool fragment -->
+    <string name="shoot_tool">Skyt redskap</string>
+    <string name="finish_tool_text">Ferdig redskap </string>
+    <string name="register_tool_complete">Registrer redskap</string>
+    <string name="register_from_olex">Registrer ruter fra OleX</string>
+    <!-- TODO: FIXME: Important! Figure out whether this actually goes to Fiskeri Direktoratet and change if not -->
+    <string name="dispatch_tools">Send redskapsliste til Direktoratet</string>
+    <string name="tool_type">Redskapstype</string>
+    <string name="enter_tool_type">Oppgi redskapstype</string>
+    <string name="start_new_tool_dialog_title">Skyt redskap</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

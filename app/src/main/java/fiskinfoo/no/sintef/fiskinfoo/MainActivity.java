@@ -21,6 +21,7 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -73,7 +74,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener{
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
+        tl.addTab(tl.newTab().setText(R.string.register_tool).setTag(RegisterToolsFragment.TAG));
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 
@@ -140,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
                     getFragmentManager().beginTransaction().
                             replace(R.id.fragment_placeholder, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
+                } else if (tab.getTag() == RegisterToolsFragment.TAG){
+                    getFragmentManager().beginTransaction().
+                            replace(R.id.fragment_placeholder, RegisterToolsFragment.newInstance(user), RegisterToolsFragment.TAG).addToBackStack(null).
+                                    commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
                 }
@@ -499,5 +505,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        //Not required for now as we communicate strictly using parcelables only for now.
     }
 }
