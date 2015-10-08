@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -62,9 +61,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private ExpandableListAdapterChildOnClickListener childOnClickListener;
     private RecyclerView mCRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private TextView mNetworkErrorTextView;
     private UtilityOnClickListeners onClickListenerInterface;
     private FiskInfoUtility fiskInfoUtility;
+    private ExpandCollapseListener expandCollapseListener;
 
     @Override
     public void onAttach(Activity activity) {
@@ -85,15 +84,21 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         View v = inf.inflate(R.layout.fragment_my_page, parent, false);
-        ArrayList<ParentObject> data = fetchMyPage();
-        myPageExpandableListAdapter = new MyPageExpandableListAdapter(this.getActivity(), data, childOnClickListener);
-        myPageExpandableListAdapter.addExpandCollapseListener(this);
-        myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
+        ArrayList<ParentObject> data;
+        expandCollapseListener = this;
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.my_page_swipe_refresh_layout);
+
+        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+            data = fetchMyPage();
+            myPageExpandableListAdapter = new MyPageExpandableListAdapter(this.getActivity(), data, childOnClickListener);
+            myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
+            myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
+        }
+
         mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
         mCRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.my_page_swipe_refresh_layout);
-        mNetworkErrorTextView = (TextView) v.findViewById(R.id.my_page_network_error_text_view);
+
         return v;
     }
 
@@ -110,29 +115,32 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                 mCRecyclerView.setLayoutManager(manager1);
                 manager1.onRestoreInstanceState(manager);
             }
-
-
         }
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // TODO: Will not work if token has expired, should look into fixing this in general
+                boolean networkAvailable = fiskInfoUtility.isNetworkAvailable(getActivity());
 
-                if(!(fiskInfoUtility.isNetworkAvailable(getActivity()))) {
-                    toggleNetworkErrorTextView(false);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    return;
+                if (networkAvailable) {
+                    ArrayList<ParentObject> data = fetchMyPage();
+
+                    myPageExpandableListAdapter = new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
+                    myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
+                    mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    mCRecyclerView.setAdapter(myPageExpandableListAdapter);
+
+                    ((MainActivity)getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
                 } else {
-                    toggleNetworkErrorTextView(true);
+                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
+                    mSwipeRefreshLayout.setRefreshing(networkAvailable);
+                    return;
                 }
-
-                ArrayList<ParentObject> data = fetchMyPage();
-                myPageExpandableListAdapter = new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
-                mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
+
+        ((MainActivity)getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
     }
 
     @Override
@@ -142,7 +150,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             Log.d(TAG, outState.toString());
         }
 
-        if(mCRecyclerView != null) {
+        if(mCRecyclerView != null && mCRecyclerView.getAdapter() != null) {
             ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
             Parcelable layoutState = mCRecyclerView.getLayoutManager().onSaveInstanceState();
             if(outState != null) {
@@ -366,7 +374,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             getFragmentManager().beginTransaction().
-                    replace(R.id.fragment_placeholder, createFragment(object, type), CardViewFragment.TAG).addToBackStack(null).
+                    replace(R.id.fragment_container, createFragment(object, type), CardViewFragment.TAG).addToBackStack(null).
                     commit();
         }
     }
@@ -379,15 +387,5 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         CardViewFragment cardViewFragment = CardViewFragment.newInstance();
         cardViewFragment.setArguments(userBundle);
         return cardViewFragment;
-    }
-
-    public void toggleNetworkErrorTextView(boolean hasInternet) {
-        if(!hasInternet) {
-            mNetworkErrorTextView.setText(R.string.no_internet_access);
-            mNetworkErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
-            mNetworkErrorTextView.setVisibility(View.VISIBLE);
-        } else {
-            mNetworkErrorTextView.setVisibility(View.GONE);
-        }
     }
 }

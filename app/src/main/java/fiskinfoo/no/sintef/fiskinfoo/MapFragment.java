@@ -51,7 +51,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import java.io.BufferedInputStream;
@@ -165,7 +164,7 @@ public class MapFragment extends Fragment {
         if(getView() == null) {
             throw new NullPointerException();
         }
-        browser = (WebView) getView().findViewById(R.id.browserWebView);
+        browser = (WebView) getView().findViewById(R.id.map_fragment_web_view);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setDomStorageEnabled(true);
         browser.getSettings().setGeolocationEnabled(true);
@@ -188,7 +187,7 @@ public class MapFragment extends Fragment {
 
         });
 
-        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+        if(!(new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
@@ -251,6 +250,8 @@ public class MapFragment extends Fragment {
 
             }
 
+            System.out.println("This was requested: " + fileName+ ", size was " + jsonString.length());
+
             return jsonString.toString();
         }
 
@@ -305,7 +306,6 @@ public class MapFragment extends Fragment {
         }
 
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
-
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
         final List<CheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);

@@ -18,7 +18,7 @@ limitations under the License.
                 tools:context=".MapActivity">
 
     <WebView
-        android:id="@+id/browserWebView"
+        android:id="@+id/map_fragment_web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"

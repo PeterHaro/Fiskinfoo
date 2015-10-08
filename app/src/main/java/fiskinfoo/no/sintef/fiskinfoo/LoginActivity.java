@@ -124,6 +124,10 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        if(!new FiskInfoUtility().isNetworkAvailable(getBaseContext())) {
+            toggleNetworkErrorText(false);
+        }
     }
 
     private void loginUserIfStored() {
@@ -133,13 +137,6 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         }
 
         user = User.readFromSharedPref(this);
-
-        if(!(new FiskInfoUtility().isNetworkAvailable(this))) {
-            toggleInternetErrorText(false);
-            mEmailView.setText(user.getUsername());
-            mPasswordView.setText(user.getPassword());
-            return;
-        }
 
         if(!user.isTokenValid()) {
             LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
@@ -173,7 +170,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         String password = mPasswordView.getText().toString();
 
         if(!(new FiskInfoUtility().isNetworkAvailable(this))) {
-            toggleInternetErrorText(true);
+            toggleNetworkErrorText(true);
             return;
         }
 
@@ -211,13 +208,13 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         }
     }
 
-    public void toggleInternetErrorText(boolean hasInternet) {
-        if(!hasInternet) {
+    public void toggleNetworkErrorText(boolean networkAvailable) {
+        if(networkAvailable) {
+            mErrorTextView.setVisibility(View.GONE);
+        } else {
             mErrorTextView.setText(R.string.no_internet_access);
             mErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
             mErrorTextView.setVisibility(View.VISIBLE);
-        } else {
-            mErrorTextView.setVisibility(View.GONE);
         }
     }
 

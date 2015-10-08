@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
@@ -40,6 +41,7 @@ import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -75,7 +77,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener {
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
     private ScheduledFuture offlineModeBackGroundThread;
     private RelativeLayout toolbarOfflineModeView;
     boolean offlineModeLooperPrepared = false;
+    private TextView mNetworkErrorTextView;
+    private boolean networkStateChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,12 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         dialogInterface = new UtilityDialogs();
         fiskInfoUtility = new FiskInfoUtility();
         setupToolbar();
+
+        mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
+
+        if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+
+        }
     }
 
     private void setupToolbar() {
@@ -125,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
     }
 
     private void setupTabsInToolbar(TabLayout tl) {
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_placeholder);
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
         if(frameLayout.getChildCount() == 0) {
             getFragmentManager().beginTransaction().
-                    replace(R.id.fragment_placeholder, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).
+                    replace(R.id.fragment_container, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).
                     commit();
         }
 
@@ -137,15 +147,15 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getTag() == MyPageFragment.TAG) {
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_placeholder, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).addToBackStack(null).
+                            replace(R.id.fragment_container, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).addToBackStack(null).
                             commit();
                 } else if (tab.getTag() == MapFragment.TAG) {
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_placeholder, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
+                            replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
                 } else if (tab.getTag() == RegisterToolsFragment.TAG){
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_placeholder, RegisterToolsFragment.newInstance(user), RegisterToolsFragment.TAG).addToBackStack(null).
+                            replace(R.id.fragment_container, RegisterToolsFragment.newInstance(user), RegisterToolsFragment.TAG).addToBackStack(null).
                                     commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
@@ -349,6 +359,27 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         offlineModeBackGroundThread = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                Handler handler = new Handler(getMainLooper());
+
+                if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+                    Log.i(TAG, "Offline mode update skipped");
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            toggleNetworkErrorTextView(false);
+                        }
+                    }, 100);
+
+                    return;
+                } else {
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            toggleNetworkErrorTextView(true);
+                        }
+                    }, 100);
+                }
+
+
+
                 BarentswatchApi barentswatchApi = new BarentswatchApi();
                 IBarentswatchApi api = barentswatchApi.getApi();
                 List<PropertyDescription> subscribables;
@@ -402,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                         e.printStackTrace();
                     }
 
-                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.ApiName, format, downloadPath, false);
+                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false);
 
                     if(success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;
@@ -446,6 +477,24 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             user.writeToSharedPref(this);
             mToast.show();
         }
+    }
+
+    public void toggleNetworkErrorTextView(boolean networkAvailable) {
+        if(!networkAvailable) {
+            mNetworkErrorTextView.setText(R.string.no_internet_access);
+            mNetworkErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
+            mNetworkErrorTextView.setVisibility(View.VISIBLE);
+        } else {
+            mNetworkErrorTextView.setVisibility(View.GONE);
+        }
+    }
+
+    public boolean getNetworkStateChanged() {
+        return networkStateChanged;
+    }
+
+    public void setNetworkStateChanged(boolean state) {
+        networkStateChanged = state;
     }
 
     private Fragment createFragment(String tag) {

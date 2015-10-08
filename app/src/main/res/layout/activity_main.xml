@@ -51,8 +51,18 @@ limitations under the License.
             app:tabTextColor="@color/passive_orange"/>
     </android.support.v7.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/activity_main_network_error_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/my_page_network_error_text_view_margin_bottom"
+        android:layout_marginTop="@dimen/my_page_network_error_text_view_margin_top"
+        android:gravity="center"
+        android:textSize="@dimen/my_page_network_error_text_size"
+        android:visibility="gone"/>
+
     <FrameLayout
-        android:id="@+id/fragment_placeholder"
+        android:id="@+id/fragment_container"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
     </FrameLayout>
