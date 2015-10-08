@@ -187,7 +187,7 @@ public class MapFragment extends Fragment {
 
         });
 
-        if(!(new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
@@ -249,8 +249,6 @@ public class MapFragment extends Fragment {
                     }
 
             }
-
-            System.out.println("This was requested: " + fileName+ ", size was " + jsonString.length());
 
             return jsonString.toString();
         }
