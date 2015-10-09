@@ -438,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                     if(success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;
                         cacheEntry.mSubscribable = subscribable;
-                        user.setSubscriptionCacheEntry(subscribable.Name, cacheEntry);
+                        user.setSubscriptionCacheEntry(subscribable.ApiName, cacheEntry);
                     }
                 }
 

@@ -396,9 +396,9 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     row.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            SubscriptionEntry updateEntry = user.getSubscriptionCacheEntry(entry.mName);
+                            SubscriptionEntry updateEntry = user.getSubscriptionCacheEntry(entry.mSubscribable.ApiName);
                             updateEntry.mOfflineActive = isChecked;
-                            user.setSubscriptionCacheEntry(entry.mName, updateEntry);
+                            user.setSubscriptionCacheEntry(entry.mSubscribable.ApiName, updateEntry);
                             user.writeToSharedPref(buttonView.getContext());
                         }
                     });
