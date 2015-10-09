@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             myPageExpandableListAdapter = new MyPageExpandableListAdapter(this.getActivity(), data, childOnClickListener);
             myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
             myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
+        } else {
+            data = fetchMyPageCached();
+            myPageExpandableListAdapter = new MyPageExpandableListAdapter(this.getActivity(), data, childOnClickListener);
+            myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
+            myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
         }
 
         mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
@@ -131,11 +137,18 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                     mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     mCRecyclerView.setAdapter(myPageExpandableListAdapter);
 
-                    ((MainActivity)getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
-                } else {
                     ((MainActivity) getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
-                    mSwipeRefreshLayout.setRefreshing(networkAvailable);
-                    return;
+                    mSwipeRefreshLayout.setRefreshing(false);
+                } else {
+                    ArrayList<ParentObject> data = fetchMyPageCached();
+
+                    myPageExpandableListAdapter = new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
+                    myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
+                    mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    mCRecyclerView.setAdapter(myPageExpandableListAdapter);
+
+                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -169,6 +182,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             List<PropertyDescription> availableSubscriptions = api.getSubscribable();
+            List<Subscription> currentSubscriptions = api.getSubscriptions();
 //            List<String> myWarnings = new ArrayList<>(); //TODO: Tie in polar low warning
 //            List<Subscription> activeSubscriptions = api.getSubscriptions();
             List<Authorization> authorizations = api.getAuthorization();
@@ -179,29 +193,41 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 //            ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
 //            ArrayList<Object> mySubscriptions = new ArrayList<>();
 
-            for(PropertyDescription subscribable : api.getSubscribable()) {
-                availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
-
-                if(user.getSubscriptionCacheEntry(subscribable.Name) == null) {
-                    SubscriptionEntry entry = new SubscriptionEntry(subscribable.Name, getString(R.string.abbreviation_na));
-                    user.setSubscriptionCacheEntry(subscribable.Name, entry);
-                }
+            for(Authorization auth : authorizations) {
+                authMap.put(auth.Id, auth.HasAccess);
             }
 
-            for(Subscription subscription : api.getSubscriptions()) {
+
+            for(Subscription subscription : currentSubscriptions) {
                 activeSubscriptionsMap.put(subscription.GeoDataServiceName, subscription);
             }
 
-            for(Authorization auth : authorizations) {
-                authMap.put(auth.Id, auth.HasAccess);
+            for(PropertyDescription subscribable : availableSubscriptions) {
+                availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
+                SubscriptionEntry currentEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
+
+                if(currentEntry == null) {
+                    SubscriptionEntry entry = activeSubscriptionsMap.get(subscribable.ApiName) == null ? new SubscriptionEntry(subscribable, authMap.get(subscribable.Id)) :
+                            new SubscriptionEntry(subscribable, activeSubscriptionsMap.get(subscribable.ApiName), authMap.get(subscribable.Id));
+                    entry.mIsAuthorized = authMap.get(subscribable.Id);
+                    user.setSubscriptionCacheEntry(subscribable.ApiName, entry);
+                } else {
+                    currentEntry.mSubscribable = subscribable;
+                    currentEntry.mSubscription = activeSubscriptionsMap.get(subscribable.ApiName);
+                    currentEntry.mIsAuthorized = authMap.get(subscribable.Id);
+
+                    user.setSubscriptionCacheEntry(subscribable.ApiName, currentEntry);
+                }
             }
 
             // Check and set access to fishingfacility data so we know this when loading the map later.
             user.setIsFishingFacilityAuthenticated(authMap.get(availableSubscriptionsMap.containsKey(getString(R.string.fishing_facility_api_name)) ? availableSubscriptionsMap.get(getString(R.string.fishing_facility_api_name)).Id : -1));
             user.writeToSharedPref(getActivity());
 
+
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
                 boolean isAuthed = (authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false);
+
                 SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
@@ -224,7 +250,6 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             ExpandableListParentObject propertyDescriptionParent = new ExpandableListParentObject();
 //            ExpandableListParentObject warningParent = new ExpandableListParentObject();
 //            ExpandableListParentObject subscriptionParent = new ExpandableListParentObject();
-
 
             propertyDescriptionParent.setChildObjectList(availableSubscriptionObjectsList);
             propertyDescriptionParent.setParentNumber(1);
@@ -249,6 +274,48 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 //            childOnClickListener.setWarnings(myWarnings);
 //            childOnClickListener.setSubscriptions(activeSubscriptions);
 
+        } catch (Exception e) {
+            Log.d(TAG, "Exception occured: " + e.toString());
+        }
+
+        return parentObjectList;
+    }
+
+    public ArrayList<ParentObject> fetchMyPageCached() {
+        ArrayList<ParentObject> parentObjectList = new ArrayList<>();
+        try {
+            Collection<SubscriptionEntry> subscriptionEntries = user.getSubscriptionCacheEntries();
+
+            Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
+            ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
+            List<PropertyDescription> availableSubscriptions = new ArrayList<>();
+            Map<Integer, Boolean> authMap = new HashMap<>();
+
+            for(SubscriptionEntry subscriptionEntry : subscriptionEntries) {
+                availableSubscriptions.add(subscriptionEntry.mSubscribable);
+                if(subscriptionEntry.mSubscription != null) {
+                    activeSubscriptionsMap.put(subscriptionEntry.mName, subscriptionEntry.mSubscription);
+                }
+                authMap.put(subscriptionEntry.mSubscribable.Id, subscriptionEntry.mIsAuthorized);
+            }
+
+            for (final PropertyDescription propertyDescription : availableSubscriptions) {
+                boolean isAuthed = (authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false);
+                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
+
+                availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
+            }
+
+            ExpandableListParentObject propertyDescriptionParent = new ExpandableListParentObject();
+
+            propertyDescriptionParent.setChildObjectList(availableSubscriptionObjectsList);
+            propertyDescriptionParent.setParentNumber(1);
+            propertyDescriptionParent.setParentText(getString(R.string.my_page_all_available_subscriptions));
+            propertyDescriptionParent.setResourcePathToImageResource(R.drawable.ikon_kart_til_din_kartplotter);
+
+            parentObjectList.add(propertyDescriptionParent);
+
+            childOnClickListener.setPropertyDescriptions(availableSubscriptions);
         } catch (Exception e) {
             Log.d(TAG, "Exception occured: " + e.toString());
         }

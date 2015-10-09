@@ -28,7 +28,7 @@ limitations under the License.
         android:layout_height="wrap_content">
 
         <TableLayout
-            android:id="@+id/message_dialog_mandatory_fields_container"
+            android:id="@+id/tool_legend_table_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -47,7 +47,7 @@ limitations under the License.
             style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/message_dialog_mandatory_fields_container"
+            android:layout_below="@+id/tool_legend_table_layout"
             android:layout_marginBottom="@dimen/dialog_container_margin_top"
             android:layout_marginTop="@dimen/dialog_internal_container_large_margin_top"
             android:orientation="horizontal"

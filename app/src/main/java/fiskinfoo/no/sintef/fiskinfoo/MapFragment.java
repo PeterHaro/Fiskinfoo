@@ -357,7 +357,7 @@ public class MapFragment extends Fragment {
     private void createToolSymbolExplanationDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_tool_legend, R.string.tool_legend);
 
-        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.message_dialog_mandatory_fields_container);
+        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.tool_legend_table_layout);
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
         for (ToolType toolType : ToolType.values()) {
@@ -772,7 +772,7 @@ public class MapFragment extends Fragment {
     private void createSearchDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_tool_legend, R.string.tool_legend);
 
-        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.message_dialog_mandatory_fields_container);
+        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.tool_legend_table_layout);
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
         for (ToolType toolType : ToolType.values()) {

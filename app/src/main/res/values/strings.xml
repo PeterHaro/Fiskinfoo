@@ -28,6 +28,7 @@ limitations under the License.
     <string name="no_internet_access">Ingen internett-tilgang</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
+    <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
 
     <string name="date_colon">Dato:</string>
 

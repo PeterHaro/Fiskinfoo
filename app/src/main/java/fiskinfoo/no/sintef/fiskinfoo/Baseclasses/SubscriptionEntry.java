@@ -17,33 +17,41 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+
 public class SubscriptionEntry implements Parcelable {
     public String mName;
     public String mLastUpdated;
     public boolean mOfflineActive;
+    public boolean mIsAuthorized;
+    public PropertyDescription mSubscribable;
+    public Subscription mSubscription;
 
-    public SubscriptionEntry(String name) {
-        mName = name;
+    public SubscriptionEntry(PropertyDescription subscribable, boolean isAuthorized) {
+        mName = subscribable.Name;
         mLastUpdated = "n.a.";
         mOfflineActive = false;
+        mIsAuthorized = isAuthorized;
+        mSubscribable = subscribable;
     }
 
-    public SubscriptionEntry(String name, String lastUpdated) {
-        mName = name;
-        mLastUpdated = lastUpdated;
-        mOfflineActive = false;
-    }
-
-    public SubscriptionEntry(String name, String lastUpdated, boolean offlineActive) {
-        mName = name;
-        mLastUpdated = lastUpdated;
-        mOfflineActive = offlineActive;
+    public SubscriptionEntry(PropertyDescription subscribable, Subscription subscription, boolean isAuthorized) {
+        mName = subscribable.Name;
+        mLastUpdated = "n.a.";
+        mOfflineActive = subscription != null;
+        mIsAuthorized = isAuthorized;
+        mSubscribable = subscribable;
+        mSubscription = subscription;
     }
 
     protected SubscriptionEntry(Parcel in) {
         mName = in.readString();
         mLastUpdated = in.readString();
         mOfflineActive = in.readByte() != 0;
+        mIsAuthorized = in.readByte() != 0;
+        mSubscribable = in.readParcelable(PropertyDescription.class.getClassLoader());
+        mSubscription = in.readParcelable(Subscription.class.getClassLoader());
     }
 
     public static final Creator<SubscriptionEntry> CREATOR = new Creator<SubscriptionEntry>() {
@@ -68,5 +76,8 @@ public class SubscriptionEntry implements Parcelable {
         dest.writeString(mName);
         dest.writeString(mLastUpdated);
         dest.writeByte((byte) (mOfflineActive ? 1 : 0));
+        dest.writeByte((byte) (mIsAuthorized ? 1 : 0));
+        dest.writeParcelable(mSubscribable, flags);
+        dest.writeParcelable(mSubscription, flags);
     }
 }

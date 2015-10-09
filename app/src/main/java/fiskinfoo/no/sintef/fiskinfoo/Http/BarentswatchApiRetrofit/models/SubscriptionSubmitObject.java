@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+// Note: Naming convention changed to fit API
 public class SubscriptionSubmitObject implements Parcelable{
     public String GeoDataServiceName;
     public String FileFormatType;

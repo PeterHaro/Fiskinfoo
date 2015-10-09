@@ -182,11 +182,15 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
         childViewHolder.subscribedCheckBox.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
         childViewHolder.subscribedCheckBox.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
-        if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized()) {
+        if(!(new FiskInfoUtility().isNetworkAvailable(context))) {
+            childViewHolder.subscribedCheckBox.setEnabled(false);
+            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
+            childViewHolder.downloadButton.setOnClickListener(new UtilityOnClickListeners().getInformationDialogOnClickListener(((SubscriptionExpandableListChildObject) childObject).getTitleText(), context.getString(R.string.unable_to_download_no_network), -1));
+
+        } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized()) {
             childViewHolder.subscribedCheckBox.setEnabled(false);
             childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
         }
-
     }
 
 

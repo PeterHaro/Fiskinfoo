@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 }
 
                 for(PropertyDescription subscribable : subscribables) {
-                    SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.Name);
+                    SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
                     boolean success;
 
@@ -437,6 +437,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
 
                     if(success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;
+                        cacheEntry.mSubscribable = subscribable;
                         user.setSubscriptionCacheEntry(subscribable.Name, cacheEntry);
                     }
                 }
