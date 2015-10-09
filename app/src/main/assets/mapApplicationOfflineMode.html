@@ -220,7 +220,12 @@
                         }
                     },
                     pointRadius: function(feature) {
-                            var retVal = map.getZoom() > 7 ? 11 : 3;
+                            var retVal;
+                            if(feature.data.tooltypename != null) {
+                                retVal = map.getZoom() > 7 ? 11 : 3;
+                            } else {
+                                retVal = 7;
+                            }
                             return retVal;
                     },
                     toolColor: function(feature) {
@@ -238,8 +243,10 @@
                             return "#75A103";
                         }  else if(feature.attributes.tooltypename === "Mooring system") {
                             return "#FF42E5";
-                        }  else {
+                        }  else if(feature.attributes.tooltypename === "Unknown") {
                             return "#000000";
+                        } else {
+                            return "#00007A";
                         }
                     },
                 }
@@ -297,7 +304,12 @@
                 new OpenLayers.Layer.Vector("Havbunnsinstallasjoner"),
                 new OpenLayers.Layer.Vector("Seismikk, pågående"),
                 new OpenLayers.Layer.Vector("Seismikk, planlagt"),
-                new OpenLayers.Layer.Vector("Redskap")
+                new OpenLayers.Layer.Vector("Redskap", {
+                    strategies: [new OpenLayers.Strategy.Cluster({
+                        distance: 15,
+                        threshold: 2
+                    })]
+                })
             ];
 
             return layers;
