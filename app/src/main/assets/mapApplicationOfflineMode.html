@@ -323,41 +323,52 @@
             var toolType;
             var position;
 
-            if (feature.data.vesselname != null) {
-                vesselName = "Fartøynavn: " + feature.data.vesselname;
-            } else {
-                vesselName = "Fartøynavn: " + "Ikke tilgjengelig";
-            }
-            if (feature.data.vesselphone != null) {
-                phoneNumber = "Telefonnummer: " + feature.data.vesselphone;
-            } else {
-                phoneNumber = "Telefonnummer: " + "Ikke tilgjengelig";
-            }
-            if (feature.data.setupdatetime != null) {
-                toolDate = "Redskapet ble satt: " + feature.data.setupdatetime.replace(/[^\d.:-]/g, ' ');
-            } else {
-                toolDate = "Redskapet ble satt: " + "Ikke tilgjengelig";
-            }
-            if (feature.data.tooltypename != null) {
-                toolType = "Redskapstype: '" + feature.data.tooltypename + "'";
-            } else {
-                toolType = "Redskapstype: " + "Ikke tilgjengelig";
-            }
-            if(feature.geometry != null) {
-                var wgs84 = feature.geometry.clone();
-                wgs84.transform("EPSG:900913", "EPSG:4326");
-                position = "Posisjon: " + wgs84.getBounds().getCenterLonLat().lat + ", " + wgs84.getBounds().getCenterLonLat().lon;
-            } else {
-                position = "Posisjon: " + "Ikke tilgjengelig";
-            }
-            popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
-            feature.geometry.getBounds().getCenterLonLat(),
-                null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolType + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
-            popup.panMapIfOutOfView = true;
-            popup.autoSize = true;
-            feature.popup = popup;
-            map.addPopup(popup);
+            if(!(feature.data.vesselname == null && feature.data.vesselphone == null && feature.data.setupdatetime == null && feature.data.tooltypename == null)) {
+                if (feature.data.vesselname != null) {
+                    vesselName = "Fartøynavn: " + feature.data.vesselname;
+                } else {
+                    vesselName = "Fartøynavn: " + "Ikke tilgjengelig";
+                }
+                if (feature.data.vesselphone != null) {
+                    phoneNumber = "Telefonnummer: " + feature.data.vesselphone;
+                } else {
+                    phoneNumber = "Telefonnummer: " + "Ikke tilgjengelig";
+                }
+                if (feature.data.setupdatetime != null) {
+                    toolDate = "Redskapet ble satt: " + feature.data.setupdatetime.replace(/[^\d.:-]/g, ' ');
+                } else {
+                    toolDate = "Redskapet ble satt: " + "Ikke tilgjengelig";
+                }
+                if (feature.data.tooltypename != null) {
+                    toolType = "Redskapstype: '" + feature.data.tooltypename + "'";
+                } else {
+                    toolType = "Redskapstype: " + "Ikke tilgjengelig";
+                }
+                if(feature.geometry != null) {
+                    var wgs84 = feature.geometry.clone();
+                    wgs84.transform("EPSG:900913", "EPSG:4326");
+                    position = "Posisjon: " + wgs84.getBounds().getCenterLonLat().lat + ", " + wgs84.getBounds().getCenterLonLat().lon;
+                } else {
+                    position = "Posisjon: " + "Ikke tilgjengelig";
+                }
 
+                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                feature.geometry.getBounds().getCenterLonLat(),
+                    null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolType + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
+                popup.panMapIfOutOfView = true;
+                popup.autoSize = true;
+                feature.popup = popup;
+                map.addPopup(popup);
+            } else {
+
+                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                feature.geometry.getBounds().getCenterLonLat(),
+                    null, "Dette er en gruppering av redskaper, zoom inn for å se detaljer om hvert redskap.", null, true, onPopupClose);
+                popup.panMapIfOutOfView = true;
+                popup.autoSize = true;
+                feature.popup = popup;
+                map.addPopup(popup);
+            }
         }
 
         function onPopupFeatureUnselect(feature) {

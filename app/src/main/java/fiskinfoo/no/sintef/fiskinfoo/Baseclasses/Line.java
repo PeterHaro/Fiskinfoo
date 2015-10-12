@@ -45,15 +45,22 @@ public class Line implements java.io.Serializable{
         double denominator = Math.abs((this.dy * point.getLatitude()) - (this.dx * point.getLongitude()) - (this.start.getLatitude() * this.stop.getLongitude()) + (this.stop.getLatitude() * this.start.getLongitude()));
         double distanceInDegrees = denominator / Math.sqrt(((this.dx * this.dx) + (this.dy * this.dy)));
         double distanceMeters = computeLengthOfDegrees(distanceInDegrees);
+
         return distanceMeters - distance < 0;
     }
 
     public boolean checkDistanceWithLineAndReportStatus(Point point, double distance) {
+        if(start.getLatitude() == stop.getLatitude() && start.getLongitude() == stop.getLongitude()) {
+            Point linePoint = new Point(start.getLatitude(), start.getLongitude());
+            return linePoint.checkDistanceBetweenTwoPoints(point, distance);
+        }
+
         if (distance < 1600) {
             return checkDistanceWithLineLegacy(point, distance);
         } else {
             Distance a = point.inverseCalculation(start);
             Distance b = point.inverseCalculation(stop);
+
             return a.distance - distance < 0 || b.distance - distance < 0;
         }
     }

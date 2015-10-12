@@ -305,6 +305,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                         .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
                                 userLogout();
                             }
 

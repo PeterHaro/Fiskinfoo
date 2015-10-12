@@ -341,7 +341,9 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 user.setAuthentication(authenticationResponse.get());
                 user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
                 if(user.getActiveLayers() == null) {
-                    user.setActiveLayers(new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.map_layer_names_array))));
+                    List<String> activeLayers = new ArrayList<>();
+                    activeLayers.add(getString(R.string.fishing_facility_name));
+                    user.setActiveLayers(activeLayers);
                 }
                 if(storeUserToDisk.isChecked()) {
                     User.rememberUser(LoginActivity.this);

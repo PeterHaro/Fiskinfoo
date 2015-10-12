@@ -628,7 +628,6 @@ public class MapFragment extends Fragment {
                     }
 
                     double latitude, longitude;
-                    Point userPosition = new Point(cachedLat, cachedLon);
 
                     if (mGpsLocationTracker.canGetLocation()) {
                         latitude = mGpsLocationTracker.getLatitude();
@@ -641,6 +640,7 @@ public class MapFragment extends Fragment {
                         mGpsLocationTracker.showSettingsAlert();
                         return;
                     }
+                    Point userPosition = new Point(cachedLat, cachedLon);
 
                     if (tools.checkCollisionWithPoint(userPosition, cachedDistance)) {
                         alarmFiring = true;
@@ -649,7 +649,7 @@ public class MapFragment extends Fragment {
                     }
                 }
 
-                System.out.println("BEEP");
+                System.out.println("Collision check run");
             }
 
         }, initialDelay, period, TimeUnit.SECONDS);
