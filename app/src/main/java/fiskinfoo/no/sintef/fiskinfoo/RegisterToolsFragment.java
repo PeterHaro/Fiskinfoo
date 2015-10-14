@@ -14,10 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.rey.material.widget.Spinner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +29,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
@@ -80,7 +84,7 @@ public class RegisterToolsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.fragment_register_tools, container, false);
+        final View rootView =  inflater.inflate(R.layout.fragment_register_tools, container, false);
         final DialogInterface dialogInterface = new UtilityDialogs();
         final TextView headerDate = (TextView) rootView.findViewById(R.id.catch_log_header_date_field);
         final String currentDate = getCurrentDate();
@@ -114,6 +118,10 @@ public class RegisterToolsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_register_new_tool, R.string.start_new_tool_dialog_title);
+                Spinner spinner_label = (Spinner) dialog.findViewById(R.id.spinner_label);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.row_spn, Tool.getValues());
+                adapter.setDropDownViewResource(R.layout.row_spn_dropdown);
+                spinner_label.setAdapter(adapter);
                 dialog.show();
 
             }

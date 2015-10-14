@@ -13,9 +13,10 @@ public class ToolInfo implements Parcelable{
     private String mmsi;
     private String imo;
     private String vesselemail;
+    private String coordinates;
 
 
-    public ToolInfo(Tool toolType, String vesselName, String vesselPhone, String setupDateTime, String ircs, String mmsi, String imo, String vesselemail) {
+    public ToolInfo(Tool toolType, String vesselName, String vesselPhone, String setupDateTime, String ircs, String mmsi, String imo, String vesselemail, String coordinates) {
         this.toolType = toolType;
         this.vesselName = vesselName;
         this.vesselPhone = vesselPhone;
@@ -24,6 +25,7 @@ public class ToolInfo implements Parcelable{
         this.mmsi = mmsi;
         this.imo = imo;
         this.vesselemail = vesselemail;
+        this.coordinates = coordinates;
         toolID = 0;
     }
 
@@ -36,6 +38,7 @@ public class ToolInfo implements Parcelable{
         mmsi = in.readString();
         imo = in.readString();
         vesselemail = in.readString();
+        coordinates = in.readString();
         toolType = Tool.createFromValue(in.readString());
     }
 
@@ -106,6 +109,7 @@ public class ToolInfo implements Parcelable{
         dest.writeString(mmsi);
         dest.writeString(imo);
         dest.writeString(vesselemail);
+        dest.writeString(coordinates);
         dest.writeString(toolType.toString());
     }
 }

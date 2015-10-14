@@ -55,6 +55,7 @@ public class User implements Parcelable{
     private ToolLog toolLog;
     private Map<String, SubscriptionEntry> subscriptionCache;
     private boolean offlineModeActive = false;
+    private UserSettings settings;
 
     public User() {
         isAuthenticated = false;
@@ -74,6 +75,7 @@ public class User implements Parcelable{
         isAuthenticated = in.readByte() != 0;
         isFishingFacilityAuthenticated = in.readByte() != 0;
         toolLog = in.readParcelable(ToolLog.class.getClassLoader());
+        settings = in.readParcelable(UserSettings.class.getClassLoader());
         Bundle bundle = in.readBundle();
         bundle.setClassLoader(SubscriptionEntry.class.getClassLoader());
         subscriptionCache = (Map<String, SubscriptionEntry>) bundle.getSerializable("cache");
@@ -91,6 +93,14 @@ public class User implements Parcelable{
             return new User[size];
         }
     };
+
+    public void setSettings(UserSettings settings) {
+        this.settings = settings;
+    }
+
+    public UserSettings getSettings() {
+        return settings;
+    }
 
     public void setPreviousAuthenticationTimeStamp(long authenticationTimeStamp) {
         previousAuthenticationTimeStamp = authenticationTimeStamp;
@@ -250,6 +260,7 @@ public class User implements Parcelable{
         dest.writeByte((byte) (isAuthenticated ? 1 : 0));
         dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
         dest.writeParcelable(toolLog, flags);
+        dest.writeParcelable(settings, flags);
         Bundle bundle = new Bundle();
         bundle.putSerializable("cache", (Serializable) subscriptionCache);
         dest.writeBundle(bundle);

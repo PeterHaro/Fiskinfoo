@@ -219,6 +219,21 @@ limitations under the License.
     <string name="tool_type">Redskapstype</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>
+    <string name="vessel_name">Båtnavn</string>
+    <string name="enter_vessel_name">Venligst oppgi navnet på fartøyet</string>
+    <string name="phone_number">Telefonnummer</string>
+    <string name="enter_phone_number">Venligst oppgi telefonnummeret</string>
+    <string name="setup_datetime">Satt opp</string>
+    <string name="enter_setup_datetime">Venligst oppgi når redskapet ble satt</string>
+    <string name="ircs">IRCS</string>
+    <string name="enter_ircs">Venligst oppgi ircs</string>
+    <string name="mmsi">MMSI</string>
+    <string name="enter_mmsi">Venlgist oppgi mmsi</string>
+    <string name="imo">IMO</string>
+    <string name="enter_imo">Venligst oppgi imo</string>
+    <string name="vesselmail">E-post</string>
+    <string name="enter_vesselmail">Venligst oppgi båtens E-post addresse</string>
+
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

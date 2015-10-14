@@ -35,6 +35,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
@@ -43,6 +44,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.rey.material.app.ThemeManager;
+import com.rey.material.widget.Spinner;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -59,6 +63,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
+
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
@@ -68,6 +74,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
@@ -287,11 +294,79 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         SettingsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
         SwitchAndButtonRow toggleOfflineModeRow = utilityRowsInterface.getSwitchAndButtonRow(this, getString(R.string.offline_mode));
         SettingsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
+        SettingsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.settings));
 
         setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createSetFileDownloadPathDialog();
+            }
+        });
+
+        settingsButtonRow.setButtonOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //final Dialog settingsDialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.)
+                boolean isLightTheme = ThemeManager.getInstance().getCurrentTheme() == 0;
+
+                final com.rey.material.app.Dialog mDialog = new com.rey.material.app.Dialog(v.getContext());
+                mDialog.applyStyle(isLightTheme ? R.style.SimpleDialogLight : R.style.SimpleDialog)
+                        .title(R.string.settings)
+                        .positiveAction(R.string.create)
+                        .negativeAction(R.string.cancel)
+                        .negativeActionClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mDialog.dismiss();
+                            }
+                        })
+                        .contentView(R.layout.dialog_user_settings)
+                        .canceledOnTouchOutside(false);
+
+                //Content view params
+                final Spinner spinner = (Spinner) mDialog.findViewById(R.id.user_settings_spinner_label);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(v.getContext(), R.layout.row_spn, Tool.getValues());
+                adapter.setDropDownViewResource(R.layout.row_spn_dropdown);
+                spinner.setAdapter(adapter);
+
+                final com.rey.material.widget.EditText vesselName = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_vesselname);
+                final com.rey.material.widget.EditText vesselMail = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_vesselmail);
+                final com.rey.material.widget.EditText phoneNumber = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_phone_number);
+                final com.rey.material.widget.EditText ircs = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_ircs);
+                final com.rey.material.widget.EditText mmsi = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_mmsi);
+                final com.rey.material.widget.EditText imo = (com.rey.material.widget.EditText) mDialog.findViewById(R.id.user_settings_register_tool_imo);
+                if (user.getSettings() != null) {
+                    UserSettings settings = user.getSettings();
+                    ArrayAdapter<String> currentAdapter = (ArrayAdapter<String>)spinner.getAdapter();
+                    spinner.setSelection(currentAdapter.getPosition(settings.getToolType().toString()));
+                    vesselName.setText(settings.getVesselName());
+                    vesselMail.setText(settings.getVesselemail());
+                    phoneNumber.setText(settings.getVesselPhone());
+                    ircs.setText(settings.getIrcs());
+                    mmsi.setText(settings.getMmsi());
+                    imo.setText(settings.getImo());
+                }
+
+
+                mDialog.positiveActionClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UserSettings newSettings = new UserSettings();
+                        newSettings.setVesselName(vesselName.getText().toString());
+                        newSettings.setVesselemail(vesselMail.getText().toString());
+                        newSettings.setVesselPhone(phoneNumber.getText().toString());
+                        newSettings.setIrcs(ircs.getText().toString());
+                        newSettings.setMmsi(mmsi.getText().toString());
+                        newSettings.setImo(imo.getText().toString());
+                        newSettings.setToolType(Tool.createFromValue(spinner.getSelectedItem().toString()));
+
+                        user.setSettings(newSettings);
+                        user.writeToSharedPref(v.getContext()); //Need wait ? Let's find out
+                        mDialog.dismiss();
+                    }
+                });
+
+                mDialog.show();
             }
         });
 
@@ -335,9 +410,12 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
 
         linearLayout.addView(toggleOfflineModeRow.getView());
         linearLayout.addView(setDownloadPathButtonRow.getView());
+        linearLayout.addView(settingsButtonRow.getView());
         linearLayout.addView(logOutButtonRow.getView());
 
         closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+
+
 
         dialog.show();
     }

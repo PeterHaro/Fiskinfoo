@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.rey.material.widget.Spinner
+        android:id="@+id/user_settings_spinner_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="128dp"
+        android:padding="8dp"
+        app:spn_label="@string/enter_tool_type"
+        app:v_styleId="@array/spinner"/>
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_vesselname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/vessel_name"
+        app:et_inputId="@+id/user_settings__start_type_instancestate"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_vessel_name"
+        app:v_styleId="@array/edittext"
+        />
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_vesselmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:inputType="number"
+        android:hint="@string/vesselmail"
+        app:et_inputId="@+id/user_settings_a"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_vesselmail"
+        app:v_styleId="@array/edittext"
+        />
+
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:inputType="number"
+        android:hint="@string/phone_number"
+        app:et_inputId="@+id/user_settings_b"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_phone_number"
+        app:v_styleId="@array/edittext"
+        />
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_ircs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:inputType="number"
+        android:hint="@string/ircs"
+        app:et_inputId="@+id/user_settings__d"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_ircs"
+        app:v_styleId="@array/edittext"
+        />
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_mmsi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:inputType="number"
+        android:hint="@string/mmsi"
+        app:et_inputId="@+id/user_settings_e"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_mmsi"
+        app:v_styleId="@array/edittext"
+        />
+
+    <com.rey.material.widget.EditText
+        android:id="@+id/user_settings_register_tool_imo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:inputType="number"
+        android:hint="@string/imo"
+        app:et_inputId="@+id/user_settings_f"
+        app:et_supportMode="helperWithError"
+        app:et_helper="@string/enter_imo"
+        app:v_styleId="@array/edittext"
+        />
+
+
+</LinearLayout>

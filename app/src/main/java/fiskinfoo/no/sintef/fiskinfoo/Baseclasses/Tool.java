@@ -1,13 +1,20 @@
 package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum Tool {
     BUNNTRÅL, GARN, LINE, RINGNOT, SNURREVAD, TARETRÅL, HARPUN;
 
     @Override
     public String toString() {
-        return Character.toUpperCase(name().charAt(0)) + name().substring(1);
+        return Character.toUpperCase(name().charAt(0)) + name().toLowerCase().substring(1);
+    }
+
+    public static String[] getValues() {
+        String[] retval = {"Bunntrål", "Garn", "Line", "Ringnot", "Snurrevad", "Taretrål", "Harpun"};
+        return retval;
     }
 
     public String toFAO() {
