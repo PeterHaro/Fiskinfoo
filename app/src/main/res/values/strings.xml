@@ -63,6 +63,17 @@ limitations under the License.
     <string name="loading_map_layers">Laster inn kartlag.</string>
     <string name="offline_mode_map_used_title">Offlinemodus</string>
     <string name="offline_mode_map_used_info">Da det ser ut til at du ikke har internett-tilgang prøver appen å benytte kart som har blitt lastet ned mens appen var i offlinemodus.</string>
+    <string name="search_tools_title">Søk i redskap</string>
+    <string name="vessel_name_unknown">Unknown</string>
+    <string name="vessel">Fartøy: </string>
+    <string name="vessel_name_na">Fartøy: n.a.</string>
+    <string name="tool_type_with_colon">Redskapstype: </string>
+    <string name="tool_type_na">Redskapstype: n.a.</string>
+    <string name="vessel_phone">Tlf: </string>
+    <string name="vessel_phone_na">Tlf: n.a.</string>
+    <string name="tool_set_date">Satt: </string>
+    <string name="tool_set_date_na">Satt: n.a.</string>
+    <string name="tool_pos">Pos: </string>
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>
@@ -72,6 +83,7 @@ limitations under the License.
     <string name="set_alert_watcher">Sett opp kollisjonsvarsling</string>
     <string name="check_polar_low">Sjekk polart lavtrykk</string>
     <string name="choose_map_layers">Velg kartlag</string>
+    <string name="menu_search_tools">Søk i redskap</string>
 
     <string name="choose_map_layers_info">Her velger du hvilke kartlag du ser på kartet.</string>
     <string name="about_fishing_facility_title">Om redskapskartet</string>

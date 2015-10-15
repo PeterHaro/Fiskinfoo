@@ -85,6 +85,11 @@ limitations under the License.
     <dimen name="settings_row_container_margin_left">30dp</dimen>
     <dimen name="settings_row_container_margin_right">30dp</dimen>
 
+    <!-- Offline mode information dialog -->
+    <dimen name="offline_mode_dialog_text_view_margin_top">15dp</dimen>
+    <dimen name="offline_mode_info_dialog_margin_left">20dp</dimen>
+    <dimen name="offline_mode_info_dialog_margin_right">20dp</dimen>
+    
     <!-- Proximity alert margins -->
     <dimen name="proximity_alert_spinner_margin_top">20dp</dimen>
     <dimen name="proximity_alert_spinner_margin_bottom">20dp</dimen>
@@ -203,9 +208,50 @@ limitations under the License.
     <dimen name="my_page_network_error_text_view_margin_top">15dp</dimen>
     <dimen name="my_page_network_error_text_view_margin_bottom">15dp</dimen>
 
+    <!-- Search tools dialog -->
+    <dimen name="search_tools_dialog_input_field_margin_left">30dp</dimen>
+    <dimen name="map_search_tools_linear_layout_margin_bottom">20dp</dimen>
+    <dimen name="map_search_tools_linear_layout_margin_left">1dp</dimen>
+    <dimen name="map_search_tools_linear_layout_margin_right">1dp</dimen>
+    <dimen name="map_search_tools_linear_layout_margin_top">20dp</dimen>
+    <dimen name="map_search_tools_input_edit_text_margin_left">30dp</dimen>
+    <dimen name="map_search_tools_input_edit_text_margin_right">30dp</dimen>
+    <dimen name="map_search_tools_input_edit_text_margin_top">30dp</dimen>
+
+    <!-- Map fragment -->
+    <dimen name="map_search_tools_button_width">40dp</dimen>
+    <dimen name="map_search_tools_button_height">40dp</dimen>
+    <dimen name="map_search_tools_button_margin_left">10dp</dimen>
+    <dimen name="map_search_tools_button_margin_top">150dp</dimen>
+
     <!-- Alert dialog -->
     <dimen name="hyperlink_alert_dialog_margin_left">10dp</dimen>
     <dimen name="hyperlink_alert_dialog_margin_right">10dp</dimen>
     <dimen name="hyperlink_alert_dialog_margin_top">10dp</dimen>
     <dimen name="hyperlink_alert_dialog_margin_bottom">10dp</dimen>
+
+    <!-- Register tools fragment -->
+    <dimen name="catch_log_circular_button_width">100dp</dimen>
+    <dimen name="catch_log_circular_button_height">80dp</dimen>
+    <dimen name="catch_log_circular_button_horisontal_margin">22dp</dimen>
+    <dimen name="catch_log_start_button_top_margin">30dp</dimen>
+    <dimen name="catch_log_location_data_vertical_margin_to_circular_button">38dp</dimen>
+    <dimen name="catch_log_location_data_vertical_margin_internal">5dp</dimen>
+    <dimen name="catch_log_left_container_horisontal_margin">30dp</dimen>
+    <dimen name="catch_log_square_button_size">120dp</dimen>
+    <dimen name="catch_log_square_button_vertical_margin">10dp</dimen>
+    <dimen name="catch_log_square_button_horisontal_margin">10dp</dimen>
+
+    <!-- Utility rows -->
+    <dimen name="table_row_padding_bottom">7dp</dimen>
+    <dimen name="table_row_padding_top">7dp</dimen>
+
+    <!-- tool search result row -->
+    <dimen name="tool_search_result_row_tool_icon_width">45dp</dimen>
+    <dimen name="tool_search_result_row_tool_icon_height">45dp</dimen>
+    <dimen name="tool_search_result_row_tool_icon_margin_left">5dp</dimen>
+    <dimen name="tool_search_result_row_vessel_name_text_view_margin_left">20dp</dimen>
+    <dimen name="tool_search_result_row_internal_margin_top">5dp</dimen>
+    <dimen name="tool_search_result_row_tool_type_text_view_margin_left">20dp</dimen>
+
 </resources>

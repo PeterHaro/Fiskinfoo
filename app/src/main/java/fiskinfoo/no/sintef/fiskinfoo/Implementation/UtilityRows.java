@@ -18,6 +18,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
@@ -25,6 +26,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
 
 public class UtilityRows implements UtilityRowsInterface {
     @Override
@@ -85,6 +87,21 @@ public class UtilityRows implements UtilityRowsInterface {
     @Override
     public SwitchAndButtonRow getSwitchAndButtonRow(Context context, String title, CompoundButton.OnCheckedChangeListener onCheckedChangeListener, View.OnClickListener onClickListener) {
         return new SwitchAndButtonRow(context, title, onCheckedChangeListener, onClickListener);
+    }
+
+    @Override
+    public ToolSearchResultRow getToolSearchResultRow(Context context) {
+        return new ToolSearchResultRow(context);
+    }
+
+    @Override
+    public ToolSearchResultRow getToolSearchResultRow(Context context, int toolImageId, String vesselName, String toolType, String phoneNumber, String date, String position) {
+        return new ToolSearchResultRow(context, toolImageId, vesselName, toolType, phoneNumber, date, position);
+    }
+
+    @Override
+    public ToolSearchResultRow getToolSearchResultRow(Context context, int toolImageId, Feature feature) {
+        return new ToolSearchResultRow(context, toolImageId, feature);
     }
 }
 

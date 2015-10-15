@@ -1,0 +1,93 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@android:drawable/picture_frame"
+          android:paddingBottom="@dimen/table_row_padding_bottom"
+          android:paddingTop="@dimen/table_row_padding_top">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/table_row_padding_bottom"
+        android:layout_marginTop="@dimen/table_row_padding_top">
+
+        <ImageView
+            android:id="@+id/tool_search_result_row_tool_type_image_view"
+            android:layout_width="@dimen/tool_search_result_row_tool_icon_width"
+            android:layout_height="@dimen/tool_search_result_row_tool_icon_height"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/tool_search_result_row_tool_icon_margin_left"
+            android:background="@drawable/ikon_kystfiske"/>
+
+        <TextView
+            android:id="@+id/tool_search_result_row_vessel_name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tool_search_result_row_vessel_name_text_view_margin_left"
+            android:layout_toRightOf="@+id/tool_search_result_row_tool_type_image_view"
+            android:text="Some vessel name text"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tool_search_result_row_tool_type_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tool_search_result_row_vessel_name_text_view"
+            android:layout_below="@+id/tool_search_result_row_vessel_name_text_view"
+            android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
+            android:text="Some tool type text"/>
+
+        <TextView
+            android:id="@+id/tool_search_result_row_phone_number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tool_search_result_row_vessel_name_text_view"
+            android:layout_below="@+id/tool_search_result_row_tool_type_text_view"
+            android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
+            android:text="Some phone number text"/>
+
+        <TextView
+            android:id="@+id/tool_search_result_row_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tool_search_result_row_tool_type_text_view"
+            android:layout_below="@+id/tool_search_result_row_phone_number_text_view"
+            android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
+            android:layout_toRightOf="@+id/tool_search_result_row_anchor_view"
+            android:text="Some date text"/>
+
+        <TextView
+            android:id="@+id/tool_search_result_row_position_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tool_search_result_row_phone_number_text_view"
+            android:layout_below="@+id/tool_search_result_row_date_text_view"
+            android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
+            android:layout_toRightOf="@+id/tool_search_result_row_anchor_view"
+            android:text="Some position text"/>
+
+        <View
+            android:id="@+id/tool_search_result_row_anchor_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true"
+            android:clickable="false"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+</TableRow>

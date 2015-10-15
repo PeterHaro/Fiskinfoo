@@ -39,6 +39,9 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -46,11 +49,14 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 
 import java.io.BufferedInputStream;
@@ -61,8 +67,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -70,9 +82,14 @@ import java.util.zip.GZIPInputStream;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Line;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LineFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.PointFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Polygon;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
@@ -83,6 +100,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
 import retrofit.client.Response;
 import retrofit.mime.TypedInput;
 
@@ -108,6 +126,7 @@ public class MapFragment extends Fragment {
     protected double cachedLon;
     protected double cachedDistance;
     private JSONArray layersAndVisibility = null;
+    private Button searchToolsButton;
 
     @Override
     public void onAttach(Activity activity) {
@@ -155,8 +174,20 @@ public class MapFragment extends Fragment {
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
         rowsInterface = new UtilityRows();
-
+        searchToolsButton = (Button) (getView() != null ? getView().findViewById(R.id.map_search_button) : null);
+        searchToolsButton = (Button) getView().findViewById(R.id.map_search_button);
         configureWebParametersAndLoadDefaultMapApplication();
+
+        if(user.getIsFishingFacilityAuthenticated()) {
+            searchToolsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createSearchDialog();
+                }
+            });
+        } else {
+            searchToolsButton.setVisibility(View.GONE);
+        }
     }
 
     @SuppressLint({"SetJavaScriptEnabled"})
@@ -771,15 +802,195 @@ public class MapFragment extends Fragment {
 
     //getAllVesselNames
     private void createSearchDialog() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_tool_legend, R.string.tool_legend);
+        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_search_tools, R.string.search_tools_title);
 
-        TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.tool_legend_table_layout);
-        Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
+        AutoCompleteTextView inputField = (AutoCompleteTextView) dialog.findViewById(R.id.search_tools_input_field);
+        final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.search_tools_row_container);
+        Button viewInMapButton = (Button) dialog.findViewById(R.id.search_tools_view_in_map_button);
+        Button dismissButton = (Button) dialog.findViewById(R.id.search_tools_dismiss_button);
+        final String previousText = "";
 
-        for (ToolType toolType : ToolType.values()) {
-            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
-            tableLayout.addView(toolLegendRow);
+        List<PropertyDescription> subscribables;
+        PropertyDescription newestSubscribable = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        Date cachedUpdateDateTime = null;
+        Date newestUpdateDateTime = null;
+        SubscriptionEntry cachedEntry;
+        Response response;
+        String format = "JSON";
+        String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+        byte[] data = new byte[0];
+        File toolsFile;
+        final JSONObject tools;
+        JSONArray toolsArray;
+        final List<String> vesselNames;
+        ArrayAdapter<String> adapter;
+        final Map<String, List<Feature>> toolMap =  new HashMap<>();
+
+        cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
+
+        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+            subscribables = barentswatchApi.getApi().getSubscribable();
+            for(PropertyDescription subscribable : subscribables) {
+                if(subscribable.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
+                    newestSubscribable = subscribable;
+                    break;
+                }
+            }
+        } else if(cachedEntry == null){
+            // TODO: user feedback: cannot do anything, no network access so cannot download new file, nor any cached version.
         }
+
+        if(cachedEntry != null) {
+            try {
+                cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
+                newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
+
+                if(cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
+                    response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
+                    try {
+                        data = FiskInfoUtility.toByteArray(response.getBody().in());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                        SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
+                        entry.mLastUpdated = newestSubscribable.LastUpdated;
+                        user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
+                        user.writeToSharedPref(getActivity());
+                    }
+                } else {
+                    String directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+
+                    File file = new File(directoryFilePath + newestSubscribable.Name + ".JSON");
+                    StringBuilder jsonString = new StringBuilder();
+                    BufferedReader bufferReader = null;
+
+                    try {
+                        bufferReader = new BufferedReader(new FileReader(file));
+                        String line;
+
+                        while ((line = bufferReader.readLine()) != null) {
+                            jsonString.append(line);
+                            jsonString.append('\n');
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if(bufferReader != null) {
+                            try {
+                                bufferReader.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    data = jsonString.toString().getBytes();
+                }
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Invalid datetime provided");
+            }
+        } else {
+            response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
+            try {
+                data = FiskInfoUtility.toByteArray(response.getBody().in());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
+                entry.mLastUpdated = newestSubscribable.LastUpdated;
+                user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
+            }
+        }
+
+        try {
+            tools = new JSONObject(new String(data));
+            toolsArray = tools.getJSONArray("features");
+            vesselNames = new ArrayList<>();
+            adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, vesselNames);
+
+            for (int i = 0; i < toolsArray.length(); i++) {
+                JSONObject feature = toolsArray.getJSONObject(i);
+//                JSONObject feature = toolsArray.getJSONObject(i).getJSONObject("properties");
+                String vesselName = feature.getJSONObject("properties").getString("vesselname") != null ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
+                List<Feature> toolsList = toolMap.get(vesselName) != null ? toolMap.get(vesselName) : new ArrayList<Feature>();
+
+                if (vesselName != null && !vesselNames.contains(vesselName)) {
+                    vesselNames.add(vesselName);
+                }
+
+                // TODO: add feature
+
+                Gson gson = new Gson();
+//                System.out.println("this is the object: " + feature.toString());
+
+                Feature toolFeature;// = gson.fromJson(feature.toString(), Feature.class);
+                try {
+                    feature.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
+//                    System.out.println("This should be a point: " + i);
+                    toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
+                } catch (JSONException e) {
+//                    e.printStackTrace();
+
+//                    System.out.println("This should be a line: " + i);
+                    toolFeature = gson.fromJson(feature.toString(), LineFeature.class);
+                }
+
+
+                if(toolFeature == null) {
+//                    System.out.println("Tool feature object failed to init");
+                } else {
+//                    System.out.println("Tool feature object did not fail to init, but all values are null? " + toolFeature.id + ", " + (toolFeature.geometry == null) + ", " + (toolFeature.properties == null));
+//                    break;
+                }
+
+//                toolsList.add(null);
+                toolsList.add(toolFeature);
+                toolMap.put(vesselName, toolsList);
+
+            }
+
+            inputField.setAdapter(adapter);
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON parse error");
+            e.printStackTrace();
+        }
+
+        inputField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedVesselName = ((TextView) view).getText().toString();
+                String toolPosition = "pos: ";
+                rowsContainer.removeAllViews();
+                List<Feature> selectedFeatures = toolMap.get(selectedVesselName);
+
+                for(Feature currentFeature : selectedFeatures) {
+                    // TODO: FIX POS
+//                    toolPosition = String.valueOf(currentFeature.geometry.coordinates[0][0]) + ", " + String.valueOf(currentFeature.geometry.coordinates[1][0]);
+//                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, selectedVesselName, "Redskapstype: ", "Tlf: ", "Satt: ", "Pos: ");
+
+                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske,
+                            currentFeature);
+                    rowsContainer.addView(row.getView());
+                }
+            }
+        });
+
+
+
+
+        viewInMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         dismissButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
 
