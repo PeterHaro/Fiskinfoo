@@ -46,6 +46,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -127,6 +129,7 @@ public class MapFragment extends Fragment {
     protected double cachedDistance;
     private JSONArray layersAndVisibility = null;
     private Button searchToolsButton;
+    private Button clearHighlightingButton;
 
     @Override
     public void onAttach(Activity activity) {
@@ -176,6 +179,7 @@ public class MapFragment extends Fragment {
         rowsInterface = new UtilityRows();
         searchToolsButton = (Button) (getView() != null ? getView().findViewById(R.id.map_search_button) : null);
         searchToolsButton = (Button) getView().findViewById(R.id.map_search_button);
+        clearHighlightingButton = (Button) getView().findViewById(R.id.map_clear_highlighting_button);
         configureWebParametersAndLoadDefaultMapApplication();
 
         if(user.getIsFishingFacilityAuthenticated()) {
@@ -804,28 +808,26 @@ public class MapFragment extends Fragment {
     private void createSearchDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_search_tools, R.string.search_tools_title);
 
-        AutoCompleteTextView inputField = (AutoCompleteTextView) dialog.findViewById(R.id.search_tools_input_field);
+        final AutoCompleteTextView inputField = (AutoCompleteTextView) dialog.findViewById(R.id.search_tools_input_field);
         final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.search_tools_row_container);
-        Button viewInMapButton = (Button) dialog.findViewById(R.id.search_tools_view_in_map_button);
+        final Button viewInMapButton = (Button) dialog.findViewById(R.id.search_tools_view_in_map_button);
         Button dismissButton = (Button) dialog.findViewById(R.id.search_tools_dismiss_button);
-        final String previousText = "";
 
         List<PropertyDescription> subscribables;
         PropertyDescription newestSubscribable = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        Date cachedUpdateDateTime = null;
-        Date newestUpdateDateTime = null;
+        Date cachedUpdateDateTime;
+        Date newestUpdateDateTime;
         SubscriptionEntry cachedEntry;
         Response response;
+        JSONArray toolsArray;
+        ArrayAdapter<String> adapter;
         String format = "JSON";
         String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
-        byte[] data = new byte[0];
-        File toolsFile;
         final JSONObject tools;
-        JSONArray toolsArray;
         final List<String> vesselNames;
-        ArrayAdapter<String> adapter;
         final Map<String, List<Feature>> toolMap =  new HashMap<>();
+        byte[] data = new byte[0];
 
         cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
 
@@ -838,7 +840,10 @@ public class MapFragment extends Fragment {
                 }
             }
         } else if(cachedEntry == null){
-            // TODO: user feedback: cannot do anything, no network access so cannot download new file, nor any cached version.
+            Dialog infoDialog = dialogInterface.getAlertDialog(getActivity(), R.string.tools_search_no_data_title, R.string.tools_search_no_data, -1);
+
+            infoDialog.show();
+            return;
         }
 
         if(cachedEntry != null) {
@@ -917,43 +922,23 @@ public class MapFragment extends Fragment {
 
             for (int i = 0; i < toolsArray.length(); i++) {
                 JSONObject feature = toolsArray.getJSONObject(i);
-//                JSONObject feature = toolsArray.getJSONObject(i).getJSONObject("properties");
                 String vesselName = feature.getJSONObject("properties").getString("vesselname") != null ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
                 List<Feature> toolsList = toolMap.get(vesselName) != null ? toolMap.get(vesselName) : new ArrayList<Feature>();
+                Gson gson = new Gson();
+                Feature toolFeature;
 
                 if (vesselName != null && !vesselNames.contains(vesselName)) {
                     vesselNames.add(vesselName);
                 }
 
-                // TODO: add feature
-
-                Gson gson = new Gson();
-//                System.out.println("this is the object: " + feature.toString());
-
-                Feature toolFeature;// = gson.fromJson(feature.toString(), Feature.class);
-                try {
-                    feature.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0);
-//                    System.out.println("This should be a point: " + i);
-                    toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
-                } catch (JSONException e) {
-//                    e.printStackTrace();
-
-//                    System.out.println("This should be a line: " + i);
+                if(feature.getJSONObject("geometry").getString("type").equals("LineString")) {
                     toolFeature = gson.fromJson(feature.toString(), LineFeature.class);
-                }
-
-
-                if(toolFeature == null) {
-//                    System.out.println("Tool feature object failed to init");
                 } else {
-//                    System.out.println("Tool feature object did not fail to init, but all values are null? " + toolFeature.id + ", " + (toolFeature.geometry == null) + ", " + (toolFeature.properties == null));
-//                    break;
+                    toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
                 }
 
-//                toolsList.add(null);
                 toolsList.add(toolFeature);
                 toolMap.put(vesselName, toolsList);
-
             }
 
             inputField.setAdapter(adapter);
@@ -966,35 +951,42 @@ public class MapFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedVesselName = ((TextView) view).getText().toString();
-                String toolPosition = "pos: ";
                 rowsContainer.removeAllViews();
                 List<Feature> selectedFeatures = toolMap.get(selectedVesselName);
 
-                for(Feature currentFeature : selectedFeatures) {
-                    // TODO: FIX POS
-//                    toolPosition = String.valueOf(currentFeature.geometry.coordinates[0][0]) + ", " + String.valueOf(currentFeature.geometry.coordinates[1][0]);
-//                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, selectedVesselName, "Redskapstype: ", "Tlf: ", "Satt: ", "Pos: ");
-
-                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske,
-                            currentFeature);
+                for (Feature currentFeature : selectedFeatures) {
+                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, currentFeature);
                     rowsContainer.addView(row.getView());
                 }
+                viewInMapButton.setEnabled(true);
+                inputField.setTag(selectedVesselName);
             }
         });
-
-
-
 
         viewInMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                highlightToolsInMap(inputField.getTag().toString());
 
+                dialog.dismiss();
             }
         });
 
         dismissButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-
         dialog.show();
+    }
 
+    private void highlightToolsInMap(String vesselName) {
+        browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
+        clearHighlightingButton.setVisibility(View.VISIBLE);
+
+        clearHighlightingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nullString = null;
+                browser.loadUrl("javascript:highlightTools(" + nullString + ")");
+                clearHighlightingButton.setVisibility(View.GONE);
+            }
+        });
     }
 }

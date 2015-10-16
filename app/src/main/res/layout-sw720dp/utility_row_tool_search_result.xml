@@ -30,7 +30,8 @@ limitations under the License.
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/tool_search_result_row_tool_icon_margin_left"
-            android:background="@drawable/ikon_kystfiske"/>
+            android:background="@drawable/ikon_kystfiske"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/tool_search_result_row_vessel_name_text_view"
@@ -65,6 +66,7 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/tool_search_result_row_tool_type_text_view"
             android:layout_below="@+id/tool_search_result_row_phone_number_text_view"
+            android:layout_marginLeft="@dimen/tool_search_result_row_date_text_view_margin_left"
             android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
             android:layout_toRightOf="@+id/tool_search_result_row_anchor_view"
             android:text="Some date text"/>
@@ -75,6 +77,7 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/tool_search_result_row_phone_number_text_view"
             android:layout_below="@+id/tool_search_result_row_date_text_view"
+            android:layout_marginLeft="@dimen/tool_search_result_row_position_text_view_margin_left"
             android:layout_marginTop="@dimen/tool_search_result_row_internal_margin_top"
             android:layout_toRightOf="@+id/tool_search_result_row_anchor_view"
             android:text="Some position text"/>

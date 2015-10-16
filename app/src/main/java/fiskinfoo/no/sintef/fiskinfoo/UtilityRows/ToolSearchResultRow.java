@@ -65,8 +65,6 @@ public class ToolSearchResultRow extends BaseTableRow {
     public ToolSearchResultRow(Context context, int toolImageId, Feature feature) {
         super(context, R.layout.utility_row_tool_search_result);
 
-        String date;
-        StringBuilder sb;
 
         toolTypeImageView = (ImageView) getView().findViewById(R.id.tool_search_result_row_tool_type_image_view);
         vesselNameTextView = (TextView) getView().findViewById(R.id.tool_search_result_row_vessel_name_text_view);
@@ -75,15 +73,14 @@ public class ToolSearchResultRow extends BaseTableRow {
         dateTextView = (TextView) getView().findViewById(R.id.tool_search_result_row_date_text_view);
         positionTextView = (TextView) getView().findViewById(R.id.tool_search_result_row_position_text_view);
 
-        toolTypeImageView.setImageResource(toolImageId);
-        vesselNameTextView.setText(feature.properties.vesselname != null ? feature.properties.vesselname : context.getString(R.string.vessel_name_na));
-        toolTypeTextView.setText(feature.properties.tooltypename != null ? context.getString(R.string.tool_type_with_colon) + feature.properties.tooltypename : context.getString(R.string.tool_type_na));
-        phoneNumberTextView.setText(feature.properties.vesselphone != null ? context.getString(R.string.vessel_phone) + feature.properties.vesselphone : context.getString(R.string.vessel_phone_na));
-        date = feature.properties.vesselphone != null ? context.getString(R.string.tool_set_date) + feature.properties.setupdatetime.replace("T", " ").replace("Z", "") : context.getString(R.string.tool_set_date_na);
-        dateTextView.setText(date);
-        sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        String vesselName = feature.properties.vesselname != null ? feature.properties.vesselname : context.getString(R.string.vessel_name_na);
+        String date = feature.properties.vesselphone != null ? context.getString(R.string.tool_set_date) + " " + feature.properties.setupdatetime.replace("T", " ").replace("Z", "") : context.getString(R.string.tool_set_date_na);
+        String toolType = feature.properties.tooltypename != null ? context.getString(R.string.tool_type_with_colon) + " " + feature.properties.tooltypename : context.getString(R.string.tool_type_na);
+        String vesselNumber = feature.properties.vesselphone != null ? context.getString(R.string.vessel_phone) + " " + feature.properties.vesselphone : context.getString(R.string.vessel_phone_na);
 
         if(feature instanceof PointFeature) {
+            sb.append("\n");
             sb.append(((PointFeature)feature).geometry.coordinates[0]);
             sb.append(", ");
             sb.append(((PointFeature)feature).geometry.coordinates[1]);
@@ -97,6 +94,10 @@ public class ToolSearchResultRow extends BaseTableRow {
             }
         }
 
+        vesselNameTextView.setText(vesselName);
+        toolTypeTextView.setText(toolType);
+        phoneNumberTextView.setText(vesselNumber);
+        dateTextView.setText(date);
         positionTextView.setText(context.getString(R.string.tool_pos) + sb.toString());
     }
 

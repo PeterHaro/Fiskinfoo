@@ -208,6 +208,13 @@ limitations under the License.
     <dimen name="my_page_network_error_text_view_margin_top">15dp</dimen>
     <dimen name="my_page_network_error_text_view_margin_bottom">15dp</dimen>
 
+    <!-- Map fragment -->
+    <dimen name="map_search_tools_button_width">40dp</dimen>
+    <dimen name="map_search_tools_button_height">40dp</dimen>
+    <dimen name="map_search_tools_button_margin_left">10dp</dimen>
+    <dimen name="map_search_tools_button_margin_top">150dp</dimen>
+    <dimen name="map_search_tools_clear_highlighting_button_margin_top">10dp</dimen>
+
     <!-- Search tools dialog -->
     <dimen name="search_tools_dialog_input_field_margin_left">30dp</dimen>
     <dimen name="map_search_tools_linear_layout_margin_bottom">20dp</dimen>
@@ -217,12 +224,6 @@ limitations under the License.
     <dimen name="map_search_tools_input_edit_text_margin_left">30dp</dimen>
     <dimen name="map_search_tools_input_edit_text_margin_right">30dp</dimen>
     <dimen name="map_search_tools_input_edit_text_margin_top">30dp</dimen>
-
-    <!-- Map fragment -->
-    <dimen name="map_search_tools_button_width">40dp</dimen>
-    <dimen name="map_search_tools_button_height">40dp</dimen>
-    <dimen name="map_search_tools_button_margin_left">10dp</dimen>
-    <dimen name="map_search_tools_button_margin_top">150dp</dimen>
 
     <!-- Alert dialog -->
     <dimen name="hyperlink_alert_dialog_margin_left">10dp</dimen>

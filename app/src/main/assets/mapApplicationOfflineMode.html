@@ -13,6 +13,7 @@
         var token = null;
         var sensor = false;
         var format = "image/jpeg";
+        var highlightVesselName = null;
         window.onload = function () {
             init();
         }
@@ -48,7 +49,6 @@
 
         function populateMap(authenticated) {
             map.addLayers(populateAllAvailableWmsLayers());
-
             populateAndStyleToolsLayer();
             populateLayers();
 
@@ -186,7 +186,6 @@
             var toolLayer;
             geoJson = getJsonFile("Redskap");
 
-
             var geoJsonFormat = new OpenLayers.Format.GeoJSON({
                 'internalProjection': new OpenLayers.Projection("EPSG:3857"),
                 'externalProjection': new OpenLayers.Projection("EPSG:4326")
@@ -195,8 +194,8 @@
             var toolStyle = OpenLayers.Util.extend( {}, OpenLayers.Feature.Vector.style[ 'default' ] );
 
             toolStyle.strokeWidth = '${strokeWidth}';
-            toolStyle.strokeColor = '${toolColor}';
-            toolStyle.fillColor = '${toolColor}';
+            toolStyle.strokeColor = '${strokeColor}';
+            toolStyle.fillColor = '${fillColor}';
             toolStyle.fill = true;
             toolStyle.pointRadius = '${pointRadius}';
             toolStyle.fillOpacity = 1;
@@ -228,7 +227,48 @@
                             }
                             return retVal;
                     },
-                    toolColor: function(feature) {
+                    strokeColor: function (feature) {
+                        if (highlightVesselName != null && highlightVesselName != "" && feature.attributes.vesselname === highlightVesselName) {
+                            return "#00FF00";
+                        }
+                        if (feature.attributes.tooltypename === "Long line") {
+                            return "#F30F0F";
+                        } else if (feature.attributes.tooltypename === "Nets") {
+                            return "#0881D7";
+                        } else if (feature.attributes.tooltypename === "Crab pot") {
+                            return "#FF6500";
+                        } else if (feature.attributes.tooltypename === "Seismic") {
+                            return "#A06C49";
+                        } else if (feature.attributes.tooltypename === "Danish- / Purse- Seine") {
+                            return "#9933CC";
+                        } else if (feature.attributes.tooltypename === "Sensor / Cable") {
+                            return "#75A103";
+                        } else if (feature.attributes.tooltypename === "Mooring system") {
+                            return "#FF42E5";
+                        } else if (feature.attributes.tooltypename === "Unknown") {
+                            return "#000000";
+                        } else if (feature.hasOwnProperty('cluster')) {
+                            var i;
+                            var len = feature.cluster.length;
+
+                            if (highlightVesselName == null || highlightVesselName == "") {
+                                return "#00007A";
+                            }
+
+                            for (i = 0; i < len; i++) {
+                                var toolFeature = feature.cluster[i];
+                                if (toolFeature.attributes.vesselname === highlightVesselName) {
+                                    return "#00FF00";
+                                }
+                            }
+
+                            return "#00007A";
+                        }
+                    },
+                    fillColor: function(feature) {
+                        if(highlightVesselName != null && highlightVesselName != "" && feature.attributes.vesselname === highlightVesselName) {
+                            return "#00FF00";
+                        }
                         if(feature.attributes.tooltypename === "Long line") {
                             return "#F30F0F";
                         } else if(feature.attributes.tooltypename === "Nets") {
@@ -245,10 +285,14 @@
                             return "#FF42E5";
                         }  else if(feature.attributes.tooltypename === "Unknown") {
                             return "#000000";
-                        } else {
+                        } else if(feature.hasOwnProperty('cluster')){
+                            var i;
+                            for(i = 0; i < feature.cluster.length; index++)
+
+
                             return "#00007A";
                         }
-                    },
+                    }
                 }
             });
 
@@ -267,6 +311,12 @@
             toolLayer = map.getLayersByName("Redskap")[0];
             toolLayer.styleMap = toolsStyleMap;
             toolLayer.addFeatures(geoJsonFormat.read(geoJson));
+        }
+
+        function highlightTools(vesselName) {
+            highlightVesselName = vesselName;
+            var toolLayer = map.getLayersByName("Redskap")[0];
+            toolLayer.redraw();
         }
 
         function getLayers() {

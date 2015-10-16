@@ -69,6 +69,7 @@ limitations under the License.
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
+                android:enabled="false"
                 android:text="@string/show_on_map"/>
 
             <Button
