@@ -922,7 +922,10 @@ public class MapFragment extends Fragment {
 
             for (int i = 0; i < toolsArray.length(); i++) {
                 JSONObject feature = toolsArray.getJSONObject(i);
-                String vesselName = feature.getJSONObject("properties").getString("vesselname") != null ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
+
+                System.out.println("This is the vessel name: " + feature.getJSONObject("properties").getString("vesselname"));
+
+                String vesselName = (feature.getJSONObject("properties").getString("vesselname") != null && !feature.getJSONObject("properties").getString("vesselname").equals("null")) ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
                 List<Integer> toolsIdList = toolIdMap.get(vesselName) != null ? toolIdMap.get(vesselName) : new ArrayList<Integer>();
 
                 if (vesselName != null && !vesselNames.contains(vesselName)) {
@@ -1006,7 +1009,8 @@ public class MapFragment extends Fragment {
         viewInMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                highlightToolsInMap(inputField.getTag().toString());
+                String vesselName = inputField.getTag().toString().equals(getString(R.string.vessel_name_unknown)) ? inputField.getTag().toString() : "null";
+                highlightToolsInMap(vesselName);
 
                 dialog.dismiss();
             }

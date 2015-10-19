@@ -64,7 +64,7 @@ limitations under the License.
     <string name="offline_mode_map_used_title">Offlinemodus</string>
     <string name="offline_mode_map_used_info">Da det ser ut til at du ikke har internett-tilgang prøver appen å benytte kart som har blitt lastet ned mens appen var i offlinemodus.</string>
     <string name="search_tools_title">Søk i redskap</string>
-    <string name="vessel_name_unknown">Unknown</string>
+    <string name="vessel_name_unknown">Ukjent fartøy</string>
     <string name="vessel">Fartøy: </string>
     <string name="vessel_name_na">Fartøy: n.a.</string>
     <string name="tool_type_with_colon">Redskapstype: </string>

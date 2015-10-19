@@ -76,7 +76,7 @@ public class ToolSearchResultRow extends BaseTableRow {
 
         StringBuilder sb = new StringBuilder();
         String vesselName = feature.properties.vesselname != null ? feature.properties.vesselname : context.getString(R.string.vessel_name_na);
-        String date = feature.properties.vesselphone != null ? context.getString(R.string.tool_set_date) + " " + feature.properties.setupdatetime.replace("T", " ").replace("Z", "") : context.getString(R.string.tool_set_date_na);
+        String date = feature.properties.setupdatetime != null ? context.getString(R.string.tool_set_date) + " " + feature.properties.setupdatetime.replace("T", " ").replace("Z", "") : context.getString(R.string.tool_set_date_na);
         String toolType = feature.properties.tooltypename != null ? context.getString(R.string.tool_type_with_colon) + " " + feature.properties.tooltypename : context.getString(R.string.tool_type_na);
         String vesselNumber = feature.properties.vesselphone != null ? context.getString(R.string.vessel_phone) + " " + feature.properties.vesselphone : context.getString(R.string.vessel_phone_na);
 
