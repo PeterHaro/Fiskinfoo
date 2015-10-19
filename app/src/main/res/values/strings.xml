@@ -106,6 +106,7 @@ limitations under the License.
     <string name="choose_subscription_interval">Velg en abonneringfrekvens</string>
     <string name="choose_subscription_email">Ugyldig epostadresse</string>
     <string name="download_map_layer_dialog_title">Velg nedlastningsformat</string>
+    <string name="download_map_error_no_network_access_title">Nedlastningsfeil</string>
     <string name="subscribe_to_map_layer_dialog_title">Abboner på kartlag</string>
     <string name="update_subscriptions">Oppdater abonnement</string>
     <string name="subscription_format">Format</string>

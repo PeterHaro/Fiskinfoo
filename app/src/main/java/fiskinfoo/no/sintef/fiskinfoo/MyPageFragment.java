@@ -183,20 +183,15 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             StrictMode.setThreadPolicy(policy);
             List<PropertyDescription> availableSubscriptions = api.getSubscribable();
             List<Subscription> currentSubscriptions = api.getSubscriptions();
-//            List<String> myWarnings = new ArrayList<>(); //TODO: Tie in polar low warning
-//            List<Subscription> activeSubscriptions = api.getSubscriptions();
             List<Authorization> authorizations = api.getAuthorization();
             Map<Integer, Boolean> authMap = new HashMap<>();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
             ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
-//            ArrayList<Object> warningServiceChildObjectList = new ArrayList<>();
-//            ArrayList<Object> mySubscriptions = new ArrayList<>();
 
             for(Authorization auth : authorizations) {
                 authMap.put(auth.Id, auth.HasAccess);
             }
-
 
             for(Subscription subscription : currentSubscriptions) {
                 activeSubscriptionsMap.put(subscription.GeoDataServiceName, subscription);
@@ -233,47 +228,16 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
 
-//            for (String warning : myWarnings) {
-//                SubscriptionExpandableListChildObject currentWarning = setupWarningChildView(warning);
-//
-//                warningServiceChildObjectList.add(currentWarning);
-//            }
-//
-//            for (Subscription subscription : activeSubscriptions) {
-//                int id = availableSubscriptionsMap.get(subscription.GeoDataServiceName) != null ? availableSubscriptionsMap.get(subscription.GeoDataServiceName).Id : -1;
-//                boolean isAuthed = authMap.get(id) != null ? authMap.get(id) : false;
-//                SubscriptionExpandableListChildObject currentSubscription = setupActiveSubscriptionChildView(subscription, availableSubscriptionsMap.get(subscription.GeoDataServiceName), isAuthed);
-//
-//                mySubscriptions.add(currentSubscription);
-//            }
-
             ExpandableListParentObject propertyDescriptionParent = new ExpandableListParentObject();
-//            ExpandableListParentObject warningParent = new ExpandableListParentObject();
-//            ExpandableListParentObject subscriptionParent = new ExpandableListParentObject();
 
             propertyDescriptionParent.setChildObjectList(availableSubscriptionObjectsList);
             propertyDescriptionParent.setParentNumber(1);
             propertyDescriptionParent.setParentText(getString(R.string.my_page_all_available_subscriptions));
             propertyDescriptionParent.setResourcePathToImageResource(R.drawable.ikon_kart_til_din_kartplotter);
 
-//            warningParent.setChildObjectList(warningServiceChildObjectList);
-//            warningParent.setParentNumber(2);
-//            warningParent.setParentText(getString(R.string.my_page_all_warnings));
-//            warningParent.setResourcePathToImageResource(R.drawable.ikon_varsling_av_polare_lavtrykk);
-//
-//            subscriptionParent.setChildObjectList(mySubscriptions);
-//            subscriptionParent.setParentNumber(3);
-//            subscriptionParent.setParentText(getString(R.string.my_page_my_subscriptions));
-//            subscriptionParent.setResourcePathToImageResource(R.drawable.ikon_kart_til_din_kartplotter);
-
             parentObjectList.add(propertyDescriptionParent);
-//            parentObjectList.add(warningParent);
-//            parentObjectList.add(subscriptionParent);
 
             childOnClickListener.setPropertyDescriptions(availableSubscriptions);
-//            childOnClickListener.setWarnings(myWarnings);
-//            childOnClickListener.setSubscriptions(activeSubscriptions);
-
         } catch (Exception e) {
             Log.d(TAG, "Exception occured: " + e.toString());
         }

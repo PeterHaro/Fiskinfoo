@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -94,6 +95,14 @@ public class ToolSearchResultRow extends BaseTableRow {
             }
         }
 
+        if(!date.equals(context.getString(R.string.tool_set_date_na)) && date.contains(".")) {
+            date = date.substring(0, date.indexOf('.'));
+        }
+
+        if(vesselNumber.contains(";")) {
+            vesselNumber.replace(';', '\n');
+        }
+
         vesselNameTextView.setText(vesselName);
         toolTypeTextView.setText(toolType);
         phoneNumberTextView.setText(vesselNumber);
@@ -139,5 +148,9 @@ public class ToolSearchResultRow extends BaseTableRow {
 
     public void setPosition(String position) {
         phoneNumberTextView.setText(position);
+    }
+
+    public void setDateTextViewTextColor(int colorId) {
+        dateTextView.setTextColor(colorId);
     }
 }

@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,6 +27,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -813,7 +815,7 @@ public class MapFragment extends Fragment {
 
         List<PropertyDescription> subscribables;
         PropertyDescription newestSubscribable = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
         Date cachedUpdateDateTime;
         Date newestUpdateDateTime;
         SubscriptionEntry cachedEntry;
@@ -946,6 +948,8 @@ public class MapFragment extends Fragment {
                 String selectedVesselName = ((TextView) view).getText().toString();
                 List<Integer> selectedTools = toolIdMap.get(selectedVesselName);
                 Gson gson = new Gson();
+                String toolSetDateString;
+                Date toolSetDate;
 
                 rowsContainer.removeAllViews();
 
@@ -961,7 +965,17 @@ public class MapFragment extends Fragment {
                         } else {
                             toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
                         }
-                    } catch (JSONException e) {
+
+                        if(toolFeature.properties.setupdatetime == null) {
+                            System.out.println("This is to say that setupdatetime is null: ");
+                        }
+
+                        toolSetDateString = toolFeature.properties.setupdatetime != null ? toolFeature.properties.setupdatetime : "2038-00-00T00:00:00";
+                        toolSetDate = simpleDateFormat.parse(toolSetDateString);
+
+                        System.out.println("tool date is now: " + toolSetDateString);
+
+                    } catch (JSONException | ParseException e) {
                         dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
                         e.printStackTrace();
 
@@ -969,6 +983,18 @@ public class MapFragment extends Fragment {
                     }
 
                     ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, toolFeature);
+                    long toolTime = System.currentTimeMillis() - toolSetDate.getTime();
+                    long highlightCutoff = ((long)getResources().getInteger(R.integer.milliseconds_in_a_day)) * ((long)getResources().getInteger(R.integer.days_to_highlight_active_tool));
+
+                    System.out.println("current time is now: " + System.currentTimeMillis() + ", tool date is: " + toolSetDate.getTime());
+                    System.out.println("Time difference between now and tool set date: " + toolTime + ", trigger time is: " + highlightCutoff);
+
+                    if(toolTime > highlightCutoff) {
+                        System.out.println("Totally triggered ");
+                        int colorId = ContextCompat.getColor(getActivity(), R.color.error_red);
+                        row.setDateTextViewTextColor(colorId);
+                    }
+
                     rowsContainer.addView(row.getView());
                 }
 

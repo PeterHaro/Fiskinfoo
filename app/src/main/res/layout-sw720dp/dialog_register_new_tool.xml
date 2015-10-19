@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:inputType="number"
+            android:inputType="textEmailAddress"
             android:hint="@string/vesselmail"
             app:et_inputId="@+id/register_tool_start_type_instancestate"
             app:et_supportMode="helperWithError"

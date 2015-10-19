@@ -64,6 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -622,7 +623,11 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 createSettingsDialog();
                 break;
             case R.id.export_metadata_to_user:
-                createDownloadMapLayerDialog();
+                if(fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+                    createDownloadMapLayerDialog();
+                } else {
+                    dialogInterface.getAlertDialog(MainActivity.this, getString(R.string.download_map_error_no_network_access_title), getString(R.string.unable_to_download_no_network), -1).show();
+                }
                 break;
             default:
                 return false;
