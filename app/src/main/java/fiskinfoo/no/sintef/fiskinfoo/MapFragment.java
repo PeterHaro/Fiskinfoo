@@ -46,8 +46,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -81,6 +79,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Line;
@@ -89,7 +88,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.PointFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Polygon;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
@@ -820,13 +818,13 @@ public class MapFragment extends Fragment {
         Date newestUpdateDateTime;
         SubscriptionEntry cachedEntry;
         Response response;
-        JSONArray toolsArray;
+        final JSONArray toolsArray;
         ArrayAdapter<String> adapter;
         String format = "JSON";
         String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
         final JSONObject tools;
         final List<String> vesselNames;
-        final Map<String, List<Feature>> toolMap =  new HashMap<>();
+        final Map<String, List<Integer>> toolIdMap =  new HashMap<>();
         byte[] data = new byte[0];
 
         cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
@@ -923,41 +921,57 @@ public class MapFragment extends Fragment {
             for (int i = 0; i < toolsArray.length(); i++) {
                 JSONObject feature = toolsArray.getJSONObject(i);
                 String vesselName = feature.getJSONObject("properties").getString("vesselname") != null ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
-                List<Feature> toolsList = toolMap.get(vesselName) != null ? toolMap.get(vesselName) : new ArrayList<Feature>();
-                Gson gson = new Gson();
-                Feature toolFeature;
+                List<Integer> toolsIdList = toolIdMap.get(vesselName) != null ? toolIdMap.get(vesselName) : new ArrayList<Integer>();
 
                 if (vesselName != null && !vesselNames.contains(vesselName)) {
                     vesselNames.add(vesselName);
                 }
 
-                if(feature.getJSONObject("geometry").getString("type").equals("LineString")) {
-                    toolFeature = gson.fromJson(feature.toString(), LineFeature.class);
-                } else {
-                    toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
-                }
-
-                toolsList.add(toolFeature);
-                toolMap.put(vesselName, toolsList);
+                toolsIdList.add(i);
+                toolIdMap.put(vesselName, toolsIdList);
             }
 
             inputField.setAdapter(adapter);
         } catch (JSONException e) {
+            dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
             Log.e(TAG, "JSON parse error");
             e.printStackTrace();
+
+            return;
         }
 
         inputField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedVesselName = ((TextView) view).getText().toString();
-                rowsContainer.removeAllViews();
-                List<Feature> selectedFeatures = toolMap.get(selectedVesselName);
+                List<Integer> selectedTools = toolIdMap.get(selectedVesselName);
+                Gson gson = new Gson();
 
-                for (Feature currentFeature : selectedFeatures) {
-                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, currentFeature);
+                rowsContainer.removeAllViews();
+
+                for(int toolId : selectedTools) {
+                    JSONObject feature;
+                    Feature toolFeature;
+
+                    try {
+                        feature = toolsArray.getJSONObject(toolId);
+
+                        if(feature.getJSONObject("geometry").getString("type").equals("LineString")) {
+                            toolFeature = gson.fromJson(feature.toString(), LineFeature.class);
+                        } else {
+                            toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
+                        }
+                    } catch (JSONException e) {
+                        dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
+                        e.printStackTrace();
+
+                        return;
+                    }
+
+                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, toolFeature);
                     rowsContainer.addView(row.getView());
                 }
+
                 viewInMapButton.setEnabled(true);
                 inputField.setTag(selectedVesselName);
             }

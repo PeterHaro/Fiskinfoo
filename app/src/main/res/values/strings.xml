@@ -77,6 +77,8 @@ limitations under the License.
     <string name="loading_tools_info">Laster inn redskapsdata, vennligst vent.</string>
     <string name="tools_search_no_data_title">Ingen data</string>
     <string name="tools_search_no_data">Applikasjonen klarer ikke å finne en fil med redskapsinformasjon og kan heller ikke laste ned denne informasjonen da det ser ut som du ikke har nettverkstilgang.</string>
+    <string name="search_tools_init_error">Feil</string>
+    <string name="search_tools_init_info">Det oppstod en feil under opprettingen av søkefeltet.</string>
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>
