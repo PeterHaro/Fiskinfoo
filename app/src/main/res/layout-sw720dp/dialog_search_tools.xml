@@ -12,7 +12,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:id="@+id/search_tools_dialog_scroll_view"
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -34,11 +35,22 @@ limitations under the License.
             android:maxLines="1"
             android:selectAllOnFocus="true"/>
 
+        <Button
+            android:id="@+id/search_tools_jump_to_bottom_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_tools_input_field"
+            android:layout_marginEnd="@dimen/map_search_tools_jump_to_bottom_margin_right"
+            android:layout_marginStart="@dimen/map_search_tools_jump_to_bottom_margin_left"
+            android:layout_marginTop="@dimen/map_search_tools_jump_to_bottom_margin_top"
+            android:text="@string/jump_to_bottom"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:id="@+id/search_tools_row_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/search_tools_input_field"
+            android:layout_below="@+id/search_tools_jump_to_bottom_button"
             android:layout_marginEnd="@dimen/map_search_tools_linear_layout_margin_right"
             android:layout_marginStart="@dimen/map_search_tools_linear_layout_margin_left"
             android:layout_marginTop="@dimen/map_search_tools_linear_layout_margin_top"
@@ -68,8 +80,8 @@ limitations under the License.
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:enabled="false"
                 android:layout_weight="1.0"
+                android:enabled="false"
                 android:text="@string/show_on_map"/>
 
             <Button

@@ -42,6 +42,7 @@ import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,8 +64,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
-
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -81,8 +80,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener {
@@ -293,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.settings_dialog_fields_container);
         Button closeDialogButton = (Button) dialog.findViewById(R.id.settings_dialog_close_button);
         SettingsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
-        SwitchAndButtonRow toggleOfflineModeRow = utilityRowsInterface.getSwitchAndButtonRow(this, getString(R.string.offline_mode));
+        SettingsButtonRow toggleOfflineModeRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.offline_mode), getOfflineModeInfoOnClickListener());
         SettingsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
         SettingsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.settings));
 
@@ -391,24 +390,6 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         });
 
-        toggleOfflineModeRow.setButtonOnClickListener(onClickListenerInterface.getOfflineModeInformationIconOnClickListener(user));
-        toggleOfflineModeRow.setChecked(user.getOfflineMode());
-        toggleOfflineModeRow.setSwitchOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                user.setOfflineMode(isChecked);
-                user.writeToSharedPref(buttonView.getContext());
-
-                if (isChecked) {
-                    initAndStartOfflineModeBackgroundThread();
-                    Toast.makeText(buttonView.getContext(), R.string.offline_mode_activated, Toast.LENGTH_LONG).show();
-                } else {
-                    stopOfflineModeBackgroundThread();
-                    Toast.makeText(buttonView.getContext(), R.string.offline_mode_deactivated, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
         linearLayout.addView(toggleOfflineModeRow.getView());
         linearLayout.addView(setDownloadPathButtonRow.getView());
         linearLayout.addView(settingsButtonRow.getView());
@@ -432,9 +413,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
     }
 
     private void initAndStartOfflineModeBackgroundThread() {
-        View.OnClickListener onClickListener = onClickListenerInterface.getOfflineModeInformationIconOnClickListener(user);
-
-        toolbarOfflineModeView.setOnClickListener(onClickListener);
+        toolbarOfflineModeView.setOnClickListener(getOfflineModeInfoOnClickListener());
 
         offlineModeBackGroundThread = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
             @Override
@@ -529,6 +508,76 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         }, getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.offline_mode_interval_time_seconds), TimeUnit.SECONDS);
 
         toolbarOfflineModeView.setVisibility(View.VISIBLE);
+    }
+
+
+    private View.OnClickListener getOfflineModeInfoOnClickListener() {
+        return                 new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_offline_mode_info, R.string.offline_mode);
+                TextView textView = (TextView) dialog.findViewById(R.id.offline_mode_info_dialog_text_view);
+                LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.offline_mode_info_dialog_linear_layout);
+                Button okButton = (Button) dialog.findViewById(R.id.offline_mode_info_dialog_dismiss_button);
+                final Switch offlineModeSwitch = (Switch) dialog.findViewById(R.id.offline_mode_info_dialog_switch);
+
+                offlineModeSwitch.setChecked(user.getOfflineMode());
+
+                if(user.getOfflineMode()) {
+                    offlineModeSwitch.setText(v.getResources().getString(R.string.offline_mode_active));
+                } else {
+                    offlineModeSwitch.setText(v.getResources().getString(R.string.offline_mode_deactivated));
+                }
+
+                textView.setText(R.string.offline_mode_info);
+
+                for (final SubscriptionEntry entry : user.getSubscriptionCacheEntries()) {
+                    final InfoSwitchRow row = new InfoSwitchRow(v.getContext(), entry.mName, entry.mLastUpdated.replace("T", "\n"));
+
+                    row.setChecked(entry.mOfflineActive);
+                    row.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            SubscriptionEntry updateEntry = user.getSubscriptionCacheEntry(entry.mSubscribable.ApiName);
+                            updateEntry.mOfflineActive = isChecked;
+                            user.setSubscriptionCacheEntry(entry.mSubscribable.ApiName, updateEntry);
+                            user.writeToSharedPref(buttonView.getContext());
+                        }
+                    });
+
+                    row.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            row.setChecked(!row.isChecked());
+                        }
+                    });
+
+                    linearLayout.addView(row.getView());
+                }
+
+                offlineModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        user.setOfflineMode(isChecked);
+                        user.writeToSharedPref(buttonView.getContext());
+
+                        if (isChecked) {
+                            offlineModeSwitch.setText(R.string.offline_mode_active);
+                            initAndStartOfflineModeBackgroundThread();
+                            Toast.makeText(buttonView.getContext(), R.string.offline_mode_activated, Toast.LENGTH_LONG).show();
+                        } else {
+                            offlineModeSwitch.setText(R.string.offline_mode_deactivated);
+                            stopOfflineModeBackgroundThread();
+                            Toast.makeText(buttonView.getContext(), R.string.offline_mode_deactivated, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+                okButton.setOnClickListener(new UtilityOnClickListeners().getDismissDialogListener(dialog));
+
+                dialog.show();
+            }
+        };
     }
 
     private void userLogout() {

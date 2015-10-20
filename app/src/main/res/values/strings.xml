@@ -79,6 +79,7 @@ limitations under the License.
     <string name="tools_search_no_data">Applikasjonen klarer ikke å finne en fil med redskapsinformasjon og kan heller ikke laste ned denne informasjonen da det ser ut som du ikke har nettverkstilgang.</string>
     <string name="search_tools_init_error">Feil</string>
     <string name="search_tools_init_info">Det oppstod en feil under opprettingen av søkefeltet.</string>
+    <string name="jump_to_bottom">Hopp til slutten</string>
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>

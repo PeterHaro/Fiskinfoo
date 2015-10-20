@@ -89,7 +89,9 @@ limitations under the License.
     <dimen name="offline_mode_dialog_text_view_margin_top">15dp</dimen>
     <dimen name="offline_mode_info_dialog_margin_left">20dp</dimen>
     <dimen name="offline_mode_info_dialog_margin_right">20dp</dimen>
-    
+    <dimen name="offline_mode_info_dialog_switch_margin_left">20dp</dimen>
+    <dimen name="offline_mode_info_dialog_switch_margin_right">20dp</dimen>
+
     <!-- Proximity alert margins -->
     <dimen name="proximity_alert_spinner_margin_top">20dp</dimen>
     <dimen name="proximity_alert_spinner_margin_bottom">20dp</dimen>
@@ -224,6 +226,9 @@ limitations under the License.
     <dimen name="map_search_tools_input_edit_text_margin_left">30dp</dimen>
     <dimen name="map_search_tools_input_edit_text_margin_right">30dp</dimen>
     <dimen name="map_search_tools_input_edit_text_margin_top">30dp</dimen>
+    <dimen name="map_search_tools_jump_to_bottom_margin_top">10dp</dimen>
+    <dimen name="map_search_tools_jump_to_bottom_margin_left">50dp</dimen>
+    <dimen name="map_search_tools_jump_to_bottom_margin_right">50dp</dimen>
 
     <!-- Alert dialog -->
     <dimen name="hyperlink_alert_dialog_margin_left">10dp</dimen>
@@ -254,5 +259,7 @@ limitations under the License.
     <dimen name="tool_search_result_row_vessel_name_text_view_margin_left">20dp</dimen>
     <dimen name="tool_search_result_row_internal_margin_top">5dp</dimen>
     <dimen name="tool_search_result_row_tool_type_text_view_margin_left">20dp</dimen>
+    <dimen name="tool_search_result_row_date_text_view_margin_left">10dp</dimen>
+    <dimen name="tool_search_result_row_position_text_view_margin_left">10dp</dimen>
 
 </resources>

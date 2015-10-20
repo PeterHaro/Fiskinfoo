@@ -48,6 +48,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -808,9 +809,11 @@ public class MapFragment extends Fragment {
     private void createSearchDialog() {
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_search_tools, R.string.search_tools_title);
 
+        final ScrollView scrollView = (ScrollView) dialog.findViewById(R.id.search_tools_dialog_scroll_view);
         final AutoCompleteTextView inputField = (AutoCompleteTextView) dialog.findViewById(R.id.search_tools_input_field);
         final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.search_tools_row_container);
         final Button viewInMapButton = (Button) dialog.findViewById(R.id.search_tools_view_in_map_button);
+        final Button jumpToBottomButton = (Button) dialog.findViewById(R.id.search_tools_jump_to_bottom_button);
         Button dismissButton = (Button) dialog.findViewById(R.id.search_tools_dismiss_button);
 
         List<PropertyDescription> subscribables;
@@ -990,6 +993,19 @@ public class MapFragment extends Fragment {
 
                 viewInMapButton.setEnabled(true);
                 inputField.setTag(selectedVesselName);
+                jumpToBottomButton.setVisibility(View.VISIBLE);
+                jumpToBottomButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollView.scrollTo(0, rowsContainer.getBottom());
+                            }
+                        });
+                    }
+                });
+
             }
         });
 
