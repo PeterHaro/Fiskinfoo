@@ -15,7 +15,6 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 import android.widget.TextView;
 

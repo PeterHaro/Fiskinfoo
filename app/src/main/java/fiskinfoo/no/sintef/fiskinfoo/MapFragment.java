@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
