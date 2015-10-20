@@ -228,68 +228,57 @@
                             return retVal;
                     },
                     strokeColor: function (feature) {
-                        if (highlightVesselName != null && highlightVesselName != "" && feature.attributes.vesselname === highlightVesselName) {
-                            return "#00FF00";
-                        }
-                        if (feature.attributes.tooltypename === "Long line") {
-                            return "#F30F0F";
-                        } else if (feature.attributes.tooltypename === "Nets") {
-                            return "#0881D7";
-                        } else if (feature.attributes.tooltypename === "Crab pot") {
-                            return "#FF6500";
-                        } else if (feature.attributes.tooltypename === "Seismic") {
-                            return "#A06C49";
-                        } else if (feature.attributes.tooltypename === "Danish- / Purse- Seine") {
-                            return "#9933CC";
-                        } else if (feature.attributes.tooltypename === "Sensor / Cable") {
-                            return "#75A103";
-                        } else if (feature.attributes.tooltypename === "Mooring system") {
-                            return "#FF42E5";
-                        } else if (feature.attributes.tooltypename === "Unknown") {
-                            return "#000000";
-                        } else if (feature.hasOwnProperty('cluster')) {
-                            var i;
-                            var len = feature.cluster.length;
-
-                            if (highlightVesselName == null || highlightVesselName == "") {
-                                return "#00007A";
-                            }
-
-                            for (i = 0; i < len; i++) {
-                                var toolFeature = feature.cluster[i];
-                                if (toolFeature.attributes.vesselname === highlightVesselName) {
+                        if (highlightVesselName != null) {
+                            if (!feature.hasOwnProperty("cluster")) {
+                                if (feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null)) {
                                     return "#00FF00";
                                 }
-                            }
+                            } else {
+                                var toolFeature;
 
+                                if (highlightVesselName === "Ukjent fartøy") {
+                                    for (i = 0; i < feature.cluster.length; i++) {
+                                        toolFeature = feature.cluster[i];
+                                        if (toolFeature.attributes.vesselname === null) {
+                                            return "#00FF00";
+                                        }
+                                    }
+                                } else {
+                                    for (i = 0; i < feature.cluster.length; i++) {
+                                        toolFeature = feature.cluster[i];
+                                        if (toolFeature.attributes.vesselname === highlightVesselName) {
+                                            return "#00FF00";
+                                        }
+                                    }
+                                }
+
+                                return "#00007A";
+                            }
+                        }
+
+                        if (!feature.hasOwnProperty("cluster")) {
+                            var color = "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+
+                            return color;
+                        } else {
                             return "#00007A";
                         }
                     },
-                    fillColor: function(feature) {
-                        if(highlightVesselName != null && highlightVesselName != "" && feature.attributes.vesselname === highlightVesselName) {
-                            return "#00FF00";
+                    fillColor: function (feature) {
+                        if (highlightVesselName != null) {
+                            if (!feature.hasOwnProperty("cluster")) {
+                                if (feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null)) {
+                                    return "#00FF00";
+                                }
+                            } else {
+                                return "#00007A";
+                            }
                         }
-                        if(feature.attributes.tooltypename === "Long line") {
-                            return "#F30F0F";
-                        } else if(feature.attributes.tooltypename === "Nets") {
-                            return "#0881D7";
-                        }  else if(feature.attributes.tooltypename === "Crab pot") {
-                            return "#FF6500";
-                        }  else if(feature.attributes.tooltypename === "Seismic") {
-                            return "#A06C49";
-                        }  else if(feature.attributes.tooltypename === "Danish- / Purse- Seine") {
-                            return "#9933CC";
-                        }  else if(feature.attributes.tooltypename === "Sensor / Cable") {
-                            return "#75A103";
-                        }  else if(feature.attributes.tooltypename === "Mooring system") {
-                            return "#FF42E5";
-                        }  else if(feature.attributes.tooltypename === "Unknown") {
-                            return "#000000";
-                        } else if(feature.hasOwnProperty('cluster')){
-                            var i;
-                            for(i = 0; i < feature.cluster.length; index++)
 
-
+                        if (!feature.hasOwnProperty('cluster')) {
+                            var color = "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+                            return color;
+                        } else {
                             return "#00007A";
                         }
                     }

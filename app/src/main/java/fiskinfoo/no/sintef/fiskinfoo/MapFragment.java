@@ -922,9 +922,6 @@ public class MapFragment extends Fragment {
 
             for (int i = 0; i < toolsArray.length(); i++) {
                 JSONObject feature = toolsArray.getJSONObject(i);
-
-                System.out.println("This is the vessel name: " + feature.getJSONObject("properties").getString("vesselname"));
-
                 String vesselName = (feature.getJSONObject("properties").getString("vesselname") != null && !feature.getJSONObject("properties").getString("vesselname").equals("null")) ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
                 List<Integer> toolsIdList = toolIdMap.get(vesselName) != null ? toolIdMap.get(vesselName) : new ArrayList<Integer>();
 
@@ -969,14 +966,8 @@ public class MapFragment extends Fragment {
                             toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
                         }
 
-                        if(toolFeature.properties.setupdatetime == null) {
-                            System.out.println("This is to say that setupdatetime is null: ");
-                        }
-
                         toolSetDateString = toolFeature.properties.setupdatetime != null ? toolFeature.properties.setupdatetime : "2038-00-00T00:00:00";
                         toolSetDate = simpleDateFormat.parse(toolSetDateString);
-
-                        System.out.println("tool date is now: " + toolSetDateString);
 
                     } catch (JSONException | ParseException e) {
                         dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
@@ -989,11 +980,7 @@ public class MapFragment extends Fragment {
                     long toolTime = System.currentTimeMillis() - toolSetDate.getTime();
                     long highlightCutoff = ((long)getResources().getInteger(R.integer.milliseconds_in_a_day)) * ((long)getResources().getInteger(R.integer.days_to_highlight_active_tool));
 
-                    System.out.println("current time is now: " + System.currentTimeMillis() + ", tool date is: " + toolSetDate.getTime());
-                    System.out.println("Time difference between now and tool set date: " + toolTime + ", trigger time is: " + highlightCutoff);
-
                     if(toolTime > highlightCutoff) {
-                        System.out.println("Totally triggered ");
                         int colorId = ContextCompat.getColor(getActivity(), R.color.error_red);
                         row.setDateTextViewTextColor(colorId);
                     }
@@ -1009,7 +996,7 @@ public class MapFragment extends Fragment {
         viewInMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String vesselName = inputField.getTag().toString().equals(getString(R.string.vessel_name_unknown)) ? inputField.getTag().toString() : "null";
+                String vesselName = inputField.getTag().toString();
                 highlightToolsInMap(vesselName);
 
                 dialog.dismiss();
