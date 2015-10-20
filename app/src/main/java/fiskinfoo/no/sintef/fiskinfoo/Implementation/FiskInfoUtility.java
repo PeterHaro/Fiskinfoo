@@ -401,6 +401,36 @@ public class FiskInfoUtility {
         return date1.compareTo(date2);
     }
 
+    /**
+     * Takes either a latitude or longitude coordinate and returns the same coordinate as DMS (Degrees, minutes, seconds)
+     * @param coord
+     *      The coordinate to convert
+     * @return
+     *      The given coordinate in DMS format
+     */
+    public static String decimalToDMS(double coord) {
+        String output, degrees, minutes, seconds;
+
+        double mod = coord % 1;
+        int intPart = (int) coord;
+
+        degrees = String.valueOf(intPart);
+        coord = mod * 60;
+        mod = coord % 1;
+        intPart = (int) coord;
+        minutes = String.valueOf(intPart);
+        coord = mod * 60;
+        intPart = (int) coord;
+        seconds = String.valueOf(intPart);
+
+        // e.g. output = "87/1,43/1,41/1"
+        // output = degrees + "/1," + minutes + "/1," + seconds + "/1";
+
+        // Standard output of D°M′S″
+        output = degrees + "°" + minutes + "'" + seconds + "\"";
+
+        return output;
+    }
 
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());

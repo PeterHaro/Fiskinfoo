@@ -171,7 +171,25 @@
                             if(type.toLowerCase() === "LineString".toLowerCase()) {
                                 retVal = map.getZoom() > 7 ? 10 : 1;
                             } else if(type.toLowerCase() === "Point".toLowerCase()) {
-                                retVal = 1;
+                                if (highlightVesselName != null && feature.hasOwnProperty("cluster")) {
+                                    if (highlightVesselName === "Ukjent fartøy") {
+                                        for (i = 0; i < feature.cluster.length; i++) {
+                                            toolFeature = feature.cluster[i];
+                                            if (toolFeature.attributes.vesselname === null) {
+                                                return 3;
+                                            }
+                                        }
+                                    } else {
+                                        for (i = 0; i < feature.cluster.length; i++) {
+                                            toolFeature = feature.cluster[i];
+                                            if (toolFeature.attributes.vesselname === highlightVesselName) {
+                                                return 3;
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    retVal = 1;
+                                }
                             } else {
                                 retVal = 4;
                             }

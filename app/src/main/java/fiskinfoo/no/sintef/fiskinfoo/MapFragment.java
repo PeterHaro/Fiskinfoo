@@ -945,6 +945,12 @@ public class MapFragment extends Fragment {
             return;
         }
 
+        if(searchToolsButton.getTag() != null) {
+            inputField.requestFocus();
+            inputField.setText(searchToolsButton.getTag().toString());
+            inputField.selectAll();
+        }
+
         inputField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -993,6 +999,7 @@ public class MapFragment extends Fragment {
 
                 viewInMapButton.setEnabled(true);
                 inputField.setTag(selectedVesselName);
+                searchToolsButton.setTag(selectedVesselName);
                 jumpToBottomButton.setVisibility(View.VISIBLE);
                 jumpToBottomButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1034,6 +1041,7 @@ public class MapFragment extends Fragment {
                 String nullString = null;
                 browser.loadUrl("javascript:highlightTools(" + nullString + ")");
                 clearHighlightingButton.setVisibility(View.GONE);
+                searchToolsButton.setTag(null);
             }
         });
     }

@@ -23,6 +23,7 @@ import java.util.List;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LineFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.PointFeature;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class ToolSearchResultRow extends BaseTableRow {
@@ -79,17 +80,19 @@ public class ToolSearchResultRow extends BaseTableRow {
         String toolType = feature.properties.tooltypename != null ? context.getString(R.string.tool_type_with_colon) + " " + feature.properties.tooltypename : context.getString(R.string.tool_type_na);
         String vesselNumber = feature.properties.vesselphone != null ? context.getString(R.string.vessel_phone) + " " + feature.properties.vesselphone : context.getString(R.string.vessel_phone_na);
 
+
+
         if(feature instanceof PointFeature) {
             sb.append("\n");
-            sb.append(((PointFeature)feature).geometry.coordinates[0]);
+            sb.append(FiskInfoUtility.decimalToDMS(((PointFeature)feature).geometry.coordinates[0]));
             sb.append(", ");
-            sb.append(((PointFeature)feature).geometry.coordinates[1]);
+            sb.append(FiskInfoUtility.decimalToDMS(((PointFeature)feature).geometry.coordinates[1]));
         } else {
             for(List<Double> coordinates : ((LineFeature)feature).geometry.coordinates) {
                 sb.append("\n(");
-                sb.append(coordinates.get(0));
-                sb.append(", ");
-                sb.append(coordinates.get(1));
+                sb.append(FiskInfoUtility.decimalToDMS(coordinates.get(0)));
+                sb.append(" , ");
+                sb.append(FiskInfoUtility.decimalToDMS(coordinates.get(1)));
                 sb.append("),");
             }
         }
