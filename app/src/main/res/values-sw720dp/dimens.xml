@@ -239,14 +239,18 @@ limitations under the License.
     <!-- Register tools fragment -->
     <dimen name="catch_log_circular_button_width">100dp</dimen>
     <dimen name="catch_log_circular_button_height">80dp</dimen>
-    <dimen name="catch_log_circular_button_horisontal_margin">22dp</dimen>
+    <dimen name="catch_log_circular_button_horizontal_margin">22dp</dimen>
     <dimen name="catch_log_start_button_top_margin">30dp</dimen>
     <dimen name="catch_log_location_data_vertical_margin_to_circular_button">38dp</dimen>
     <dimen name="catch_log_location_data_vertical_margin_internal">5dp</dimen>
-    <dimen name="catch_log_left_container_horisontal_margin">30dp</dimen>
+    <dimen name="catch_log_left_container_horizontal_margin">30dp</dimen>
     <dimen name="catch_log_square_button_size">120dp</dimen>
     <dimen name="catch_log_square_button_vertical_margin">10dp</dimen>
-    <dimen name="catch_log_square_button_horisontal_margin">10dp</dimen>
+    <dimen name="catch_log_square_button_horizontal_margin">10dp</dimen>
+    <dimen name="catch_log_header_date_picker_button_width">60dp</dimen>
+    <dimen name="catch_log_header_date_picker_button_height">50dp</dimen>
+    <dimen name="catch_log_header_date_picker_button_margin_left">5dp</dimen>
+    <dimen name="catch_log_header_date_container_margin_left">10dp</dimen>
 
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>

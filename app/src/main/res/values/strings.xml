@@ -235,6 +235,8 @@ limitations under the License.
     <string name="register_from_olex">Registrer ruter fra OleX</string>
     <!-- TODO: FIXME: Important! Figure out whether this actually goes to Fiskeri Direktoratet and change if not -->
     <string name="dispatch_tools">Send redskapsliste til Direktoratet</string>
+    <!-- TODO: Using the following string until the above is sorted -->
+    <string name="report_tools">Rapporter redskaper</string>
     <string name="tool_type">Redskapstype</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>

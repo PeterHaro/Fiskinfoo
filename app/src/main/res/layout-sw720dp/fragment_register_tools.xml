@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/catch_log_left_container_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/catch_log_left_container_horisontal_margin"
-        android:layout_marginRight="@dimen/catch_log_left_container_horisontal_margin" >
+        android:layout_marginLeft="@dimen/catch_log_left_container_horizontal_margin"
+        android:layout_marginRight="@dimen/catch_log_left_container_horizontal_margin">
 
         <fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle
             android:id="@+id/register_tool_set_tool"
             android:layout_width="@dimen/catch_log_circular_button_width"
             android:layout_height="@dimen/catch_log_circular_button_height"
-            android:layout_alignParentLeft="true"
-            android:gravity="center_vertical|center_horizontal"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/catch_log_start_button_top_margin"
+            android:gravity="center_vertical|center_horizontal"
             android:text="@string/shoot_tool"/>
 
         <fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle
             android:id="@+id/finish_tool_button"
             android:layout_width="@dimen/catch_log_circular_button_width"
             android:layout_height="@dimen/catch_log_circular_button_height"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_alignLeft="@+id/register_tool_set_tool"
+            android:layout_alignStart="@+id/register_tool_set_tool"
             android:layout_below="@+id/register_tool_set_tool"
-            android:layout_marginTop="@dimen/catch_log_circular_button_horisontal_margin"
-            android:text="@string/finish_tool_text" />
+            android:layout_marginTop="@dimen/catch_log_circular_button_horizontal_margin"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/finish_tool_text"/>
 
         <fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle
             android:id="@+id/register_tool_register_tool"
             android:layout_width="@dimen/catch_log_circular_button_width"
             android:layout_height="@dimen/catch_log_circular_button_height"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_alignLeft="@+id/register_tool_set_tool"
+            android:layout_alignStart="@+id/register_tool_set_tool"
             android:layout_below="@+id/finish_tool_button"
-            android:layout_marginTop="@dimen/catch_log_circular_button_horisontal_margin"
-            android:text="@string/register_tool_complete" />
+            android:layout_marginTop="@dimen/catch_log_circular_button_horizontal_margin"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/register_tool_complete"/>
 
         <fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle
             android:id="@+id/register_tool_register_from_olex"
             android:layout_width="@dimen/catch_log_circular_button_width"
             android:layout_height="@dimen/catch_log_circular_button_height"
-            android:layout_alignLeft="@+id/register_tool_set_tool"
+            android:layout_alignStart="@+id/register_tool_set_tool"
             android:layout_below="@+id/register_tool_register_tool"
+            android:layout_marginTop="@dimen/catch_log_circular_button_horizontal_margin"
             android:gravity="center_vertical|center_horizontal"
-            android:layout_marginTop="@dimen/catch_log_circular_button_horisontal_margin"
-            android:text="@string/register_from_olex" />
+            android:text="@string/register_from_olex"/>
 
         <fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Material.ButtonRectangle
             android:id="@+id/register_tool_dispatch_tools"
             android:layout_width="120dp"
             android:layout_height="90dp"
-            android:layout_alignLeft="@+id/register_tool_register_from_olex"
-            android:gravity="center_vertical|center_horizontal"
+            android:layout_alignStart="@+id/register_tool_register_from_olex"
             android:layout_below="@+id/register_tool_register_from_olex"
-            android:layout_marginTop="@dimen/catch_log_circular_button_horisontal_margin"
-            android:text="@string/dispatch_tools" />
+            android:layout_marginTop="@dimen/catch_log_circular_button_horizontal_margin"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/dispatch_tools"/>
 
         <!-- top text view -->
 
@@ -69,12 +69,12 @@
             android:id="@+id/catch_log_date_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/register_tool_register_tool"
-            android:layout_alignRight="@+id/register_tool_register_tool"
+            android:layout_alignEnd="@+id/register_tool_register_tool"
+            android:layout_alignStart="@+id/register_tool_register_tool"
             android:layout_below="@+id/register_tool_dispatch_tools"
             android:layout_marginTop="@dimen/catch_log_location_data_vertical_margin_to_circular_button"
             android:gravity="center_horizontal"
-            android:text="@string/placeholder_string" />
+            android:text="@string/placeholder_string"/>
 
         <!-- middle text view -->
 
@@ -82,12 +82,12 @@
             android:id="@+id/gps_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/register_tool_register_tool"
-            android:layout_alignRight="@+id/register_tool_register_tool"
+            android:layout_alignEnd="@+id/register_tool_register_tool"
+            android:layout_alignStart="@+id/register_tool_register_tool"
             android:layout_below="@+id/catch_log_date_time"
             android:layout_marginTop="@dimen/catch_log_location_data_vertical_margin_internal"
             android:gravity="center_horizontal"
-            android:text="@string/placeholder_string" />
+            android:text="@string/placeholder_string"/>
 
         <!-- bottom text view -->
 
@@ -95,12 +95,12 @@
             android:id="@+id/catch_log_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/register_tool_register_tool"
-            android:layout_alignRight="@+id/register_tool_register_tool"
+            android:layout_alignEnd="@+id/register_tool_register_tool"
+            android:layout_alignStart="@+id/register_tool_register_tool"
             android:layout_below="@+id/gps_text_view"
             android:layout_marginTop="@dimen/catch_log_location_data_vertical_margin_internal"
             android:gravity="center_horizontal"
-            android:text="@string/placeholder_string" />
+            android:text="@string/placeholder_string"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -108,9 +108,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/catch_log_left_container_layout" >
+        android:layout_toEndOf="@+id/catch_log_left_container_layout">
 
         <!-- background colour and hard coded height only to see that layout is roughly right -->
 
@@ -118,54 +118,63 @@
             android:id="@+id/catch_log_main_container_top"
             android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/rectangle_boarder" >
-
-            <TextView
-                android:id="@+id/catch_log_header_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:text="@string/date_colon"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/catch_log_header_date_field"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/catch_log_header_date"
-                android:text="@string/placeholder_string"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <Button
-                android:id="@+id/catch_log_calendar_picker"
-                android:layout_width="60dp"
-                android:layout_height="50dp"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@+id/catch_log_header_date_field"
-                android:background="@drawable/calendar" />
+            android:background="@drawable/rectangle_boarder">
 
             <Button
                 android:id="@+id/catch_log_header_arrow_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:background="@drawable/arrow_left" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/arrow_left"/>
 
             <Button
                 android:id="@+id/catch_log_header_arrow_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@+id/catch_log_header_arrow_left"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/catch_log_header_arrow_left"
                 android:background="@drawable/arrow_right"
-                android:visibility="invisible" />
+                android:visibility="invisible"/>
+
+            <RelativeLayout
+                android:id="@+id/catch_log_header_date_container"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/catch_log_header_date_container_margin_left"
+                android:layout_toEndOf="@+id/catch_log_header_arrow_right">
+
+                <TextView
+                    android:id="@+id/catch_log_header_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/date_colon"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <TextView
+                    android:id="@+id/catch_log_header_date_field"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/catch_log_header_date"
+                    android:text="@string/placeholder_string"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/catch_log_calendar_picker"
+                android:layout_width="@dimen/catch_log_header_date_picker_button_width"
+                android:layout_height="@dimen/catch_log_header_date_picker_button_height"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/catch_log_header_date_picker_button_margin_left"
+                android:layout_toEndOf="@+id/catch_log_header_date_container"
+                android:background="@drawable/calendar"/>
+
         </RelativeLayout>
 
         <!-- background colour and hard coded height only to see that layout is roughly right -->
@@ -175,12 +184,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/catch_log_main_container_top"
-            android:background="@drawable/boarder" >
+            android:background="@drawable/boarder">
 
             <TableLayout
                 android:id="@+id/haul_table"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content">
             </TableLayout>
         </ScrollView>
     </RelativeLayout>
