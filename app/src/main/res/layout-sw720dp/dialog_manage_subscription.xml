@@ -121,6 +121,15 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
+                android:id="@+id/manage_subscription_cancel_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/cancel"/>
+
+            <Button
                 android:id="@+id/manage_subscription_update_button"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
@@ -129,14 +138,6 @@ limitations under the License.
                 android:layout_weight="1.0"
                 android:text="@string/update"/>
 
-            <Button
-                android:id="@+id/manage_subscription_cancel_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0.0dip"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1.0"
-                android:text="@string/cancel"/>
         </LinearLayout>
 
     </RelativeLayout>

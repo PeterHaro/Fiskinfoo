@@ -75,6 +75,15 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
+                android:id="@+id/search_tools_dismiss_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/ok"/>
+
+            <Button
                 android:id="@+id/search_tools_view_in_map_button"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
@@ -83,15 +92,6 @@ limitations under the License.
                 android:layout_weight="1.0"
                 android:enabled="false"
                 android:text="@string/show_on_map"/>
-
-            <Button
-                android:id="@+id/search_tools_dismiss_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0.0dip"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1.0"
-                android:text="@string/ok"/>
         </LinearLayout>
 
     </RelativeLayout>

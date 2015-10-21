@@ -35,18 +35,19 @@
                     android:text="@string/nnew"/>
 
                 <Button
+                    android:id="@+id/fd_button_cancel"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7"
+                    android:text="@string/cancel"/>
+
+                <Button
                     android:id="@+id/fd_button_select"
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
                     android:layout_weight=".7"
                     android:text="@string/select"/>
 
-                <Button
-                    android:id="@+id/fd_button_cancel"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".7"
-                    android:text="@string/cancel"/>
             </LinearLayout>
         </LinearLayout>
 

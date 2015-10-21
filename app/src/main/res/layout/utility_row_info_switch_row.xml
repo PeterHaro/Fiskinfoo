@@ -22,6 +22,17 @@ limitations under the License.
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/info_switch_row_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/switch_info_row_text_view_margin_right"
+            android:layout_marginStart="@dimen/switch_info_row_text_view_margin_left"
+            android:layout_toStartOf="@+id/info_switch_row_switch"
+            android:text="some other text"/>
+
         <Switch
             android:id="@+id/info_switch_row_switch"
             android:layout_width="wrap_content"
@@ -31,16 +42,6 @@ limitations under the License.
             android:layout_marginLeft="@dimen/switch_info_row_switch_margin_left"
             android:layout_marginRight="@dimen/switch_info_row_switch_margin_right"
             android:text="Some text"/>
-
-        <TextView
-            android:id="@+id/info_switch_row_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/switch_info_row_text_view_margin_right"
-            android:layout_marginStart="@dimen/switch_info_row_text_view_margin_left"
-            android:text="some other text"/>
 
     </RelativeLayout>
 

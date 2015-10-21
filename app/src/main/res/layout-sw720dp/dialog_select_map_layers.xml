@@ -67,6 +67,15 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
+                android:id="@+id/select_map_layers_cancel_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/cancel"/>
+
+            <Button
                 android:id="@+id/select_map_layers_update_map_button"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0.0dip"
@@ -75,14 +84,6 @@ limitations under the License.
                 android:layout_weight="1.0"
                 android:text="@string/ok"/>
 
-            <Button
-                android:id="@+id/select_map_layers_cancel_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0.0dip"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1.0"
-                android:text="@string/cancel"/>
         </LinearLayout>
 
     </RelativeLayout>

@@ -103,14 +103,14 @@ limitations under the License.
             android:paddingTop="5.0dip">
 
             <Button
-                android:id="@+id/create_proximity_alert_create_alert_watcher_button"
+                android:id="@+id/create_proximity_alert_cancel_button"
                 style="?android:attr/buttonBarStyle"
+
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
-
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/create_proximity_checker"/>
+                android:text="@string/cancel"/>
 
             <Button
                 android:id="@+id/create_proximity_alert_stop_existing_alert_button"
@@ -124,14 +124,14 @@ limitations under the License.
                 android:visibility="gone"/>
 
             <Button
-                android:id="@+id/create_proximity_alert_cancel_button"
+                android:id="@+id/create_proximity_alert_create_alert_watcher_button"
                 style="?android:attr/buttonBarStyle"
-
                 android:layout_width="0.0dip"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/cancel"/>
+                android:text="@string/create_proximity_checker"/>
+
         </LinearLayout>
     </RelativeLayout>
 
