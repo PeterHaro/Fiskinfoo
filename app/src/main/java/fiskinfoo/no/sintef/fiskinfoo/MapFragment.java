@@ -223,11 +223,13 @@ public class MapFragment extends Fragment {
 
         });
 
-        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+        if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
-            dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+            if((!new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+                dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+            }
         }
     }
 
@@ -283,8 +285,9 @@ public class MapFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-
             }
+
+            System.out.println("Sent following layer: " + fileName);
 
             return jsonString.toString();
         }
@@ -773,7 +776,7 @@ public class MapFragment extends Fragment {
     }
 
     public void updateMap() {
-        if((new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+        if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
             ((MainActivity)getActivity()).toggleNetworkErrorTextView(true);
         } else {
