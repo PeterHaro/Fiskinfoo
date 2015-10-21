@@ -92,6 +92,7 @@ limitations under the License.
                 android:layout_weight="1.0"
                 android:enabled="false"
                 android:text="@string/show_on_map"/>
+            
         </LinearLayout>
 
     </RelativeLayout>
