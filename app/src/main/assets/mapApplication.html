@@ -456,7 +456,10 @@
 
         function toggleLayerVisibilityByName(name, visibility) {
             var layer = map.getLayersByName(name)[0];
-            layer.setVisibility(visibility);
+
+            if(layer != null) {
+                layer.setVisibility(visibility);
+            }
         }
 
         function populateAllAvailableWmsLayers() {
@@ -647,7 +650,7 @@
                     position = "Posisjon: " + "Ikke tilgjengelig";
                 }
 
-                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
                 feature.geometry.getBounds().getCenterLonLat(),
                     null, "<p>Redskapsinformasjon</p> <p> " + vesselName + "</p>" + "<p>" + phoneNumber + "</p>" + "<p>" + toolDate + "</p>" + "<p>" + toolType + "</p>" + "<p>" + position + "</p>" + "<p></p>", null, true, onPopupClose);
                 popup.panMapIfOutOfView = false;
@@ -656,7 +659,7 @@
                 map.addPopup(popup);
             } else {
 
-                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
                 feature.geometry.getBounds().getCenterLonLat(),
                     null, "Dette er en gruppering av redskaper, zoom inn for å se detaljer om hvert redskap.", null, true, onPopupClose);
                 popup.panMapIfOutOfView = false;
@@ -709,7 +712,7 @@
                 position = "<p>" + "Posisjon: " + "Ikke tilgjengelig" + "</p>";
             }
 
-            popup = new OpenLayers.Popup.FramedCloud("Seismikkinformasjon",
+            popup = new OpenLayers.Popup.FramedCloud("Informasjon",
             feature.geometry.getBounds().getCenterLonLat(),
                 null, "<p>Seismikkinformasjon</p>" + surmaintyp + sensorType + startDate + endDate + position, null, true, onPopupClose);
             popup.panMapIfOutOfView = false;
@@ -766,7 +769,7 @@
                     position = "<p>Posisjon: Ikke tilgjengelig</p>";
                 }
 
-                popup = new OpenLayers.Popup.FramedCloud("Seismikkinformasjon",
+                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
                 feature.geometry.getBounds().getCenterLonLat(),
                     null, "<p>Seismikkinformasjon</p>" + facilityName + facilityType + waterDepth + facilityFuncion + dateStartup + lifetime + position, null, true, onPopupClose);
                 popup.panMapIfOutOfView = false;
@@ -774,7 +777,7 @@
                 feature.popup = popup;
                 map.addPopup(popup);
             } else {
-                popup = new OpenLayers.Popup.FramedCloud("Seismikkinformasjon",
+                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
                 feature.geometry.getBounds().getCenterLonLat(),
                     null, "<p>Dette er en gruppering av plattformer, zoom inn for å se info om individuelle platformer.</p>", null, true, onPopupClose);
                 popup.panMapIfOutOfView = false;
@@ -862,11 +865,11 @@
         border-radius: 5px 0 0 0;
         }
 
-        #Redskapsinformasjon_close {
+        #Informasjon_close {
         background-color: cornflowerblue;
         }
 
-        #Redskapsinformasjon_close:before {
+        #Informasjon_close:before {
         content: "X";
         text-align: center;
         }

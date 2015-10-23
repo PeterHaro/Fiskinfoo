@@ -230,14 +230,7 @@ public class MapFragment extends Fragment {
 
         });
 
-        if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
-            browser.loadUrl("file:///android_asset/mapApplication.html");
-        } else {
-            browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
-            if((!new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
-                dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
-            }
-        }
+        updateMap();
     }
 
     public class JavaScriptInterface {
@@ -354,7 +347,7 @@ public class MapFragment extends Fragment {
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
         LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
         for (LayerAndVisibility layer : layers) {
-            if (layer.name.equals("Grunnkart")) {
+            if (layer.name.equals("Grunnkart") || layer.name.contains("OpenLayers_Control")) {
                 continue;
             }
             boolean isActive;
@@ -786,7 +779,10 @@ public class MapFragment extends Fragment {
             ((MainActivity)getActivity()).toggleNetworkErrorTextView(true);
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
-            dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+
+            if((!new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
+                dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+            }
         }
     }
 
