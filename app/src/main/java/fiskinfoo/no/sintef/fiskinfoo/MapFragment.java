@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -195,6 +196,12 @@ public class MapFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        browser.reload();
+        super.onConfigurationChanged(newConfig);
+    }
+
     @SuppressLint({"SetJavaScriptEnabled"})
     private void configureWebParametersAndLoadDefaultMapApplication() {
         if(getView() == null) {
@@ -278,13 +285,13 @@ public class MapFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                    if(bufferReader != null) {
-                        try {
-                            bufferReader.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                if (bufferReader != null) {
+                    try {
+                        bufferReader.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                }
             }
 
             System.out.println("Sent following layer: " + fileName);
@@ -302,7 +309,6 @@ public class MapFragment extends Fragment {
     private void getLayersAndVisibility() {
         browser.loadUrl("javascript:getLayersAndState()");
     }
-
 
     private class barentswatchFiskInfoWebClient extends WebViewClient {
         @Override
@@ -333,7 +339,6 @@ public class MapFragment extends Fragment {
                 }
             }, 3000);
         }
-
     }
 
     //
