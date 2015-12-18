@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.register_tool).setTag(RegisterToolsFragment.TAG));
+//        tl.addTab(tl.newTab().setText(R.string.register_tool).setTag(RegisterToolsFragment.TAG));
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 

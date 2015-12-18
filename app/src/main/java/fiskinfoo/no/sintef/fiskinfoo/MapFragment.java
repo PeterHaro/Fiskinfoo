@@ -545,6 +545,10 @@ public class MapFragment extends Fragment {
                                     Log.d(TAG, "line " + line);
                                 }
 
+                                if(convertedLine[0].startsWith("3sl")) {
+                                    continue;
+                                }
+
                                 if (convertedLine[3].equalsIgnoreCase("Garnstart") && startSet) {
                                     if (shape.size() == 1) {
                                         // Point
@@ -589,6 +593,7 @@ public class MapFragment extends Fragment {
                         } catch (ArrayIndexOutOfBoundsException e) {
                             Log.e(TAG, "Error when trying to serialize file.");
                             Toast error = Toast.makeText(getActivity(), "Ingen redskaper i området du definerte", Toast.LENGTH_LONG);
+                            e.printStackTrace();
                             error.show();
                             return;
                         } finally {
