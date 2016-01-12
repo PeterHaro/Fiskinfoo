@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
 
         linearLayout.addView(toggleOfflineModeRow.getView());
         linearLayout.addView(setDownloadPathButtonRow.getView());
-        linearLayout.addView(settingsButtonRow.getView());
+//        linearLayout.addView(settingsButtonRow.getView());
         linearLayout.addView(logOutButtonRow.getView());
 
         closeDialogButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));

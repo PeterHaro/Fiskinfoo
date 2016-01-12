@@ -168,6 +168,8 @@ limitations under the License.
     <string name="log_out">Logg ut</string>
     <string name="confirm_log_out">Er du sikker på at du vil logge ut?</string>
     <string name="title_activity_file_dialog">FileDialog</string>
+    <string name="register_user_account_hyperlink">&lt;a href="https://www.barentswatch.no/LandingPage/"&gt;Registrer bruker.&lt;/a&gt;</string>
+    <string name="forgot_account_password_hyperlink">&lt;a href="https://www.barentswatch.no/s/Logg-inn/?ReturnUrl=/MinSide/"&gt;Glemt passord.&lt;/a&gt;</string>
 
     <!-- Cardview fragment -->
     <string name="cardview_contents">This is a CardView widget. CardView widgets can have

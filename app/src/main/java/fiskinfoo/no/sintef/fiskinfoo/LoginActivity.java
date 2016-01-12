@@ -26,7 +26,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -69,6 +71,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private View mProgressView;
     private View mLoginFormView;
     private TextView mErrorTextView;
+    private TextView mRegisterUserTextView;
+    private TextView mForgotPasswordTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         mErrorTextView = (TextView) findViewById(R.id.login_error_text_field);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email_sign_in_edit_text);
         mPasswordView = (EditText) findViewById(R.id.password_sign_in_edit_text);
-
+        mRegisterUserTextView = (TextView) findViewById(R.id.sign_up_text_view);
+        mForgotPasswordTextView = (TextView) findViewById(R.id.forgotten_password_text_view);
         //Skip login form if the user requested it
         user = new User();
 
@@ -113,6 +118,14 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 // TODO: recover password
             }
         });
+
+        mRegisterUserTextView.setClickable(true);
+        mRegisterUserTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        mRegisterUserTextView.setText(Html.fromHtml(getString(R.string.register_user_account_hyperlink)));
+
+        mForgotPasswordTextView.setClickable(true);
+        mForgotPasswordTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        mForgotPasswordTextView.setText(Html.fromHtml(getString(R.string.forgot_account_password_hyperlink)));
 
         TextView signUpTextView = (TextView) findViewById(R.id.sign_up_text_view);
         signUpTextView.setOnClickListener(new View.OnClickListener() {

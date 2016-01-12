@@ -409,21 +409,7 @@
                         isBaseLayer: false,
                         yx: { 'EPSG:4326': true }
                     }
-                ), new OpenLayers.Layer.WMS(
-            "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
-            {
-                LAYERS: 'peter:points',
-                transparent: true,
-                STYLES: '',
-                format: format
-            },
-            {
-                singleTile: true,
-                ratio: 1,
-                isBaseLayer: false,
-                yx: { 'EPSG:4326': true }
-            }
-        )];
+                )];
             return layers;
         }
 
@@ -491,20 +477,6 @@
                     LAYERS: 'bwdev:npdsurveyplanned_latest',
                     transparent: true,
                     STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.WMS(
-                "Polart lavtrykk", "http://10.218.113.70:8080/geoserver/peter/wms",
-                {
-                    LAYERS: 'peter:points',
-                    transparent: true,
-                    STYLES: 'strike_probability',
                     format: format
                 },
                 {
