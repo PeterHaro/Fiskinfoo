@@ -244,6 +244,9 @@ public class FiskInfoUtility {
             case "iceedge":
                 retVal = R.drawable.ikon_is_tjenester;
                 break;
+            case "icechart":
+                retVal = R.drawable.ikon_is_tjenester;
+                break;
             case "npdfacility":
                 retVal = R.drawable.ikon_olje_og_gass;
                 break;

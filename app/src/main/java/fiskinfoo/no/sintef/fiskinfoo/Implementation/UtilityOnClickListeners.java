@@ -227,13 +227,14 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 if(iconId != -1) {
                     dialog = new UtilityDialogs().getDialogWithTitleIcon(v.getContext(), R.layout.dialog_manage_subscription, subscription.Name, iconId);
                 } else {
-                    dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_download_map_layer, subscription.Name);
+                    dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_manage_subscription, subscription.Name);
                 }
 
                 final Switch subscribedSwitch = (Switch) dialog.findViewById(R.id.manage_subscription_switch);
                 final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);
                 final LinearLayout intervalsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_intervals_container);
                 final EditText subscriptionEmailEditText = (EditText) dialog.findViewById(R.id.manage_subscription_email_edit_text);
+
                 final Button subscribeButton = (Button) dialog.findViewById(R.id.manage_subscription_update_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 

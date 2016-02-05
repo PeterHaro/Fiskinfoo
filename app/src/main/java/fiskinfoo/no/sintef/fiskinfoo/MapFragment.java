@@ -972,7 +972,7 @@ public class MapFragment extends Fragment {
 
                 for(int toolId : selectedTools) {
                     JSONObject feature;
-                    Feature toolFeature;
+                            Feature toolFeature;
 
                     try {
                         feature = toolsArray.getJSONObject(toolId);

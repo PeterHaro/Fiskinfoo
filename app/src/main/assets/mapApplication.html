@@ -329,7 +329,7 @@
                  new OpenLayers.Layer.WMS(
                     "Redskap", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
-                        LAYERS: 'bwdev:fishingfacility_latest',
+                        LAYERS: 'bw:fishingfacility_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -342,7 +342,7 @@
                     }), new OpenLayers.Layer.WMS(
                     "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
-                        LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                        LAYERS: 'bw:waveforecast_area_iso_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -356,7 +356,7 @@
                 ), new OpenLayers.Layer.WMS(
                     "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
-                        LAYERS: 'bwdev:iceedge_latest',
+                        LAYERS: 'bw:iceedge_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -384,7 +384,7 @@
                 ), new OpenLayers.Layer.WMS(
                     "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
-                        LAYERS: 'bwdev:npdsurveyongoing_latest',
+                        LAYERS: 'bw:npdsurveyongoing_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -398,7 +398,7 @@
                 ), new OpenLayers.Layer.WMS(
                     "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
                     {
-                        LAYERS: 'bwdev:npdsurveyplanned_latest',
+                        LAYERS: 'bw:npdsurveyplanned_latest',
                         transparent: true,
                         STYLES: '',
                         format: format
@@ -418,7 +418,7 @@
                 new OpenLayers.Layer.WMS(
                 "Bølgevarsel", "https://geo.barentswatch.no/geoserver/bw/wms",
                 {
-                    LAYERS: 'bwdev:waveforecast_area_iso_latest',
+                    LAYERS: 'bw:waveforecast_area_iso_latest',
                     transparent: true,
                     STYLES: '',
                     format: format
@@ -432,7 +432,7 @@
             ), new OpenLayers.Layer.WMS(
                 "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
                 {
-                    LAYERS: 'bwdev:iceedge_latest',
+                    LAYERS: 'bw:iceedge_latest',
                     transparent: true,
                     STYLES: '',
                     format: format
@@ -460,7 +460,7 @@
             ), new OpenLayers.Layer.WMS(
                 "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
                 {
-                    LAYERS: 'bwdev:npdsurveyongoing_latest',
+                    LAYERS: 'bw:npdsurveyongoing_latest',
                     transparent: true,
                     STYLES: '',
                     format: format
@@ -474,7 +474,21 @@
             ), new OpenLayers.Layer.WMS(
                 "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
                 {
-                    LAYERS: 'bwdev:npdsurveyplanned_latest',
+                    LAYERS: 'bw:npdsurveyplanned_latest',
+                    transparent: true,
+                    STYLES: '',
+                    format: format
+                },
+                {
+                    singleTile: true,
+                    ratio: 1,
+                    isBaseLayer: false,
+                    yx: { 'EPSG:4326': true }
+                }
+            ), new OpenLayers.Layer.WMS(
+                "Iskonsentrasjon", "https://geo.barentswatch.no/geoserver/bw/wms",
+                {
+                    LAYERS: 'bw:icechart_latest',
                     transparent: true,
                     STYLES: '',
                     format: format

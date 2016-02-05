@@ -29,6 +29,7 @@ limitations under the License.
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
     <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
+    <string name="position">Posisjon</string>
 
     <string name="date_colon">Dato:</string>
 
@@ -80,6 +81,9 @@ limitations under the License.
     <string name="search_tools_init_error">Feil</string>
     <string name="search_tools_init_info">Det oppstod en feil under opprettingen av søkefeltet.</string>
     <string name="jump_to_bottom">Hopp til slutten</string>
+    <string name="tool_set_date_placeholder">Dato</string>
+    <string name="tool">Redskap</string>
+
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>
@@ -242,7 +246,7 @@ limitations under the License.
     <string name="tool_type">Redskapstype</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>
-    <string name="vessel_name">Båtnavn</string>
+    <string name="vessel_name">Fartøynavn</string>
     <string name="enter_vessel_name">Venligst oppgi navnet på fartøyet</string>
     <string name="phone_number">Telefonnummer</string>
     <string name="enter_phone_number">Venligst oppgi telefonnummeret</string>
