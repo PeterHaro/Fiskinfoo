@@ -52,6 +52,8 @@
                 map.addLayers(populateAuthenticatedUser());
                 var mToken = getToken();
                 corsRequest('https://www.barentswatch.no/api/v1/geodata/download/fishingfacility?format=JSON', 'GET', '', parseGeoJsonResponse, corsErrBack, mToken);
+                corsRequest('https://www.barentswatch.no/api/v1/geodata/download/icechart?format=JSON', 'GET', '', parseIceChartGeoJsonResponse, corsErrBack, null);
+
             } else {
                 map.addLayers(populateAllAvailableWmsLayers());
             }
@@ -289,6 +291,93 @@
             map.addControl(selectFeature);
         }
 
+
+        function parseIceChartGeoJsonResponse(data) {
+            geoJson = data;
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var toolStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+            toolStyle.fillColor = '${fillColor}';
+            toolStyle.fill = true;
+            toolStyle.strokeWidth = 0
+            toolStyle.fillOpacity = '${fillOpacity}';
+            var toolsStyleLayer = new OpenLayers.Style(toolStyle, {
+                context: {
+                    fillColor: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var color = null;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                color = "#fb9c45";
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                color = "#ff4040";
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = "#c3c5c7";
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                color = "#ffff40";
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                color = "#a5fdb8";
+                            } else if (feature.data.icetype === "Open Water") {
+                                color = "#b0d6ff";
+                            } else {
+                                color = "#000000";
+                            }
+
+                            return color;
+                        } else {
+                            return "#FFAA7A";
+                        }
+                    },
+                    fillOpacity: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var opacity = 0.2;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = 0.5;
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Open Water") {
+                                opacity = 0.5;
+                            } else {
+                                opacity = 0.5
+                            }
+
+                            return opacity;
+                        } else {
+                            return 0.5;
+                        }
+                    }
+                }
+            });
+            var iceChartStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 2
+                })
+            });
+            var iceChartLayer = map.getLayersByName("Iskonsentrasjon")[0];
+            iceChartLayer.styleMap = iceChartStyleMap;
+            iceChartLayer.addFeatures(geoJsonFormat.read(geoJson));
+            selectFeature = new OpenLayers.Control.SelectFeature(
+            iceChartLayer, {
+                onSelect: iceChartClickNotice,
+                onUnselect: onPopupFeatureUnselect,
+                autoActivate: true
+            });
+            map.addControl(selectFeature);
+        }
+
         function highlightTools(vesselName) {
             highlightVesselName = vesselName;
             var toolLayer = map.getLayersByName("Redskap")[0];
@@ -409,7 +498,8 @@
                         isBaseLayer: false,
                         yx: { 'EPSG:4326': true }
                     }
-                )];
+                ), new OpenLayers.Layer.Vector("Iskonsentrasjon")
+                ];
             return layers;
         }
 
@@ -429,84 +519,71 @@
                     isBaseLayer: false,
                     yx: { 'EPSG:4326': true }
                 }
-            ), new OpenLayers.Layer.WMS(
-                "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bw:iceedge_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.WMS(
-                "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bw:npdfacility_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.WMS(
-                "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bw:npdsurveyongoing_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.WMS(
-                "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bw:npdsurveyplanned_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.WMS(
-                "Iskonsentrasjon", "https://geo.barentswatch.no/geoserver/bw/wms",
-                {
-                    LAYERS: 'bw:icechart_latest',
-                    transparent: true,
-                    STYLES: '',
-                    format: format
-                },
-                {
-                    singleTile: true,
-                    ratio: 1,
-                    isBaseLayer: false,
-                    yx: { 'EPSG:4326': true }
-                }
-            ), new OpenLayers.Layer.Vector("Redskap", {
-                strategies: [new OpenLayers.Strategy.Cluster({
-                    distance: 15,
-                    threshold: 2
-                })]
-            })
+                ), new OpenLayers.Layer.WMS(
+                    "Iskant", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:iceedge_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Havbunnsinstallasjoner", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:npdfacility_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, pågående", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:npdsurveyongoing_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.WMS(
+                    "Seismikk, planlagt", "https://geo.barentswatch.no/geoserver/bw/wms",
+                    {
+                        LAYERS: 'bw:npdsurveyplanned_latest',
+                        transparent: true,
+                        STYLES: '',
+                        format: format
+                    },
+                    {
+                        singleTile: true,
+                        ratio: 1,
+                        isBaseLayer: false,
+                        yx: { 'EPSG:4326': true }
+                    }
+                ), new OpenLayers.Layer.Vector("Iskonsentrasjon"),
+                new OpenLayers.Layer.Vector("Redskap", {
+                    strategies: [new OpenLayers.Strategy.Cluster({
+                        distance: 15,
+                        threshold: 2
+                    })]
+                })
+            ];
 
-        ];
             return layers;
         }
 
@@ -559,6 +636,40 @@
                 popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
                 feature.geometry.getBounds().getCenterLonLat(),
                     null, "Dette er en gruppering av redskaper, zoom inn for å se detaljer om hvert redskap.", null, true, onPopupClose);
+                popup.panMapIfOutOfView = true;
+                popup.autoSize = true;
+                feature.popup = popup;
+                map.addPopup(popup);
+            }
+        }
+
+        function iceChartClickNotice(feature) {
+            mFeature = feature;
+            var iceType;
+            if (feature.data.hasOwnProperty("icetype")) {
+                if (feature.data.icetype != null) {
+                    var type = feature.data.icetype;
+                    if (type === "Close Drift Ice") {
+                        iceType = "Tett drivis";
+                    } else if (type === "Very Close Drift Ice") {
+                        iceType = "Veldig tett drivis";
+                    } else if (type === "Fast Ice") {
+                        iceType = "Fast is";
+                    } else if (type === "Open Drift Ice") {
+                        iceType = "Åpen drivis";
+                    } else if (type === "Very Open Drift Ice") {
+                        iceType = "Veldig åpen drivis";
+                    } else if (type === "Open Water") {
+                        iceType = "Åpent vann";
+                    } else {
+                        iceType = "Detaljer ikke tilgjengelig";
+                    }
+                } else {
+                    iceType = "Detaljer ikke tilgjengelig";
+                }
+                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                feature.geometry.getBounds().getCenterLonLat(),
+                    null, iceType + "<p></p>", null, true, onPopupClose);
                 popup.panMapIfOutOfView = true;
                 popup.autoSize = true;
                 feature.popup = popup;
