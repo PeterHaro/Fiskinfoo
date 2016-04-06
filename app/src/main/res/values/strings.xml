@@ -55,6 +55,8 @@ limitations under the License.
     <string name="subscribe">Abonnér</string>
     <string name="fishing_facility_api_name">fishingfacility</string>
     <string name="fishing_facility_name">Redskap</string>
+    <string name="subscription_update_successful">Abonnement oppdatert</string>
+    <string name="subscription_update_failed">Abonnementsendring feilet</string>
 
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>

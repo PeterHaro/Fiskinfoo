@@ -281,10 +281,7 @@ public class FiskInfoUtility {
         File directory = filePath == null ? null : new File(filePath);
 
         if(directory != null && !directory.isDirectory() && !directory.mkdirs()) {
-           if(showToasts) {
-               Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
-           }
-            return false;
+            directory = null;
         }
 
         if(directory == null) {

@@ -345,6 +345,9 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                 if(response.getStatus() == 204) {
                                     ((CheckBox) v).setChecked(false);
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                                 }
                             }
                         } else {
@@ -355,6 +358,9 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             if(response != null) {
                                 ((CheckBox) v).setChecked(true);
                                 // TODO: add to "Mine abonnementer"
+                                Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                             }
 
                         }
