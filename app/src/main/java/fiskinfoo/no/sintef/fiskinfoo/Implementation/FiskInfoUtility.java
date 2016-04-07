@@ -277,6 +277,7 @@ public class FiskInfoUtility {
         OutputStream outputStream = null;
         filePath = downloadSavePath;
         boolean success = false;
+        String fileEnding = format;
 
         File directory = filePath == null ? null : new File(filePath);
 
@@ -290,8 +291,12 @@ public class FiskInfoUtility {
             filePath = directoryPath + "/" + directoryName + "/";
         }
 
+        if(fileEnding != null && fileEnding.equals(context.getString(R.string.olex))) {
+            fileEnding = "olx.gz";
+        }
+
         try {
-            outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
+            outputStream = new FileOutputStream(new File(filePath + writableName + "." + fileEnding));
             outputStream.write(data);
 
             if(showToasts) {
