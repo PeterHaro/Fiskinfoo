@@ -14,32 +14,33 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolInfo;
 
 public class ToolLog implements Parcelable{
-    public NavigableMap<String, ArrayList<ToolInfo>> myLog;
+    public NavigableMap<String, ArrayList<ToolEntry>> myLog;
 
     public ToolLog() {
         myLog = new TreeMap<>(new dateComperator());
 
     }
 
-    public void addTool(ToolInfo tool, String date) {
+    public void addTool(ToolEntry tool, String date) {
         if (!myLog.containsKey(date)) {
-            myLog.put(date, new ArrayList<ToolInfo>());
+            myLog.put(date, new ArrayList<ToolEntry>());
         }
-        tool.setToolID(myLog.get(date).size() + 1);
+        tool.setToolLogId(myLog.get(date).size() + 1);
         myLog.get(date).add(tool);
     }
 
-    public ArrayList<ToolInfo> get(String date) {
+    public ArrayList<ToolEntry> get(String date) {
         if (!myLog.containsKey(date)) {
             return new ArrayList<>();
         }
         return myLog.get(date);
     }
 
-    public ToolInfo get(String date, int id) {
+    public ToolEntry get(String date, int id) {
         if (myLog.get(date) == null) {
             throw new IndexOutOfBoundsException("Invalid date, no Hauls on the specified date: " + date);
         }
@@ -56,9 +57,9 @@ public class ToolLog implements Parcelable{
             final String key = in.readString();
             final int listLen = in.readInt();
 
-            final ArrayList<ToolInfo> list = new ArrayList<ToolInfo>(listLen);
+            final ArrayList<ToolEntry> list = new ArrayList<ToolEntry>(listLen);
             for (int j = 0; j < listLen; j++) {
-                final ToolInfo value = (ToolInfo)in.readParcelable(ToolInfo.class.getClassLoader());
+                final ToolEntry value = (ToolEntry)in.readParcelable(ToolEntry.class.getClassLoader());
                 list.add(value);
             }
             myLog.put(key, list);
@@ -85,13 +86,13 @@ public class ToolLog implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(myLog.size());
-        for (Map.Entry<String, ArrayList<ToolInfo>> entry : myLog.entrySet()) {
+        for (Map.Entry<String, ArrayList<ToolEntry>> entry : myLog.entrySet()) {
             dest.writeString(entry.getKey());
-            final ArrayList<ToolInfo> toolsInfoList = entry.getValue();
+            final ArrayList<ToolEntry> toolsInfoList = entry.getValue();
             final int listLen = toolsInfoList.size();
 
             dest.writeInt(listLen);
-            for (ToolInfo item : toolsInfoList) {
+            for (ToolEntry item : toolsInfoList) {
                 dest.writeParcelable(item, 0);
             }
         }
@@ -102,7 +103,7 @@ class dateComperator implements Comparator<String> {
 
     @Override
     public int compare(String arg0, String arg1) {
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
         Date date1 = null;
         Date date2 = null;
         try {

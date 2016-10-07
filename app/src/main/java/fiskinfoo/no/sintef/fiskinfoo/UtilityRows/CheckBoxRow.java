@@ -25,8 +25,8 @@ public class CheckBoxRow extends BaseTableRow {
     private TextView mTextView;
     private CheckBox mCheckBox;
 
-    public CheckBoxRow(Context context, String format) {
-        super(context, R.layout.utility_row_check_box_row);
+    public CheckBoxRow(Context context, String format, boolean rightmostCheckbox) {
+        super(context, rightmostCheckbox ? R.layout.utility_row_check_box_right_row : R.layout.utility_row_check_box_left_row);
 
         mTextView = (TextView) getView().findViewById(R.id.check_box_row_text_view);
         mCheckBox = (CheckBox) getView().findViewById(R.id.check_box_row_check_box);
@@ -41,8 +41,8 @@ public class CheckBoxRow extends BaseTableRow {
         });
     }
 
-    public CheckBoxRow(Context context, String buttonText, boolean isChecked) {
-        super(context, R.layout.utility_row_check_box_row);
+    public CheckBoxRow(Context context, String buttonText, boolean rightmostCheckbox, boolean isChecked) {
+        super(context, rightmostCheckbox ? R.layout.utility_row_check_box_right_row : R.layout.utility_row_check_box_left_row);
 
         mTextView = (TextView) getView().findViewById(R.id.check_box_row_text_view);
         mCheckBox = (CheckBox) getView().findViewById(R.id.check_box_row_check_box);

@@ -97,7 +97,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
@@ -353,7 +353,7 @@ public class MapFragment extends Fragment {
             boolean isActive;
             isActive = layer.isVisible;
 
-            CheckBoxRow row = rowsInterface.getCheckBoxRow(getActivity(), layer.name, isActive);
+            CheckBoxRow row = rowsInterface.getCheckBoxRow(getActivity(), layer.name, false, isActive);
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);
@@ -398,7 +398,7 @@ public class MapFragment extends Fragment {
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
         for (ToolType toolType : ToolType.values()) {
-            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexValue(), toolType.toString()).getView();
+            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexColorValue(), toolType.toString()).getView();
             tableLayout.addView(toolLegendRow);
         }
 

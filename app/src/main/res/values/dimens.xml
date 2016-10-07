@@ -107,7 +107,9 @@ limitations under the License.
     <!-- Checkbox row -->
     <dimen name="check_box_row_text_size">20sp</dimen>
     <dimen name="check_box_row_text_view_margin_left">50dp</dimen>
+    <dimen name="check_box_row_check_box_margin">25dp</dimen>
     <dimen name="check_box_row_check_box_margin_left">25dp</dimen>
+    <dimen name="check_box_row_check_box_margin_right">15dp</dimen>
     <dimen name="check_box_row_text_view_padding">10dp</dimen>
     <dimen name="check_box_row_padding_top">1dp</dimen>
     <dimen name="check_box_row_padding_bottom">1dp</dimen>
@@ -127,7 +129,7 @@ limitations under the License.
     <dimen name="radio_button_row_radio_button_margin_top">5dp</dimen>
     <dimen name="radio_button_row_text_view_margin_top">5dp</dimen>
 
-    <!-- SettingsButtonRow -->
+    <!-- OptionsButtonRow -->
     <dimen name="settings_button_row_margin_bottom">5dp</dimen>
     <dimen name="settings_button_row_margin_left">30dp</dimen>
     <dimen name="settings_button_row_margin_right">30dp</dimen>
@@ -153,6 +155,15 @@ limitations under the License.
     <dimen name="switch_info_row_switch_margin_right">20dp</dimen>
     <dimen name="switch_info_row_text_view_margin_left">20dp</dimen>
     <dimen name="switch_info_row_text_view_margin_right">20dp</dimen>
+
+    <!-- EditTextRow -->
+    <dimen name="edit_text_row_padding_bottom">7dp</dimen>
+    <dimen name="edit_text_row_padding_top">7dp</dimen>
+    <dimen name="edit_text_row_header_margin_left">5dp</dimen>
+    <dimen name="edit_text_row_header_margin_right">20dp</dimen>
+    <dimen name="edit_text_row_edit_text_margin_left">20dp</dimen>
+    <dimen name="edit_text_row_edit_text_margin_right">15dp</dimen>
+    <dimen name="utility_edit_text_row_edit_text_width">200dp</dimen>
 
     <!-- Recycle View -->
     <dimen name="recycle_item_child_margin_left">8dp</dimen>
@@ -262,6 +273,17 @@ limitations under the License.
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>
     <dimen name="table_row_padding_top">7dp</dimen>
+    <dimen name="utility_row_help_button_height">20dp</dimen>
+    <dimen name="utility_row_help_button_width">20dp</dimen>
+    <dimen name="utility_coordinates_row_add_button_right_margin">20dp</dimen>
+    <dimen name="utility_row_header_margin_left">5dp</dimen>
+    <dimen name="utility_row_margin_top">5dp</dimen>
+    <dimen name="utility_row_margin_left_15">15dp</dimen>
+    <dimen name="tool_log_notification_view_width">30dp</dimen>
+    <dimen name="tool_log_notification_view_height">30dp</dimen>
+
+    <!-- Time and Date picker rows -->
+    <dimen name="time_and_date_row_padding_vertical">8dp</dimen>
 
     <!-- tool search result row -->
     <dimen name="tool_search_result_row_tool_icon_width">45dp</dimen>
@@ -272,5 +294,6 @@ limitations under the License.
     <dimen name="tool_search_result_row_tool_type_text_view_margin_left">20dp</dimen>
     <dimen name="tool_search_result_row_date_text_view_margin_left">10dp</dimen>
     <dimen name="tool_search_result_row_position_text_view_margin_left">10dp</dimen>
+    <integer name="coordinate_input_field_max_length">14</integer>
 
 </resources>

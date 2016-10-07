@@ -30,5 +30,10 @@ limitations under the License.
     <integer name="milliseconds_in_a_day">86400000</integer>
     <integer name="days_to_highlight_active_tool">14</integer>
 
+    <!-- Input limits -->
+    <integer name="input_length_ircs">6</integer>
+    <integer name="input_length_mmsi">9</integer>
+    <integer name="input_length_imo">7</integer>
+    <integer name="input_length_registration_number">7</integer>
 
 </resources>

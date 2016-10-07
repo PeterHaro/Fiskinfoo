@@ -22,8 +22,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
@@ -35,23 +35,23 @@ public class UtilityRows implements UtilityRowsInterface {
     }
 
     @Override
-    public SettingsButtonRow getSettingsButtonRow(Context context, String buttonText) {
-        return new SettingsButtonRow(context, buttonText);
+    public OptionsButtonRow getSettingsButtonRow(Context context, String buttonText) {
+        return new OptionsButtonRow(context, buttonText);
     }
 
     @Override
-    public SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
-        return new SettingsButtonRow(context, buttonText, onClickListener);
+    public OptionsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
+        return new OptionsButtonRow(context, buttonText, onClickListener);
     }
 
     @Override
-    public CheckBoxRow getCheckBoxRow(Context context, String text) {
-        return new CheckBoxRow(context, text);
+    public CheckBoxRow getCheckBoxRow(Context context, String text, boolean checkBoxOnRightSide) {
+        return new CheckBoxRow(context, text, checkBoxOnRightSide);
     }
 
     @Override
-    public CheckBoxRow getCheckBoxRow(Context context, String text, boolean isChecked) {
-        return new CheckBoxRow(context, text, isChecked);
+    public CheckBoxRow getCheckBoxRow(Context context, String text, boolean checkBoxOnRightSide, boolean isChecked) {
+        return new CheckBoxRow(context, text, checkBoxOnRightSide, isChecked);
     }
 
     @Override

@@ -1,0 +1,86 @@
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:drawable/picture_frame"
+    android:paddingBottom="@dimen/table_row_padding_bottom"
+    android:paddingTop="@dimen/table_row_padding_top">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/table_row_padding_bottom">
+
+        <ImageView
+            android:id="@+id/tool_log_row_tool_type_image_view"
+            android:layout_width="@dimen/tool_search_result_row_tool_icon_width"
+            android:layout_height="@dimen/tool_search_result_row_tool_icon_height"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin_small"
+            android:background="@drawable/ikon_kystfiske"/>
+
+        <TextView
+            android:id="@+id/tool_log_row_latest_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/utility_row_margin_left_15"
+            android:layout_toEndOf="@+id/tool_log_row_tool_type_image_view"
+            android:text="@string/date_placeholder_string"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tool_log_row_tool_type_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
+            android:layout_below="@+id/tool_log_row_latest_date_text_view"
+            android:layout_marginTop="@dimen/utility_row_margin_top"
+            android:text="@string/tool_type"/>
+
+        <TextView
+            android:id="@+id/tool_log_row_tool_position_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
+            android:layout_below="@+id/tool_log_row_tool_type_text_view"
+            android:layout_marginTop="@dimen/utility_row_margin_top"
+            android:text="@string/position"/>
+
+        <ImageView
+            android:id="@+id/tool_log_row_reported_image_view"
+            android:layout_width="@dimen/tool_log_notification_view_width"
+            android:layout_height="@dimen/tool_log_notification_view_height"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            android:layout_toStartOf="@+id/tool_log_row_edit_tool_button"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
+            android:background="@drawable/ic_priority_high_black_24dp"/>
+
+        <Button
+            android:id="@+id/tool_log_row_edit_tool_button"
+            android:layout_width="@dimen/tool_log_notification_view_width"
+            android:layout_height="@dimen/tool_log_notification_view_height"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:background="@drawable/ic_border_color_black_24dp"/>
+
+
+    </RelativeLayout>
+
+</TableRow>

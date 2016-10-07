@@ -17,16 +17,19 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 
 public class UserSettings implements Parcelable {
-    private Tool toolType;
+    private ToolType toolType;
     private String vesselName;
     private String vesselPhone;
     private String ircs;
     private String mmsi;
     private String imo;
-    private String vesselemail;
+    private String registrationNumber;
+    private String ContactPersonEmail;
+    private String ContactPersonPhone;
+    private String ContactPersonName;
 
     public UserSettings() {
 
@@ -38,8 +41,11 @@ public class UserSettings implements Parcelable {
         ircs = in.readString();
         mmsi = in.readString();
         imo = in.readString();
-        vesselemail = in.readString();
-        toolType = Tool.createFromValue(in.readString());
+        toolType = ToolType.createFromValue(in.readString());
+        registrationNumber = in.readString();
+        ContactPersonEmail = in.readString();
+        ContactPersonPhone = in.readString();
+        ContactPersonName = in.readString();
     }
 
     public static final Creator<UserSettings> CREATOR = new Creator<UserSettings>() {
@@ -95,20 +101,44 @@ public class UserSettings implements Parcelable {
         this.imo = imo;
     }
 
-    public String getVesselemail() {
-        return vesselemail != null ? vesselemail : "";
-    }
-
-    public void setVesselemail(String vesselemail) {
-        this.vesselemail = vesselemail;
-    }
-
-    public Tool getToolType() {
+    public ToolType getToolType() {
         return toolType;
     }
 
-    public void setToolType(Tool toolType) {
+    public void setToolType(ToolType toolType) {
         this.toolType = toolType;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber != null ? registrationNumber : "";
+    }
+
+    public void setRegistrationNumber(String registrationNumber)  {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public String getContactPersonEmail() {
+        return ContactPersonEmail != null ? ContactPersonEmail : "";
+    }
+
+    public void setContactPersonEmail(String contactPersonEmail) {
+        ContactPersonEmail = contactPersonEmail;
+    }
+
+    public String getContactPersonPhone() {
+        return ContactPersonPhone != null ? ContactPersonPhone : "";
+    }
+
+    public void setContactPersonPhone(String contactPersonPhone) {
+        ContactPersonPhone = contactPersonPhone;
+    }
+
+    public String getContactPersonName() {
+        return ContactPersonName != null ? ContactPersonName : "";
+    }
+
+    public void setContactPersonName(String contactPersonName) {
+        ContactPersonName = contactPersonName;
     }
 
     @Override
@@ -123,7 +153,10 @@ public class UserSettings implements Parcelable {
         dest.writeString(ircs);
         dest.writeString(mmsi);
         dest.writeString(imo);
-        dest.writeString(vesselemail);
         dest.writeString(toolType.toString());
+        dest.writeString(registrationNumber);
+        dest.writeString(ContactPersonEmail);
+        dest.writeString(ContactPersonPhone);
+        dest.writeString(ContactPersonName);
     }
 }

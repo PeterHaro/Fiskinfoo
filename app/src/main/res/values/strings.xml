@@ -19,18 +19,22 @@ limitations under the License.
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="ok">OK</string>
+    <string name="save">Lagre</string>
     <string name="cancel">Avbryt</string>
     <string name="zero_number">0</string>
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
     <string name="update">Oppdater</string>
     <string name="placeholder_string">Placeholder</string>
+    <string name="placeholder_empty_string"></string>
+    <string name="date_placeholder_string">Dato</string>
     <string name="no_internet_access">Ingen internett-tilgang</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
     <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
 
     <string name="date_colon">Dato:</string>
+    <string name="time_colon">Tid:</string>
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -147,6 +151,7 @@ limitations under the License.
     <string name="offline_mode_activated">Offline-modus aktivert</string>
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
+    <string name="user_settings">Brukerinnstillinger</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Epostadresse</string>
@@ -240,23 +245,68 @@ limitations under the License.
     <string name="tool_type">Redskapstype</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>
-    <string name="vessel_name">Båtnavn</string>
+    <string name="vessel_name">Fartøynavn</string>
     <string name="enter_vessel_name">Venligst oppgi navnet på fartøyet</string>
     <string name="phone_number">Telefonnummer</string>
     <string name="enter_phone_number">Venligst oppgi telefonnummeret</string>
     <string name="setup_datetime">Satt opp</string>
     <string name="enter_setup_datetime">Venligst oppgi når redskapet ble satt</string>
     <string name="ircs">IRCS</string>
+    <string name="ircs_number">IRCS</string>
     <string name="enter_ircs">Venligst oppgi ircs</string>
     <string name="mmsi">MMSI</string>
+    <string name="mmsi_number">MMSI-nummer</string>
     <string name="enter_mmsi">Venlgist oppgi mmsi</string>
     <string name="imo">IMO</string>
+    <string name="imo_number">IMO-nummer</string>
     <string name="enter_imo">Venligst oppgi imo</string>
-    <string name="vesselmail">E-post</string>
-    <string name="enter_vesselmail">Venligst oppgi båtens E-post addresse</string>
+    <string name="registration_number">Registreringsnummer</string>
+    <string name="vesselmail">Fartøyets E-postadresse</string>
+    <string name="enter_vesselmail">Venligst oppgi båtens Epostadresse</string>
+    <string name="vessel_phone_number">Fartøyets tlf.nr.</string>
+    <string name="error_invalid_ircs">Ugyldig IRCS</string>
+    <string name="error_invalid_imo">Ugyldig IMO</string>
+    <string name="error_invalid_mmsi">Ugyldig MMSI</string>
+    <string name="error_invalid_phone_number">Ugyldig tlf.nr.</string>
+    <string name="error_invalid_name">Navnet er ikke gyldig</string>
+    <string name="error_invalid_vessel_name">Ugyldig navn</string>
+    <string name="ircs_help_description">Internasjonalt radiokallesignal (IRCS) har en lengde på 6 tegn, hvor de to første er bokstaver, og de fire resterende tegnene er tall.</string>
+    <string name="mmsi_help_description">Maritime Mobile Service Identity (MMSI) koden er en tallkode på ni siffer.</string>
+    <string name="imo_help_description">International Maritime Organization (IMO) nummeret er en identifikasjonskode for skip og består av de tre bokstavene IMO etterfulgt av syv tall. Du trenger bare å skrive inn tallene i feltet under.</string>
+    <string name="registration_help_description">Fartøyets registreringsnummer skrives inn uten mellomrom.</string>
+    <string name="error_invalid_registration_number">Ugyldig registreringsnr.</string>
+    <string name="add_tool">Legg til</string>
+    <string name="tool_registration">Redskapsregistrering</string>
+    <string name="tool_set_date_colon">Dato satt:</string>
+    <string name="tool_set_time_colon">Tid satt:</string>
+    <string name="contact_person_email">Epostadresse</string>
+    <string name="contact_person_name">Navn</string>
+    <string name="contact_person_phone">Telefonnummer</string>
+    <string name="contact_person_email_help_description">Her skriver du inn din epostadresse. Du kan også oppgi den samme adressen i feltet for fartøyets epostadresse.</string>
+    <string name="contact_person_name_help_description">Her skriver du inn navnet ditt.</string>
+    <string name="contact_person_phone_help_description">Her skriver du inn ditt telefonnummer. Du kan også oppgi det samme nummeret i feltet for fartøyets telefonnummmer. Det viktigste er at du er tilgjengelig på nummeret.</string>
+    <string name="notification_tool_not_reported">Redskapet har ikke blitt innrapportert.</string>
+    <string name="notification_tool_unreported_changes">Redskapet har urapporterte endringer.</string>
+    <string name="edit_tool">Redskapsredigering</string>
+    <string name="error_invalid_latitude">Ugyldig breddegrad</string>
+    <string name="error_invalid_longitude">Ugyldig lengdegrad</string>
+    <string name="tool_report_file_name">Redskapsrapport</string>
+    <string name="format_geojson">geojson</string>
+    <string name="comment_field_header">Kommentar</string>
+    <string name="comment_field_hint">Kommentar</string>
+    <string name="comment_help_description">Her kan du skrive en kommentar for redskapet dersom det er ekstra informasjon andre burde vite om det.</string>
+    <string name="tool_removed_row_text">Redskapet er tatt opp </string>
+    <string name="error_minimum_coordinate_limit">Redskap må ha minst en posisjon.</string>
+    <string name="error_minimum_identification_factors_not_met">Påkrevde felter er ikke utfylt. Følgende felter er påkrevd: Navn, telefonnummer, fartøynavn, og registreringsnummer, samt en av følgende: IRCS, MMSI, eller IMO. Dersom du ikke oppgir disse kan du ikke rapportere inn redskaper via appen.\nTips: Dersom du setter opp disse verdiene i innstillingene vil de automatisk fylles ut når du skal rapportere et redskap.</string>
+
+    <!-- Position -->
+    <string name="position">Posisjon</string>
+    <string name="latitude">Breddegrad</string>
+    <string name="longitude">Lengdegrad</string>
+    <string name="coordinates_help_text">Koordinater skrives inn som lengde- og breddegrader. Du kan legge til og fjerne posisjoner med knappene til høyre.</string>
 
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 

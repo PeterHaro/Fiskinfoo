@@ -15,13 +15,16 @@
 package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.view.View;
 
 import java.util.ArrayList;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 public interface OnclickListenerInterface {
@@ -33,4 +36,6 @@ public interface OnclickListenerInterface {
     View.OnClickListener getInformationDialogOnClickListener(int titleId, int messageId, int iconId);
     View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
     View.OnClickListener getOfflineModeInformationIconOnClickListener(User user);
+    View.OnClickListener getUserSettingsDialogOnClickListener(final User user);
+    View.OnClickListener getToolEntryEditDialogOnClickListener(final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user);
 }
