@@ -22,7 +22,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsButtonRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SwitchAndButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
@@ -43,7 +43,7 @@ public interface UtilityRowsInterface {
      * @param buttonText
      * @return
      */
-    SettingsButtonRow getSettingsButtonRow(Context context, String buttonText);
+    OptionsButtonRow getSettingsButtonRow(Context context, String buttonText);
 
     /**
      *
@@ -52,7 +52,7 @@ public interface UtilityRowsInterface {
      * @param onClickListener
      * @return
      */
-    SettingsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener);
+    OptionsButtonRow getSettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener);
 
     /**
      *
@@ -60,7 +60,7 @@ public interface UtilityRowsInterface {
      * @param text
      * @return
      */
-    CheckBoxRow getCheckBoxRow(Context context, String text);
+    CheckBoxRow getCheckBoxRow(Context context, String text, boolean checkBoxOnRightSide);
 
     /**
      *
@@ -69,7 +69,7 @@ public interface UtilityRowsInterface {
      * @param isChecked
      * @return
      */
-    CheckBoxRow getCheckBoxRow(Context context, String text, boolean isChecked);
+    CheckBoxRow getCheckBoxRow(Context context, String text, boolean checkBoxOnRightSide, boolean isChecked);
 
     /**
      *

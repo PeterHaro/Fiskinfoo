@@ -127,7 +127,7 @@ limitations under the License.
     <dimen name="radio_button_row_radio_button_margin_top">5dp</dimen>
     <dimen name="radio_button_row_text_view_margin_top">5dp</dimen>
 
-    <!-- SettingsButtonRow -->
+    <!-- OptionsButtonRow -->
     <dimen name="settings_button_row_margin_bottom">10dp</dimen>
     <dimen name="settings_button_row_margin_left">30dp</dimen>
     <dimen name="settings_button_row_margin_right">30dp</dimen>

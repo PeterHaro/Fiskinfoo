@@ -253,6 +253,9 @@ public class FiskInfoUtility {
             case "npdsurveyongoing":
                 retVal = R.drawable.ikon_olje_og_gass;
                 break;
+            case "icechart":
+                retVal = R.drawable.ikon_is_tjenester;
+                break;
         }
 
         return retVal;
@@ -612,4 +615,67 @@ public class FiskInfoUtility {
             return myView.getLeft() + getRelativeLeft((View) myView.getParent());
     }
 
+    public boolean validateName(String name) {
+        return name != null && name.length() >= 2;// TODO: Add regex matching
+    }
+
+    public boolean validatePhoneNumber(String phoneNumber) {
+        return phoneNumber != null && phoneNumber.length() >= 8; //TODO: Add regex matching
+    }
+
+    public boolean validateIRCS(String ircs) {
+        boolean success = false;
+
+        if(ircs != null && ((ircs.length() == 6 &&
+                ircs.substring(0, 2).matches("[a-zA-Z]+") &&
+                ircs.substring(2, ircs.length()).matches("^[0-9]*$"))))
+        {
+            success = true;
+        }
+
+        return success;
+    }
+
+    /*
+     *  A valid MMSI is a 9 digit code.
+     */
+    public boolean validateMMSI(String mmsi) {
+        boolean success = false;
+
+        if(mmsi != null && (mmsi.length() == 9 &&
+            mmsi.substring(0, 1).matches("[2-7]") &&
+            mmsi.matches("^[0-9]*$")))
+        {
+            success = true;
+        }
+
+        return success;
+    }
+
+    public boolean validateIMO(String imo) {
+        boolean success = false;
+
+        if(imo != null && ((imo.length() == 7 &&
+            imo.substring(0, 1).matches("[0-9]") &&
+            imo.matches("^[0-9]*$"))))
+        {
+                int[] imoCheckArray = new int[6];
+                int checkSum = 0;
+
+                for(int i = 0; i < 6; i++) {
+                    imoCheckArray[i] = Character.getNumericValue(imo.charAt(i));
+                }
+
+                for(int i = 0; i < 6; i++) {
+                    checkSum += imoCheckArray[i] * (7 - i);
+                }
+                success = Character.getNumericValue(imo.charAt(imo.length() - 1)) == checkSum % 10;
+         }
+
+        return success;
+    }
+
+    public boolean validateRegistrationNumber(String regnum) {
+        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+    }
 }

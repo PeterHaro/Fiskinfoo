@@ -20,10 +20,10 @@ import android.widget.Button;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class SettingsButtonRow extends BaseTableRow {
+public class OptionsButtonRow extends BaseTableRow {
     private Button mButton;
 
-    public SettingsButtonRow(Context context, String buttonText) {
+    public OptionsButtonRow(Context context, String buttonText) {
         super(context, R.layout.utility_row_settings_button_row);
 
         mButton = (Button) getView().findViewById(R.id.settings_button_row_button);
@@ -31,7 +31,7 @@ public class SettingsButtonRow extends BaseTableRow {
         mButton.setText(buttonText);
     }
 
-    public SettingsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
+    public OptionsButtonRow(Context context, String buttonText, View.OnClickListener onClickListener) {
         super(context, R.layout.utility_row_settings_button_row);
 
         mButton = (Button) getView().findViewById(R.id.settings_button_row_button);
