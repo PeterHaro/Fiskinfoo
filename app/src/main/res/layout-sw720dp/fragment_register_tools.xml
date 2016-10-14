@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/register_tool_header_arrow_left"
-                android:layout_marginLeft="@dimen/catch_log_header_date_field_margin_left"
+                android:layout_marginStart="@dimen/catch_log_header_date_field_margin_left"
                 android:text="@string/placeholder_string"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -87,26 +87,6 @@
         android:layout_alignParentBottom="true"
         android:src="@drawable/ic_add_white_24dp"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         />
-
-    <Button
-        android:id="@+id/get_json_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lag innrapporteringsfil"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"/>
-
-    <Button
-        android:id="@+id/open_file_location_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Åpne filposisjon"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="12dp"
-        android:layout_above="@+id/get_json_button"
-        />
-
 </RelativeLayout>

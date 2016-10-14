@@ -626,9 +626,7 @@ public class FiskInfoUtility {
     public boolean validateIRCS(String ircs) {
         boolean success = false;
 
-        if(ircs != null && ((ircs.length() == 6 &&
-                ircs.substring(0, 2).matches("[a-zA-Z]+") &&
-                ircs.substring(2, ircs.length()).matches("^[0-9]*$"))))
+        if(ircs != null && (ircs.length() >= 4))
         {
             success = true;
         }

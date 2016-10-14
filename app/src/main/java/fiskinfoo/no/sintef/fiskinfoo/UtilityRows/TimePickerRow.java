@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.view.View;
@@ -24,49 +25,50 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
+import fiskinfoo.no.sintef.fiskinfoo.RegisterToolsFragment;
 
 public class TimePickerRow extends BaseTableRow {
     private TextView header;
     private Button timePickerButton;
     private TextView timeTextView;
 
-    public TimePickerRow(Context context, final FragmentManager fragmentManager) {
+    public TimePickerRow(Context context, final FragmentManager fragmentManager, final boolean hasMaxTime) {
         super(context, R.layout.utility_row_time_picker_row);
 
         header = (TextView) getView().findViewById(R.id.date_picker_row_header);
         timePickerButton = (Button) getView().findViewById(R.id.time_picker_row_time_picker_button);
         timeTextView = (TextView) getView().findViewById(R.id.time_picker_row_time_text_view);
 
-        Date date = new Date();
+        Date time = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
-        timeTextView.setText(sdf.format(date));
+        timeTextView.setText(sdf.format(time));
         timePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                DialogFragment dateFragment = new RegisterToolsFragment.DatePickerFragment(timeTextView);
-//                dateFragment.show(fragmentManager, "datePicker");
+                DialogFragment newFragment = new RegisterToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                newFragment.show(fragmentManager, "timePicker");
             }
         });
     }
 
-    public TimePickerRow(Context context, String rowTitle, final FragmentManager fragmentManager) {
+    public TimePickerRow(Context context, String rowTitle, final FragmentManager fragmentManager, final boolean hasMaxTime) {
         super(context, R.layout.utility_row_time_picker_row);
 
         header = (TextView) getView().findViewById(R.id.utility_row_header);
         timePickerButton = (Button) getView().findViewById(R.id.time_picker_row_time_picker_button);
         timeTextView = (TextView) getView().findViewById(R.id.time_picker_row_time_text_view);
 
-        Date date = new Date();
+        Date time = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         header.setText(rowTitle);
-        timeTextView.setText(sdf.format(date));
+        timeTextView.setText(sdf.format(time).substring(0, 5));
         timePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                DialogFragment dateFragment = new RegisterToolsFragment.DatePickerFragment(timeTextView);
-//                dateFragment.show(fragmentManager, "datePicker");
+                DialogFragment newFragment = new RegisterToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                newFragment.show(fragmentManager, "timePicker");
             }
         });
     }

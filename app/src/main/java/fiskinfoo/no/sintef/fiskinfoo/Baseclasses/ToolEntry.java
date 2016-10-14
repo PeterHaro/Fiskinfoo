@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.UUID;
 
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GeometryType;
@@ -45,15 +46,16 @@ public class ToolEntry implements Parcelable {
     private String Comment;
     private String ShortComment;
     private String RemovedTime;
-    private String SetupTime;
+    private String SetupDateTime;
     private String ToolId;
     private String LastChangedDateTime;
+    private String LastChangedBySource;
     private ToolEntryStatus toolStatus;
     private int toolLogId;
 
     protected ToolEntry(Parcel in) {
         id = in.readString();
-        coordinates = new ArrayList<Point>();
+        coordinates = new ArrayList<>();
         in.readList(coordinates, Point.class.getClassLoader());
         geometry = GeometryType.createFromValue(in.readString());
         IMO = in.readString();
@@ -70,30 +72,31 @@ public class ToolEntry implements Parcelable {
         Comment = in.readString();
         ShortComment = in.readString();
         RemovedTime = in.readString();
-        SetupTime = in.readString();
+        SetupDateTime = in.readString();
         ToolId = in.readString();
         LastChangedDateTime = in.readString();
+        LastChangedBySource = in.readString();
         toolStatus = ToolEntryStatus.createFromValue(in.readString());
         toolLogId = in.readInt();
     }
 
-    public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, ToolType toolType, String setupTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
+    public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
         this.coordinates = coordinates;
         this.geometry = coordinates.size() > 1 ? GeometryType.LINESTRING : GeometryType.POINT;
         this.VesselName = vesselName;
         this.VesselPhone = vesselPhone;
         this.ToolTypeCode = toolType;
-        this.SetupTime = setupTime;
+        this.SetupDateTime = setupDateTime;
         this.toolStatus = ToolEntryStatus.STATUS_UNSENT;
         this.RegNum = regNum;
         this.ContactPersonName = contactPersonName;
         this.ContactPersonPhone = contactPersonPhone;
         this.ContactPersonEmail = contactPersonEmail;
 
-        this.ToolId = UUID.randomUUID().toString(); //UUID.fromString("Fiskinfo" + VesselName + SetupTime).toString();
+        this.ToolId = UUID.randomUUID().toString(); //UUID.fromString("Fiskinfo" + VesselName + SetupDateTime).toString();
     }
 
-    public ToolEntry(List<Point> coordinates, String imoNumber, String ircsNumber, String mmsiNumber, String registrationNumber, String vesselName, String vesselPhone, ToolType toolType, String comment, String shortComment, String setupTime) {
+    public ToolEntry(List<Point> coordinates, String imoNumber, String ircsNumber, String mmsiNumber, String registrationNumber, String vesselName, String vesselPhone, ToolType toolType, String comment, String shortComment, String setupDateTime) {
         this.coordinates = coordinates;
         this.geometry = coordinates.size() > 1 ? GeometryType.LINESTRING : GeometryType.POINT;
         this.IMO = imoNumber;
@@ -105,10 +108,71 @@ public class ToolEntry implements Parcelable {
         this.ToolTypeCode = toolType;
         this.Comment = comment;
         this.ShortComment = shortComment;
-        this.SetupTime = setupTime;
+        this.SetupDateTime = setupDateTime;
         this.toolStatus = ToolEntryStatus.STATUS_UNSENT;
 
         this.ToolId = UUID.randomUUID().toString();
+    }
+
+    public ToolEntry(JSONObject tool) {
+        try {
+            id = tool.getJSONObject("properties").getString("id");
+
+            coordinates = new ArrayList<>();
+            tool.getJSONObject("properties").getString("id");
+
+            JSONArray toolJsonCoordinates = tool.getJSONObject("geometry").getJSONArray("coordinates");
+
+            if(tool.getJSONObject("geometry").getString("type").equals(GeometryType.LINESTRING.toString())) {
+                for(int i = 0; i < toolJsonCoordinates.length(); i++) {
+                    JSONArray currentPoint = toolJsonCoordinates.getJSONArray(i);
+                    Point point = new Point(currentPoint.getDouble(0), currentPoint.getDouble(1));
+                    coordinates.add(point);
+                }
+            } else {
+                Point point = new Point(toolJsonCoordinates.getDouble(0), toolJsonCoordinates.getDouble(1));
+                coordinates.add(point);
+            }
+
+            geometry = !tool.getJSONObject("geometry").has("type") ? null : GeometryType.createFromValue(tool.getJSONObject("geometry").getString("type"));
+            IMO = !tool.getJSONObject("properties").has("imo") ? null : !tool.getJSONObject("properties").getString("imo").equals("null") ? tool.getJSONObject("properties").getString("imo") : null;
+            IRCS = !tool.getJSONObject("properties").has("ircs") ? null : tool.getJSONObject("properties").getString("ircs");
+            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? null : tool.getJSONObject("properties").getString("mmsi");
+            RegNum = !tool.getJSONObject("properties").has("regnum") ? null : tool.getJSONObject("properties").getString("regnum");
+            VesselName = !tool.getJSONObject("properties").has("vesselname") ? null : tool.getJSONObject("properties").getString("vesselname");
+            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? null : tool.getJSONObject("properties").getString("vesselphone");
+            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? null : tool.getJSONObject("properties").getString("contactpersonemail");
+            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? null:  tool.getJSONObject("properties").getString("contactpersonphone");
+            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? null: tool.getJSONObject("properties").getString("contactpersonname");
+            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? null : ToolType.createFromValue(tool.getJSONObject("properties").getString("tooltypecode"));
+            Source = !tool.getJSONObject("properties").has("source") ? null: tool.getJSONObject("properties").getString("source");
+            Comment = !tool.getJSONObject("properties").has("comment") ? null: tool.getJSONObject("properties").getString("comment");
+            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? null: tool.getJSONObject("properties").getString("shortcomment");
+            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? null: tool.getJSONObject("properties").getString("removeddatetime");
+            ToolId = !tool.getJSONObject("properties").has("toolid") ? null: tool.getJSONObject("properties").getString("toolid");
+
+            if(tool.getJSONObject("properties").has("setupdatetime")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("setupdatetime").split("[.Z]");
+
+                SetupDateTime = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            if(tool.getJSONObject("properties").has("lastchangeddatetime")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("lastchangeddatetime").split("[.Z]");
+
+                LastChangedDateTime = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            if(tool.getJSONObject("properties").has("lastchangedbysource")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("lastchangedbysource").split("[.Z]");
+
+                LastChangedBySource = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            toolStatus =  ToolEntryStatus.STATUS_RECEIVED;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public JSONObject toGeoJson() {
@@ -147,10 +211,11 @@ public class ToolEntry implements Parcelable {
             properties.put("Comment", this.Comment == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("ShortComment", this.ShortComment == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("RemovedTime", this.RemovedTime == null ? JSONObject.NULL : this.LastChangedDateTime);
-            properties.put("SetupTime", this.SetupTime == null ? JSONObject.NULL : this.LastChangedDateTime);
+            properties.put("SetupDateTime", this.SetupDateTime == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("ToolColor", "#" + Integer.toHexString(this.ToolTypeCode.getHexColorValue()).toUpperCase());
             properties.put("ToolId", this.ToolId == null ? JSONObject.NULL : this.ToolId);
             properties.put("LastChangedDateTime", this.LastChangedDateTime == null ? JSONObject.NULL : this.LastChangedDateTime);
+            properties.put("LastChangedBySource", this.LastChangedBySource == null ? JSONObject.NULL : this.LastChangedBySource);
 
             geoJsonTool.put("properties", properties);
 
@@ -197,15 +262,16 @@ public class ToolEntry implements Parcelable {
         dest.writeString(Comment);
         dest.writeString(ShortComment);
         dest.writeString(RemovedTime);
-        dest.writeString(SetupTime);
+        dest.writeString(SetupDateTime);
         dest.writeString(ToolId);
         dest.writeString(LastChangedDateTime);
+        dest.writeString(LastChangedBySource);
         dest.writeString(toolStatus.toString());
         dest.writeInt(toolLogId);
     }
 
     public String getId() {
-        return id;
+        return id == null ? "" : id;
     }
 
     public void setId(String id) {
@@ -230,7 +296,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getIMO() {
-        return IMO;
+        return IMO == null ? "" : IMO;
     }
 
     public void setIMO(String IMO) {
@@ -238,7 +304,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getIRCS() {
-        return IRCS;
+        return IRCS == null ? "" : IRCS;
     }
 
     public void setIRCS(String IRCS) {
@@ -246,7 +312,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getMMSI() {
-        return MMSI;
+        return MMSI == null ? "" : MMSI;
     }
 
     public void setMMSI(String MMSI) {
@@ -254,7 +320,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getRegNum() {
-        return RegNum;
+        return RegNum == null ? "" : RegNum;
     }
 
     public void setRegNum(String regNum) {
@@ -262,7 +328,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getVesselName() {
-        return VesselName;
+        return VesselName == null ? "" : VesselName;
     }
 
     public void setVesselName(String vesselName) {
@@ -270,7 +336,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getVesselPhone() {
-        return VesselPhone;
+        return VesselPhone == null ? "" : VesselPhone;
     }
 
     public void setVesselPhone(String vesselPhone) {
@@ -286,7 +352,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getComment() {
-        return Comment;
+        return Comment == null ? "" : Comment;
     }
 
     public void setComment(String comment) {
@@ -298,7 +364,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getShortComment() {
-        return ShortComment;
+        return ShortComment == null ? "" : ShortComment;
     }
 
     public void setShortComment(String shortComment) {
@@ -306,23 +372,27 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getRemovedTime() {
-        return RemovedTime;
+        return RemovedTime == null ? "" : RemovedTime;
     }
 
     public void setRemovedTime(String removedTime) {
         RemovedTime = removedTime;
     }
 
-    public String getSetupTime() {
-        return SetupTime;
+    public String getSetupDateTime() {
+        return SetupDateTime == null ? "" : SetupDateTime;
     }
 
-    public void setSetupTime(String setupTime) {
-        SetupTime = setupTime;
+    public String getSetupDate() {
+        return SetupDateTime == null ? "" : SetupDateTime.substring(0, 10);
+    }
+
+    public void setSetupDateTime(String setupDateTime) {
+        SetupDateTime = setupDateTime;
     }
 
     public String getToolId() {
-        return ToolId;
+        return ToolId == null ? "" : ToolId;
     }
 
     public void setToolId(String toolId) {
@@ -330,11 +400,19 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getLastChangedDateTime() {
-        return LastChangedDateTime;
+        return LastChangedDateTime == null ? "" : LastChangedDateTime;
     }
 
     public void setLastChangedDateTime(String lastChangedDateTime) {
         LastChangedDateTime = lastChangedDateTime;
+    }
+
+    public String getLastChangedBySource() {
+        return LastChangedBySource == null ? "" : LastChangedBySource;
+    }
+
+    public void setLastChangedBySource(String lastChangedDateTime) {
+        LastChangedBySource = lastChangedDateTime;
     }
 
     public ToolEntryStatus getToolStatus() {
@@ -346,7 +424,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getContactPersonEmail() {
-        return ContactPersonEmail;
+        return ContactPersonEmail == null ? "" : ContactPersonEmail;
     }
 
     public void setContactPersonEmail(String contactPersonEmail) {
@@ -354,7 +432,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getContactPersonPhone() {
-        return ContactPersonPhone;
+        return ContactPersonPhone == null ? "" : ContactPersonPhone;
     }
 
     public void setContactPersonPhone(String contactPersonPhone) {
@@ -362,7 +440,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getContactPersonName() {
-        return ContactPersonName;
+        return ContactPersonName == null ? "" : ContactPersonName;
     }
 
     public void setContactPersonName(String contactPersonName) {
@@ -370,7 +448,7 @@ public class ToolEntry implements Parcelable {
     }
 
     public String getSource() {
-        return Source;
+        return Source == null ? "" : Source;
     }
 
     public void setSource(String source) {

@@ -25,8 +25,8 @@ import android.widget.Toast;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
@@ -48,7 +48,7 @@ public class ToolLogRow extends BaseTableRow {
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolButton = (Button) getView().findViewById(R.id.tool_log_row_edit_tool_button);
 
-        dateHeader.setText(tool.getSetupTime());
+        dateHeader.setText(tool.getSetupDateTime());
         toolTypeTextView.setText(tool.getToolType().toString());
         String toolPosition = Double.toString(tool.getCoordinates().get(0).getLatitude()) + ", " + Double.toString(tool.getCoordinates().get(0).getLongitude());
         toolPositionTextView.setText(toolPosition);
@@ -74,15 +74,23 @@ public class ToolLogRow extends BaseTableRow {
         toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolButton = (Button) getView().findViewById(R.id.tool_log_row_edit_tool_button);
+        StringBuilder sb = new StringBuilder();
 
-        dateHeader.setText(tool.getSetupTime().replace("'T'", " ").substring(0, 19));
+        dateHeader.setText(tool.getSetupDateTime().replace("T", " ").substring(0, 16));
         toolTypeTextView.setText(tool.getToolType().toString());
-        String toolPosition = Double.toString(tool.getCoordinates().get(0).getLatitude()) + ", " + Double.toString(tool.getCoordinates().get(0).getLongitude());
-        toolPositionTextView.setText(toolPosition);
+
+        sb.append(String.format(Locale.ENGLISH, "%.8f", tool.getCoordinates().get(0).getLatitude()));
+        sb.append(", ");
+        sb.append(String.format(Locale.ENGLISH, "%.8f", tool.getCoordinates().get(0).getLongitude()));
+
+        String coordinateString = sb.toString();
+        coordinateString = tool.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length()) : coordinateString.substring(0, coordinateString.length()) + "\n..";
+
+        toolPositionTextView.setText(coordinateString);
         editToolButton.setOnClickListener(onClickListener);
         editToolButton.setVisibility(View.VISIBLE);
 
-        if(tool.getToolStatus() == ToolEntryStatus.STATUS_UNSENT) {
+        if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
             toolNotificationImageView.setVisibility(View.VISIBLE);
             toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -115,28 +123,29 @@ public class ToolLogRow extends BaseTableRow {
         return dateHeader.getText().toString();
     }
 
-    public void setToolPosition(Point position) {
-        String toolPosition = Double.toString(position.getLatitude()) + ", " + Double.toString(position.getLongitude());
-        dateHeader.setText(toolPosition);
+    public void setToolPosition(String position) {
+        dateHeader.setText(position);
     }
 
     public void highlightOldTool(boolean highlight) {
         if(highlight) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            Date toolDate = null;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date toolDate;
             Date currentDate = new Date();
             try {
-                toolDate = dateFormat.parse(dateHeader.getText().toString());
+                toolDate = sdf.parse(dateHeader.getText().toString());
+
+                long diff = currentDate.getTime() - toolDate.getTime();
+                double days = diff / super.getView().getContext().getResources().getInteger(R.integer.milliseconds_in_a_day);
+
+                if(days > 14) {
+                    dateHeader.setTextColor(ContextCompat.getColor(super.getView().getContext(), (R.color.error_red)));
+                } else {
+                    dateHeader.setTextColor(dateHeader.getTextColors().getDefaultColor());
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
                 return;
-            }
-
-            long diff = currentDate.getTime() - toolDate.getTime();
-            double days = diff / super.getView().getContext().getResources().getInteger(R.integer.milliseconds_in_a_day);
-
-            if(days > 14) {
-                dateHeader.setTextColor(ContextCompat.getColor(super.getView().getContext(), (R.color.error_red)));
             }
         } else{
             dateHeader.setTextColor(dateHeader.getTextColors().getDefaultColor());

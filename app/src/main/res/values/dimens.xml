@@ -17,6 +17,7 @@ limitations under the License.
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_horizontal_margin_small">8dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin_small">8dp</dimen>
 
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>

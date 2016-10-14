@@ -17,8 +17,10 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -146,6 +148,31 @@ public class UtilityDialogs implements DialogInterface{
 
         TextView messageTextView = (TextView) dialog.findViewById(R.id.loading_dialog_info_text_view);
         messageTextView.setText(message);
+
+        return dialog;
+    }
+
+    @Override
+    public Dialog getConfirmationDialog(Context context, String title, String message, String confirmButtonText) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_confirm);
+        dialog.setTitle(title);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        TextView textView = (TextView) dialog.findViewById(R.id.dialog_confirm_message_text_view);
+        Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
+        Button confirmButton = (Button) dialog.findViewById(R.id.dialog_bottom_confirm_bottom);
+
+        textView.setText(message);
+        confirmButton.setText(confirmButtonText);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
         return dialog;
     }

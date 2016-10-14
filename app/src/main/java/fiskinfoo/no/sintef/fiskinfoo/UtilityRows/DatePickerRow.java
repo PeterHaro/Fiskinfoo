@@ -39,9 +39,8 @@ public class DatePickerRow extends BaseTableRow {
         datePickerButton = (Button) getView().findViewById(R.id.date_picker_row_date_picker_button);
         dateTextView = (TextView) getView().findViewById(R.id.date_picker_row_date_text_view);
 
-
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         dateTextView.setText(sdf.format(date));
         datePickerButton.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +60,7 @@ public class DatePickerRow extends BaseTableRow {
         dateTextView = (TextView) getView().findViewById(R.id.date_picker_row_date_text_view);
 
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         header.setText(rowTitle);
         dateTextView.setText(sdf.format(date));

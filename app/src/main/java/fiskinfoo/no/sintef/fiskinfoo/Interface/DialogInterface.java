@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Interface;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.view.View;
 
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
@@ -134,4 +135,7 @@ public interface DialogInterface {
      * @return
      */
     Dialog getLoadingDialog(Context context, String message);
+
+    Dialog getConfirmationDialog(Context context, String title, String message, String confirmButtonText);
+
 }

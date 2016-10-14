@@ -73,7 +73,7 @@ limitations under the License.
     <string name="vessel_name_na">Fartøy: n.a.</string>
     <string name="tool_type_with_colon">Redskapstype: </string>
     <string name="tool_type_na">Redskapstype: n.a.</string>
-    <string name="vessel_phone">Tlf: </string>
+    <string name="vessel_phone">Tlf</string>
     <string name="vessel_phone_na">Tlf: n.a.</string>
     <string name="tool_set_date">Satt: </string>
     <string name="tool_set_date_na">Satt: n.a.</string>
@@ -195,7 +195,7 @@ limitations under the License.
     <string name="formats">Tilgjengelige formater:</string>
     <string name="subscription_frequencies">Mulige abonneringsfrekvenser:</string>
     <string name="map_creation_date">Kartet ble opprettet:</string>
-    <string name="last_updated">Sist oppdatert:</string>
+    <string name="last_updated">Sist oppdatert</string>
     <string name="role_requirement">Rollekrav:</string>
     <string name="error_text">Merknad:</string>
     <string name="see_more_info">Les mer her.</string>
@@ -282,7 +282,7 @@ limitations under the License.
     <string name="contact_person_email">Epostadresse</string>
     <string name="contact_person_name">Navn</string>
     <string name="contact_person_phone">Telefonnummer</string>
-    <string name="contact_person_email_help_description">Her skriver du inn din epostadresse. Du kan også oppgi den samme adressen i feltet for fartøyets epostadresse.</string>
+    <string name="contact_person_email_help_description">Her skriver du inn din epostadresse. Denne brukes blant annet til å sende deg bekreftelse på at redskapet er registrert når du sender inn redskapsrapport.</string>
     <string name="contact_person_name_help_description">Her skriver du inn navnet ditt.</string>
     <string name="contact_person_phone_help_description">Her skriver du inn ditt telefonnummer. Du kan også oppgi det samme nummeret i feltet for fartøyets telefonnummmer. Det viktigste er at du er tilgjengelig på nummeret.</string>
     <string name="notification_tool_not_reported">Redskapet har ikke blitt innrapportert.</string>
@@ -298,6 +298,23 @@ limitations under the License.
     <string name="tool_removed_row_text">Redskapet er tatt opp </string>
     <string name="error_minimum_coordinate_limit">Redskap må ha minst en posisjon.</string>
     <string name="error_minimum_identification_factors_not_met">Påkrevde felter er ikke utfylt. Følgende felter er påkrevd: Navn, telefonnummer, fartøynavn, og registreringsnummer, samt en av følgende: IRCS, MMSI, eller IMO. Dersom du ikke oppgir disse kan du ikke rapportere inn redskaper via appen.\nTips: Dersom du setter opp disse verdiene i innstillingene vil de automatisk fylles ut når du skal rapportere et redskap.</string>
+    <string name="error_cannot_set_time_to_future">Kan ikke sette redskaper frem i tiden</string>
+    <string name="no_changes_made">Ingen endringer gjort.</string>
+    <string name="tool_confirmation">Redskapsbekreftelse</string>
+    <string name="tool_confirmation_dialog_help">Redskapene under deler noen verdier med hva du har satt opp i innstillingene dine. Dersom de tilhører deg kan du legge de til slik at du kan redigere de eller rapportere de ut. Dersom redskapene ikke tilhører deg kan du ignorere denne meldingen.</string>
+    <string name="last_updated_by_source">Sist oppdatert av eier</string>
+    <string name="delete">Slett</string>
+    <string name="delete_tool">Slett redskap</string>
+    <string name="confirm_tool_deletion_text_general">Trykk slett for å slette redskapet fra enheten.</string>
+    <string name="confirm_tool_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette vil ikke rapportere inn redskapet.</string>
+    <string name="confirm_registered_tool_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette redskapet er registrert og vil ikke bli utrapportert dersom du velger å slette det nå.</string>
+    <string name="confirm_registered_tool_with_local_changes_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette redskapet har lokale endringer som ikke vil bli rapportert dersom du velger å slette det nå.</string>
+    <string name="tool_deleted">Redskap slettet</string>
+    <string name="send_tool_report">Send redskapsrapport</string>
+    <string name="tool_report_recipient_email">norccis@gmail.com</string>
+    <string name="tool_report_email_header">Redskapsrapportering</string>
+    <string name="send_tool_report_intent_header">Send redskapsrapport</string>
+    <string name="no_changes_to_report">Ingen endringer å rapportere</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

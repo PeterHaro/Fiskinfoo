@@ -57,57 +57,78 @@ public enum ToolType {
     }
 
     public static ToolType createFromValue(String value) {
-        if (value.equalsIgnoreCase("Line")) {
-            return ToolType.LONG_LINE;
-        } else if (value.equalsIgnoreCase("garn")) {
-            return ToolType.NETS;
-        } else if (value.equalsIgnoreCase("Teine")) {
-            return ToolType.CRAB_POTS;
-        } else if (value.equalsIgnoreCase("Sensorkabel")) {
-            return ToolType.SEISMIC;
-        } else if (value.equalsIgnoreCase("Sensor / kabel")) {
-            return ToolType.SENSOR_CABLE;
-        } else if (value.equalsIgnoreCase("Snurpenot")) {
-            return ToolType.DANISH_PURSE_SEINE;
-        } else if (value.equalsIgnoreCase("Fortøyningssystem")) {
-            return ToolType.MOORING_SYSTEM;
-        } else if (value.equalsIgnoreCase("Ukjent redskap")) {
-            return ToolType.UNKNOWN;
-        }
-        return null;
-    }
+        ToolType retval = null;
 
-    public String getToolCode() {
-        String retVal;
-        switch(this) {
-            case LONG_LINE:
-                retVal = "LONGLINE";
+        switch(value) {
+            case "LONGLINE":
+            case "Line":
+                retval = ToolType.LONG_LINE;
                 break;
-            case NETS:
-                retVal = "NETS";
+            case "NETS":
+            case "Garn":
+                retval = ToolType.NETS;
                 break;
-            case CRAB_POTS:
-                retVal = "CRABPOT";
+            case "CRABPOT":
+            case "Teine":
+                retval = ToolType.CRAB_POTS;
                 break;
-            case SEISMIC:
-                retVal = "SEISMIC";
+            case "SEISMIC":
+            case "Sensorkabel":
+                retval = ToolType.SEISMIC;
                 break;
-            case DANISH_PURSE_SEINE:
-                retVal = "DANPURSEINE";
+            case "DANPURSEINE":
+            case "Snurpenot":
+                retval = ToolType.DANISH_PURSE_SEINE;
                 break;
-            case SENSOR_CABLE:
-                retVal = "SENSORCABLE";
+            case "SENSORCABLE":
+            case "Sensor / kabel":
+                retval = ToolType.SENSOR_CABLE;
                 break;
-            case MOORING_SYSTEM:
-                retVal = "MOORING";
+            case "MOORING":
+            case "Fortøyningssystem":
+                retval = ToolType.MOORING_SYSTEM;
                 break;
-            case UNKNOWN:
-                retVal = "UNK";
+            case "UNK":
+            case "Ukjent redskap":
+                retval = ToolType.UNKNOWN;
                 break;
             default:
                 throw new UnsupportedOperationException("Tool type does not exist in the system");
         }
-        return retVal;
+        return retval;
+    }
+
+    public String getToolCode() {
+        String retval;
+        switch(this) {
+            case LONG_LINE:
+                retval = "LONGLINE";
+                break;
+            case NETS:
+                retval = "NETS";
+                break;
+            case CRAB_POTS:
+                retval = "CRABPOT";
+                break;
+            case SEISMIC:
+                retval = "SEISMIC";
+                break;
+            case DANISH_PURSE_SEINE:
+                retval = "DANPURSEINE";
+                break;
+            case SENSOR_CABLE:
+                retval = "SENSORCABLE";
+                break;
+            case MOORING_SYSTEM:
+                retval = "MOORING";
+                break;
+            case UNKNOWN:
+                retval = "UNK";
+                break;
+            default:
+                throw new UnsupportedOperationException("Tool type does not exist in the system");
+        }
+        return retval;
     }
 
     public int getHexColorValue() {
