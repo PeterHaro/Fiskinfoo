@@ -28,7 +28,10 @@ import retrofit.RestAdapter;
 import retrofit.android.MainThreadExecutor;
 
 public class BarentswatchApi {
-    private static final String BARENTSWATCH_API_ENDPOINT = "https://www.barentswatch.no/api/v1/geodata";
+    private final static String barentsWatchPilotAddress = "https://pilot.barentswatch.net";
+    private final static String barentsWatchLiveAddress = "https://www.barentswatch.no";
+    private final static String currentPath = barentsWatchPilotAddress;
+    private static final String BARENTSWATCH_API_ENDPOINT = currentPath + "/api/v1/geodata";
     private static String accessToken;
     private final IBarentswatchApi barentswatchApi;
 
@@ -54,7 +57,22 @@ public class BarentswatchApi {
                 .add("password", mPassword)
                 .build();
          return new Request.Builder()
-                .url("https://www.barentswatch.no/api/token")
+                .url(currentPath + "/api/token")
+                .header("content-type", "application/x-www-form-urlencoded")
+                .post(formBody)
+                .build();
+    }
+
+    public static Request getRequestForAuthenticationClientCredentialsFlow(String mEmail, String mPassword) {
+        final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json;charset=utf-8");
+        final OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("grant_type", "client_credentials")
+                .add("client_id", mEmail)
+                .add("client_secret", mPassword)
+                .build();
+        return new Request.Builder()
+                .url(currentPath + "/api/token")
                 .header("content-type", "application/x-www-form-urlencoded")
                 .post(formBody)
                 .build();

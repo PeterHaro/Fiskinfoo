@@ -98,7 +98,7 @@ import retrofit.client.Response;
  */
 public class RegisterToolsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private FloatingActionButton newHaulButton = null;
+    private FloatingActionButton newToolButton = null;
     private UtilityOnClickListeners utilityOnClickListeners = new UtilityOnClickListeners();
     private static final String USER_PARAM = "user";
     private User user;
@@ -232,10 +232,10 @@ public class RegisterToolsFragment extends Fragment {
                     }
 
                     if(!hasCopy && settings != null) {
-                        if((!settings.getVesselName().isEmpty() && settings.getVesselName().toUpperCase().equals(tool.getJSONObject("properties").getString("vesselname"))) /*&&
+                        if((!settings.getVesselName().isEmpty() && settings.getVesselName().toUpperCase().equals(tool.getJSONObject("properties").getString("vesselname"))) &&
                                 (!settings.getIrcs().isEmpty() && settings.getIrcs().toUpperCase().equals(tool.getJSONObject("properties").getString("ircs"))) ||
                                 (!settings.getMmsi().isEmpty() && settings.getMmsi().equals(tool.getJSONObject("properties").getString("mmsi"))) ||
-                                (!settings.getImo().isEmpty() && settings.getImo().equals(tool.getJSONObject("properties").getString("imo")))*/)
+                                (!settings.getImo().isEmpty() && settings.getImo().equals(tool.getJSONObject("properties").getString("imo"))))
                         {
                             matchedTools.put(tool);
                         }
@@ -282,8 +282,8 @@ public class RegisterToolsFragment extends Fragment {
             }
         }
 
-        newHaulButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
-        newHaulButton.setOnClickListener(new View.OnClickListener() {
+        newToolButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
+        newToolButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {

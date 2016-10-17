@@ -43,6 +43,7 @@ import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -189,11 +190,11 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!new FiskInfoUtility().isEmailValid(email)) {
+        } /*else if (!new FiskInfoUtility().isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
-        }
+        }*/
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
@@ -320,6 +321,10 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             try {
                 OkHttpClient mClient = new OkHttpClient();
                 Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
+                if(response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                    response = mClient.newCall(BarentswatchApi.getRequestForAuthenticationClientCredentialsFlow(mEmail, mPassword)).execute();
+                }
+
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
@@ -378,10 +383,14 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             try {
                 OkHttpClient mClient = new OkHttpClient();
                 Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(user.getUsername(), user.getPassword())).execute();
+                if(response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+                    response = mClient.newCall(BarentswatchApi.getRequestForAuthenticationClientCredentialsFlow(user.getUsername(), user.getPassword())).execute();
+                }
+
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
-                return true;
+                return auth.access_token != null;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
                 return false;
