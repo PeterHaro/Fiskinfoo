@@ -21,7 +21,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -94,6 +96,13 @@ public class ToolEntry implements Parcelable {
         this.ContactPersonEmail = contactPersonEmail;
 
         this.ToolId = UUID.randomUUID().toString(); //UUID.fromString("Fiskinfo" + VesselName + SetupDateTime).toString();
+        this.id = this.ToolId;
+
+        Date lastChangedDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        this.LastChangedBySource = sdf.format(lastChangedDate);
+        this.LastChangedDateTime = sdf.format(lastChangedDate);
     }
 
     public ToolEntry(List<Point> coordinates, String imoNumber, String ircsNumber, String mmsiNumber, String registrationNumber, String vesselName, String vesselPhone, ToolType toolType, String comment, String shortComment, String setupDateTime) {
@@ -112,9 +121,77 @@ public class ToolEntry implements Parcelable {
         this.toolStatus = ToolEntryStatus.STATUS_UNSENT;
 
         this.ToolId = UUID.randomUUID().toString();
+        this.id = this.ToolId;
+
+        Date lastChangedDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        this.LastChangedBySource = sdf.format(lastChangedDate);
+        this.LastChangedDateTime = sdf.format(lastChangedDate);
     }
 
     public ToolEntry(JSONObject tool) {
+        try {
+            id = tool.getJSONObject("properties").getString("id");
+
+            coordinates = new ArrayList<>();
+            tool.getJSONObject("properties").getString("id");
+
+            JSONArray toolJsonCoordinates = tool.getJSONObject("geometry").getJSONArray("coordinates");
+
+            if(tool.getJSONObject("geometry").getString("type").equals(GeometryType.LINESTRING.toString())) {
+                for(int i = 0; i < toolJsonCoordinates.length(); i++) {
+                    JSONArray currentPoint = toolJsonCoordinates.getJSONArray(i);
+                    Point point = new Point(currentPoint.getDouble(0), currentPoint.getDouble(1));
+                    coordinates.add(point);
+                }
+            } else {
+                Point point = new Point(toolJsonCoordinates.getDouble(0), toolJsonCoordinates.getDouble(1));
+                coordinates.add(point);
+            }
+
+            geometry = !tool.getJSONObject("geometry").has("type") ? null : GeometryType.createFromValue(tool.getJSONObject("geometry").getString("type"));
+            IMO = !tool.getJSONObject("properties").has("imo") ? null : !tool.getJSONObject("properties").getString("imo").equals("null") ? tool.getJSONObject("properties").getString("imo") : null;
+            IRCS = !tool.getJSONObject("properties").has("ircs") ? null : tool.getJSONObject("properties").getString("ircs");
+            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? null : tool.getJSONObject("properties").getString("mmsi");
+            RegNum = !tool.getJSONObject("properties").has("regnum") ? null : tool.getJSONObject("properties").getString("regnum");
+            VesselName = !tool.getJSONObject("properties").has("vesselname") ? null : tool.getJSONObject("properties").getString("vesselname");
+            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? null : tool.getJSONObject("properties").getString("vesselphone");
+            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? null : tool.getJSONObject("properties").getString("contactpersonemail");
+            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? null:  tool.getJSONObject("properties").getString("contactpersonphone");
+            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? null: tool.getJSONObject("properties").getString("contactpersonname");
+            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? null : ToolType.createFromValue(tool.getJSONObject("properties").getString("tooltypecode"));
+            Source = !tool.getJSONObject("properties").has("source") ? null: tool.getJSONObject("properties").getString("source");
+            Comment = !tool.getJSONObject("properties").has("comment") ? null: tool.getJSONObject("properties").getString("comment");
+            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? null: tool.getJSONObject("properties").getString("shortcomment");
+            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? null: tool.getJSONObject("properties").getString("removeddatetime");
+            ToolId = !tool.getJSONObject("properties").has("toolid") ? null: tool.getJSONObject("properties").getString("toolid");
+
+            if(tool.getJSONObject("properties").has("setupdatetime")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("setupdatetime").split("[.Z]");
+
+                SetupDateTime = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            if(tool.getJSONObject("properties").has("lastchangeddatetime")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("lastchangeddatetime").split("[.Z]");
+
+                LastChangedDateTime = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            if(tool.getJSONObject("properties").has("lastchangedbysource")) {
+                String[] dateTimeArray = tool.getJSONObject("properties").getString("lastchangedbysource").split("[.Z]");
+
+                LastChangedBySource = dateTimeArray[0] +
+                        (dateTimeArray.length > 1 ? "." + dateTimeArray[1] + "Z" : ".000Z");
+            }
+            toolStatus =  ToolEntryStatus.STATUS_RECEIVED;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateFromGeoJson(JSONObject tool) {
         try {
             id = tool.getJSONObject("properties").getString("id");
 
@@ -181,13 +258,17 @@ public class ToolEntry implements Parcelable {
             JSONObject geometry = new JSONObject();
             JSONArray Toolcoordinates = new JSONArray();
 
-            for(Point currentPosition : this.coordinates) {
-                JSONArray position = new JSONArray();
-                position.put(currentPosition.getLongitude());
-                position.put(currentPosition.getLatitude());
+            if(this.geometry == GeometryType.POINT) {
+                Toolcoordinates.put(coordinates.get(0).getLongitude());
+                Toolcoordinates.put(coordinates.get(0).getLatitude());
+            } else {
+                for(Point currentPosition : this.coordinates) {
+                    JSONArray position = new JSONArray();
+                    position.put(currentPosition.getLongitude());
+                    position.put(currentPosition.getLatitude());
 
-                Toolcoordinates.put(position);
-
+                    Toolcoordinates.put(position);
+                }
             }
 
             geoJsonTool.put("id", this.id == null ? JSONObject.NULL : this.id);
@@ -210,12 +291,15 @@ public class ToolEntry implements Parcelable {
             properties.put("Source", this.Source == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("Comment", this.Comment == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("ShortComment", this.ShortComment == null ? JSONObject.NULL : this.LastChangedDateTime);
-            properties.put("RemovedTime", this.RemovedTime == null ? JSONObject.NULL : this.LastChangedDateTime);
-            properties.put("SetupDateTime", this.SetupDateTime == null ? JSONObject.NULL : this.LastChangedDateTime);
+            properties.put("RemovedTime", this.RemovedTime == null ? JSONObject.NULL : this.RemovedTime);
+            properties.put("SetupTime", this.SetupDateTime == null ? JSONObject.NULL : this.SetupDateTime);
             properties.put("ToolColor", "#" + Integer.toHexString(this.ToolTypeCode.getHexColorValue()).toUpperCase());
             properties.put("ToolId", this.ToolId == null ? JSONObject.NULL : this.ToolId);
             properties.put("LastChangedDateTime", this.LastChangedDateTime == null ? JSONObject.NULL : this.LastChangedDateTime);
             properties.put("LastChangedBySource", this.LastChangedBySource == null ? JSONObject.NULL : this.LastChangedBySource);
+            properties.put("ContactPersonName", this.ContactPersonName == null ? JSONObject.NULL : this.ContactPersonName);
+            properties.put("ContactPersonPhone", this.ContactPersonPhone == null ? JSONObject.NULL : this.ContactPersonPhone);
+            properties.put("ContactPersonEmail", this.ContactPersonEmail == null ? JSONObject.NULL : this.ContactPersonEmail);
 
             geoJsonTool.put("properties", properties);
 

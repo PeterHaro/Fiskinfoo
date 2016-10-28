@@ -291,6 +291,7 @@ public class FiskInfoUtility {
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             String directoryName = "FiskInfo";
             filePath = directoryPath + "/" + directoryName + "/";
+            new File(filePath).mkdirs();
         }
 
         try {

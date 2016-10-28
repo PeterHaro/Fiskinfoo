@@ -215,13 +215,15 @@ public class RegisterToolsFragment extends Fragment {
                                             sdfJson.parse(tool.getJSONObject("properties").getString("lastchangedbysource")) : sdf.parse(tool.getJSONObject("properties").getString("lastchangedbysource"));
                                 }
 
-                                // TODO: Handle updates from KV if there are unreported local changes.
 
-                                if(localLastUpdatedDateTime.equals(serverUpdatedDateTime) && localUpdatedBySourceDateTime.equals(serverUpdatedBySourceDateTime)) {
-                                    localTool.setId(localTool.getId() != null ? localTool.getId() : tool.getJSONObject("properties").getString("id"));
-                                    localTool.setSource(localTool.getSource() != null ? localTool.getSource() : tool.getJSONObject("properties").getString("source"));
-                                    localTool.setToolStatus(ToolEntryStatus.STATUS_RECEIVED);
+                                if((localLastUpdatedDateTime.equals(serverUpdatedDateTime) || localLastUpdatedDateTime.before(serverUpdatedDateTime)) && localUpdatedBySourceDateTime.equals(serverUpdatedBySourceDateTime)) {
+                                    localTool.updateFromGeoJson(tool);
+                                } else {
+                                    // TODO: Handle updates from KV if there are unreported local changes.
+
+
                                 }
+
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
@@ -373,7 +375,7 @@ public class RegisterToolsFragment extends Fragment {
                         String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
                         String toolSetupDate = setupDateRow.getDate().trim();
                         String toolSetupTime = setupTimeRow.getTime().trim();
-                        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ".000Z";
+                        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000Z";
                         String commentString = commentRow.getFieldText().trim();
                         String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
                         String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
@@ -407,10 +409,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = utility.validateName(contactPersonName);
                         contactPersonNameRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_name));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonNameRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, contactPersonNameRow.getView().getBottom());
                                     contactPersonNameRow.requestFocus();
                                 }
                             });
@@ -421,10 +423,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = utility.validatePhoneNumber(contactPersonPhone);
                         contactPersonPhoneRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_phone_number));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonPhoneRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, contactPersonPhoneRow.getView().getBottom());
                                     contactPersonPhoneRow.requestFocus();
                                 }
                             });
@@ -435,10 +437,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = utility.isEmailValid(contactPersonEmail) || contactPersonEmail.isEmpty();
                         contactPersonEmailRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_email));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonEmailRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, contactPersonEmailRow.getView().getBottom());
                                     contactPersonEmailRow.requestFocus();
                                 }
                             });
@@ -449,10 +451,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = (ircsValidated = utility.validateIRCS(vesselIrcsNumber)) || vesselIrcsNumber.isEmpty();
                         vesselIrcsNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_ircs));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselIrcsNumberRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselIrcsNumberRow.getView().getBottom());
                                     vesselIrcsNumberRow.requestFocus();
                                 }
                             });
@@ -463,10 +465,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = (mmsiValidated = utility.validateMMSI(vesselMmsiNumber)) || vesselMmsiNumber.isEmpty();
                         vesselMmsiNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_mmsi));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselMmsiNumberRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselMmsiNumberRow.getView().getBottom());
                                     vesselMmsiNumberRow.requestFocus();
                                 }
                             });
@@ -477,10 +479,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = (imoValidated = utility.validateIMO(vesselImoNumber)) || vesselImoNumber.isEmpty();
                         vesselImoNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_imo));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselImoNumberRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselImoNumberRow.getView().getBottom());
                                     vesselImoNumberRow.requestFocus();
                                 }
                             });
@@ -491,10 +493,10 @@ public class RegisterToolsFragment extends Fragment {
                         validated = (regNumValidated = utility.validateRegistrationNumber(registrationNumber)) || registrationNumber.isEmpty();
                         vesselRegistrationNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_registration_number));
                         if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselRegistrationNumberRow.getView().getBottom());
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselRegistrationNumberRow.getView().getBottom());
                                     vesselRegistrationNumberRow.requestFocus();
                                 }
                             });
@@ -507,6 +509,14 @@ public class RegisterToolsFragment extends Fragment {
                         errorRow.setVisibility(!minimumIdentificationFactorsMet);
 
                         if(!minimumIdentificationFactorsMet) {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, errorRow.getView().getBottom());
+                                    vesselRegistrationNumberRow.requestFocus();
+                                }
+                            });
+
                             return;
                         }
 
@@ -520,6 +530,7 @@ public class RegisterToolsFragment extends Fragment {
 
                         ToolLog toolLog = user.getToolLog();
                         toolLog.addTool(toolEntry, toolSetupDate);
+                        user.writeToSharedPref(v.getContext());
 
                         View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
                         ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
@@ -771,14 +782,14 @@ public class RegisterToolsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.send_tool_report:
-                generateGeoJsonToolReport();
+                generateAndSendGeoJsonToolReport();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void generateGeoJsonToolReport() {
+    private void generateAndSendGeoJsonToolReport() {
         FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
         JSONObject featureCollection = new JSONObject();
         try {
@@ -813,15 +824,52 @@ public class RegisterToolsFragment extends Fragment {
             if (fiskInfoUtility.isExternalStorageWritable()) {
                 fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
 
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                boolean found = false;
+                String[] clients = new String[] { "inbox", "gmail", "outlook", "mail",  };
+                String[] recipients = new String[] { getString(R.string.tool_report_recipient_email) };
+                Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("plain/plain");
-                intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.tool_report_recipient_email));
+
+//                List<ResolveInfo> resInfo = getActivity().getPackageManager().queryIntentActivities(intent, 0);
+//                if (!resInfo.isEmpty()){
+//                    for (ResolveInfo info : resInfo) {
+//                        for(String emailClient : clients) {
+//                            if (info.activityInfo.packageName.toLowerCase().contains(emailClient) ||
+//                                    info.activityInfo.name.toLowerCase().contains(emailClient)) {
+
+//                                info.activityInfo.packageName.toLowerCase().contains(type) ||
+//                                info.activityInfo.name.toLowerCase().contains(type) ) {
+//                                intent.setPackage(info.activityInfo.packageName);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+
+                String toolIds;
+                StringBuilder sb = new StringBuilder();
+
+                sb.append("Redskapskoder:\n");
+
+                for(int i = 0; i < featureList.length(); i++) {
+                    sb.append(Integer.toString(i + 1));
+                    sb.append(": ");
+                    sb.append(featureList.getJSONObject(i).getJSONObject("properties").getString("ToolId"));
+                    sb.append("\n");
+                }
+
+                toolIds = sb.toString();
+
+                intent.putExtra(Intent.EXTRA_EMAIL, recipients);
+                intent.putExtra(Intent.EXTRA_TEXT, toolIds);
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.tool_report_email_header));
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                         + "/FiskInfo/Redskapsrapport.geojson");
                 Uri uri = Uri.fromFile(file);
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
+
                 startActivity(Intent.createChooser(intent, getString(R.string.send_tool_report_intent_header)));
+
             }
         } catch (JSONException e) {
             e.printStackTrace();

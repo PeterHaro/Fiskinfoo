@@ -176,14 +176,14 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public ArrayList<ParentObject> fetchMyPage() {
         BarentswatchApi barentswatchApi = new BarentswatchApi();
         barentswatchApi.setAccesToken(user.getToken());
-        final IBarentswatchApi api = barentswatchApi.getApi();
+
         ArrayList<ParentObject> parentObjectList = new ArrayList<>();
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            List<PropertyDescription> availableSubscriptions = api.getSubscribable();
-            List<Subscription> currentSubscriptions = api.getSubscriptions();
-            List<Authorization> authorizations = api.getAuthorization();
+            List<PropertyDescription> availableSubscriptions = barentswatchApi.getApi().getSubscribable();
+            List<Subscription> currentSubscriptions = barentswatchApi.getApi().getSubscriptions();
+            List<Authorization> authorizations = barentswatchApi.getApi().getAuthorization();
             Map<Integer, Boolean> authMap = new HashMap<>();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();

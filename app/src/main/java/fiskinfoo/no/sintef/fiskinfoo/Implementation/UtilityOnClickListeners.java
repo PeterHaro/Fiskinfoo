@@ -649,7 +649,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
             public void onClick(final View editButton) {
                 final DialogInterface dialogInterface = new UtilityDialogs();
                 final Dialog dialog = dialogInterface.getDialog(editButton.getContext(), R.layout.dialog_register_new_tool, R.string.edit_tool);
-                ((Button)dialog.findViewById(R.id.dialog_register_tool_create_tool_button)).setText(editButton.getContext().getString(R.string.update));
+                ((Button)dialog.findViewById(R.id.dialog_register_tool_create_tool_button)).setText(editButton.getContext().getString(R.string.save));
 
                 final Button updateButton = (Button) dialog.findViewById(R.id.dialog_register_tool_create_tool_button);
                 final Button cancelButton = (Button) dialog.findViewById(R.id.dialog_register_tool_cancel_button);
@@ -745,6 +745,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                 ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
                 toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(toolEntry.getToolType().toString()));
+                toolRemovedRow.setChecked(!toolEntry.getRemovedTime().isEmpty());
                 commentRow.setText(toolEntry.getComment());
                 contactPersonNameRow.setText(toolEntry.getContactPersonName());
                 contactPersonPhoneRow.setText(toolEntry.getContactPersonPhone());
@@ -938,7 +939,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                         if((coordinates != null && coordinates.size() != toolEntry.getCoordinates().size()) ||
                                 toolType != toolEntry.getToolType() ||
-                                (toolRemoved) != (toolEntry.getRemovedTime() != null) ||
+                                (toolRemoved) == (toolEntry.getRemovedTime().isEmpty()) ||
                                 (vesselName != null && !vesselName.equals(toolEntry.getVesselName())) ||
                                 (vesselPhoneNumber != null && !vesselPhoneNumber.equals(toolEntry.getVesselPhone())) ||
                                 (toolSetupDateTime != null && !toolSetupDateTime.equals(toolEntry.getSetupDateTime())) ||
@@ -983,6 +984,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             toolEntry.setMMSI(vesselMmsiNumber);
                             toolEntry.setIMO(vesselImoNumber);
                             toolEntry.setRegNum(registrationNumber);
+                            toolEntry.setLastChangedDateTime(sdf.format(lastChangedDate));
                             toolEntry.setLastChangedBySource(sdf.format(lastChangedDate));
                             toolEntry.setContactPersonName(contactPersonName);
                             toolEntry.setContactPersonPhone(contactPersonPhone);

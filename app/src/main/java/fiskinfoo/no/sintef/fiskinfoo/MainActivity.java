@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.register_tool).setTag(RegisterToolsFragment.TAG));
+        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(RegisterToolsFragment.TAG));
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 
@@ -214,16 +214,16 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         }
 
-        for(int i = 0; i < availableSubscriptions.size(); i++) {
-            if(!authMap.get(availableSubscriptions.get(i).Id)) {
+        for(PropertyDescription subscription : availableSubscriptions) {
+            if(!authMap.get(subscription.Id)) {
                 continue;
             }
-            listDataHeader.add(availableSubscriptions.get(i).Name);
-            nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
+            listDataHeader.add(subscription.Name);
+            nameToApi.put(subscription.Name, subscription.ApiName);
             List<String> availableFormats = new ArrayList<>();
 
-            availableFormats.addAll(Arrays.asList(availableSubscriptions.get(i).Formats));
-            listDataChild.put(listDataHeader.get(i), availableFormats);
+            availableFormats.addAll(Arrays.asList(subscription.Formats));
+            listDataChild.put(listDataHeader.get(listDataHeader.size() - 1), availableFormats);
         }
 
         LegacyExpandableListAdapter legacyExpandableListAdapter = new LegacyExpandableListAdapter(this, listDataHeader, listDataChild);

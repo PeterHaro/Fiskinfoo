@@ -50,6 +50,7 @@ limitations under the License.
     <string name="my_page">Min side</string>
     <string name="map">Kart</string>
     <string name="register_tool">Redskapsregistrering</string>
+    <string name="my_tools">Mine redskaper</string>
 
     <!-- MyPage fragment strings -->
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
