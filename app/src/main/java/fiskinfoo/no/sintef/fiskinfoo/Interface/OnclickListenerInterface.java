@@ -38,4 +38,5 @@ public interface OnclickListenerInterface {
     View.OnClickListener getOfflineModeInformationIconOnClickListener(User user);
     View.OnClickListener getUserSettingsDialogOnClickListener(final User user);
     View.OnClickListener getToolEntryEditDialogOnClickListener(final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user);
+    View.OnClickListener getHelpDialogOnClickListener();
 }

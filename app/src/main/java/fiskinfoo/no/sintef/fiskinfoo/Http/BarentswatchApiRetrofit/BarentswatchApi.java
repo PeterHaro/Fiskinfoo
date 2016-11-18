@@ -14,12 +14,24 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit;
 
+import android.os.Environment;
+import android.util.JsonReader;
+
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -29,11 +41,12 @@ import retrofit.android.MainThreadExecutor;
 
 public class BarentswatchApi {
     private final static String barentsWatchPilotAddress = "https://pilot.barentswatch.net";
-    private final static String barentsWatchLiveAddress = "https://www.barentswatch.no";
-    private final static String currentPath = barentsWatchPilotAddress;
-    private static final String BARENTSWATCH_API_ENDPOINT = currentPath + "/api/v1/geodata";
+    private final static String barentsWatchProdAddress = "https://www.barentswatch.no";
+    private static String currentPath = barentsWatchProdAddress;
+    private static String BARENTSWATCH_API_ENDPOINT = currentPath + "/api/v1/geodata";
     private static String accessToken;
     private final IBarentswatchApi barentswatchApi;
+    private boolean targetProd = true;
 
     /**
      * Oauth2 interceptor, adds the header token to every request
@@ -48,7 +61,7 @@ public class BarentswatchApi {
         }
     }
 
-    public static Request getRequestForAuthentication(String mEmail, String mPassword) {
+    public Request getRequestForAuthentication(String mEmail, String mPassword) {
         final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json;charset=utf-8");
         final OkHttpClient client = new OkHttpClient();
         RequestBody formBody = new FormEncodingBuilder()
@@ -63,7 +76,7 @@ public class BarentswatchApi {
                 .build();
     }
 
-    public static Request getRequestForAuthenticationClientCredentialsFlow(String mEmail, String mPassword) {
+    public Request getRequestForAuthenticationClientCredentialsFlow(String mEmail, String mPassword) {
         final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json;charset=utf-8");
         final OkHttpClient client = new OkHttpClient();
         RequestBody formBody = new FormEncodingBuilder()
@@ -93,6 +106,44 @@ public class BarentswatchApi {
     }
 
     public BarentswatchApi() {
+        String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        String fileName = directoryPath + "/FiskInfo/api_setting.json";
+        File file = new File(fileName);
+        String environment = null;
+
+        if(file.exists()) {
+            InputStream inputStream;
+            InputStreamReader streamReader;
+            JsonReader jsonReader;
+
+            try {
+                inputStream = new BufferedInputStream(new FileInputStream(file));
+                streamReader = new InputStreamReader(inputStream, "UTF-8");
+                jsonReader = new JsonReader(streamReader);
+
+                jsonReader.beginObject();
+                while (jsonReader.hasNext()) {
+                    String name = jsonReader.nextName();
+                    if (name.equals("environment")) {
+                        environment = jsonReader.nextString();
+                    } else {
+                        jsonReader.skipValue();
+                    }
+                }
+                jsonReader.endObject();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+        }
+
+        targetProd = !"pilot".equals(environment);
+        currentPath = targetProd ? barentsWatchProdAddress : barentsWatchPilotAddress;
+        BARENTSWATCH_API_ENDPOINT = currentPath + "/api/v1/geodata";
+
         Executor httpExecutor = Executors.newSingleThreadExecutor();
         MainThreadExecutor callbackExecutor = new MainThreadExecutor();
         barentswatchApi = initializeBarentswatchAPI(httpExecutor, callbackExecutor);
@@ -103,7 +154,16 @@ public class BarentswatchApi {
         return this;
     }
 
+    public void usePilotApi(boolean usePilot) {
+        currentPath = usePilot ? barentsWatchPilotAddress : barentsWatchProdAddress;
+        BARENTSWATCH_API_ENDPOINT = currentPath + "/api/v1/geodata";
+    }
+
     public IBarentswatchApi getApi() {
         return barentswatchApi;
+    }
+
+    public boolean isTargetProd() {
+        return targetProd;
     }
 }

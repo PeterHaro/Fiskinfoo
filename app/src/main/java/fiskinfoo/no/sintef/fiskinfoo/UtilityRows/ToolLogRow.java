@@ -17,8 +17,8 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
@@ -33,51 +34,23 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class ToolLogRow extends BaseTableRow {
-    TextView dateHeader;
-    TextView toolTypeTextView;
-    TextView toolPositionTextView;
-    ImageView toolNotificationImageView;
-    Button editToolButton;
+    private TextView dateHeader;
+    private TextView toolTypeTextView;
+    private TextView toolPositionTextView;
+    private ImageView toolNotificationImageView;
+    private ImageView editToolImageView;
+    private RelativeLayout relativeLayout;
 
-    public ToolLogRow(Context context, ToolEntry tool) {
+    public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener) {
         super(context, R.layout.utility_row_tool_log_row);
 
         dateHeader = (TextView) getView().findViewById(R.id.tool_log_row_latest_date_text_view);
         toolTypeTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_type_text_view);
         toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
-        editToolButton = (Button) getView().findViewById(R.id.tool_log_row_edit_tool_button);
-
-        dateHeader.setText(tool.getSetupDateTime());
-        toolTypeTextView.setText(tool.getToolType().toString());
-        String toolPosition = Double.toString(tool.getCoordinates().get(0).getLatitude()) + ", " + Double.toString(tool.getCoordinates().get(0).getLongitude());
-        toolPositionTextView.setText(toolPosition);
-
-        if(tool.getId() == null) {
-            toolNotificationImageView.setVisibility(View.VISIBLE);
-            toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new Toast(v.getContext()).makeText(v.getContext(), R.string.notification_tool_not_reported, Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-
-        highlightOldTool(true);
-    }
-
-    public ToolLogRow(Context context, ToolEntry tool, View.OnClickListener onClickListener) {
-        super(context, R.layout.utility_row_tool_log_row);
-
-        dateHeader = (TextView) getView().findViewById(R.id.tool_log_row_latest_date_text_view);
-        toolTypeTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_type_text_view);
-        toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
-        toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
-        editToolButton = (Button) getView().findViewById(R.id.tool_log_row_edit_tool_button);
+        editToolImageView = (ImageView) getView().findViewById(R.id.tool_log_row_edit_image_view);
+        relativeLayout = (RelativeLayout) getView().findViewById(R.id.tool_log_row_relative_layout);
         StringBuilder sb = new StringBuilder();
-
-        dateHeader.setText(tool.getSetupDateTime().replace("T", " ").substring(0, 16));
-        toolTypeTextView.setText(tool.getToolType().toString());
 
         sb.append(String.format(Locale.ENGLISH, "%.8f", tool.getCoordinates().get(0).getLatitude()));
         sb.append(", ");
@@ -86,16 +59,47 @@ public class ToolLogRow extends BaseTableRow {
         String coordinateString = sb.toString();
         coordinateString = tool.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length()) : coordinateString.substring(0, coordinateString.length()) + "\n..";
 
+        SimpleDateFormat sdf = new SimpleDateFormat(context.getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+        Date setupDate;
+        String setupDateTime = "";
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            setupDate = sdf.parse(tool.getSetupDateTime());
+            sdf.setTimeZone(TimeZone.getDefault());
+            setupDateTime = sdf.format(setupDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         toolPositionTextView.setText(coordinateString);
-        editToolButton.setOnClickListener(onClickListener);
-        editToolButton.setVisibility(View.VISIBLE);
+        editToolImageView.setVisibility(View.VISIBLE);
+        relativeLayout.setOnClickListener(onClickListener);
+        toolTypeTextView.setText(tool.getToolType().toString());
+        dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
 
         if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
             toolNotificationImageView.setVisibility(View.VISIBLE);
             toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new Toast(v.getContext()).makeText(v.getContext(), R.string.notification_tool_not_reported, Toast.LENGTH_LONG).show();
+                    int errorMessageId = -1;
+                    switch(tool.getToolStatus()) {
+                        case STATUS_REMOVED_UNCONFIRMED:
+                        case STATUS_SENT_UNCONFIRMED:
+                            errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
+                            break;
+                        case STATUS_UNREPORTED:
+                        case STATUS_UNSENT:
+                            errorMessageId = R.string.notification_tool_not_reported;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if(errorMessageId != -1) {
+                        new Toast(v.getContext()).makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -129,7 +133,8 @@ public class ToolLogRow extends BaseTableRow {
 
     public void highlightOldTool(boolean highlight) {
         if(highlight) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date toolDate;
             Date currentDate = new Date();
             try {
@@ -164,8 +169,8 @@ public class ToolLogRow extends BaseTableRow {
         }
     }
 
-    public void setEditToolButtonOnClickListener(View.OnClickListener onClickListener) {
-        editToolButton.setOnClickListener(onClickListener);
-        editToolButton.setVisibility(onClickListener == null ? View.INVISIBLE : View.VISIBLE);
+    public void setEditToolOnClickListener(View.OnClickListener onClickListener) {
+        relativeLayout.setOnClickListener(onClickListener);
+        editToolImageView.setVisibility(onClickListener == null ? View.INVISIBLE : View.VISIBLE);
     }
 }

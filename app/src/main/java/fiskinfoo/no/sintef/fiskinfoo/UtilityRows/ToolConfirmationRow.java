@@ -61,7 +61,7 @@ public class ToolConfirmationRow extends BaseTableRow{
         lastChangedBySourceTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
         expandViewImageView = (ImageView) getView().findViewById(R.id.tool_row_expand_view_image_view);
         addToolCheckBox = (CheckBox) getView().findViewById(R.id.tool_row_check_box);
-        toolEntry = new ToolEntry(tool);
+        toolEntry = new ToolEntry(tool, context);
 
         setupTimeTextView.setText(toolEntry.getSetupDateTime().replace("T", " ").substring(0, toolEntry.getSetupDateTime().indexOf(".")));
         toolTypeNameTextView.setText(toolEntry.getToolType().toString());

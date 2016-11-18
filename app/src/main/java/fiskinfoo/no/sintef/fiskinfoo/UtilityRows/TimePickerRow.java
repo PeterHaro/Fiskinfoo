@@ -24,8 +24,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import fiskinfoo.no.sintef.fiskinfoo.MyToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.RegisterToolsFragment;
 
 public class TimePickerRow extends BaseTableRow {
     private TextView header;
@@ -43,10 +43,18 @@ public class TimePickerRow extends BaseTableRow {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         timeTextView.setText(sdf.format(time));
+        timeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                newFragment.show(fragmentManager, "timePicker");
+            }
+        });
+
         timePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment newFragment = new RegisterToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                DialogFragment newFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
                 newFragment.show(fragmentManager, "timePicker");
             }
         });
@@ -64,10 +72,18 @@ public class TimePickerRow extends BaseTableRow {
 
         header.setText(rowTitle);
         timeTextView.setText(sdf.format(time).substring(0, 5));
+        timeTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                newFragment.show(fragmentManager, "timePicker");
+            }
+        });
+
         timePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment newFragment = new RegisterToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+                DialogFragment newFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
                 newFragment.show(fragmentManager, "timePicker");
             }
         });

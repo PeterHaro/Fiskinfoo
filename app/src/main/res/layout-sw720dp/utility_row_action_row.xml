@@ -23,7 +23,7 @@ limitations under the License.
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/delete_row_header"
+            android:id="@+id/action_row_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
@@ -35,7 +35,7 @@ limitations under the License.
             android:textSize="@dimen/card_view_information_row_text_size"/>
 
         <Button
-            android:id="@+id/delete_row_button"
+            android:id="@+id/action_row_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"

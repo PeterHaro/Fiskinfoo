@@ -32,9 +32,17 @@ limitations under the License.
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
     <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
-
+    <string name="datetime_format_yyyy_mm_dd">yyyy-MM-dd</string>
+    <string name="datetime_format_yyyy_mm_dd_hh_mm">yyyy-MM-dd HH:mm</string>
+    <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss">yyyy-MM-dd\'T\'HH:mm:ss</string>
+    <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss">yyyy-MM-dd\'T\'HH:mm:ss.SSS</string>
+    <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss_z">yyyy-MM-dd\'T\'HH:mm:ss\'Z\'</string>
+    <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss_z">yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'</string>
+    <string name="datetime_format_hh_mm_ss">HH:mm:ss</string>
     <string name="date_colon">Dato:</string>
     <string name="time_colon">Tid:</string>
+    <string name="archive">Arkiver</string>
+    <string name="null_string_lowercase">null</string>
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -145,6 +153,9 @@ limitations under the License.
     <string name="set_download_path">Endre lagringsmappe for nedlastninger</string>
     <string name="close_settings">Lukk innstillingsvindu</string>
     <string name="settings">Innstillinger</string>
+    <string name="about">Om appen</string>
+    <string name="help">Hjelp</string>
+    <string name="back_to_settings">Tilbake til innstillinger</string>
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
     <string name="offline_mode">Offline-modus</string>
     <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.\n\nUnder kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
@@ -202,7 +213,7 @@ limitations under the License.
     <string name="see_more_info">Les mer her.</string>
     <string name="update_frequency_not_available">Oppdateringsfrekvens er ikke tilgjengelig for dette kartlaget.</string>
     <string name="about_partners_base_address">https://www.barentswatch.no</string>
-    <string name="unauthorized_subscription">Din bruker er ikke autorisert til å abonnere på dette kartet. Du kan finne mer informasjon om dette ved å gå til http://www.barentswatch.no/kartplotter</string>
+    <string name="unauthorized_subscription">Din bruker er ikke autorisert til å abonnere på dette kartet. Du kan finne mer informasjon om dette ved å gå til https://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
     <string name="unauthorized_download">Din bruker er ikke autorisert til å laste ned dette kartet. Du kan finne mer informasjon om dette ved å gå til http://www.barentswatch.no/kartplotter</string>
     <string name="unauthorized_user">Din bruker er ikke autorisert til å laste ned eller abonnere på dette kartet. Du kan finne mer informasjon om dette ved å gå til\n\thttp://www.barentswatch.no/kartplotter</string>
 
@@ -288,6 +299,7 @@ limitations under the License.
     <string name="contact_person_phone_help_description">Her skriver du inn ditt telefonnummer. Du kan også oppgi det samme nummeret i feltet for fartøyets telefonnummmer. Det viktigste er at du er tilgjengelig på nummeret.</string>
     <string name="notification_tool_not_reported">Redskapet har ikke blitt innrapportert.</string>
     <string name="notification_tool_unreported_changes">Redskapet har urapporterte endringer.</string>
+    <string name="notification_tool_sent_unconfirmed_changes">Redskapet er innrapportert, men endringene er ikke bekreftet enda.</string>
     <string name="edit_tool">Redskapsredigering</string>
     <string name="error_invalid_latitude">Ugyldig breddegrad</string>
     <string name="error_invalid_longitude">Ugyldig lengdegrad</string>
@@ -306,16 +318,26 @@ limitations under the License.
     <string name="last_updated_by_source">Sist oppdatert av eier</string>
     <string name="delete">Slett</string>
     <string name="delete_tool">Slett redskap</string>
+    <string name="archive_tool">Arkiver redskap</string>
     <string name="confirm_tool_deletion_text_general">Trykk slett for å slette redskapet fra enheten.</string>
     <string name="confirm_tool_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette vil ikke rapportere inn redskapet.</string>
     <string name="confirm_registered_tool_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette redskapet er registrert og vil ikke bli utrapportert dersom du velger å slette det nå.</string>
     <string name="confirm_registered_tool_with_local_changes_deletion_text">Trykk slett for å slette redskapet fra enheten.\nNB! Dette redskapet har lokale endringer som ikke vil bli rapportert dersom du velger å slette det nå.</string>
+    <string name="confirm_registered_tool_archiving">Trykk Arkiver for å arkivere dette redskapet.\nNB! Dette redskapet ser ikke ut til å være utrapportert. Dersom du arkiverer det nå vil det ikke bli rapportert ut.\n(Dersom redskapet har blitt utrapportert på andre måter enn gjennom appen kan du se bort fra denne advarselen.)</string>
+    <string name="confirm_tool_archiving_text">Trykk Arkiver for å arkivere redskapet.\nNB! Dette vil fjerne redskapet fra redskapslisten og redskapet vil ikke bli rapportert inn.\n(Dersom redskapet har blitt utrapportert på andre måter enn gjennom appen kan du se bort fra denne advarselen.)</string>
+    <string name="confirm_registered_tool_with_local_changes_archiving_text">Trykk Arkiver for å arkivere redskapet.\nNB! Dette vil fjerne redskapet fra redskapslisten  og de lokale endringene vil ikke bli innrapportert dersom du arkiverer redskapet.\n(Dersom redskapet har blitt utrapportert på andre måter enn gjennom appen kan du se bort fra denne advarselen.)</string>
+    <string name="confirm_tool_archiving_text_general">Trykk Arkiver for å arkivere redskapet. Dette vil fjerne redskapet fra redskapslisten og redskapet vil ikke bli rapportert inn.\n(Dersom redskapet har blitt utrapportert på andre måter enn gjennom appen kan du se bort fra denne advarselen.)</string>
     <string name="tool_deleted">Redskap slettet</string>
+    <string name="tool_archived">Redskap arkivert</string>
     <string name="send_tool_report">Send redskapsrapport</string>
-    <string name="tool_report_recipient_email">norccis@gmail.com</string>
+    <string name="tool_report_recipient_email">fiskinfo@kystvakten.no</string>
     <string name="tool_report_email_header">Redskapsrapportering</string>
     <string name="send_tool_report_intent_header">Send redskapsrapport</string>
     <string name="no_changes_to_report">Ingen endringer å rapportere</string>
+    <string name="register_tool_not_authenticated_info_text">Redskapsregistrering krever at brukeren din har tilgang til bruksdata for å kunne fungere.  Du kan søke om tilgang til bruksdata ved å følge lenken under.\nhttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
+    <string name="register_tool_not_authenticated_title">Redskapsregistrering</string>
+    <string name="send_tool_report_not_authorized_error_message">For å rapportere inn redskaper gjennom Fiskinfo må brukeren din ha tilgang til bruksdata. Du kan søke om tilgang til bruksdata ved å følge lenken under.\nhttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
+    <string name="send_tool_report_not_authorized_error_title">Redskapsrapportering</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

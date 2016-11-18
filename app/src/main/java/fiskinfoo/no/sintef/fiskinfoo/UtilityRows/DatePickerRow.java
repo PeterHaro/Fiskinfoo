@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.RegisterToolsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.MyToolsFragment;
 
 public class DatePickerRow extends BaseTableRow {
     private TextView header;
@@ -43,10 +43,18 @@ public class DatePickerRow extends BaseTableRow {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         dateTextView.setText(sdf.format(date));
+        dateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
+                dateFragment.show(fragmentManager, "datePicker");
+            }
+        });
+
         datePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment dateFragment = new RegisterToolsFragment.DatePickerFragment(dateTextView);
+                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
                 dateFragment.show(fragmentManager, "datePicker");
             }
         });
@@ -64,10 +72,18 @@ public class DatePickerRow extends BaseTableRow {
 
         header.setText(rowTitle);
         dateTextView.setText(sdf.format(date));
+        dateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
+                dateFragment.show(fragmentManager, "datePicker");
+            }
+        });
+
         datePickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment dateFragment = new RegisterToolsFragment.DatePickerFragment(dateTextView);
+                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
                 dateFragment.show(fragmentManager, "datePicker");
             }
         });

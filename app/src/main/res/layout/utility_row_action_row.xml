@@ -23,26 +23,25 @@ limitations under the License.
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/delete_row_header"
+            android:id="@+id/action_row_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
             android:layout_marginStart="@dimen/utility_row_header_margin_left"
             android:layout_marginEnd="@dimen/dialog_container_margin_right"
             android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-            android:text="@string/delete"
+            android:text="@string/placeholder_string"
             android:textStyle="bold"
             android:textSize="@dimen/card_view_information_row_text_size"/>
 
         <Button
-            android:id="@+id/delete_row_button"
+            android:id="@+id/action_row_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
             android:layout_marginEnd="@dimen/check_box_row_check_box_margin_right"
-            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-            android:background="@drawable/ic_delete_black_24dp" />
+            android:layout_marginTop="@dimen/dialog_internal_container_margin_top" />
     </RelativeLayout>
 </TableRow>

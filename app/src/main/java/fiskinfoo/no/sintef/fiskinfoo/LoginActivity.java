@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,7 +50,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
@@ -71,6 +69,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private View mProgressView;
     private View mLoginFormView;
     private TextView mErrorTextView;
+    private BarentswatchApi barentswatchApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +79,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         mErrorTextView = (TextView) findViewById(R.id.login_error_text_field);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email_sign_in_edit_text);
         mPasswordView = (EditText) findViewById(R.id.password_sign_in_edit_text);
+        barentswatchApi = new BarentswatchApi();
 
         //Skip login form if the user requested it
         user = new User();
@@ -321,9 +321,9 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         protected Boolean doInBackground(Void... params) {
             try {
                 OkHttpClient mClient = new OkHttpClient();
-                Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
+                Response response = mClient.newCall(barentswatchApi.getRequestForAuthentication(mEmail, mPassword)).execute();
                 if(response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-                    response = mClient.newCall(BarentswatchApi.getRequestForAuthenticationClientCredentialsFlow(mEmail, mPassword)).execute();
+                    response = mClient.newCall(barentswatchApi.getRequestForAuthenticationClientCredentialsFlow(mEmail, mPassword)).execute();
                 }
 
                 Gson gson = new Gson();
@@ -383,9 +383,9 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         protected Boolean doInBackground(Void... params) {
             try {
                 OkHttpClient mClient = new OkHttpClient();
-                Response response = mClient.newCall(BarentswatchApi.getRequestForAuthentication(user.getUsername(), user.getPassword())).execute();
+                Response response = mClient.newCall(barentswatchApi.getRequestForAuthentication(user.getUsername(), user.getPassword())).execute();
                 if(response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
-                    response = mClient.newCall(BarentswatchApi.getRequestForAuthenticationClientCredentialsFlow(user.getUsername(), user.getPassword())).execute();
+                    response = mClient.newCall(barentswatchApi.getRequestForAuthenticationClientCredentialsFlow(user.getUsername(), user.getPassword())).execute();
                 }
 
                 Gson gson = new Gson();

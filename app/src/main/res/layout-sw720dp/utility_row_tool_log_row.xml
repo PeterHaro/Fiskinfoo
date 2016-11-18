@@ -20,6 +20,7 @@ limitations under the License.
     android:paddingTop="@dimen/table_row_padding_top">
 
     <RelativeLayout
+        android:id="@+id/tool_log_row_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/table_row_padding_bottom">
@@ -31,6 +32,7 @@ limitations under the License.
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
+            android:duplicateParentState="true"
             android:background="@drawable/ikon_kystfiske"/>
 
         <TextView
@@ -40,6 +42,7 @@ limitations under the License.
             android:layout_marginStart="@dimen/utility_row_margin_left_15"
             android:layout_toEndOf="@+id/tool_log_row_tool_type_image_view"
             android:text="@string/date_placeholder_string"
+            android:duplicateParentState="true"
             android:textStyle="bold"/>
 
         <TextView
@@ -49,6 +52,7 @@ limitations under the License.
             android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
             android:layout_below="@+id/tool_log_row_latest_date_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
+            android:duplicateParentState="true"
             android:text="@string/tool_type"/>
 
         <TextView
@@ -58,6 +62,7 @@ limitations under the License.
             android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
             android:layout_below="@+id/tool_log_row_tool_type_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
+            android:duplicateParentState="true"
             android:text="@string/position"/>
 
         <ImageView
@@ -66,19 +71,20 @@ limitations under the License.
             android:layout_height="@dimen/tool_log_notification_view_height"
             android:layout_centerVertical="true"
             android:visibility="invisible"
-            android:layout_toStartOf="@+id/tool_log_row_edit_tool_button"
+            android:layout_toStartOf="@+id/tool_log_row_edit_image_view"
             android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
-            android:background="@drawable/ic_priority_high_black_24dp"/>
+            android:background="@drawable/ic_priority_high_black_36dp"/>
 
-        <Button
-            android:id="@+id/tool_log_row_edit_tool_button"
+        <ImageView
+            android:id="@+id/tool_log_row_edit_image_view"
             android:layout_width="@dimen/tool_log_notification_view_width"
             android:layout_height="@dimen/tool_log_notification_view_height"
             android:layout_centerVertical="true"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:background="@drawable/ic_border_color_black_24dp"/>
+            android:duplicateParentState="true"
+            android:background="@drawable/ic_mode_edit_black_36dp"/>
 
 
     </RelativeLayout>

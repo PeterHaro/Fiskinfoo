@@ -22,15 +22,19 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,6 +46,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -51,14 +56,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -71,6 +82,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolLog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
@@ -85,24 +97,29 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.TimePickerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolConfirmationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLogRow;
+import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 import retrofit.client.Response;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RegisterToolsFragment.OnFragmentInteractionListener} interface
+ * {@link MyToolsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link RegisterToolsFragment#newInstance} factory method to
+ * Use the {@link MyToolsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterToolsFragment extends Fragment {
+public class MyToolsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private FloatingActionButton newToolButton = null;
-    private UtilityOnClickListeners utilityOnClickListeners = new UtilityOnClickListeners();
+    private final UtilityOnClickListeners utilityOnClickListeners = new UtilityOnClickListeners();
+    private final DialogInterface dialogInterface = new UtilityDialogs();
+    private final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
     private static final String USER_PARAM = "user";
     private User user;
     private GpsLocationTracker mGpsLocationTracker;
+    private BarentswatchApi barentswatchApi;
 
     private OnFragmentInteractionListener mListener;
 
@@ -113,17 +130,17 @@ public class RegisterToolsFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param user The user instance.
-     * @return A new instance of fragment RegisterToolsFragment.
+     * @return A new instance of fragment MyToolsFragment.
      */
-    public static RegisterToolsFragment newInstance(User user) {
-        RegisterToolsFragment fragment = new RegisterToolsFragment();
+    public static MyToolsFragment newInstance(User user) {
+        MyToolsFragment fragment = new MyToolsFragment();
         Bundle args = new Bundle();
         args.putParcelable(USER_PARAM, user);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public RegisterToolsFragment() {
+    public MyToolsFragment() {
         // Required empty public constructor
     }
 
@@ -135,6 +152,7 @@ public class RegisterToolsFragment extends Fragment {
         }
 
         mGpsLocationTracker = new GpsLocationTracker(getActivity());
+        barentswatchApi = new BarentswatchApi();
 
         if (!mGpsLocationTracker.canGetLocation()) {
             mGpsLocationTracker.showSettingsAlert();
@@ -154,137 +172,66 @@ public class RegisterToolsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View rootView =  inflater.inflate(R.layout.fragment_register_tools, container, false);
+        final View rootView =  inflater.inflate(R.layout.fragment_my_tools, container, false);
         final TextView headerDate = (TextView) rootView.findViewById(R.id.register_tool_header_date_field);
         final LinearLayout toolContainer = (LinearLayout) rootView.findViewById(R.id.register_tool_current_tools_table_layout);
-        final DialogInterface dialogInterface = new UtilityDialogs();
-        final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.my_tools_swipe_refresh_layout);
 
+        final Set<Map.Entry<String, ArrayList<ToolEntry>>> tools = user.getToolLog().myLog.entrySet();
         final String currentDate = getCurrentDate();
         headerDate.setText(currentDate);
-        Set<Map.Entry<String, ArrayList<ToolEntry>>> tools = user.getToolLog().myLog.entrySet();
 
-        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+        newToolButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
 
-            List<ToolEntry> localTools = new ArrayList<>();
+        if(!user.getIsFishingFacilityAuthenticated()) {
+            newToolButton.setEnabled(false);
+            newToolButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.unavailable_grey)));
 
-            for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
-                for (final ToolEntry toolEntry : dateEntry.getValue()) {
-                    localTools.add(toolEntry);
-                }
-            }
+            Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.register_tool_not_authenticated_title), getString(R.string.register_tool_not_authenticated_info_text));
+            dialog.show();
+        }
 
-            BarentswatchApi barentswatchApi = new BarentswatchApi();
-            barentswatchApi.setAccesToken(user.getToken());
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // TODO: Will not work if token has expired, should look into fixing this in general
+                if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                    updateToolList(tools, toolContainer);
+                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(true);
+                    toolContainer.removeAllViews();
 
-            Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
-
-            if (response == null) {
-                Log.d(TAG, "RESPONSE == NULL");
-            }
-
-            byte[] toolData = new byte[0];
-            try {
-                toolData = FiskInfoUtility.toByteArray(response.getBody().in());
-                JSONObject featureCollection = new JSONObject(new String(toolData));
-                JSONArray jsonTools = featureCollection.getJSONArray("features");
-                JSONArray matchedTools = new JSONArray();
-
-                for(int i = 0; i < jsonTools.length(); i++) {
-                    UserSettings settings = user.getSettings();
-                    JSONObject tool = jsonTools.getJSONObject(i);
-                    boolean hasCopy = false;
-
-                    for(ToolEntry localTool : localTools) {
-                        if(localTool.getToolId().equals(tool.getJSONObject("properties").getString("toolid"))) {
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                            SimpleDateFormat sdfJson = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                            Date localLastUpdatedDateTime;
-                            Date localUpdatedBySourceDateTime;
-                            Date serverUpdatedDateTime;
-                            Date serverUpdatedBySourceDateTime = null;
-
-                            try {
-                                localLastUpdatedDateTime = sdf.parse(localTool.getLastChangedDateTime());
-                                localUpdatedBySourceDateTime = sdf.parse(localTool.getLastChangedDateTime());
-                                serverUpdatedDateTime = tool.getJSONObject("properties").getString("lastchangeddatetime").length() == 20 ?
-                                        sdfJson.parse(tool.getJSONObject("properties").getString("lastchangeddatetime")) : sdf.parse(tool.getJSONObject("properties").getString("lastchangeddatetime"));
-
-                                if(tool.getJSONObject("properties").has("lastchangedbysource")) {
-                                    serverUpdatedBySourceDateTime = tool.getJSONObject("properties").getString("lastchangedbysource").length() == 20 ?
-                                            sdfJson.parse(tool.getJSONObject("properties").getString("lastchangedbysource")) : sdf.parse(tool.getJSONObject("properties").getString("lastchangedbysource"));
-                                }
-
-
-                                if((localLastUpdatedDateTime.equals(serverUpdatedDateTime) || localLastUpdatedDateTime.before(serverUpdatedDateTime)) && localUpdatedBySourceDateTime.equals(serverUpdatedBySourceDateTime)) {
-                                    localTool.updateFromGeoJson(tool);
-                                } else {
-                                    // TODO: Handle updates from KV if there are unreported local changes.
-
-
-                                }
-
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                    for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
+                        for(final ToolEntry toolEntry : dateEntry.getValue()) {
+                            if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                                continue;
                             }
 
-                            hasCopy = true;
-                            break;
+                            View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                            ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                            toolContainer.addView(row.getView());
+                            mSwipeRefreshLayout.setRefreshing(false);
                         }
                     }
-
-                    if(!hasCopy && settings != null) {
-                        if((!settings.getVesselName().isEmpty() && settings.getVesselName().toUpperCase().equals(tool.getJSONObject("properties").getString("vesselname"))) &&
-                                (!settings.getIrcs().isEmpty() && settings.getIrcs().toUpperCase().equals(tool.getJSONObject("properties").getString("ircs"))) ||
-                                (!settings.getMmsi().isEmpty() && settings.getMmsi().equals(tool.getJSONObject("properties").getString("mmsi"))) ||
-                                (!settings.getImo().isEmpty() && settings.getImo().equals(tool.getJSONObject("properties").getString("imo"))))
-                        {
-                            matchedTools.put(tool);
-                        }
-                    }
+                }else {
+                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
 
-                if(matchedTools.length() > 0) {
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button addToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-                    final List<ToolConfirmationRow> matchedToolsList = new ArrayList<>();
+            }
+        });
 
-                    for(int i = 0; i < matchedTools.length(); i++) {
-                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), matchedTools.getJSONObject(i));
-                        linearLayoutToolContainer.addView(confirmationRow.getView());
-                        matchedToolsList.add(confirmationRow);
-                    }
-
-                    addToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for(ToolConfirmationRow row : matchedToolsList) {
-                                if(row.isChecked()) {
-                                    ToolEntry newTool = row.getToolEntry();
-                                    user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
-                                    ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, newTool, user));
-                                    toolContainer.addView(newRow.getView());
-                                }
-                            }
-
-                            user.writeToSharedPref(v.getContext());
-                            dialog.dismiss();
-                        }
-                    });
-
-                    cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-                    dialog.show();
+        for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
+            for(final ToolEntry toolEntry : dateEntry.getValue()) {
+                if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                    continue;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                toolContainer.addView(row.getView());
             }
         }
 
-        newToolButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
         newToolButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -375,7 +322,7 @@ public class RegisterToolsFragment extends Fragment {
                         String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
                         String toolSetupDate = setupDateRow.getDate().trim();
                         String toolSetupTime = setupTimeRow.getTime().trim();
-                        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000Z";
+                        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
                         String commentString = commentRow.getFieldText().trim();
                         String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
                         String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
@@ -392,15 +339,6 @@ public class RegisterToolsFragment extends Fragment {
                         boolean regNumValidated;
                         boolean minimumIdentificationFactorsMet;
 
-                        /*
-                         *  TODO: Validation of the following:
-                         *      Coordinates
-                         *      toolType
-                         *      VesselName
-                         *      VesselPhone
-                         *      setupDateTime
-                         *
-                         */
                         validated = coordinates != null;
                         if(!validated) {
                             return;
@@ -442,6 +380,34 @@ public class RegisterToolsFragment extends Fragment {
                                 public void run() {
                                     ((ScrollView)fieldContainer.getParent()).scrollTo(0, contactPersonEmailRow.getView().getBottom());
                                     contactPersonEmailRow.requestFocus();
+                                }
+                            });
+
+                            return;
+                        }
+
+                        validated = vesselNameRow.getFieldText().trim() != null && !vesselNameRow.getFieldText().isEmpty();
+                        vesselNameRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_vessel_name));
+                        if(!validated) {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselNameRow.getView().getBottom());
+                                    vesselNameRow.requestFocus();
+                                }
+                            });
+
+                            return;
+                        }
+
+                        validated = vesselPhoneNumberRow.getFieldText().trim() != null && !vesselPhoneNumberRow.getFieldText().isEmpty();
+                        vesselPhoneNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_phone_number));
+                        if(!validated) {
+                            ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((ScrollView)fieldContainer.getParent()).scrollTo(0, vesselPhoneNumberRow.getView().getBottom());
+                                    vesselPhoneNumberRow.requestFocus();
                                 }
                             });
 
@@ -504,7 +470,7 @@ public class RegisterToolsFragment extends Fragment {
                             return;
                         }
 
-                        minimumIdentificationFactorsMet = (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
+                        minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
 
                         errorRow.setVisibility(!minimumIdentificationFactorsMet);
 
@@ -571,20 +537,180 @@ public class RegisterToolsFragment extends Fragment {
 
         setupTextChangedListenerOnHeaderDate(headerDate, currentDate, arrowRightButton);
 
-        for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
-            for(final ToolEntry toolEntry : dateEntry.getValue()) {
-                if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
-                    continue;
+        return rootView;
+    }
+
+    private void updateToolList(Set<Map.Entry<String, ArrayList<ToolEntry>>> tools, final LinearLayout toolContainer) {
+        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+            List<ToolEntry> localTools = new ArrayList<>();
+            List<ToolEntry> unconfirmedRemovedTools = new ArrayList<>();
+            List<ToolEntry> synchedTools = new ArrayList<>();
+
+            for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
+                for (final ToolEntry toolEntry : dateEntry.getValue()) {
+                    if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                        continue;
+                    } else if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED) {
+                        synchedTools.add(toolEntry);
+                    } else if(!(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED)) {
+                        localTools.add(toolEntry);
+                    } else {
+                        unconfirmedRemovedTools.add(toolEntry);
+                    }
+                }
+            }
+
+            barentswatchApi.setAccesToken(user.getToken());
+
+            Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
+
+            if (response == null) {
+                Log.d(TAG, "RESPONSE == NULL");
+            }
+
+            byte[] toolData;
+            try {
+                toolData = FiskInfoUtility.toByteArray(response.getBody().in());
+                JSONObject featureCollection = new JSONObject(new String(toolData));
+                JSONArray jsonTools = featureCollection.getJSONArray("features");
+                JSONArray matchedTools = new JSONArray();
+                UserSettings settings = user.getSettings();
+
+                for(int i = 0; i < jsonTools.length(); i++) {
+                    JSONObject tool = jsonTools.getJSONObject(i);
+                    boolean hasCopy = false;
+
+                    for(int j = 0; j < localTools.size(); j++) {
+                        if(localTools.get(j).getToolId().equals(tool.getJSONObject("properties").getString("toolid"))) {
+                            SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
+                            SimpleDateFormat sdfMilliSecondsRemote = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
+                            SimpleDateFormat sdfRemote = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+
+                            sdfMilliSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            /* Timestamps from BW seem to be one hour earlier than UTC/GMT?  */
+                            sdfMilliSecondsRemote.setTimeZone(TimeZone.getTimeZone("GMT-1"));
+                            sdfRemote.setTimeZone(TimeZone.getTimeZone("GMT-1"));
+                            Date localLastUpdatedDateTime;
+                            Date localUpdatedBySourceDateTime;
+                            Date serverUpdatedDateTime;
+                            Date serverUpdatedBySourceDateTime = null;
+                            try {
+                                localLastUpdatedDateTime = sdfMilliSeconds.parse(localTools.get(j).getLastChangedDateTime());
+                                localUpdatedBySourceDateTime = sdfMilliSeconds.parse(localTools.get(j).getLastChangedBySource());
+
+                                serverUpdatedDateTime = tool.getJSONObject("properties").getString("lastchangeddatetime").length() == getResources().getInteger(R.integer.datetime_without_milliseconds_length) ?
+                                        sdfRemote.parse(tool.getJSONObject("properties").getString("lastchangeddatetime")) : sdfMilliSecondsRemote.parse(tool.getJSONObject("properties").getString("lastchangeddatetime"));
+
+                                if(tool.getJSONObject("properties").has("lastchangedbysource")) {
+                                    serverUpdatedBySourceDateTime = tool.getJSONObject("properties").getString("lastchangedbysource").length() == getResources().getInteger(R.integer.datetime_without_milliseconds_length) ?
+                                            sdfRemote.parse(tool.getJSONObject("properties").getString("lastchangedbysource")) : sdfMilliSecondsRemote.parse(tool.getJSONObject("properties").getString("lastchangedbysource"));
+                                }
+
+                                if((localLastUpdatedDateTime.equals(serverUpdatedDateTime) || localLastUpdatedDateTime.before(serverUpdatedDateTime)) &&
+                                        serverUpdatedBySourceDateTime != null &&
+                                        (localUpdatedBySourceDateTime.equals(serverUpdatedBySourceDateTime) || localUpdatedBySourceDateTime.before(serverUpdatedBySourceDateTime))) {
+                                    localTools.get(j).updateFromGeoJson(tool, getActivity());
+
+                                    localTools.get(j).setToolStatus(ToolEntryStatus.STATUS_RECEIVED);
+                                } else if(serverUpdatedBySourceDateTime != null && localUpdatedBySourceDateTime.after(serverUpdatedBySourceDateTime)) {
+                                    // TODO: Do nothing, local changes should be reported.
+
+
+                                } else {
+                                    // TODO: what gives?
+                                }
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            localTools.remove(j);
+                            j--;
+
+                            hasCopy = true;
+                            break;
+                        }
+                    }
+
+                    for(int j = 0; j < unconfirmedRemovedTools.size(); j++) {
+                        if(unconfirmedRemovedTools.get(j).getToolId().equals(tool.getJSONObject("properties").getString("toolid"))) {
+                            hasCopy = true;
+                            unconfirmedRemovedTools.remove(j);
+                            j--;
+                        }
+                    }
+
+                    for(int j = 0; j < synchedTools.size(); j++) {
+                        if(synchedTools.get(j).getToolId().equals(tool.getJSONObject("properties").getString("toolid"))) {
+                            hasCopy = true;
+                            synchedTools.remove(j);
+                            j--;
+                        }
+                    }
+
+                    if(!hasCopy && settings != null) {
+                        if((!settings.getVesselName().isEmpty() && FiskInfoUtility.ReplaceRegionalCharacters(settings.getVesselName()).toUpperCase().equals(tool.getJSONObject("properties").getString("vesselname"))) &&
+                                ((!settings.getIrcs().isEmpty() && settings.getIrcs().toUpperCase().equals(tool.getJSONObject("properties").getString("ircs"))) ||
+                                        (!settings.getMmsi().isEmpty() && settings.getMmsi().equals(tool.getJSONObject("properties").getString("mmsi"))) ||
+                                        (!settings.getImo().isEmpty() && settings.getImo().equals(tool.getJSONObject("properties").getString("imo")))))
+                        {
+                            matchedTools.put(tool);
+                        }
+                    }
                 }
 
-                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                if(matchedTools.length() > 0) {
+                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
+                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
+                    Button addToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
+                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
+                    final List<ToolConfirmationRow> matchedToolsList = new ArrayList<>();
 
-                ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
-                toolContainer.addView(row.getView());
+                    for(int i = 0; i < matchedTools.length(); i++) {
+                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), matchedTools.getJSONObject(i));
+                        linearLayoutToolContainer.addView(confirmationRow.getView());
+                        matchedToolsList.add(confirmationRow);
+                    }
+
+                    addToolsButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            for(ToolConfirmationRow row : matchedToolsList) {
+                                if(row.isChecked()) {
+                                    ToolEntry newTool = row.getToolEntry();
+                                    user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
+                                    ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, newTool, user));
+                                    toolContainer.addView(newRow.getView());
+                                }
+                            }
+
+                            user.writeToSharedPref(v.getContext());
+                            dialog.dismiss();
+                        }
+                    });
+
+                    cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
+                    dialog.show();
+                }
+
+                for(ToolEntry entry : unconfirmedRemovedTools) {
+                    // TODO: If not found server side, set status to removed
+//                    Toast.makeText(getActivity(), "Tool removed!", Toast.LENGTH_LONG).show();
+                    entry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+                }
+
+                for(ToolEntry entry : synchedTools) {
+                    // TODO: Prompt user: Tool was confirmed, now is no longer at BW, remove or archive?
+                    Dialog dialog = dialogInterface.getAlertDialog(getActivity(), "Manglende redskap", "Et redskap ser ut til å være fjernet fra tjenesten til Barentswatch. Her vil du senere få et valg om å fjerne eller slette dette bruket.", -1);
+                }
+
+                user.writeToSharedPref(getActivity());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
-
-        return rootView;
     }
 
 
@@ -680,7 +806,7 @@ public class RegisterToolsFragment extends Fragment {
             }
             private void decrementDateByOneInHeader(String currentKey, final TextView headerDate) {
                 final int DECREMENT_VALUE = -1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 Date selectedDate = null;
                 try {
@@ -700,7 +826,7 @@ public class RegisterToolsFragment extends Fragment {
     }
 
     private String getCurrentDateTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_hh_mm), Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(new Date());
     }
@@ -738,51 +864,16 @@ public class RegisterToolsFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-
-    @SuppressLint("ValidFragment")
-    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
-        TextView mTextView;
-        boolean hasMaxTime;
-
-        @SuppressLint("ValidFragment")
-        public TimePickerFragment(TextView tx, boolean maxTime) {
-            mTextView = tx;
-            hasMaxTime = maxTime;
-        }
-
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-
-            return new TimePickerDialog(getActivity(), this, hour, minute,
-                    DateFormat.is24HourFormat(getActivity()));
-        }
-
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendar.set(Calendar.MINUTE, minute);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            String toolTime = sdf.format(calendar.getTime());
-            String currentTime = sdf.format(new Date());
-
-            if (hasMaxTime && FiskInfoUtility.compareDates(toolTime, currentTime, "HH:mm:ss") > 0 ) {
-                Toast.makeText(getActivity(), getString(R.string.error_cannot_set_time_to_future), Toast.LENGTH_LONG).show();
-            } else {
-                mTextView.setText(toolTime.substring(0, 5));
-            }
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.send_tool_report:
-                generateAndSendGeoJsonToolReport();
+                if(user.getIsFishingFacilityAuthenticated()) {
+                    generateAndSendGeoJsonToolReport();
+                } else {
+                    Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.send_tool_report_not_authorized_error_message));
+                    dialog.show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -792,6 +883,7 @@ public class RegisterToolsFragment extends Fragment {
     private void generateAndSendGeoJsonToolReport() {
         FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
         JSONObject featureCollection = new JSONObject();
+
         try {
             Set<Map.Entry<String, ArrayList<ToolEntry>>> tools = user.getToolLog().myLog.entrySet();
             JSONArray featureList = new JSONArray();
@@ -803,7 +895,8 @@ public class RegisterToolsFragment extends Fragment {
                         continue;
                     }
 
-                    JSONObject gjsonTool = toolEntry.toGeoJson();
+                    toolEntry.setToolStatus(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED);
+                    JSONObject gjsonTool = toolEntry.toGeoJson(mGpsLocationTracker);
                     featureList.put(gjsonTool);
                 }
             }
@@ -814,6 +907,7 @@ public class RegisterToolsFragment extends Fragment {
                 return;
             }
 
+            user.writeToSharedPref(getActivity());
             featureCollection.put("features", featureList);
             featureCollection.put("type", "FeatureCollection");
             featureCollection.put("crs", JSONObject.NULL);
@@ -823,28 +917,44 @@ public class RegisterToolsFragment extends Fragment {
 
             if (fiskInfoUtility.isExternalStorageWritable()) {
                 fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
+                String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                String fileName = directoryPath + "/FiskInfo/api_setting.json";
+                File apiSettingsFile = new File(fileName);
+                String recipient = null;
 
-                boolean found = false;
-                String[] clients = new String[] { "inbox", "gmail", "outlook", "mail",  };
-                String[] recipients = new String[] { getString(R.string.tool_report_recipient_email) };
+                if(apiSettingsFile.exists()) {
+                    InputStream inputStream;
+                    InputStreamReader streamReader;
+                    JsonReader jsonReader;
+
+                    try {
+                        inputStream = new BufferedInputStream(new FileInputStream(apiSettingsFile));
+                        streamReader = new InputStreamReader(inputStream, "UTF-8");
+                        jsonReader = new JsonReader(streamReader);
+
+                        jsonReader.beginObject();
+                        while (jsonReader.hasNext()) {
+                            String name = jsonReader.nextName();
+                            if (name.equals("email")) {
+                                recipient = jsonReader.nextString();
+                            } else {
+                                jsonReader.skipValue();
+                            }
+                        }
+                        jsonReader.endObject();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                recipient = recipient == null ? getString(R.string.tool_report_recipient_email) : recipient;
+                String[] recipients = new String[] { recipient };
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("plain/plain");
-
-//                List<ResolveInfo> resInfo = getActivity().getPackageManager().queryIntentActivities(intent, 0);
-//                if (!resInfo.isEmpty()){
-//                    for (ResolveInfo info : resInfo) {
-//                        for(String emailClient : clients) {
-//                            if (info.activityInfo.packageName.toLowerCase().contains(emailClient) ||
-//                                    info.activityInfo.name.toLowerCase().contains(emailClient)) {
-
-//                                info.activityInfo.packageName.toLowerCase().contains(type) ||
-//                                info.activityInfo.name.toLowerCase().contains(type) ) {
-//                                intent.setPackage(info.activityInfo.packageName);
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
 
                 String toolIds;
                 StringBuilder sb = new StringBuilder();
@@ -877,6 +987,46 @@ public class RegisterToolsFragment extends Fragment {
     }
 
     @SuppressLint("ValidFragment")
+    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+        TextView mTextView;
+        boolean hasMaxTime;
+
+        @SuppressLint("ValidFragment")
+        public TimePickerFragment(TextView tx, boolean maxTime) {
+            mTextView = tx;
+            hasMaxTime = maxTime;
+        }
+
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_hh_mm_ss), Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getDefault());
+            String toolTime = sdf.format(calendar.getTime());
+            String currentTime = sdf.format(new Date());
+
+            if (hasMaxTime && FiskInfoUtility.compareDates(toolTime, currentTime, getString(R.string.datetime_format_hh_mm_ss)) > 0 ) {
+                Toast.makeText(getActivity(), getString(R.string.error_cannot_set_time_to_future), Toast.LENGTH_LONG).show();
+            } else {
+                mTextView.setText(toolTime.substring(0, 5));
+            }
+        }
+    }
+
+    @SuppressLint("ValidFragment")
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         TextView mTextView;
@@ -903,16 +1053,16 @@ public class RegisterToolsFragment extends Fragment {
         public void onDateSet(DatePicker view, int year, int month, int day) {
             Calendar c = Calendar.getInstance();
             c.set(year, month, day);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getDefault());
             String date = sdf.format(c.getTime());
             String today = sdf.format(new Date());
 
-            if (FiskInfoUtility.compareDates(date, today, "yyyy-MM-dd") > 0 ) {
+            if (FiskInfoUtility.compareDates(date, today, getString(R.string.datetime_format_yyyy_mm_dd)) > 0 ) {
                 Toast.makeText(getActivity(), getString(R.string.error_cannot_set_time_to_future), Toast.LENGTH_LONG).show();
             } else {
                 mTextView.setText(date);
             }
         }
     }
-
 }

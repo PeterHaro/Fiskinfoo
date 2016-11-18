@@ -45,10 +45,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -82,7 +78,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MyToolsFragment.OnFragmentInteractionListener {
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners utilityOnClickListeners;
@@ -122,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(RegisterToolsFragment.TAG));
+        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 
@@ -158,9 +154,9 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                     getFragmentManager().beginTransaction().
                             replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
-                } else if (tab.getTag() == RegisterToolsFragment.TAG){
+                } else if (tab.getTag() == MyToolsFragment.TAG){
                     getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, RegisterToolsFragment.newInstance(user), RegisterToolsFragment.TAG).addToBackStack(null).
+                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
                                     commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
@@ -293,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         OptionsButtonRow toggleOfflineModeRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.offline_mode), getOfflineModeInfoOnClickListener());
         OptionsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
         OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.settings));
+        OptionsButtonRow aboutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.help));
 
         setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,9 +320,12 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         });
 
+        aboutButtonRow.setButtonOnClickListener(utilityOnClickListeners.getHelpDialogOnClickListener());
+
         linearLayout.addView(toggleOfflineModeRow.getView());
         linearLayout.addView(setDownloadPathButtonRow.getView());
         linearLayout.addView(settingsButtonRow.getView());
+        linearLayout.addView(aboutButtonRow.getView());
         linearLayout.addView(logOutButtonRow.getView());
 
         closeDialogButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));

@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -176,6 +177,10 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public ArrayList<ParentObject> fetchMyPage() {
         BarentswatchApi barentswatchApi = new BarentswatchApi();
         barentswatchApi.setAccesToken(user.getToken());
+
+        if(!barentswatchApi.isTargetProd()) {
+            Toast.makeText(getActivity(), "Targeting pilot environment", Toast.LENGTH_LONG).show();
+        }
 
         ArrayList<ParentObject> parentObjectList = new ArrayList<>();
         try {

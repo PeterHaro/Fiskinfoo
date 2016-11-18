@@ -15,23 +15,26 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class DeleteRow extends BaseTableRow {
+public class ActionRow extends BaseTableRow {
     TextView header;
-    Button deleteButton;
+    Button actionButton;
 
-    public DeleteRow(Context context, String headerText, View.OnClickListener onClickListener) {
-        super(context, R.layout.utility_row_delete_row);
+    public ActionRow(Context context, String headerText, int actionButtonIconId, View.OnClickListener onClickListener) {
+        super(context, R.layout.utility_row_action_row);
 
-        header = (TextView) getView().findViewById(R.id.delete_row_header);
-        deleteButton = (Button) getView().findViewById(R.id.delete_row_button);
+        header = (TextView) getView().findViewById(R.id.action_row_header);
+        actionButton = (Button) getView().findViewById(R.id.action_row_button);
 
-        deleteButton.setOnClickListener(onClickListener);
+        header.setText(headerText);
+        actionButton.setBackground(ContextCompat.getDrawable(context, actionButtonIconId));
+        actionButton.setOnClickListener(onClickListener);
     }
 
     public String getHeaderText() {
@@ -42,7 +45,11 @@ public class DeleteRow extends BaseTableRow {
         header.setText(headerText);
     }
 
+    public void setIcon(int iconId) {
+        actionButton.setBackground(ContextCompat.getDrawable(getView().getContext(), iconId));
+    }
+
     public void setOnClickListener(View.OnClickListener onClickListener) {
-        deleteButton.setOnClickListener(onClickListener);
+        actionButton.setOnClickListener(onClickListener);
     }
 }

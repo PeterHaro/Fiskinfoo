@@ -19,7 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TableRow;
 
-public class BaseTableRow {
+public abstract class BaseTableRow {
     private View mTableRow;
 
     public BaseTableRow(Context context, int layoutId) {

@@ -677,4 +677,21 @@ public class FiskInfoUtility {
     public boolean validateRegistrationNumber(String regnum) {
         return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
     }
+
+    /**
+     * Replaces the regional characters 'æ, ø, å' with 'ae, oe, aa'. Conserves case.
+     * @param string String to be replaced
+     * @return String with regional characters replaced.
+     */
+    public static String ReplaceRegionalCharacters(String string) {
+        String retval = string == null ? "" : string;
+        retval = retval.replace("æ", "ae");
+        retval = retval.replace("Æ", "ae");
+        retval = retval.replace("ø", "oe");
+        retval = retval.replace("Ø", "OE");
+        retval = retval.replace("å", "aa");
+        retval = retval.replace("Å", "AA");
+
+        return retval;
+    }
 }
