@@ -162,11 +162,11 @@ public class ToolLogRow extends BaseTableRow {
     }
 
     public void setToolNotificationImageViewVisibility(boolean visible) {
-        if(visible) {
-            toolNotificationImageView.setVisibility(View.VISIBLE);
-        } else {
-            toolNotificationImageView.setVisibility(View.INVISIBLE);
-        }
+        toolNotificationImageView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    public void setEditToolImageViewVisibility(boolean visible) {
+        editToolImageView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void setEditToolOnClickListener(View.OnClickListener onClickListener) {

@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         OptionsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
         OptionsButtonRow toggleOfflineModeRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.offline_mode), getOfflineModeInfoOnClickListener());
         OptionsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
-        OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.settings));
+        OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.contact_information));
         OptionsButtonRow aboutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.help));
 
         setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {

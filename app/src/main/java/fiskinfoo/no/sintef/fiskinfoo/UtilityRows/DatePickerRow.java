@@ -32,34 +32,6 @@ public class DatePickerRow extends BaseTableRow {
     private Button datePickerButton;
     private TextView dateTextView;
 
-    public DatePickerRow(Context context, final FragmentManager fragmentManager) {
-        super(context, R.layout.utility_row_date_picker_row);
-
-        header = (TextView) getView().findViewById(R.id.date_picker_row_header);
-        datePickerButton = (Button) getView().findViewById(R.id.date_picker_row_date_picker_button);
-        dateTextView = (TextView) getView().findViewById(R.id.date_picker_row_date_text_view);
-
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        dateTextView.setText(sdf.format(date));
-        dateTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
-                dateFragment.show(fragmentManager, "datePicker");
-            }
-        });
-
-        datePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
-                dateFragment.show(fragmentManager, "datePicker");
-            }
-        });
-    }
-
     public DatePickerRow(Context context, String rowTitle, final FragmentManager fragmentManager) {
         super(context, R.layout.utility_row_date_picker_row);
 
@@ -72,21 +44,17 @@ public class DatePickerRow extends BaseTableRow {
 
         header.setText(rowTitle);
         dateTextView.setText(sdf.format(date));
-        dateTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
-                dateFragment.show(fragmentManager, "datePicker");
-            }
-        });
 
-        datePickerButton.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
                 dateFragment.show(fragmentManager, "datePicker");
             }
-        });
+        };
+
+        dateTextView.setOnClickListener(onClickListener);
+        datePickerButton.setOnClickListener(onClickListener);
     }
 
     public String getDate() {
@@ -99,5 +67,11 @@ public class DatePickerRow extends BaseTableRow {
 
     public void setHeader(String headerText) {
         header.setText(headerText);
+    }
+
+    // TODO: Should be abstract in base class so different rows can implement differently.
+    public void setEnabled(boolean enabled) {
+        dateTextView.setEnabled(enabled);
+        datePickerButton.setEnabled(enabled);
     }
 }

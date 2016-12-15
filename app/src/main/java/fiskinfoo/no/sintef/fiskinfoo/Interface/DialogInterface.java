@@ -138,4 +138,5 @@ public interface DialogInterface {
 
     Dialog getConfirmationDialog(Context context, String title, String message, String confirmButtonText);
 
+    Dialog getCheckboxInformationDialog(Context context, String title, String message);
 }

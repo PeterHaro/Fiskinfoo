@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.SortedMap;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -46,6 +45,7 @@ public class ToolEntry implements Parcelable {
     private String RegNum;
     private String VesselName;
     private String VesselPhone;
+    private String VesselEmail;
     private String ContactPersonEmail;
     private String ContactPersonPhone;
     private String ContactPersonName;
@@ -72,6 +72,7 @@ public class ToolEntry implements Parcelable {
         RegNum = in.readString();
         VesselName = in.readString();
         VesselPhone = in.readString();
+        VesselEmail = in.readString();
         ContactPersonEmail = in.readString();
         ContactPersonPhone = in.readString();
         ContactPersonName = in.readString();
@@ -88,7 +89,7 @@ public class ToolEntry implements Parcelable {
         toolLogId = in.readInt();
     }
 
-    public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
+    public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, String vesselEmail, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
         this.coordinates = coordinates;
         this.geometry = coordinates.size() > 1 ? GeometryType.LINESTRING : GeometryType.POINT;
         this.VesselName = vesselName;
@@ -99,6 +100,7 @@ public class ToolEntry implements Parcelable {
         this.ContactPersonName = contactPersonName;
         this.ContactPersonPhone = contactPersonPhone;
         this.ContactPersonEmail = contactPersonEmail;
+        this.VesselEmail = vesselEmail;
 
         this.ToolId = UUID.randomUUID().toString(); //UUID.fromString("Fiskinfo" + VesselName + SetupDateTime).toString();
         this.id = this.ToolId;
@@ -164,6 +166,8 @@ public class ToolEntry implements Parcelable {
                     null : tool.getJSONObject("properties").getString("vesselname");
             VesselPhone = !tool.getJSONObject("properties").has("vesselphone") || "null".equals(tool.getJSONObject("properties").getString("vesselphone")) ?
                     null : tool.getJSONObject("properties").getString("vesselphone");
+            VesselEmail = !tool.getJSONObject("properties").has("vesselemail") || "null".equals(tool.getJSONObject("properties").getString("vesselemail")) ?
+                    null : tool.getJSONObject("properties").getString("vesselemail");
             ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") || "null".equals(tool.getJSONObject("properties").getString("contactpersonemail")) ?
                     null : tool.getJSONObject("properties").getString("contactpersonemail");
             ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") || "null".equals(tool.getJSONObject("properties").getString("contactpersonphone")) ?
@@ -239,67 +243,72 @@ public class ToolEntry implements Parcelable {
      */
     public void updateFromGeoJson(JSONObject tool, Context context) {
         try {
-            id = tool.getJSONObject("properties").getString("id");
+            ToolJsonHandler jsonHandler = new ToolJsonHandler(context);
 
-            coordinates = new ArrayList<>();
-            tool.getJSONObject("properties").getString("id");
+            id = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_id), id);
+            coordinates = jsonHandler.getCoordinates(tool, new ArrayList<>());
+            geometry = jsonHandler.getGeometryType(tool, geometry);
+            IMO = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_imo), IMO);
+            IRCS = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_ircs), IRCS);
+            MMSI = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_mmsi), MMSI);
+            RegNum = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_regnum), RegNum);
+            VesselName = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_vessel_name), VesselName);
+            VesselPhone = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_vessel_phone), VesselPhone);
+            VesselEmail = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property__vessel_email), VesselEmail);
+            ContactPersonEmail = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_contactperson_email), ContactPersonEmail);
+            ContactPersonPhone = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_contactperson_phone), ContactPersonPhone);
+            ContactPersonName = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_contactperson_name), ContactPersonName);
+            Source = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_source), Source);
+            Comment = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_comment), Comment);
+            ShortComment = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_short_comment), ShortComment);
+            RemovedTime = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_removed_time), RemovedTime);
+            ToolTypeCode = jsonHandler.getToolType(tool, context.getString(R.string.json_tool_property_tool_type_code), ToolTypeCode);
 
-            JSONArray toolJsonCoordinates = tool.getJSONObject("geometry").getJSONArray("coordinates");
-
-            if(tool.getJSONObject("geometry").getString("type").equals(GeometryType.LINESTRING.toString())) {
-                for(int i = 0; i < toolJsonCoordinates.length(); i++) {
-                    JSONArray currentPoint = toolJsonCoordinates.getJSONArray(i);
-                    Point point = new Point(currentPoint.getDouble(1), currentPoint.getDouble(0));
-                    coordinates.add(point);
-                }
-            } else {
-                Point point = new Point(toolJsonCoordinates.getDouble(1), toolJsonCoordinates.getDouble(0));
-                coordinates.add(point);
-            }
-
-            geometry = !tool.getJSONObject("geometry").has("type") ? geometry : GeometryType.createFromValue(tool.getJSONObject("geometry").getString("type"));
-            IMO = !tool.getJSONObject("properties").has("imo") ? IMO :
-                    (tool.getJSONObject("properties").getString("imo") == null || "null".equals(tool.getJSONObject("properties").getString("imo"))) ?
-                            IMO : tool.getJSONObject("properties").getString("imo");
-            IRCS = !tool.getJSONObject("properties").has("ircs") ? IRCS :
-                    (tool.getJSONObject("properties").getString("ircs") == null || "null".equals(tool.getJSONObject("properties").getString("ircs"))) ?
-                            IRCS : tool.getJSONObject("properties").getString("ircs");
-            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? MMSI :
-                    (tool.getJSONObject("properties").getString("mmsi") == null || "null".equals(tool.getJSONObject("properties").getString("mmsi"))) ?
-                            MMSI : tool.getJSONObject("properties").getString("mmsi");
-            RegNum = !tool.getJSONObject("properties").has("regnum") ? RegNum :
-                    (tool.getJSONObject("properties").getString("regnum") == null || "null".equals(tool.getJSONObject("properties").getString("regnum"))) ?
-                            RegNum : tool.getJSONObject("properties").getString("regnum");
-            VesselName = !tool.getJSONObject("properties").has("vesselname") ? VesselName :
-                    (tool.getJSONObject("properties").getString("vesselname") == null || "null".equals(tool.getJSONObject("properties").getString("vesselname"))) ?
-                            VesselName : tool.getJSONObject("properties").getString("vesselname");
-            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? VesselPhone :
-                    (tool.getJSONObject("properties").getString("vesselphone") == null || "null".equals(tool.getJSONObject("properties").getString("vesselphone"))) ?
-                            VesselPhone : tool.getJSONObject("properties").getString("vesselphone");
-            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? ContactPersonEmail :
-                    (tool.getJSONObject("properties").getString("contactpersonemail") == null || "null".equals(tool.getJSONObject("properties").getString("contactpersonemail"))) ?
-                            ContactPersonEmail : tool.getJSONObject("properties").getString("contactpersonemail");
-            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? ContactPersonPhone :
-                    (tool.getJSONObject("properties").getString("contactpersonphone") == null || "null".equals(tool.getJSONObject("properties").getString("contactpersonphone"))) ?
-                            ContactPersonPhone : tool.getJSONObject("properties").getString("contactpersonphone");
-            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? ContactPersonName :
-                    (tool.getJSONObject("properties").getString("contactpersonname") == null || "null".equals(tool.getJSONObject("properties").getString("contactpersonname"))) ?
-                            ContactPersonName : tool.getJSONObject("properties").getString("contactpersonname");
-            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? ToolTypeCode :
-                    (tool.getJSONObject("properties").getString("tooltypecode") == null || "null".equals(tool.getJSONObject("properties").getString("tooltypecode"))) ?
-                            ToolTypeCode : ToolType.createFromValue(tool.getJSONObject("properties").getString("tooltypecode"));
-            Source = !tool.getJSONObject("properties").has("source") ? Source :
-                    (tool.getJSONObject("properties").getString("source") == null || "null".equals(tool.getJSONObject("properties").getString("source"))) ?
-                            Source : tool.getJSONObject("properties").getString("source");
-            Comment = !tool.getJSONObject("properties").has("comment") ? Comment :
-                    (tool.getJSONObject("properties").getString("comment") == null || "null".equals(tool.getJSONObject("properties").getString("comment"))) ?
-                            Comment : tool.getJSONObject("properties").getString("comment");
-            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? ShortComment :
-                    (tool.getJSONObject("properties").getString("shortcomment") == null || "null".equals(tool.getJSONObject("properties").getString("shortcomment"))) ?
-                            ShortComment : tool.getJSONObject("properties").getString("shortcomment");
-            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? RemovedTime :
-                    (tool.getJSONObject("properties").getString("removeddatetime") == null || "null".equals(tool.getJSONObject("properties").getString("removeddatetime"))) ?
-                            RemovedTime : tool.getJSONObject("properties").getString("removeddatetime");
+//            IMO = !tool.getJSONObject("properties").has("imo") ? IMO :
+//                    (tool.getJSONObject("properties").getProperty("imo") == null || "null".equals(tool.getJSONObject("properties").getProperty("imo"))) ?
+//                            IMO : tool.getJSONObject("properties").getProperty("imo");
+//            IRCS = !tool.getJSONObject("properties").has("ircs") ? IRCS :
+//                    (tool.getJSONObject("properties").getProperty("ircs") == null || "null".equals(tool.getJSONObject("properties").getProperty("ircs"))) ?
+//                            IRCS : tool.getJSONObject("properties").getProperty("ircs");
+//            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? MMSI :
+//                    (tool.getJSONObject("properties").getProperty("mmsi") == null || "null".equals(tool.getJSONObject("properties").getProperty("mmsi"))) ?
+//                            MMSI : tool.getJSONObject("properties").getProperty("mmsi");
+//            RegNum = !tool.getJSONObject("properties").has("regnum") ? RegNum :
+//                    (tool.getJSONObject("properties").getProperty("regnum") == null || "null".equals(tool.getJSONObject("properties").getProperty("regnum"))) ?
+//                            RegNum : tool.getJSONObject("properties").getProperty("regnum");
+//            VesselName = !tool.getJSONObject("properties").has("vesselname") ? VesselName :
+//                    (tool.getJSONObject("properties").getProperty("vesselname") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselname"))) ?
+//                            VesselName : tool.getJSONObject("properties").getProperty("vesselname");
+//            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? VesselPhone :
+//                    (tool.getJSONObject("properties").getProperty("vesselphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselphone"))) ?
+//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselphone");
+//            VesselEmail = !tool.getJSONObject("properties").has("vesselemail") ? VesselPhone :
+//                    (tool.getJSONObject("properties").getProperty("vesselemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselemail"))) ?
+//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselemail");
+//            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? ContactPersonEmail :
+//                    (tool.getJSONObject("properties").getProperty("contactpersonemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonemail"))) ?
+//                            ContactPersonEmail : tool.getJSONObject("properties").getProperty("contactpersonemail");
+//            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? ContactPersonPhone :
+//                    (tool.getJSONObject("properties").getProperty("contactpersonphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonphone"))) ?
+//                            ContactPersonPhone : tool.getJSONObject("properties").getProperty("contactpersonphone");
+//            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? ContactPersonName :
+//                    (tool.getJSONObject("properties").getProperty("contactpersonname") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonname"))) ?
+//                            ContactPersonName : tool.getJSONObject("properties").getProperty("contactpersonname");
+//            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? ToolTypeCode :
+//                    (tool.getJSONObject("properties").getProperty("tooltypecode") == null || "null".equals(tool.getJSONObject("properties").getProperty("tooltypecode"))) ?
+//                            ToolTypeCode : ToolType.createFromValue(tool.getJSONObject("properties").getProperty("tooltypecode"));
+//            Source = !tool.getJSONObject("properties").has("source") ? Source :
+//                    (tool.getJSONObject("properties").getProperty("source") == null || "null".equals(tool.getJSONObject("properties").getProperty("source"))) ?
+//                            Source : tool.getJSONObject("properties").getProperty("source");
+//            Comment = !tool.getJSONObject("properties").has("comment") ? Comment :
+//                    (tool.getJSONObject("properties").getProperty("comment") == null || "null".equals(tool.getJSONObject("properties").getProperty("comment"))) ?
+//                            Comment : tool.getJSONObject("properties").getProperty("comment");
+//            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? ShortComment :
+//                    (tool.getJSONObject("properties").getProperty("shortcomment") == null || "null".equals(tool.getJSONObject("properties").getProperty("shortcomment"))) ?
+//                            ShortComment : tool.getJSONObject("properties").getProperty("shortcomment");
+//            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? RemovedTime :
+//                    (tool.getJSONObject("properties").getProperty("removeddatetime") == null || "null".equals(tool.getJSONObject("properties").getProperty("removeddatetime"))) ?
+//                            RemovedTime : tool.getJSONObject("properties").getProperty("removeddatetime");
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
             SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
@@ -380,8 +389,10 @@ public class ToolEntry implements Parcelable {
             properties.put("IMO", this.IMO == null ? JSONObject.NULL : this.IMO);
             properties.put("IRCS", this.IRCS == null ? JSONObject.NULL : this.IRCS);
             properties.put("MMSI", this.MMSI == null ? JSONObject.NULL : this.MMSI);
+            properties.put("REGNUM", this.RegNum == null ? JSONObject.NULL : this.RegNum);
             properties.put("VesselName", this.VesselName == null ? JSONObject.NULL : this.VesselName);
             properties.put("VesselPhone", this.VesselPhone == null ? JSONObject.NULL : this.VesselPhone);
+            properties.put("VesselEmail", this.VesselEmail == null ? JSONObject.NULL : this.VesselEmail);
             properties.put("ToolTypeCode", this.ToolTypeCode == null ? JSONObject.NULL : this.ToolTypeCode.getToolCode());
             properties.put("ToolTypeName", this.ToolTypeCode == null ? JSONObject.NULL : this.ToolTypeCode.toString());
             properties.put("Source", this.Source == null ? JSONObject.NULL : this.Source);
@@ -447,6 +458,7 @@ public class ToolEntry implements Parcelable {
         dest.writeString(RegNum);
         dest.writeString(VesselName);
         dest.writeString(VesselPhone);
+        dest.writeString(VesselEmail);
         dest.writeString(ContactPersonEmail);
         dest.writeString(ContactPersonPhone);
         dest.writeString(ContactPersonName);
@@ -534,6 +546,14 @@ public class ToolEntry implements Parcelable {
 
     public void setVesselPhone(String vesselPhone) {
         VesselPhone = vesselPhone;
+    }
+
+    public String getVesselEmail() {
+        return VesselEmail == null ? "" : VesselEmail;
+    }
+
+    public void setVesselEmail(String vesselEmail) {
+        VesselEmail = vesselEmail;
     }
 
     public ToolType getToolType() {
@@ -667,5 +687,85 @@ public class ToolEntry implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    private class ToolJsonHandler {
+        Context context;
+        private final String properties;
+        private final String geometry;
+        private final String geometryType;
+        private final String coordinates;
+        private final String nullString;
+
+        public ToolJsonHandler(Context context) {
+            this.context = context;
+            this.geometry = context.getString(R.string.json_tool_property_geometry);
+            this.geometryType = context.getString(R.string.json_tool_property_geometry_type);
+            this.properties = context.getString(R.string.json_tool_properties);
+            this.coordinates = context.getString(R.string.json_tool_property_coordinates);
+            this.nullString = context.getString(R.string.json_tool_property_null_string_value);
+        }
+
+        public String getProperty(JSONObject tool, String name, String defaultValue) {
+            String retval = defaultValue;
+            try {
+                retval = !tool.getJSONObject(properties).has(name) ?
+                        defaultValue : (tool.getJSONObject(properties).getString(name) == null || nullString.equals(tool.getJSONObject(properties).getString(name))) ?
+                        defaultValue : tool.getJSONObject(properties).getString(name);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return retval;
+        }
+
+        public ToolType getToolType(JSONObject tool, String name, ToolType defaultValue) {
+            ToolType retval = defaultValue;
+            try {
+                retval = !tool.getJSONObject(properties).has(name) ? defaultValue :
+                    (tool.getJSONObject(properties).getString(name) == null || nullString.equals(tool.getJSONObject(properties).getString(name))) ?
+                        defaultValue : ToolType.createFromValue(tool.getJSONObject(properties).getString(name));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return retval;
+        }
+
+        public GeometryType getGeometryType(JSONObject tool, GeometryType defaultValue) {
+            GeometryType retval = defaultValue;
+            try {
+                retval = !tool.getJSONObject(geometry).has(geometryType) ? defaultValue :
+                    (tool.getJSONObject(geometry).getString(geometryType) == null || nullString.equals(tool.getJSONObject(geometry).getString(geometryType))) ?
+                        defaultValue : GeometryType.createFromValue(tool.getJSONObject(geometry).getString(geometryType));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return retval;
+        }
+
+        public List<Point> getCoordinates(JSONObject tool, ArrayList defaultValue) {
+            List<Point> retval = defaultValue;
+
+            try {
+                JSONArray toolJsonCoordinates = tool.getJSONObject(geometry).getJSONArray(coordinates);
+
+                if(GeometryType.LINESTRING.toString().equals(tool.getJSONObject(geometry).getString(geometryType))) {
+                    for(int i = 0; i < toolJsonCoordinates.length(); i++) {
+                        JSONArray currentPoint = toolJsonCoordinates.getJSONArray(i);
+                        Point point = new Point(currentPoint.getDouble(1), currentPoint.getDouble(0));
+                        retval.add(point);
+                    }
+                } else {
+                    Point point = new Point(toolJsonCoordinates.getDouble(1), toolJsonCoordinates.getDouble(0));
+                    retval.add(point);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return retval;
+        }
     }
 }

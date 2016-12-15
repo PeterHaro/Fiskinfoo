@@ -56,6 +56,7 @@ public class User implements Parcelable{
     private Map<String, SubscriptionEntry> subscriptionCache;
     private boolean offlineModeActive = false;
     private UserSettings settings;
+    private boolean showToolExplanation = true;
 
     public User() {
         isAuthenticated = false;
@@ -80,6 +81,7 @@ public class User implements Parcelable{
         bundle.setClassLoader(SubscriptionEntry.class.getClassLoader());
         subscriptionCache = (Map<String, SubscriptionEntry>) bundle.getSerializable("cache");
         offlineModeActive = in.readByte() != 0;
+        showToolExplanation = in.readByte() != 0;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -242,6 +244,14 @@ public class User implements Parcelable{
         subscriptionCache.put(name, entry);
     }
 
+    public boolean getShowToolExplanation() {
+        return this.showToolExplanation;
+    }
+
+    public void setShowToolExplanation(boolean showToolExplanation) {
+        this.showToolExplanation = showToolExplanation;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -265,5 +275,6 @@ public class User implements Parcelable{
         bundle.putSerializable("cache", (Serializable) subscriptionCache);
         dest.writeBundle(bundle);
         dest.writeByte((byte) (offlineModeActive ? 1 : 0));
+        dest.writeByte((byte) (showToolExplanation ? 1 : 0));
     }
 }

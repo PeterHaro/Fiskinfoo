@@ -43,6 +43,7 @@ limitations under the License.
     <string name="time_colon">Tid:</string>
     <string name="archive">Arkiver</string>
     <string name="null_string_lowercase">null</string>
+    <string name="do_not_show_message_again">Ikke vis denne meldingen igjen</string>
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -282,10 +283,10 @@ limitations under the License.
     <string name="error_invalid_phone_number">Ugyldig tlf.nr.</string>
     <string name="error_invalid_name">Navnet er ikke gyldig</string>
     <string name="error_invalid_vessel_name">Ugyldig navn</string>
-    <string name="ircs_help_description">Internasjonalt radiokallesignal (IRCS) har en lengde på 6 tegn, hvor de to første er bokstaver, og de fire resterende tegnene er tall.</string>
-    <string name="mmsi_help_description">Maritime Mobile Service Identity (MMSI) koden er en tallkode på ni siffer.</string>
-    <string name="imo_help_description">International Maritime Organization (IMO) nummeret er en identifikasjonskode for skip og består av de tre bokstavene IMO etterfulgt av syv tall. Du trenger bare å skrive inn tallene i feltet under.</string>
-    <string name="registration_help_description">Fartøyets registreringsnummer skrives inn uten mellomrom.</string>
+    <string name="ircs_help_description">Internasjonalt radiokallesignal (IRCS) har normalt en lengde på 6 tegn, hvor de to første er bokstaver, og de fire resterende tegnene er tall. Dette feltet kan ikke endres etter innrapportering.</string>
+    <string name="mmsi_help_description">Maritime Mobile Service Identity (MMSI) koden er en tallkode på ni siffer. Dette feltet kan ikke endres etter innrapportering.</string>
+    <string name="imo_help_description">International Maritime Organization (IMO) nummeret er en identifikasjonskode for skip og består av de tre bokstavene IMO etterfulgt av syv tall. Du trenger bare å skrive inn tallene i feltet under. Dette feltet kan ikke endres etter innrapportering.</string>
+    <string name="registration_number_help_description">Fartøyets registreringsnummer skrives inn uten mellomrom. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="error_invalid_registration_number">Ugyldig registreringsnr.</string>
     <string name="add_tool">Legg til</string>
     <string name="tool_registration">Redskapsregistrering</string>
@@ -294,6 +295,7 @@ limitations under the License.
     <string name="contact_person_email">Epostadresse</string>
     <string name="contact_person_name">Navn</string>
     <string name="contact_person_phone">Telefonnummer</string>
+    <string name="vessel_name_help_description">Her skriver du inn navnet på fartøyet som setter redskapet. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="contact_person_email_help_description">Her skriver du inn din epostadresse. Denne brukes blant annet til å sende deg bekreftelse på at redskapet er registrert når du sender inn redskapsrapport.</string>
     <string name="contact_person_name_help_description">Her skriver du inn navnet ditt.</string>
     <string name="contact_person_phone_help_description">Her skriver du inn ditt telefonnummer. Du kan også oppgi det samme nummeret i feltet for fartøyets telefonnummmer. Det viktigste er at du er tilgjengelig på nummeret.</string>
@@ -314,6 +316,7 @@ limitations under the License.
     <string name="error_cannot_set_time_to_future">Kan ikke sette redskaper frem i tiden</string>
     <string name="no_changes_made">Ingen endringer gjort.</string>
     <string name="tool_confirmation">Redskapsbekreftelse</string>
+    <string name="tool_information">Redskapsinformasjon</string>
     <string name="tool_confirmation_dialog_help">Redskapene under deler noen verdier med hva du har satt opp i innstillingene dine. Dersom de tilhører deg kan du legge de til slik at du kan redigere de eller rapportere de ut. Dersom redskapene ikke tilhører deg kan du ignorere denne meldingen.</string>
     <string name="last_updated_by_source">Sist oppdatert av eier</string>
     <string name="delete">Slett</string>
@@ -338,12 +341,45 @@ limitations under the License.
     <string name="register_tool_not_authenticated_title">Redskapsregistrering</string>
     <string name="send_tool_report_not_authorized_error_message">For å rapportere inn redskaper gjennom Fiskinfo må brukeren din ha tilgang til bruksdata. Du kan søke om tilgang til bruksdata ved å følge lenken under.\nhttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
     <string name="send_tool_report_not_authorized_error_title">Redskapsrapportering</string>
+    <string name="removed_tools_information_text">Følgende redskaper har blitt utrapportert og vil nå bli arkivert.</string>
+    <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
+    <string name="reported_tools_removed_title">Utrapporterte redskaper</string>
+    <string name="tool_fragement_explanation_title">Mine redskaper</string>
+    <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
+    <string name="contact_information">Kontaktinformasjon</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
     <string name="latitude">Breddegrad</string>
     <string name="longitude">Lengdegrad</string>
     <string name="coordinates_help_text">Koordinater skrives inn som lengde- og breddegrader. Du kan legge til og fjerne posisjoner med knappene til høyre.</string>
+
+    <!-- Tool Json properties -->
+    <string name="json_tool_properties">properties</string>
+    <string name="json_tool_property_geometry">geometry</string>
+    <string name="json_tool_property_geometry_type">type</string>
+    <string name="json_tool_property_properties">properties</string>
+    <string name="json_tool_property_id">id</string>
+    <string name="json_tool_property_imo">imo</string>
+    <string name="json_tool_property_ircs">ircs</string>
+    <string name="json_tool_property_mmsi">mmsi</string>
+    <string name="json_tool_property_regnum">regnum</string>
+    <string name="json_tool_property_vessel_name">vesselname</string>
+    <string name="json_tool_property_vessel_phone">vesselphone</string>
+    <string name="json_tool_property__vessel_email">vesselemail</string>
+    <string name="json_tool_property_contactperson_email">contactpersonemail</string>
+    <string name="json_tool_property_contactperson_phone">contactpersonphone</string>
+    <string name="json_tool_property_contactperson_name">contactpersonname</string>
+    <string name="json_tool_property_tool_type_code">tooltypecode</string>
+    <string name="json_tool_property_source">source</string>
+    <string name="json_tool_property_comment">comment</string>
+    <string name="json_tool_property_short_comment">shortcomment</string>
+    <string name="json_tool_property_removed_time">removeddatetime</string>
+    <string name="json_tool_property_setup_date_time">setupdatetime</string>
+    <string name="json_tool_property_last_changed">lastchangeddatetime</string>
+    <string name="json_tool_property_last_changed_by_source">lastchangedbysource</string>
+    <string name="json_tool_property_coordinates">coordinates</string>
+    <string name="json_tool_property_null_string_value">null</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

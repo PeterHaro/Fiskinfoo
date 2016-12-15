@@ -192,7 +192,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             focusView = mEmailView;
             cancel = true;
         } /*else if (!new FiskInfoUtility().isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+            mEmailView.setError(getProperty(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
         }*/

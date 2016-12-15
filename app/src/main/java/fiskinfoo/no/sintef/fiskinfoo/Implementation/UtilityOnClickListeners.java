@@ -496,7 +496,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                 vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
                 vesselRegistrationNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_help_description));
+                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_number_help_description));
 
                 fieldContainer.addView(contactPersonNameRow.getView());
                 fieldContainer.addView(contactPersonPhoneRow.getView());
@@ -530,7 +530,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                         boolean validated = false;
 
-                        validated = utility.validateName(contactPersonNameRow.getFieldText().trim());
+                        validated = utility.validateName(contactPersonNameRow.getFieldText().trim()) || contactPersonNameRow.getFieldText().trim().equals("");
                         contactPersonNameRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_name));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -544,7 +544,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim());
+                        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim()) || contactPersonPhoneRow.getFieldText().trim().equals("");
                         contactPersonPhoneRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_phone_number));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -558,7 +558,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim());
+                        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim()) || contactPersonEmailRow.getFieldText().trim().equals("");
                         contactPersonEmailRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_email));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -572,7 +572,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim());
+                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim()) || vesselIrcsNumberRow.getFieldText().trim().equals("");
                         vesselIrcsNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_ircs));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -586,7 +586,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim());
+                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim()) || vesselMmsiNumberRow.getFieldText().trim().equals("");
                         vesselMmsiNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_mmsi));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -600,7 +600,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim());
+                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim()) || vesselImoNumberRow.getFieldText().trim().equals("");
                         vesselImoNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_imo));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -769,6 +769,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 commentRow.setInputType(InputType.TYPE_CLASS_TEXT);
                 commentRow.setHelpText(editButton.getContext().getString(R.string.comment_help_description));
                 vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
+                contactPersonPhoneRow.setHelpText(editButton.getContext().getString(R.string.vessel_name_help_description));
                 vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
                 vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
                 vesselIrcsNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
@@ -781,7 +782,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 vesselImoNumberRow.setHelpText(editButton.getContext().getString(R.string.imo_help_description));
                 vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
                 vesselRegistrationNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-                vesselRegistrationNumberRow.setHelpText(editButton.getContext().getString(R.string.registration_help_description));
+                vesselRegistrationNumberRow.setHelpText(editButton.getContext().getString(R.string.registration_number_help_description));
                 contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
                 contactPersonEmailRow.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -790,23 +791,28 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 contactPersonEmailRow.setHelpText(editButton.getContext().getString(R.string.contact_person_email_help_description));
                 coordinatesRow.setCoordinates(toolEntry.getCoordinates());
 
+                setupDateRow.setEnabled(false);
+
+                /* Should these fields be editable after tools are reported? */
+//                vesselRegistrationNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselImoNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselMmsiNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselNameRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselIrcsNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+
                 ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
                 toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(toolEntry.getToolType().toString()));
                 toolRemovedRow.setChecked(!toolEntry.getRemovedTime().isEmpty());
                 commentRow.setText(toolEntry.getComment());
                 contactPersonNameRow.setText(toolEntry.getContactPersonName());
-                contactPersonPhoneRow.setText(toolEntry.getContactPersonPhone());
-                contactPersonEmailRow.setText(toolEntry.getContactPersonEmail());
+                contactPersonPhoneRow.setText(!toolEntry.getContactPersonPhone().equals("") ? toolEntry.getContactPersonPhone() : toolEntry.getVesselPhone());
+                contactPersonEmailRow.setText(!toolEntry.getContactPersonEmail().equals("") ? toolEntry.getContactPersonEmail() : toolEntry.getVesselEmail());
                 vesselNameRow.setText(toolEntry.getVesselName());
                 vesselPhoneNumberRow.setText(toolEntry.getVesselPhone());
                 vesselIrcsNumberRow.setText(toolEntry.getIRCS());
                 vesselMmsiNumberRow.setText(toolEntry.getMMSI());
                 vesselImoNumberRow.setText(toolEntry.getIMO());
                 vesselRegistrationNumberRow.setText(toolEntry.getRegNum());
-
-                /***/
-
-
 
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 Date setupDate = null;
@@ -820,12 +826,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                 sdfMilliSeconds.setTimeZone(TimeZone.getDefault());
                 toolSetupDateTime = sdfMilliSeconds.format(setupDate);
-
-
                 setupDateRow.setDate(toolSetupDateTime.substring(0, 10));
                 setupTimeRow.setTime(toolSetupDateTime.substring(toolEntry.getSetupDateTime().indexOf('T') + 1, toolEntry.getSetupDateTime().indexOf('T') + 6));
-
-                /***/
 
                 fieldContainer.addView(coordinatesRow.getView());
                 fieldContainer.addView(setupDateRow.getView());

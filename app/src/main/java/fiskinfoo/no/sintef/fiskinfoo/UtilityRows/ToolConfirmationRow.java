@@ -63,7 +63,103 @@ public class ToolConfirmationRow extends BaseTableRow{
         addToolCheckBox = (CheckBox) getView().findViewById(R.id.tool_row_check_box);
         toolEntry = new ToolEntry(tool, context);
 
-        setupTimeTextView.setText(toolEntry.getSetupDateTime().replace("T", " ").substring(0, toolEntry.getSetupDateTime().indexOf(".")));
+        setupTimeTextView.setText(toolEntry.getSetupDateTime().replace("T", " ").substring(0, 19));
+        toolTypeNameTextView.setText(toolEntry.getToolType().toString());
+
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
+
+            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+            sb.append(", ");
+            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+            sb.append("\n");
+        }
+
+        String coordinateString = sb.toString();
+        String lastChangedBySourceString = (toolEntry.getLastChangedBySource().equals("") ? "" : toolEntry.getLastChangedBySource().replace("T", " ").substring(0, toolEntry.getLastChangedBySource().length() - 5));
+        coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length() - 1) : coordinateString.substring(0, coordinateString.length() - 1) + "\n..";
+
+
+        coordinatesTextView.setText(coordinateString);
+        vesselNameTextView.setText(context.getString(R.string.vessel_name) + ": " + toolEntry.getVesselName());
+        ircsTextView.setText(context.getString(R.string.ircs) + ": " + toolEntry.getIRCS());
+        mmsiTextView.setText(context.getString(R.string.mmsi) + ": " + toolEntry.getMMSI());
+        imoTextView.setText(context.getString(R.string.imo) + ": " + toolEntry.getIMO());
+        vesselPhoneTextView.setText(context.getString(R.string.vessel_phone) + ": " + toolEntry.getVesselPhone());
+        commentTextView.setText(context.getString(R.string.comment_field_header) + ": " + toolEntry.getComment());
+        lastChangedDateTimeTextView.setText(context.getString(R.string.last_updated) + ": " + toolEntry.getLastChangedDateTime().replace("T", " ").substring(0, toolEntry.getLastChangedDateTime().length() - 5));
+        lastChangedBySourceTextView.setText(context.getString(R.string.last_updated_by_source) + ": " + lastChangedBySourceString);
+
+        getView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StringBuilder sb = new StringBuilder();
+
+                if(ircsTextView.getVisibility() == View.GONE) {
+                    for(Point point : toolEntry.getCoordinates()) {
+                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLatitude()));
+                        sb.append(", ");
+                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLongitude()));
+                        sb.append("\n");
+                    }
+
+                    coordinatesTextView.setText(sb.toString().substring(0, sb.toString().length() - 1));
+
+                    ircsTextView.setVisibility(!toolEntry.getIRCS().isEmpty() ? View.VISIBLE : View.GONE);
+                    mmsiTextView.setVisibility(!toolEntry.getMMSI().isEmpty() ? View.VISIBLE : View.GONE);
+                    imoTextView.setVisibility(!toolEntry.getIMO().isEmpty() ? View.VISIBLE : View.GONE);
+                    vesselPhoneTextView.setVisibility(!toolEntry.getVesselPhone().isEmpty() ? View.VISIBLE : View.GONE);
+                    commentTextView.setVisibility(!toolEntry.getComment().isEmpty() ? View.VISIBLE : View.GONE);
+                    lastChangedDateTimeTextView.setVisibility(!toolEntry.getLastChangedDateTime().isEmpty() ? View.VISIBLE : View.GONE);
+                    lastChangedBySourceTextView.setVisibility(!toolEntry.getLastChangedBySource().isEmpty() ? View.VISIBLE : View.GONE);
+
+                } else {
+                    ircsTextView.setVisibility(View.GONE);
+                    mmsiTextView.setVisibility(View.GONE);
+                    imoTextView.setVisibility(View.GONE);
+                    vesselPhoneTextView.setVisibility(View.GONE);
+                    commentTextView.setVisibility(View.GONE);
+                    lastChangedDateTimeTextView.setVisibility(View.GONE);
+                    lastChangedBySourceTextView.setVisibility(View.GONE);
+
+                    for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
+
+                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+                        sb.append(", ");
+                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+                        sb.append("\n");
+                    }
+
+                    String coordinateString = sb.toString();
+                    coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length() - 1) : coordinateString.substring(0, coordinateString.length() - 1) + "\n..";
+                    coordinatesTextView.setText(coordinateString);
+                }
+            }
+        });
+    }
+
+    public ToolConfirmationRow(Context context, ToolEntry tool) {
+        super(context, R.layout.utility_row_tool_confirmation_row);
+
+        coordinatesTextView = (TextView) getView().findViewById(R.id.tool_row_tool_position_text_view);
+        ircsTextView = (TextView) getView().findViewById(R.id.tool_row_ircs_text_view);
+        mmsiTextView = (TextView) getView().findViewById(R.id.tool_row_mmsi_text_view);
+        imoTextView = (TextView) getView().findViewById(R.id.tool_row_imo_text_view);
+        vesselNameTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_name_text_view);
+        vesselPhoneTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_phone_text_view);
+        toolTypeNameTextView = (TextView) getView().findViewById(R.id.tool_row_tool_type_text_view);
+        commentTextView = (TextView) getView().findViewById(R.id.tool_row_comment_text_view);
+        setupTimeTextView = (TextView) getView().findViewById(R.id.tool_row_setup_time_text_view);
+        lastChangedDateTimeTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_text_view);
+        lastChangedBySourceTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
+        expandViewImageView = (ImageView) getView().findViewById(R.id.tool_row_expand_view_image_view);
+        addToolCheckBox = (CheckBox) getView().findViewById(R.id.tool_row_check_box);
+        toolEntry = tool;
+
+        addToolCheckBox.setVisibility(View.GONE);
+
+        setupTimeTextView.setText(toolEntry.getSetupDateTime().replace("T", " ").substring(0, 19));
         toolTypeNameTextView.setText(toolEntry.getToolType().toString());
 
         StringBuilder sb = new StringBuilder();

@@ -152,11 +152,12 @@ limitations under the License.
 
         <CheckBox
             android:id="@+id/tool_row_check_box"
+            android:visibility="visible"
+            android:layout_toStartOf="@+id/tool_row_expand_view_image_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/tool_row_expand_view_image_view"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginEnd="@dimen/activity_horizontal_margin_small" />
 
         <ImageView
             android:id="@+id/tool_row_expand_view_image_view"
@@ -164,9 +165,10 @@ limitations under the License.
             android:layout_height="30dp"
             android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
             android:layout_marginTop="@dimen/activity_vertical_margin_small"
-            android:layout_toStartOf="@+id/tool_row_check_box"
             android:duplicateParentState="true"
-            android:background="@drawable/ic_expand_more_black_24dp" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/ic_expand_more_black_36dp" />
 
     </RelativeLayout>
 

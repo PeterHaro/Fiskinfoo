@@ -176,4 +176,19 @@ public class UtilityDialogs implements DialogInterface{
 
         return dialog;
     }
+
+    @Override
+    public Dialog getCheckboxInformationDialog(Context context, String title, String infoText) {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_information_checkbox);
+        dialog.setTitle(title);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        TextView textView = (TextView) dialog.findViewById(R.id.checkbox_dialog_text_view);
+
+        textView.setText(infoText);
+
+        return dialog;
+    }
 }

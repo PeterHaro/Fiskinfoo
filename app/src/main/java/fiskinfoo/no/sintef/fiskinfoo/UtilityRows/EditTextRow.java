@@ -117,4 +117,8 @@ public class EditTextRow extends BaseTableRow  {
     public void requestFocus() {
         editText.requestFocus();
     }
+
+    public void setEnabled(boolean enabled) {
+        editText.setEnabled(enabled);
+    }
 }

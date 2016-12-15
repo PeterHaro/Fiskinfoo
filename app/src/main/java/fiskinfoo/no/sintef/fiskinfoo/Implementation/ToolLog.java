@@ -4,7 +4,6 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolInfo;
 
 public class ToolLog implements Parcelable{
     public NavigableMap<String, ArrayList<ToolEntry>> myLog;
