@@ -262,6 +262,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);
                 final LinearLayout intervalsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_intervals_container);
                 final EditText subscriptionEmailEditText = (EditText) dialog.findViewById(R.id.manage_subscription_email_edit_text);
+
                 final Button subscribeButton = (Button) dialog.findViewById(R.id.manage_subscription_update_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 
@@ -372,6 +373,9 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                 if(response.getStatus() == 204) {
                                     ((CheckBox) v).setChecked(false);
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                                 }
                             }
                         } else {
@@ -381,6 +385,10 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                             if(response != null) {
                                 ((CheckBox) v).setChecked(true);
+                                // TODO: add to "Mine abonnementer"
+                                Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                             }
                         }
 

@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
+
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 
@@ -330,8 +331,6 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
 
         closeDialogButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
 
-
-
         dialog.show();
     }
 
@@ -378,9 +377,10 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                 Response response;
                 String downloadPath;
                 String format = "JSON";
-                byte[] data = null;
                 Date lastUpdatedDateTime;
                 Date lastUpdatedCacheDateTime;
+                byte[] data = null;
+                boolean success;
 
                 subscribables = api.getSubscribable();
                 downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
@@ -393,7 +393,6 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                 for(PropertyDescription subscribable : subscribables) {
                     SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                    boolean success;
 
                     if(cacheEntry == null || !cacheEntry.mOfflineActive) {
                         continue;
@@ -425,7 +424,12 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                         e.printStackTrace();
                     }
 
-                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false);
+                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(),
+                            data,
+                            subscribable.Name
+                                    .replace(",", "")
+                                    .replace(" ", "_"),
+                            format, downloadPath, false);
 
                     if(success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;

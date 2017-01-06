@@ -312,19 +312,11 @@ public class MapFragment extends Fragment {
 
         public void onPageFinished(WebView view, String url) {
             List<String> layers = user.getActiveLayers();
-            if (user.isTokenValid() && user.getIsFishingFacilityAuthenticated()) {
-                Log.d(TAG, "USER IS AUTHENTICATED");
-                view.loadUrl("javascript:populateMap(1);");
+            JSONArray json = new JSONArray(layers);
 
-                JSONArray json = new JSONArray(layers);
-                Log.d("TAG", json.toString());
-                view.loadUrl("javascript:toggleLayers(" + json + ")");
-            } else {
-                JSONArray json = new JSONArray(layers);
-                Log.d(TAG, json.toString());
-                view.loadUrl("javascript:populateMap(2)");
-                view.loadUrl("javascript:toggleLayers(" + json + ")");
-            }
+            view.loadUrl("javascript:populateMap();");
+            view.loadUrl("javascript:toggleLayers(" + json + ");");
+
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -543,6 +535,10 @@ public class MapFragment extends Fragment {
                                     Log.d(TAG, "line " + line);
                                 }
 
+                                if(convertedLine[0].startsWith("3sl")) {
+                                    continue;
+                                }
+
                                 if (convertedLine[3].equalsIgnoreCase("Garnstart") && startSet) {
                                     if (shape.size() == 1) {
                                         // Point
@@ -587,6 +583,7 @@ public class MapFragment extends Fragment {
                         } catch (ArrayIndexOutOfBoundsException e) {
                             Log.e(TAG, "Error when trying to serialize file.");
                             Toast error = Toast.makeText(getActivity(), "Ingen redskaper i området du definerte", Toast.LENGTH_LONG);
+                            e.printStackTrace();
                             error.show();
                             return;
                         } finally {
@@ -968,7 +965,7 @@ public class MapFragment extends Fragment {
 
                 for(int toolId : selectedTools) {
                     JSONObject feature;
-                    Feature toolFeature;
+                            Feature toolFeature;
 
                     try {
                         feature = toolsArray.getJSONObject(toolId);

@@ -106,7 +106,7 @@ limitations under the License.
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
 
     <!-- Checkbox row -->
-    <dimen name="check_box_row_text_size">20sp</dimen>
+    <dimen name="check_box_row_text_size">17sp</dimen>
     <dimen name="check_box_row_text_view_margin_left">50dp</dimen>
     <dimen name="check_box_row_check_box_margin">25dp</dimen>
     <dimen name="check_box_row_check_box_margin_left">25dp</dimen>

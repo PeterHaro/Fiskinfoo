@@ -244,6 +244,9 @@ public class FiskInfoUtility {
             case "iceedge":
                 retVal = R.drawable.ikon_is_tjenester;
                 break;
+            case "icechart":
+                retVal = R.drawable.ikon_is_tjenester;
+                break;
             case "npdfacility":
                 retVal = R.drawable.ikon_olje_og_gass;
                 break;
@@ -252,9 +255,6 @@ public class FiskInfoUtility {
                 break;
             case "npdsurveyongoing":
                 retVal = R.drawable.ikon_olje_og_gass;
-                break;
-            case "icechart":
-                retVal = R.drawable.ikon_is_tjenester;
                 break;
         }
 
@@ -277,14 +277,12 @@ public class FiskInfoUtility {
         OutputStream outputStream = null;
         filePath = downloadSavePath;
         boolean success = false;
+        String fileEnding = format;
 
         File directory = filePath == null ? null : new File(filePath);
 
         if(directory != null && !directory.isDirectory() && !directory.mkdirs()) {
-           if(showToasts) {
-               Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
-           }
-            return false;
+            directory = null;
         }
 
         if(directory == null) {
@@ -294,8 +292,12 @@ public class FiskInfoUtility {
             new File(filePath).mkdirs();
         }
 
+        if(fileEnding != null && fileEnding.equals(context.getString(R.string.olex))) {
+            fileEnding = "olx.gz";
+        }
+
         try {
-            outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
+            outputStream = new FileOutputStream(new File(filePath + writableName + "." + fileEnding));
             outputStream.write(data);
 
             if(showToasts) {

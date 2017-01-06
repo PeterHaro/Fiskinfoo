@@ -306,8 +306,10 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
         }
 
+        String tmpUpdatedTime = subscription.LastUpdated == null ? (subscription.Created == null ? getString(R.string.abbreviation_na) : subscription.Created) : subscription.LastUpdated;
+
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
-        currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
+        currentPropertyDescriptionChildObject.setLastUpdatedText(tmpUpdatedTime.replace("T", "\n"));
         currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
         currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
         currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);

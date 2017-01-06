@@ -68,6 +68,8 @@ limitations under the License.
     <string name="subscribe">Abonnér</string>
     <string name="fishing_facility_api_name">fishingfacility</string>
     <string name="fishing_facility_name">Redskap</string>
+    <string name="subscription_update_successful">Abonnement oppdatert</string>
+    <string name="subscription_update_failed">Abonnementsendring feilet</string>
 
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
@@ -94,6 +96,9 @@ limitations under the License.
     <string name="search_tools_init_error">Feil</string>
     <string name="search_tools_init_info">Det oppstod en feil under opprettingen av søkefeltet.</string>
     <string name="jump_to_bottom">Hopp til slutten</string>
+    <string name="tool_set_date_placeholder">Dato</string>
+    <string name="tool">Redskap</string>
+
 
     <!-- Map fragment menu strings -->
     <string name="map_update_button">Oppdater kartet</string>
@@ -136,6 +141,7 @@ limitations under the License.
     <string name="download_map_layer_dialog_help_text">Her kan du laste ned kartlag i forskjellige formater. Velg et kartlag og klikk last ned. Kartlaget lagres som standard i mappen Downloads/fiskinfo med mindre du har valgt en annen mappe i innstillingene.</string>
     <string name="cancel_subscription_dialog_title">Kanseller abonnement</string>
     <string name="confirm_subscription_cancelation">Er du sikker på at du vil avbryte dette abonnementet?</string>
+    <string name="olex">OLEX</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
     <string name="proximity_alert_set">Kollisjonsvarsling opprettet</string>
@@ -186,6 +192,8 @@ limitations under the License.
     <string name="log_out">Logg ut</string>
     <string name="confirm_log_out">Er du sikker på at du vil logge ut?</string>
     <string name="title_activity_file_dialog">FileDialog</string>
+    <string name="register_user_account_hyperlink">&lt;a href="https://www.barentswatch.no/LandingPage/"&gt;Registrer bruker.&lt;/a&gt;</string>
+    <string name="forgot_account_password_hyperlink">&lt;a href="https://www.barentswatch.no/s/Logg-inn/?ReturnUrl=/MinSide/"&gt;Glemt passord.&lt;/a&gt;</string>
 
     <!-- Cardview fragment -->
     <string name="cardview_contents">This is a CardView widget. CardView widgets can have
