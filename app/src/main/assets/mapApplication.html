@@ -7,13 +7,15 @@
     <script>
         var map;
         var ls;
-        var mFeature;
+        var mFeature = null;
+        var popup = null;
         var selectFeature;
         var geoJson = null;
         var token = null;
         var sensor = false;
         var format = "image/jpeg";
         var highlightVesselName = null;
+        var marinogramUrl = null;
         window.onload = function () {
             init();
         }
@@ -83,10 +85,7 @@
                 },
 
                 trigger: function(e) {
-                    var lonlat = map.getLonLatFromPixel(e.xy);
-                    lonlat.transform("EPSG:3857", "EPSG:4326");
-                    alert(lonlat.lat.toFixed(8) + ", " +
-                                              lonlat.lon.toFixed(8))
+                    mapClick(e);
                 }
             });
 
@@ -118,15 +117,45 @@
         }
 
         function toggleLayers(layers) {
+            var controls = map.controls;
+
+            for(i = 0; i < controls.length; i++) {
+                var controlId = controls[i].id.toLowerCase();
+                if(controlId.includes("SelectFeature")) {
+                    controls.splice(i, 1);
+                    i--;
+                }
+            }
+
+            map.controls = controls;
+
+            var layerArray = [];
+            var vectorLayers = map.getLayersByClass("OpenLayers.Layer.Vector") ;
             toggleAllLayersInvisible();
             for (var i = 0; i < layers.length; i++) {
                 toggleLayerVisibilityByName(layers[i], true);
+                layerArray.push(map.getLayersByName(layers[i])[0]);
             }
+
+            layerArray = layerArray.filter(function(n) {
+                return vectorLayers.indexOf(n) != -1;
+            });
+
+            selectFeature = new OpenLayers.Control.SelectFeature(
+                layerArray,
+                {
+                    onSelect: clickNotice,
+                    onUnselect: onPopupFeatureUnselect,
+                    autoActivate: true
+                }
+            );
+
+            map.addControl(selectFeature);
         }
 
         function corsErrBack(error) {
             var i = 5;
-            alert(error);
+            <!--alert(error);-->
         }
 
         /**
@@ -158,7 +187,7 @@
                             if (req.status >= 200 && req.status < 400) {
                                 callback(req.responseText);
                             } else {
-                                errback(new Error("Response returned with non-OK status"));
+                                errback(new Error("Response returned with non-OK status " + req.status));
                             }
                         }
                     };
@@ -320,21 +349,6 @@
             var toolLayer = map.getLayersByName("Redskap")[0];
             toolLayer.styleMap = toolsStyleMap;
             toolLayer.addFeatures(geoJsonFormat.read(geoJson));
-
-            selectFeature = new OpenLayers.Control.SelectFeature(
-                [toolLayer,
-                    map.getLayersByName("Seismikk, pågående")[0],
-                    map.getLayersByName("Seismikk, planlagt")[0],
-                    map.getLayersByName("Havbunnsinstallasjoner")[0],
-                    map.getLayersByName("Iskonsentrasjon")[0] ],
-                {
-                    onSelect: clickNotice,
-                    onUnselect: onPopupFeatureUnselect,
-                    autoActivate: true
-                }
-            );
-
-            map.addControl(selectFeature);
         }
 
         function onOrientationChanged() {
@@ -650,7 +664,7 @@
                 new OpenLayers.Layer.Vector("Seismikk, planlagt"),
                 new OpenLayers.Layer.Vector("Havbunnsinstallasjoner", {
                     strategies: [new OpenLayers.Strategy.Cluster({
-                        distance: 15,
+                        distance: map.getZoom() > 7 ? 5 : 15,
                         threshold: 2
                     })]
                 }),
@@ -667,6 +681,10 @@
 
 
         function clickNotice(feature) {
+            if(popup != null) {
+                onPopupClose();
+            }
+
             if (feature.attributes.hasOwnProperty("tooltypename") || (feature.hasOwnProperty("cluster") && (feature.cluster[0].hasOwnProperty("cluster") || feature.cluster[0].data.hasOwnProperty("tooltypename")))) {
                 toolClickNotice(feature);
             } else if (feature.attributes.hasOwnProperty("surmaintyp")) {
@@ -882,6 +900,37 @@
             }
         }
 
+        function mapClick(e) {
+             if(popup != null) {
+                onPopupClose();
+                return;
+            }
+
+            var lonLat = map.getLonLatFromPixel(e.xy);
+            var lonLatWGS = new OpenLayers.LonLat(lonLat.lon, lonLat.lat);
+            lonLatWGS.transform("EPSG:3857", "EPSG:4326");
+            marinogramUrl = "http://www.yr.no/sted/hav/" + lonLatWGS.lat.toFixed(8).replace(".", ",") + "_" + lonLatWGS.lon.toFixed(8).replace(".", ",");
+            popup = new OpenLayers.Popup.FramedCloud(
+                "Posisjon",
+                lonLat,
+                null,
+                <!--"<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p>",-->
+                "<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p> " + "<button onclick='launchMarinogramIntent()'>Se marinogram for området</button>",
+                <!--"<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p> " + "<a href=" + marinogramUrl + ">Se marinogram for området</a>",-->
+                null,
+                true,
+                null
+            );
+
+            popup.panMapIfOutOfView = true;
+            popup.autoSize = true;
+            map.addPopup(popup);
+        }
+
+        function launchMarinogramIntent(url) {
+            Android.openMarinogramUrl(marinogramUrl);
+        }
+
         function unknownFeatureClickNotice(feature) {
             popup = new OpenLayers.Popup.FramedCloud("Ukjent objekt",
             feature.geometry.getBounds().getCenterLonLat(),
@@ -897,11 +946,20 @@
                 map.removePopup(feature.popup);
                 feature.popup.destroy();
                 feature.popup = null;
+                popup = null;
+                mFeature = null;
             }
         }
 
         function onPopupClose(evt) {
-            selectFeature.unselect(mFeature);
+            if(mFeature != null) {
+                selectFeature.unselect(mFeature);
+            } else if(popup != null) {
+                map.removePopup(popup);
+                popup.destroy();
+                popup = null;
+
+            }
         }
 
         function getMapCoordinates(event) {

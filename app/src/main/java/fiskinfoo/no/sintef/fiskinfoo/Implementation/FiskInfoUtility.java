@@ -677,7 +677,9 @@ public class FiskInfoUtility {
     }
 
     public boolean validateRegistrationNumber(String regnum) {
-        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+        // TODO: Relax validation, invalidates correct values.
+        return regnum != null && regnum.length() >= 3;
+//        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
     }
 
     /**

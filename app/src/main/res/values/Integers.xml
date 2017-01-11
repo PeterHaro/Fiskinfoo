@@ -36,5 +36,9 @@ limitations under the License.
     <integer name="input_length_mmsi">9</integer>
     <integer name="input_length_imo">7</integer>
     <integer name="input_length_registration_number">7</integer>
+    <integer name="valid_latitude_value_min">50</integer>
+    <integer name="valid_latitude_value_max">85</integer>
+    <integer name="valid_longitude_value_min">-10</integer>
+    <integer name="valid_longitude_value_max">50</integer>
 
 </resources>

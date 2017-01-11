@@ -19,8 +19,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -257,7 +259,14 @@ public class MapFragment extends Fragment {
             }
         }
 
-        // Note: Would pass a JSONObject, but for some reason the mapApplication fails at receiving so sending as string instead.
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public void openMarinogramUrl(String url) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
+        }
+
+
         @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
         public String getGeoJSONFile(String fileName) {
