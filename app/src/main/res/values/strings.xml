@@ -360,7 +360,10 @@ limitations under the License.
     <string name="position">Posisjon</string>
     <string name="latitude">Breddegrad</string>
     <string name="longitude">Lengdegrad</string>
-    <string name="coordinates_help_text">Koordinater skrives inn som lengde- og breddegrader. Du kan legge til og fjerne posisjoner med knappene til høyre.\nKoordinatene må falle innefor følgende verdier:\nBreddegrad: 50 til 85\nLengdegrad: -10 til 50</string>
+    <string name="coordinates_help_text">Koordinater skrives inn som grader, minutt, sekund. Du kan legge til og fjerne posisjoner med knappene til høyre.</string>
+    <string name="symbol_geographical_degrees">°</string>
+    <string name="symbol_geographical_minutes">\'</string>
+    <string name="symbol_geographical_seconds">\"</string>
 
     <!-- Tool Json properties -->
     <string name="json_tool_properties">properties</string>

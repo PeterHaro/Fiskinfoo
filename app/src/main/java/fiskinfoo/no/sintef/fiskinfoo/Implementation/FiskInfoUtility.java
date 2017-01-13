@@ -452,6 +452,29 @@ public class FiskInfoUtility {
         return output;
     }
 
+    public static double[] decimalToDMSArray(double coord) {
+        double[] output = new double[3];
+
+        double mod = coord % 1;
+        int intPart = (int) coord;
+        output[0] = intPart;
+
+        coord = mod * 60;
+        mod = coord % 1;
+        intPart = (int) coord;
+        output[1] = intPart;
+
+        coord = mod * 60;
+        intPart = (int) coord;
+        output[2] = intPart;
+
+        return output;
+    }
+
+    public static double DMSToDecimal(double[] coord) {
+        return coord[0] + (coord[1] / 60) + (coord[2] / 3600);
+    }
+
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
         if (input.endsWith("Z")) {

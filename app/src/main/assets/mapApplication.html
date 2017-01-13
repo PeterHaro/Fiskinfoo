@@ -910,13 +910,20 @@
             var lonLatWGS = new OpenLayers.LonLat(lonLat.lon, lonLat.lat);
             lonLatWGS.transform("EPSG:3857", "EPSG:4326");
             marinogramUrl = "http://www.yr.no/sted/hav/" + lonLatWGS.lat.toFixed(8).replace(".", ",") + "_" + lonLatWGS.lon.toFixed(8).replace(".", ",");
+
+            var latDegrees = Math.floor(lonLatWGS.lat);
+            var latMinutes = Math.floor((lonLatWGS.lat - latDegrees) * 60);
+            var latSeconds = (lonLatWGS.lat - latDegrees - latMinutes / 60) * 3600;
+
+            var lonDegrees = Math.floor(lonLatWGS.lon);
+            var lonMinutes = Math.floor((lonLatWGS.lon - lonDegrees) * 60);
+            var lonSeconds = (lonLatWGS.lon - lonDegrees - lonMinutes / 60) * 3600;
+
             popup = new OpenLayers.Popup.FramedCloud(
                 "Posisjon",
                 lonLat,
                 null,
-                <!--"<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p>",-->
-                "<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p> " + "<button onclick='launchMarinogramIntent()'>Se marinogram for området</button>",
-                <!--"<p>" + lonLatWGS.lat.toFixed(8) + ", " + lonLatWGS.lon.toFixed(8) + "</p> " + "<a href=" + marinogramUrl + ">Se marinogram for området</a>",-->
+                "<p>" + String(latDegrees) + "° " + String(latMinutes) + "' " + String(latSeconds) + "\", " + String(lonDegrees) + "° " + String(lonMinutes) + "' " + String(lonSeconds) + "\"</p><button onclick='launchMarinogramIntent()'>Se marinogram for området</button>",
                 null,
                 true,
                 null

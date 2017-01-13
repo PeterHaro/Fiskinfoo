@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class ToolConfirmationRow extends BaseTableRow{
@@ -69,16 +70,15 @@ public class ToolConfirmationRow extends BaseTableRow{
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
-
-            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+            sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLatitude())));
             sb.append(", ");
-            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+            sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLongitude())));
             sb.append("\n");
         }
 
         String coordinateString = sb.toString();
-        String lastChangedBySourceString = (toolEntry.getLastChangedBySource().equals("") ? "" : toolEntry.getLastChangedBySource().replace("T", " ").substring(0, toolEntry.getLastChangedBySource().length() - 5));
         coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length() - 1) : coordinateString.substring(0, coordinateString.length() - 1) + "\n..";
+        String lastChangedBySourceString = (toolEntry.getLastChangedBySource().equals("") ? "" : toolEntry.getLastChangedBySource().replace("T", " ").substring(0, toolEntry.getLastChangedBySource().length() - 5));
 
 
         coordinatesTextView.setText(coordinateString);
@@ -98,9 +98,9 @@ public class ToolConfirmationRow extends BaseTableRow{
 
                 if(ircsTextView.getVisibility() == View.GONE) {
                     for(Point point : toolEntry.getCoordinates()) {
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLatitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((point.getLatitude())));
                         sb.append(", ");
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLongitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((point.getLongitude())));
                         sb.append("\n");
                     }
 
@@ -124,10 +124,9 @@ public class ToolConfirmationRow extends BaseTableRow{
                     lastChangedBySourceTextView.setVisibility(View.GONE);
 
                     for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
-
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLatitude())));
                         sb.append(", ");
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLongitude())));
                         sb.append("\n");
                     }
 
@@ -165,16 +164,15 @@ public class ToolConfirmationRow extends BaseTableRow{
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
-
-            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+            sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLatitude())));
             sb.append(", ");
-            sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+            sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLongitude())));
             sb.append("\n");
         }
 
         String coordinateString = sb.toString();
-        String lastChangedBySourceString = (toolEntry.getLastChangedBySource().equals("") ? "" : toolEntry.getLastChangedBySource().replace("T", " ").substring(0, toolEntry.getLastChangedBySource().length() - 5));
         coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length() - 1) : coordinateString.substring(0, coordinateString.length() - 1) + "\n..";
+        String lastChangedBySourceString = (toolEntry.getLastChangedBySource().equals("") ? "" : toolEntry.getLastChangedBySource().replace("T", " ").substring(0, toolEntry.getLastChangedBySource().length() - 5));
 
 
         coordinatesTextView.setText(coordinateString);
@@ -194,9 +192,9 @@ public class ToolConfirmationRow extends BaseTableRow{
 
                 if(ircsTextView.getVisibility() == View.GONE) {
                     for(Point point : toolEntry.getCoordinates()) {
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLatitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((point.getLatitude())));
                         sb.append(", ");
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", point.getLongitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((point.getLongitude())));
                         sb.append("\n");
                     }
 
@@ -220,10 +218,9 @@ public class ToolConfirmationRow extends BaseTableRow{
                     lastChangedBySourceTextView.setVisibility(View.GONE);
 
                     for(int i = 0; i < toolEntry.getCoordinates().size() && i < 2; i++) {
-
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLatitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLatitude())));
                         sb.append(", ");
-                        sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(i).getLongitude()));
+                        sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(i).getLongitude())));
                         sb.append("\n");
                     }
 

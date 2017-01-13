@@ -40,5 +40,11 @@ limitations under the License.
     <integer name="valid_latitude_value_max">85</integer>
     <integer name="valid_longitude_value_min">-10</integer>
     <integer name="valid_longitude_value_max">50</integer>
+    <integer name="valid_degrees_value_min">0</integer>
+    <integer name="valid_degrees_value_max">90</integer>
+    <integer name="valid_minutes_value_min">0</integer>
+    <integer name="valid_minutes_value_max">60</integer>
+    <integer name="valid_seconds_value_min">0</integer>
+    <integer name="valid_seconds_value_max">60</integer>
 
 </resources>

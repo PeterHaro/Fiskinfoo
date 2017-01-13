@@ -1127,13 +1127,15 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                                 TextView positionTextView = (TextView)((View)editButton.getParent()).findViewById(R.id.tool_log_row_tool_position_text_view);
                                 StringBuilder sb = new StringBuilder();
 
-                                sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(0).getLatitude()));
+
+
+                                sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(0).getLatitude())));
                                 sb.append(", ");
-                                sb.append(String.format(Locale.ENGLISH, "%.8f", toolEntry.getCoordinates().get(0).getLongitude()));
+                                sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(0).getLongitude())));
 
                                 String coordinateString = sb.toString();
-                                coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length()) : coordinateString.substring(0, coordinateString.length()) + "\n..";
-
+                                coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString : coordinateString + "\n..";
+                                
                                 sdfMilliSeconds.setTimeZone(TimeZone.getTimeZone("GMT+1"));
                                 setupDateString = sdfMilliSeconds.format(setupDate);
 

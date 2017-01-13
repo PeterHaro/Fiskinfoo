@@ -31,6 +31,7 @@ import java.util.TimeZone;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class ToolLogRow extends BaseTableRow {
@@ -52,12 +53,12 @@ public class ToolLogRow extends BaseTableRow {
         relativeLayout = (RelativeLayout) getView().findViewById(R.id.tool_log_row_relative_layout);
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(Locale.ENGLISH, "%.8f", tool.getCoordinates().get(0).getLatitude()));
+        sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));
         sb.append(", ");
-        sb.append(String.format(Locale.ENGLISH, "%.8f", tool.getCoordinates().get(0).getLongitude()));
+        sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLongitude())));
 
         String coordinateString = sb.toString();
-        coordinateString = tool.getCoordinates().size() < 2 ? coordinateString.substring(0, sb.toString().length()) : coordinateString.substring(0, coordinateString.length()) + "\n..";
+        coordinateString = tool.getCoordinates().size() < 2 ? coordinateString : coordinateString + "\n..";
 
         SimpleDateFormat sdf = new SimpleDateFormat(context.getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
         Date setupDate;
