@@ -288,7 +288,7 @@ public class CardViewFragment extends Fragment {
 
             bottomButtonContainer.addView(showOnMapButton);
 
-            downloadMapButton.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(propertyDescription, user, TAG));
+            downloadMapButton.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
 
         }
         if(warning != null) {

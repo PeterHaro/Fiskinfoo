@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -29,8 +30,8 @@ public class LatLonRow extends BaseTableRow {
     private Button setPositionButton;
     private GpsLocationTracker locationTracker;
 
-    public LatLonRow(Context context, GpsLocationTracker gpsLocationTracker) {
-        super(context, R.layout.utility_row_lat_lon_row);
+    public LatLonRow(Activity activity, GpsLocationTracker gpsLocationTracker) {
+        super(activity, R.layout.utility_row_lat_lon_row);
 
         latitudeEditText = (EditText) super.getView().findViewById(R.id.utility_lat_lon_row_latitude_edit_text);
         longitudeEditText = (EditText) super.getView().findViewById(R.id.utility_lat_lon_row_longitude_edit_text);

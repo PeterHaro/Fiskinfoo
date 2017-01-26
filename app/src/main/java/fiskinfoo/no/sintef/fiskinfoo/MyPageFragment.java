@@ -298,7 +298,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         View.OnClickListener subscriptionSwitchClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, TAG) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {

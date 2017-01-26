@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,6 +29,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -750,6 +752,9 @@ public class MapFragment extends Fragment {
                         proximityAlertWatcher = null;
                         mediaPlayer.stop();
                         mediaPlayer.release();
+
+
+
                         browser.loadUrl("javascript:zoomToUserPosition()");
 
                         dialog.dismiss();
@@ -799,6 +804,15 @@ public class MapFragment extends Fragment {
                 updateMap();
                 return true;
             case R.id.zoom_to_user_position:
+                if(FiskInfoUtility.shouldAskPermission()) {
+                    String[] perms = {"android.permission.ACCESS_FINE_LOCATION"};
+                    int permsRequestCode = MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            permsRequestCode);
+                }
+
                 browser.loadUrl("javascript:zoomToUserPosition()");
                 return true;
             case R.id.symbol_explanation:

@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -97,7 +98,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public OnClickListener getSubscriptionDownloadButtonOnClickListener(final PropertyDescription subscription, final User user, final String tag) {
+    public OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag) {
         return new OnClickListener() {
 
             @Override
@@ -150,7 +151,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                         byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                                         if (fiskInfoUtility.isExternalStorageWritable()) {
-                                            fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
+                                            fiskInfoUtility.writeMapLayerToExternalStorage(activity, fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
                                         } else {
                                             Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                                         }
@@ -652,7 +653,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
         };
     }
 
-    public OnClickListener getToolEntryEditDialogOnClickListener(final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user) {
+    public OnClickListener getToolEntryEditDialogOnClickListener(final Activity activity, final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user) {
         return new OnClickListener() {
             @Override
             public void onClick(final View editButton) {
@@ -665,7 +666,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 final LinearLayout fieldContainer = (LinearLayout) dialog.findViewById(R.id.dialog_register_tool_main_container);
                 final DatePickerRow setupDateRow = new DatePickerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_set_date_colon), fragmentManager);
                 final TimePickerRow setupTimeRow = new TimePickerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_set_time_colon), fragmentManager, false);
-                final CoordinatesRow coordinatesRow = new CoordinatesRow(editButton.getContext(), locationTracker);
+                final CoordinatesRow coordinatesRow = new CoordinatesRow(activity, locationTracker);
                 final SpinnerRow toolRow = new SpinnerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_type), ToolType.getValues());
                 final CheckBoxRow toolRemovedRow = new CheckBoxRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_removed_row_text), true);
                 final EditTextRow commentRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.comment_field_header), editButton.getContext().getString(R.string.comment_field_hint));
@@ -797,7 +798,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 contactPersonNameRow.setHelpText(editButton.getContext().getString(R.string.contact_person_name_help_description));
                 contactPersonPhoneRow.setHelpText(editButton.getContext().getString(R.string.contact_person_phone_help_description));
                 contactPersonEmailRow.setHelpText(editButton.getContext().getString(R.string.contact_person_email_help_description));
-                coordinatesRow.setCoordinates(toolEntry.getCoordinates());
+                coordinatesRow.setCoordinates(activity, toolEntry.getCoordinates());
 
                 setupDateRow.setEnabled(false);
 

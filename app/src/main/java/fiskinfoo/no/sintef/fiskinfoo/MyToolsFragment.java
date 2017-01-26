@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -27,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -224,7 +226,7 @@ public class MyToolsFragment extends Fragment {
                                     continue;
                                 }
 
-                                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, toolEntry, user);
                                 ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
                                 row.getView().setTag(toolEntry.getToolId());
                                 toolContainer.addView(row.getView());
@@ -246,7 +248,7 @@ public class MyToolsFragment extends Fragment {
                         continue;
                     }
 
-                    View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                    View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, toolEntry, user);
                     ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
                     row.getView().setTag(toolEntry.getToolId());
                     toolContainer.addView(row.getView());
@@ -257,6 +259,15 @@ public class MyToolsFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
+                    if(FiskInfoUtility.shouldAskPermission()) {
+                        String[] perms = { "android.permission.ACCESS_FINE_LOCATION" };
+                        int permsRequestCode = MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                permsRequestCode);
+                    }
+
                     final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_register_new_tool, R.string.tool_registration);
                     final UserSettings settings = user.getSettings() != null ? user.getSettings() : new UserSettings();
 
@@ -265,7 +276,7 @@ public class MyToolsFragment extends Fragment {
                     final LinearLayout fieldContainer = (LinearLayout) dialog.findViewById(R.id.dialog_register_tool_main_container);
                     final DatePickerRow setupDateRow = new DatePickerRow(v.getContext(), v.getContext().getString(R.string.tool_set_date_colon), getFragmentManager());
                     final TimePickerRow setupTimeRow = new TimePickerRow(v.getContext(), v.getContext().getString(R.string.tool_set_time_colon), getFragmentManager(), true);
-                    final CoordinatesRow coordinatesRow = new CoordinatesRow(v.getContext(), mGpsLocationTracker);
+                    final CoordinatesRow coordinatesRow = new CoordinatesRow(getActivity(), mGpsLocationTracker);
                     final SpinnerRow toolRow = new SpinnerRow(v.getContext(), v.getContext().getString(R.string.tool_type), ToolType.getValues());
                     final EditTextRow commentRow = new EditTextRow(v.getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
 
@@ -519,7 +530,7 @@ public class MyToolsFragment extends Fragment {
                             toolLog.addTool(toolEntry, toolSetupDate);
                             user.writeToSharedPref(v.getContext());
 
-                            View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                            View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, toolEntry, user);
                             ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
 
                             row.getView().setTag(toolEntry.getToolId());
@@ -703,7 +714,7 @@ public class MyToolsFragment extends Fragment {
                                 if(row.isChecked()) {
                                     ToolEntry newTool = row.getToolEntry();
                                     user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
-                                    ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getFragmentManager(), mGpsLocationTracker, newTool, user));
+                                    ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, newTool, user));
                                     row.getView().setTag(newTool.getToolId());
                                     toolContainer.addView(newRow.getView());
                                 }

@@ -14,12 +14,16 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -50,6 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
 import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -272,7 +277,18 @@ public class FiskInfoUtility {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    public boolean writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
+    public boolean writeMapLayerToExternalStorage(Activity activity, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
+
+        if(FiskInfoUtility.shouldAskPermission()) {
+            String[] perms = { "android.permission.WRITE_EXTERNAL_STORAGE" };
+            int permsRequestCode = 0x001;
+//            activity.requestPermissions(perms, permsRequestCode);
+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    permsRequestCode);
+        }
+
         String filePath;
         OutputStream outputStream = null;
         filePath = downloadSavePath;
@@ -292,7 +308,7 @@ public class FiskInfoUtility {
             new File(filePath).mkdirs();
         }
 
-        if(fileEnding != null && fileEnding.equals(context.getString(R.string.olex))) {
+        if(fileEnding != null && fileEnding.equals(activity.getBaseContext().getString(R.string.olex))) {
             fileEnding = "olx.gz";
         }
 
@@ -301,13 +317,13 @@ public class FiskInfoUtility {
             outputStream.write(data);
 
             if(showToasts) {
-                Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+                Toast.makeText(activity.getBaseContext(), "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
             }
 
             success = true;
         } catch (IOException e) {
             if(showToasts) {
-                Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+                Toast.makeText(activity.getBaseContext(), R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             }
             e.printStackTrace();
         } finally {
@@ -720,5 +736,9 @@ public class FiskInfoUtility {
         retval = retval.replace("Å", "AA");
 
         return retval;
+    }
+
+    public static boolean shouldAskPermission(){
+        return Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1;
     }
 }

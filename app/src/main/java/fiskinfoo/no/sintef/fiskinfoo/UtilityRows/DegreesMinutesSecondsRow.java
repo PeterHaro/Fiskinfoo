@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -34,8 +35,10 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
     private Button setPositionButton;
     private GpsLocationTracker locationTracker;
 
-    public DegreesMinutesSecondsRow(Context context, GpsLocationTracker gpsLocationTracker) {
-        super(context, R.layout.utility_row_degrees_minutes_seconds_row);
+    public DegreesMinutesSecondsRow(Activity activity, GpsLocationTracker gpsLocationTracker) {
+        super(activity, R.layout.utility_row_degrees_minutes_seconds_row);
+
+
 
         latitudeDegreesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_degrees_edit_text);
         latitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_minutes_edit_text);

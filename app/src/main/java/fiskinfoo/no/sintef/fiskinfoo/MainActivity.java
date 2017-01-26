@@ -20,6 +20,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -90,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
     boolean offlineModeLooperPrepared = false;
     private TextView mNetworkErrorTextView;
     private boolean networkStateChanged;
+    public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
+    public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
+//        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
 
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
@@ -155,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                     getFragmentManager().beginTransaction().
                             replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
-                } else if (tab.getTag() == MyToolsFragment.TAG){
-                    getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
-                                    commit();
+//                } else if (tab.getTag() == MyToolsFragment.TAG){
+//                    getFragmentManager().beginTransaction().
+//                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
+//                                    commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
                 }
@@ -262,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                     }
                     byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                     if (fiskInfoUtility.isExternalStorageWritable()) {
-                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage(), true);
+                        fiskInfoUtility.writeMapLayerToExternalStorage(MainActivity.this, fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage(), true);
                     } else {
                         Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
@@ -424,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                         e.printStackTrace();
                     }
 
-                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(),
+                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(MainActivity.this,
                             data,
                             subscribable.Name
                                     .replace(",", "")
@@ -533,6 +536,21 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_CREATE);
 
         startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
+
+        switch(permsRequestCode){
+            case 200:
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                boolean writeAccepted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
+                break;
+            default:
+                Toast.makeText(this, R.string.permission_denied_app_limited, Toast.LENGTH_LONG).show();
+                break;
+        }
     }
 
     public synchronized void onActivityResult(final int requestCode, int resultCode, final Intent data) {

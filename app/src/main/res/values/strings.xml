@@ -142,6 +142,7 @@ limitations under the License.
     <string name="cancel_subscription_dialog_title">Kanseller abonnement</string>
     <string name="confirm_subscription_cancelation">Er du sikker på at du vil avbryte dette abonnementet?</string>
     <string name="olex">OLEX</string>
+    <string name="permission_denied_app_limited">Appens funksjoner er begrenset uten tillatelsen.</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
     <string name="proximity_alert_set">Kollisjonsvarsling opprettet</string>

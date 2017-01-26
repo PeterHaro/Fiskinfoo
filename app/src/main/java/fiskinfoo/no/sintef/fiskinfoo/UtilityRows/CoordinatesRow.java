@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -38,8 +39,8 @@ public class CoordinatesRow extends BaseTableRow {
     private GpsLocationTracker locationTracker;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
-    public CoordinatesRow(Context context, GpsLocationTracker gpsLocationTracker) {
-        super(context, R.layout.utility_row_coordinates_row);
+    public CoordinatesRow(final Activity activity, GpsLocationTracker gpsLocationTracker) {
+        super(activity, R.layout.utility_row_coordinates_row);
 
         header = (TextView) getView().findViewById(R.id.utility_coordinates_row_header_text_view);
         helpButton = (Button) getView().findViewById(R.id.utility_coordinates_row_help_button);
@@ -49,7 +50,7 @@ public class CoordinatesRow extends BaseTableRow {
         helpTextView = (TextView) getView().findViewById(R.id.utility_coordinates_row_help_text_view);
         this.locationTracker = gpsLocationTracker;
 
-        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(context, locationTracker);
+        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationTracker);
 
         coordinateRows.add(coordinatesRow);
         latLonViewContainer.addView(coordinatesRow.getView());
@@ -64,7 +65,7 @@ public class CoordinatesRow extends BaseTableRow {
         addCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(v.getContext(), locationTracker);
+                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
 
                 coordinateRows.add(row);
                 latLonViewContainer.addView(row.getView());
@@ -105,12 +106,12 @@ public class CoordinatesRow extends BaseTableRow {
         return coordinates;
     }
 
-    public void setCoordinates(List<Point> coordinates) {
+    public void setCoordinates(Activity activity, List<Point> coordinates) {
         coordinateRows.clear();
         latLonViewContainer.removeAllViews();
 
         for(Point position : coordinates) {
-            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(getView().getContext(), locationTracker);
+            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
             row.setCoordinates(position);
             coordinateRows.add(row);
             latLonViewContainer.addView(row.getView());

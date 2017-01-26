@@ -717,14 +717,47 @@
                     wgs84.transform("EPSG:900913", "EPSG:4326");
 
                     if (feature.geometry.id.indexOf("LineString") > -1) {
-                        position = "<p>Startposisjon: " + wgs84.components[0].x.toFixed(8) + ", " + wgs84.components[0].y.toFixed(8) + "</p><p>Sluttposisjon: " +
-                            wgs84.components[wgs84.components.length - 1].x.toFixed(8) + ", " + wgs84.components[wgs84.components.length - 1].y.toFixed(8) + "</p>";
+                        var startLatDegrees = Math.floor(wgs84.components[0].y);
+                        var startLatMinutes = Math.floor((wgs84.components[0].y - startLatDegrees) * 60);
+                        var startLatSeconds = ((wgs84.components[0].y - startLatDegrees - startLatMinutes / 60) * 3600).toFixed(3);
+                        var startLonDegrees = Math.floor(wgs84.components[0].x);
+                        var startLonMinutes = Math.floor((wgs84.components[0].x - startLonDegrees) * 60);
+                        var startLonSeconds = ((wgs84.components[0].x - startLonDegrees - startLonMinutes / 60) * 3600).toFixed(3);
+
+                        var endLatDegrees = Math.floor(wgs84.components[wgs84.components.length - 1].y);
+                        var endLatMinutes = Math.floor((wgs84.components[wgs84.components.length - 1].y - endLatDegrees) * 60);
+                        var endLatSeconds = ((wgs84.components[wgs84.components.length - 1].y - endLatDegrees - endLatMinutes / 60) * 3600).toFixed(3);
+                        var endLonDegrees = Math.floor(wgs84.components[wgs84.components.length - 1].x);
+                        var endLonMinutes = Math.floor((wgs84.components[wgs84.components.length - 1].x - endLonDegrees) * 60);
+                        var endLonSeconds = ((wgs84.components[wgs84.components.length - 1].x - endLonDegrees - endLonMinutes / 60) * 3600).toFixed(3);
+
+                        marinogramUrl = "http://www.yr.no/sted/hav/" + wgs84.components[0].y.toFixed(8).replace(",", ".") + "_" + wgs84.components[0].x.toFixed(8).replace(",", ".");
+
+                        startPosition = "<p>Startposisjon: " + String(startLatDegrees) + "° " + String(startLatMinutes) + "' " + String(startLatSeconds) + "\", " + String(startLonDegrees) +
+                            "° " + String(startLonMinutes) + "' " + String(startLonSeconds) + "\"</p>";
+
+                        endPosition = "<p>Sluttposisjon: " + String(endLatDegrees) + "° " + String(endLatMinutes) + "' " + String(endLatSeconds) + "\", " + String(endLonDegrees) +
+                            "° " + String(endLonMinutes) + "' " + String(endLonSeconds) + "\",</p>";
+
+                        position = startPosition + endPosition + "</p><button onclick='launchMarinogramIntent()'>Se marinogram for området</button>";
 
                         if (wgs84.components.length > 2) {
                             position += "<p>Last ned redskapfil for fullstendig koordinatoversikt.</p>";
                         }
                     } else {
-                        position = "<p>Posisjon: " + wgs84.getBounds().getCenterLonLat().lat.toFixed(8) + ", " + wgs84.getBounds().getCenterLonLat().lon.toFixed(8) + "</p>";
+                        var startLatDegrees = Math.floor(wgs84.y);
+                        var startLatMinutes = Math.floor((wgs84.y - startLatDegrees) * 60);
+                        var startLatSeconds = ((wgs84.y - startLatDegrees - startLatMinutes / 60) * 3600).toFixed(3);
+                        var startLonDegrees = Math.floor(wgs84.x);
+                        var startLonMinutes = Math.floor((wgs84.x - startLonDegrees) * 60);
+                        var startLonSeconds = ((wgs84.x - startLonDegrees - startLonMinutes / 60) * 3600).toFixed(3);
+
+                        marinogramUrl = "http://www.yr.no/sted/hav/" + wgs84.y.toFixed(8).replace(",", ".") + "_" + wgs84.x.toFixed(8).replace(",", ".");
+
+                        startPosition = "<p>Startposisjon: " + String(startLatDegrees) + "°" + String(startLatMinutes) + "' " + String(startLatSeconds) + "\", " + String(startLonDegrees) +
+                            "° " + String(startLonMinutes) + "' " + String(startLonSeconds) + "\"</p>";
+
+                        position = startPosition + "</p><button onclick='launchMarinogramIntent()'>Se marinogram for området</button>";
                     }
                 } else {
                     position = "";
@@ -909,21 +942,21 @@
             var lonLat = map.getLonLatFromPixel(e.xy);
             var lonLatWGS = new OpenLayers.LonLat(lonLat.lon, lonLat.lat);
             lonLatWGS.transform("EPSG:3857", "EPSG:4326");
-            marinogramUrl = "http://www.yr.no/sted/hav/" + lonLatWGS.lat.toFixed(8).replace(".", ",") + "_" + lonLatWGS.lon.toFixed(8).replace(".", ",");
+            marinogramUrl = "http://www.yr.no/sted/hav/" + lonLatWGS.lat.toFixed(8).replace(",", ".") + "_" + lonLatWGS.lon.toFixed(8).replace(",", ".");
 
             var latDegrees = Math.floor(lonLatWGS.lat);
             var latMinutes = Math.floor((lonLatWGS.lat - latDegrees) * 60);
-            var latSeconds = (lonLatWGS.lat - latDegrees - latMinutes / 60) * 3600;
+            var latSeconds = ((lonLatWGS.lat - latDegrees - latMinutes / 60) * 3600).toFixed(3);
 
             var lonDegrees = Math.floor(lonLatWGS.lon);
             var lonMinutes = Math.floor((lonLatWGS.lon - lonDegrees) * 60);
-            var lonSeconds = (lonLatWGS.lon - lonDegrees - lonMinutes / 60) * 3600;
+            var lonSeconds = ((lonLatWGS.lon - lonDegrees - lonMinutes / 60) * 3600).toFixed(3);
 
             popup = new OpenLayers.Popup.FramedCloud(
                 "Posisjon",
                 lonLat,
                 null,
-                "<p>" + String(latDegrees) + "° " + String(latMinutes) + "' " + String(latSeconds) + "\", " + String(lonDegrees) + "° " + String(lonMinutes) + "' " + String(lonSeconds) + "\"</p><button onclick='launchMarinogramIntent()'>Se marinogram for området</button>",
+                "<p>" + String(latDegrees) + "° " + String(latMinutes) + "'" + String(latSeconds) + "\", " + String(lonDegrees) + "°" + String(lonMinutes) + "'" + String(lonSeconds) + "\"</p><button onclick='launchMarinogramIntent()'>Se marinogram for området</button>",
                 null,
                 true,
                 null
@@ -999,7 +1032,7 @@
         }
 
         function fail() {
-            alert("Venligst sjekk om du har internettforbindelse");
+            alert("Noe gikk galt, venligst sjekk om du har internettforbindelse");
         }
 
     </script>
