@@ -14,7 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -36,10 +36,10 @@ public class CoordinatesRow extends BaseTableRow {
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
     private GpsLocationTracker locationTracker;
-    private List<LatLonRow> latLonRows = new ArrayList<>();
+    private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
-    public CoordinatesRow(Context context, GpsLocationTracker gpsLocationTracker) {
-        super(context, R.layout.utility_row_coordinates_row);
+    public CoordinatesRow(final Activity activity, GpsLocationTracker gpsLocationTracker) {
+        super(activity, R.layout.utility_row_coordinates_row);
 
         header = (TextView) getView().findViewById(R.id.utility_coordinates_row_header_text_view);
         helpButton = (Button) getView().findViewById(R.id.utility_coordinates_row_help_button);
@@ -49,9 +49,9 @@ public class CoordinatesRow extends BaseTableRow {
         helpTextView = (TextView) getView().findViewById(R.id.utility_coordinates_row_help_text_view);
         this.locationTracker = gpsLocationTracker;
 
-        LatLonRow coordinatesRow = new LatLonRow(context, locationTracker);
+        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationTracker);
 
-        latLonRows.add(coordinatesRow);
+        coordinateRows.add(coordinatesRow);
         latLonViewContainer.addView(coordinatesRow.getView());
 
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -64,9 +64,9 @@ public class CoordinatesRow extends BaseTableRow {
         addCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LatLonRow row = new LatLonRow(v.getContext(), locationTracker);
+                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
 
-                latLonRows.add(row);
+                coordinateRows.add(row);
                 latLonViewContainer.addView(row.getView());
             }
         });
@@ -74,13 +74,13 @@ public class CoordinatesRow extends BaseTableRow {
         removeCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(latLonRows.size() == 1) {
+                if(coordinateRows.size() == 1) {
                     Toast.makeText(getView().getContext(), getView().getContext().getString(R.string.error_minimum_coordinate_limit), Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 latLonViewContainer.removeViewAt(latLonViewContainer.getChildCount() - 1);
-                latLonRows.remove(latLonRows.size() - 1);
+                coordinateRows.remove(coordinateRows.size() - 1);
             }
         });
     }
@@ -92,7 +92,7 @@ public class CoordinatesRow extends BaseTableRow {
     public List<Point> getCoordinates() {
         List<Point> coordinates = new ArrayList<>();
 
-        for(LatLonRow coordinateRow : latLonRows) {
+        for(DegreesMinutesSecondsRow coordinateRow : coordinateRows) {
             Point point = coordinateRow.getCoordinates();
 
             if(point == null) {
@@ -105,15 +105,15 @@ public class CoordinatesRow extends BaseTableRow {
         return coordinates;
     }
 
-    public void setCoordinates(List<Point> coordinates) {
-        latLonRows.clear();
+    public void setCoordinates(Activity activity, List<Point> coordinates) {
+        coordinateRows.clear();
         latLonViewContainer.removeAllViews();
 
         for(Point position : coordinates) {
-            LatLonRow latLonRow = new LatLonRow(getView().getContext(), locationTracker);
-            latLonRow.setCoordinates(position);
-            latLonRows.add(latLonRow);
-            latLonViewContainer.addView(latLonRow.getView());
+            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
+            row.setCoordinates(position);
+            coordinateRows.add(row);
+            latLonViewContainer.addView(row.getView());
         }
     }
 }

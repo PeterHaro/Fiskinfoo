@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/catch_log_main_container_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true">
+
+        <!-- background colour and hard coded height only to see that layout is roughly right -->
+
+        <RelativeLayout
+            android:id="@+id/register_tool_header_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:paddingBottom="@dimen/catch_log_header_padding_bottom"
+            android:paddingTop="@dimen/catch_log_header_padding_top"
+            android:background="@drawable/rectangle_boarder">
+
+            <Button
+                android:id="@+id/register_tool_header_arrow_left"
+                android:layout_width="@dimen/catch_log_header_date_navigation_arrow_width"
+                android:layout_height="@dimen/catch_log_header_date_navigation_arrow_height"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_keyboard_arrow_left_black_36dp"/>
+
+            <TextView
+                android:id="@+id/register_tool_header_date_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/register_tool_header_arrow_left"
+                android:layout_marginLeft="@dimen/catch_log_header_date_field_margin_left"
+                android:text="@string/placeholder_string"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Button
+                android:id="@+id/register_tool_calendar_picker"
+                android:layout_width="@dimen/catch_log_header_date_picker_button_width"
+                android:layout_height="@dimen/catch_log_header_date_picker_button_height"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/catch_log_header_date_picker_button_margin_left"
+                android:layout_toStartOf="@+id/register_tool_header_arrow_right"
+                android:background="@drawable/calendar"/>
+
+            <Button
+                android:id="@+id/register_tool_header_arrow_right"
+                android:layout_width="@dimen/catch_log_header_date_navigation_arrow_width"
+                android:layout_height="@dimen/catch_log_header_date_navigation_arrow_height"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/ic_keyboard_arrow_right_black_36dp"
+                android:visibility="invisible"/>
+
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/my_tools_swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ScrollView
+                android:id="@+id/register_tool_main_container_middle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/boarder"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true">
+
+                <LinearLayout
+                    android:id="@+id/register_tool_current_tools_table_layout"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </LinearLayout>
+            </ScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/register_tool_layout_add_tool_material_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:backgroundTint="@color/toolbar_blue"
+        android:src="@drawable/ic_add_white_24dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    />
+
+</RelativeLayout>

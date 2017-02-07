@@ -21,8 +21,6 @@ public class Authorization implements Parcelable {
     public int Id;
     public boolean HasAccess;
 
-    // TODO: cannot write boolean to parcel so needs to be rewritten.
-
     protected Authorization(Parcel in) {
         Id = in.readInt();
         HasAccess = in.readByte() != 0;

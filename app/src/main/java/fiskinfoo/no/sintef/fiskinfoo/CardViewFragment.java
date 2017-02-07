@@ -163,7 +163,7 @@ public class CardViewFragment extends Fragment {
             String hyperlink = null;
             // TODO: should rewrite in order to handle multiple links.
             if(description.contains("<a href=\"")) {
-                hyperlink = "<a href='" + description.substring(description.indexOf("\"") + 1, description.indexOf(">") - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
+                hyperlink = "<a href='" + description.substring(description.indexOf("href=") + 6, description.indexOf(">") - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
                 description = description.substring(0, description.indexOf('<')) + description.substring(description.indexOf('>') + 1, description.indexOf("</a")) +
                         "*" +  (description.indexOf("a>") > description.length() - 3 ? "" : description.substring(description.indexOf("a>") + 2, description.length()));
             }
@@ -288,7 +288,7 @@ public class CardViewFragment extends Fragment {
 
             bottomButtonContainer.addView(showOnMapButton);
 
-            downloadMapButton.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(propertyDescription, user, TAG));
+            downloadMapButton.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
 
         }
         if(warning != null) {

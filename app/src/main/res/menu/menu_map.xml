@@ -13,21 +13,22 @@ limitations under the License.
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="fiskinfoo.no.sintef.fiskinfoo.MapFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="fiskinfoo.no.sintef.fiskinfoo.MapFragment">
+
     <item
         android:id="@+id/update_map"
-        android:title="@string/map_update_button"></item>
+        android:title="@string/map_update_button"/>
     <item
         android:id="@+id/zoom_to_user_position"
-        android:title="@string/map_zoom_button"></item>
+        android:title="@string/map_zoom_button"/>
     <item
         android:id="@+id/symbol_explanation"
-        android:title="@string/map_symbol_explanation"></item>
+        android:title="@string/map_symbol_explanation"/>
     <item
         android:id="@+id/setProximityAlert"
-        android:title="@string/set_alert_watcher"></item>
+        android:title="@string/set_alert_watcher"/>
     <item
         android:id="@+id/choose_map_layers"
-        android:title="@string/choose_map_layers"></item>
+        android:title="@string/choose_map_layers"/>
 </menu>

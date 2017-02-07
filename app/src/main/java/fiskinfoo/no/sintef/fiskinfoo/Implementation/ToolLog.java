@@ -4,7 +4,6 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolInfo;
 
 public class ToolLog implements Parcelable{
     public NavigableMap<String, ArrayList<ToolEntry>> myLog;
@@ -29,8 +27,36 @@ public class ToolLog implements Parcelable{
         if (!myLog.containsKey(date)) {
             myLog.put(date, new ArrayList<ToolEntry>());
         }
-        tool.setToolLogId(myLog.get(date).size() + 1);
+
+        int toolLogId = 1;
+
+        for(ToolEntry toolEntry : myLog.get(date)) {
+            if(toolEntry.getToolLogId() >= toolLogId) {
+                toolLogId = toolEntry.getToolLogId() + 1;
+            }
+        }
+
+        tool.setToolLogId(toolLogId);
         myLog.get(date).add(tool);
+    }
+
+    public void removeTool(String date, int toolId) {
+        if (myLog.get(date) == null) {
+            throw new IndexOutOfBoundsException("Invalid date, no Hauls on the specified date: " + date);
+        }
+
+        boolean containsTool = false;
+
+        for(int i = 0; i < myLog.get(date).size(); i++) {
+            if(myLog.get(date).get(i).getToolLogId() == toolId) {
+                containsTool = true;
+                myLog.get(date).remove(i);
+            }
+        }
+
+        if(toolId != 0 && !containsTool) {
+            throw new IndexOutOfBoundsException("Invalid index to get entry. the specified id: " + toolId + " does not exist in the log");
+        }
     }
 
     public ArrayList<ToolEntry> get(String date) {
@@ -44,10 +70,21 @@ public class ToolLog implements Parcelable{
         if (myLog.get(date) == null) {
             throw new IndexOutOfBoundsException("Invalid date, no Hauls on the specified date: " + date);
         }
-        if (id == 0 || id > myLog.get(date).size()) {
-            throw new ArrayIndexOutOfBoundsException("Invalid index to get entry. the specified index: " + id + " does not exist in the log");
+
+        ToolEntry retval = null;
+
+        for(ToolEntry tool : myLog.get(date)) {
+            if(tool.getToolLogId() == id) {
+                retval = tool;
+            }
         }
-        return myLog.get(date).get(id - 1);
+
+        if(retval == null) {
+            throw new ArrayIndexOutOfBoundsException("Invalid id to get entry. the specified id: " + id + " does not exist in the log");
+        }
+
+        return retval;
+
     }
 
     protected ToolLog(Parcel in) {
@@ -103,7 +140,7 @@ class dateComperator implements Comparator<String> {
 
     @Override
     public int compare(String arg0, String arg1) {
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date date1 = null;
         Date date2 = null;
         try {

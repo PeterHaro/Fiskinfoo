@@ -15,13 +15,15 @@
 package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 public enum ToolEntryStatus {
-    STATUS_UNSENT, STATUS_SENT_UNCONFIRMED, STATUS_RECEIVED, STATUS_REMOVED_UNCONFIRMED, STATUS_REMOVED;
-
+    STATUS_UNREPORTED, STATUS_UNSENT, STATUS_SENT_UNCONFIRMED, STATUS_RECEIVED, STATUS_REMOVED_UNCONFIRMED, STATUS_REMOVED;
 
     @Override
     public String toString() {
         String retVal;
         switch(this) {
+            case STATUS_UNREPORTED:
+                retVal = "Ikke innrapportert";
+                break;
             case STATUS_UNSENT:
                 retVal = "Ikke rapportert";
                 break;
@@ -44,7 +46,9 @@ public enum ToolEntryStatus {
     }
 
     public static ToolEntryStatus createFromValue(String value) {
-        if (value.equalsIgnoreCase("Ikke rapportert")) {
+        if (value.equalsIgnoreCase("Ikke innrapportert")) {
+            return ToolEntryStatus.STATUS_UNREPORTED;
+        } else if (value.equalsIgnoreCase("Ikke rapportert")) {
             return ToolEntryStatus.STATUS_UNSENT;
         } else if (value.equalsIgnoreCase("Rapportert, ikke bekreftet")) {
             return ToolEntryStatus.STATUS_SENT_UNCONFIRMED;

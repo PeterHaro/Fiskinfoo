@@ -35,7 +35,7 @@
                 layers: [
                     new OpenLayers.Layer.WMS(
 	      		"Grunnkart", "http://opencache.statkart.no/gatekeeper/gk/gk.open?",
-		      	{ layers: 'sjo_hovedkart2', format: 'image/png' },
+		      	{ layers: 'sjokartraster', format: 'image/png' },
                         { 'displayInLayerSwitcher': false }, {
                             isBaseLayer: true
                         }
@@ -50,6 +50,7 @@
         function populateMap(authenticated) {
             map.addLayers(populateAllAvailableWmsLayers());
             populateAndStyleToolsLayer();
+            populateAndStyleIceChartLayer();
             populateLayers();
 
             if(authenticated === 1) {
@@ -122,54 +123,6 @@
         function corsErrBack(error) {
             var i = 5;
             alert(error);
-        }
-
-        /**
-         * Make a X-Domain request to url and callback.
-         *
-         * @param url {String}
-         * @param method {String} HTTP verb ('GET', 'POST', 'DELETE', etc.)
-         * @param data {String} request body
-         * @param callback {Function} to callback on completion
-         * @param errback {Function} to callback on error
-         */
-        function corsRequest(url, method, data, callback, errback, authToken) {
-            var req;
-            var token = null;
-            if (authToken !== null) {
-                if (typeof authToken !== 'undefined') {
-                    token = authToken;
-                }
-            }
-            if (XMLHttpRequest) {
-                req = new XMLHttpRequest();
-                if ('withCredentials' in req) {
-                    req.open(method, url, true);
-                    req.setRequestHeader('Authorization',
-                        'Bearer ' + token)
-                    req.onerror = errback;
-                    req.onreadystatechange = function () {
-                        if (req.readyState === 4) {
-                            if (req.status >= 200 && req.status < 400) {
-                                callback(req.responseText);
-                            } else {
-                                errback(new Error('Response returned with non-OK status'));
-                            }
-                        }
-                    };
-                    req.send(data);
-                }
-            } else if (XDomainRequest) {
-                req = new XDomainRequest();
-                req.open(method, url);
-                req.onerror = errback;
-                req.onload = function () {
-                    callback(req.responseText);
-                };
-                req.send(data);
-            } else {
-                errback(new Error('CORS not supported'));
-            }
         }
 
         function getToken() {
@@ -320,6 +273,93 @@
             toolLayer.addFeatures(geoJsonFormat.read(geoJson));
         }
 
+        function populateAndStyleIceChartLayer(data) {
+            geoJson = getJsonFile("Iskonsentrasjon");
+
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var toolStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+            toolStyle.fillColor = '${fillColor}';
+            toolStyle.fill = true;
+            toolStyle.strokeWidth = 0
+            toolStyle.fillOpacity = '${fillOpacity}';
+            var toolsStyleLayer = new OpenLayers.Style(toolStyle, {
+                context: {
+                    fillColor: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var color = null;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                color = "#fb9c45";
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                color = "#ff4040";
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = "#c3c5c7";
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                color = "#ffff40";
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                color = "#a5fdb8";
+                            } else if (feature.data.icetype === "Open Water") {
+                                color = "#b0d6ff";
+                            } else {
+                                color = "#000000";
+                            }
+
+                            return color;
+                        } else {
+                            return "#FFAA7A";
+                        }
+                    },
+                    fillOpacity: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var opacity = 0.2;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = 0.5;
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Open Water") {
+                                opacity = 0.5;
+                            } else {
+                                opacity = 0.5
+                            }
+
+                            return opacity;
+                        } else {
+                            return 0.5;
+                        }
+                    }
+                }
+            });
+            var iceChartStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 2
+                })
+            });
+            var iceChartLayer = map.getLayersByName("Iskonsentrasjon")[0];
+            iceChartLayer.styleMap = iceChartStyleMap;
+            iceChartLayer.addFeatures(geoJsonFormat.read(geoJson));
+            selectFeature = new OpenLayers.Control.SelectFeature(
+            iceChartLayer, {
+                onSelect: iceChartClickNotice,
+                onUnselect: onPopupFeatureUnselect,
+                autoActivate: true
+            });
+            map.addControl(selectFeature);
+        }
+
         function highlightTools(vesselName) {
             highlightVesselName = vesselName;
             var toolLayer = map.getLayersByName("Redskap")[0];
@@ -361,6 +401,7 @@
                 new OpenLayers.Layer.Vector("Havbunnsinstallasjoner"),
                 new OpenLayers.Layer.Vector("Seismikk, pågående"),
                 new OpenLayers.Layer.Vector("Seismikk, planlagt"),
+                new OpenLayers.Layer.Vector("Iskonsentrasjon"),
                 new OpenLayers.Layer.Vector("Redskap", {
                     strategies: [new OpenLayers.Strategy.Cluster({
                         distance: 15,
@@ -428,6 +469,40 @@
             }
         }
 
+        function iceChartClickNotice(feature) {
+            mFeature = feature;
+            var iceType;
+            if (feature.data.hasOwnProperty("icetype")) {
+                if (feature.data.icetype != null) {
+                    var type = feature.data.icetype;
+                    if (type === "Close Drift Ice") {
+                        iceType = "Tett drivis";
+                    } else if (type === "Very Close Drift Ice") {
+                        iceType = "Veldig tett drivis";
+                    } else if (type === "Fast Ice") {
+                        iceType = "Fast is";
+                    } else if (type === "Open Drift Ice") {
+                        iceType = "Åpen drivis";
+                    } else if (type === "Very Open Drift Ice") {
+                        iceType = "Veldig åpen drivis";
+                    } else if (type === "Open Water") {
+                        iceType = "Åpent vann";
+                    } else {
+                        iceType = "Detaljer ikke tilgjengelig";
+                    }
+                } else {
+                    iceType = "Detaljer ikke tilgjengelig";
+                }
+                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
+                feature.geometry.getBounds().getCenterLonLat(),
+                    null, iceType + "<p></p>", null, true, onPopupClose);
+                popup.panMapIfOutOfView = true;
+                popup.autoSize = true;
+                feature.popup = popup;
+                map.addPopup(popup);
+            }
+        }
+
         function onPopupFeatureUnselect(feature) {
             map.removePopup(feature.popup);
             feature.popup.destroy();
@@ -457,7 +532,7 @@
         }
 
         function fail() {
-            alert("Venligst sjekk om du har internett forbindelse");
+            alert("Venligst sjekk om du har internettforbindelse");
         }
 
     </script>

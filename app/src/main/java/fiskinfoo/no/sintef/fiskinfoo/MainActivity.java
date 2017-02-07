@@ -20,6 +20,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,10 +45,6 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -82,7 +79,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements RegisterToolsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MyToolsFragment.OnFragmentInteractionListener {
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners utilityOnClickListeners;
@@ -94,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
     boolean offlineModeLooperPrepared = false;
     private TextView mNetworkErrorTextView;
     private boolean networkStateChanged;
+    public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
+    public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.register_tool).setTag(RegisterToolsFragment.TAG));
+//        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
+
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
 
@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                     getFragmentManager().beginTransaction().
                             replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
-                } else if (tab.getTag() == RegisterToolsFragment.TAG){
-                    getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, RegisterToolsFragment.newInstance(user), RegisterToolsFragment.TAG).addToBackStack(null).
-                                    commit();
+//                } else if (tab.getTag() == MyToolsFragment.TAG){
+//                    getFragmentManager().beginTransaction().
+//                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
+//                                    commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
                 }
@@ -214,16 +214,16 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         }
 
-        for(int i = 0; i < availableSubscriptions.size(); i++) {
-            if(!authMap.get(availableSubscriptions.get(i).Id)) {
+        for(PropertyDescription subscription : availableSubscriptions) {
+            if(!authMap.get(subscription.Id)) {
                 continue;
             }
-            listDataHeader.add(availableSubscriptions.get(i).Name);
-            nameToApi.put(availableSubscriptions.get(i).Name, availableSubscriptions.get(i).ApiName);
+            listDataHeader.add(subscription.Name);
+            nameToApi.put(subscription.Name, subscription.ApiName);
             List<String> availableFormats = new ArrayList<>();
 
-            availableFormats.addAll(Arrays.asList(availableSubscriptions.get(i).Formats));
-            listDataChild.put(listDataHeader.get(i), availableFormats);
+            availableFormats.addAll(Arrays.asList(subscription.Formats));
+            listDataChild.put(listDataHeader.get(listDataHeader.size() - 1), availableFormats);
         }
 
         LegacyExpandableListAdapter legacyExpandableListAdapter = new LegacyExpandableListAdapter(this, listDataHeader, listDataChild);
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                     }
                     byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                     if (fiskInfoUtility.isExternalStorageWritable()) {
-                        fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage(), true);
+                        fiskInfoUtility.writeMapLayerToExternalStorage(MainActivity.this, fileData, selectedHeader.get(), format, user.getFilePathForExternalStorage(), true);
                     } else {
                         Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
@@ -292,7 +292,8 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         OptionsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
         OptionsButtonRow toggleOfflineModeRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.offline_mode), getOfflineModeInfoOnClickListener());
         OptionsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
-        OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.settings));
+        OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.contact_information));
+        OptionsButtonRow aboutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.help));
 
         setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,14 +324,15 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
             }
         });
 
+        aboutButtonRow.setButtonOnClickListener(utilityOnClickListeners.getHelpDialogOnClickListener());
+
         linearLayout.addView(toggleOfflineModeRow.getView());
         linearLayout.addView(setDownloadPathButtonRow.getView());
         linearLayout.addView(settingsButtonRow.getView());
+        linearLayout.addView(aboutButtonRow.getView());
         linearLayout.addView(logOutButtonRow.getView());
 
         closeDialogButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-
-
 
         dialog.show();
     }
@@ -378,9 +380,10 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 Response response;
                 String downloadPath;
                 String format = "JSON";
-                byte[] data = null;
                 Date lastUpdatedDateTime;
                 Date lastUpdatedCacheDateTime;
+                byte[] data = null;
+                boolean success;
 
                 subscribables = api.getSubscribable();
                 downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
@@ -393,7 +396,6 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                 for(PropertyDescription subscribable : subscribables) {
                     SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                    boolean success;
 
                     if(cacheEntry == null || !cacheEntry.mOfflineActive) {
                         continue;
@@ -425,7 +427,12 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
                         e.printStackTrace();
                     }
 
-                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(getBaseContext(), data, subscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false);
+                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(MainActivity.this,
+                            data,
+                            subscribable.Name
+                                    .replace(",", "")
+                                    .replace(" ", "_"),
+                            format, downloadPath, false);
 
                     if(success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;
@@ -529,6 +536,21 @@ public class MainActivity extends AppCompatActivity implements RegisterToolsFrag
         intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_CREATE);
 
         startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
+
+        switch(permsRequestCode){
+            case 200:
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                boolean writeAccepted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
+                break;
+            default:
+                Toast.makeText(this, R.string.permission_denied_app_limited, Toast.LENGTH_LONG).show();
+                break;
+        }
     }
 
     public synchronized void onActivityResult(final int requestCode, int resultCode, final Intent data) {

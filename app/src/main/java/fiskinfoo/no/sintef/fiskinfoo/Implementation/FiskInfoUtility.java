@@ -14,12 +14,16 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -50,6 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
 import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -244,6 +249,9 @@ public class FiskInfoUtility {
             case "iceedge":
                 retVal = R.drawable.ikon_is_tjenester;
                 break;
+            case "icechart":
+                retVal = R.drawable.ikon_is_tjenester;
+                break;
             case "npdfacility":
                 retVal = R.drawable.ikon_olje_og_gass;
                 break;
@@ -252,9 +260,6 @@ public class FiskInfoUtility {
                 break;
             case "npdsurveyongoing":
                 retVal = R.drawable.ikon_olje_og_gass;
-                break;
-            case "icechart":
-                retVal = R.drawable.ikon_is_tjenester;
                 break;
         }
 
@@ -272,39 +277,53 @@ public class FiskInfoUtility {
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    public boolean writeMapLayerToExternalStorage(Context context, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
+    public boolean writeMapLayerToExternalStorage(Activity activity, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
+
+        if(FiskInfoUtility.shouldAskPermission()) {
+            String[] perms = { "android.permission.WRITE_EXTERNAL_STORAGE" };
+            int permsRequestCode = 0x001;
+//            activity.requestPermissions(perms, permsRequestCode);
+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    permsRequestCode);
+        }
+
         String filePath;
         OutputStream outputStream = null;
         filePath = downloadSavePath;
         boolean success = false;
+        String fileEnding = format;
 
         File directory = filePath == null ? null : new File(filePath);
 
         if(directory != null && !directory.isDirectory() && !directory.mkdirs()) {
-           if(showToasts) {
-               Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
-           }
-            return false;
+            directory = null;
         }
 
         if(directory == null) {
             String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
             String directoryName = "FiskInfo";
             filePath = directoryPath + "/" + directoryName + "/";
+            new File(filePath).mkdirs();
+        }
+
+        if(fileEnding != null && fileEnding.equals(activity.getBaseContext().getString(R.string.olex))) {
+            fileEnding = "olx.gz";
         }
 
         try {
-            outputStream = new FileOutputStream(new File(filePath + writableName + "." + format));
+            outputStream = new FileOutputStream(new File(filePath + writableName + "." + fileEnding));
             outputStream.write(data);
 
             if(showToasts) {
-                Toast.makeText(context, "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+                Toast.makeText(activity.getBaseContext(), "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
             }
 
             success = true;
         } catch (IOException e) {
             if(showToasts) {
-                Toast.makeText(context, R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+                Toast.makeText(activity.getBaseContext(), R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             }
             e.printStackTrace();
         } finally {
@@ -447,6 +466,29 @@ public class FiskInfoUtility {
         output = degrees + "°" + minutes + "'" + seconds + "\"";
 
         return output;
+    }
+
+    public static double[] decimalToDMSArray(double coord) {
+        double[] output = new double[3];
+
+        double mod = coord % 1;
+        int intPart = (int) coord;
+        output[0] = intPart;
+
+        coord = mod * 60;
+        mod = coord % 1;
+        intPart = (int) coord;
+        output[1] = intPart;
+
+        coord = mod * 60;
+        intPart = (int) coord;
+        output[2] = intPart;
+
+        return output;
+    }
+
+    public static double DMSToDecimal(double[] coord) {
+        return coord[0] + (coord[1] / 60) + (coord[2] / 3600);
     }
 
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {
@@ -626,9 +668,7 @@ public class FiskInfoUtility {
     public boolean validateIRCS(String ircs) {
         boolean success = false;
 
-        if(ircs != null && ((ircs.length() == 6 &&
-                ircs.substring(0, 2).matches("[a-zA-Z]+") &&
-                ircs.substring(2, ircs.length()).matches("^[0-9]*$"))))
+        if(ircs != null && (ircs.length() >= 4))
         {
             success = true;
         }
@@ -643,8 +683,8 @@ public class FiskInfoUtility {
         boolean success = false;
 
         if(mmsi != null && (mmsi.length() == 9 &&
-            mmsi.substring(0, 1).matches("[2-7]") &&
-            mmsi.matches("^[0-9]*$")))
+                mmsi.substring(0, 1).matches("[2-7]") &&
+                mmsi.matches("^[0-9]*$")))
         {
             success = true;
         }
@@ -656,26 +696,49 @@ public class FiskInfoUtility {
         boolean success = false;
 
         if(imo != null && ((imo.length() == 7 &&
-            imo.substring(0, 1).matches("[0-9]") &&
-            imo.matches("^[0-9]*$"))))
+                imo.substring(0, 1).matches("[0-9]") &&
+                imo.matches("^[0-9]*$"))))
         {
-                int[] imoCheckArray = new int[6];
-                int checkSum = 0;
+            int[] imoCheckArray = new int[6];
+            int checkSum = 0;
 
-                for(int i = 0; i < 6; i++) {
-                    imoCheckArray[i] = Character.getNumericValue(imo.charAt(i));
-                }
+            for(int i = 0; i < 6; i++) {
+                imoCheckArray[i] = Character.getNumericValue(imo.charAt(i));
+            }
 
-                for(int i = 0; i < 6; i++) {
-                    checkSum += imoCheckArray[i] * (7 - i);
-                }
-                success = Character.getNumericValue(imo.charAt(imo.length() - 1)) == checkSum % 10;
-         }
+            for(int i = 0; i < 6; i++) {
+                checkSum += imoCheckArray[i] * (7 - i);
+            }
+            success = Character.getNumericValue(imo.charAt(imo.length() - 1)) == checkSum % 10;
+        }
 
         return success;
     }
 
     public boolean validateRegistrationNumber(String regnum) {
-        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+        // TODO: Relax validation, invalidates correct values.
+        return regnum != null && regnum.length() >= 3;
+//        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+    }
+
+    /**
+     * Replaces the regional characters 'æ, ø, å' with 'ae, oe, aa'. Conserves case.
+     * @param string String to be replaced
+     * @return String with regional characters replaced.
+     */
+    public static String ReplaceRegionalCharacters(String string) {
+        String retval = string == null ? "" : string;
+        retval = retval.replace("æ", "ae");
+        retval = retval.replace("Æ", "ae");
+        retval = retval.replace("ø", "oe");
+        retval = retval.replace("Ø", "OE");
+        retval = retval.replace("å", "aa");
+        retval = retval.replace("Å", "AA");
+
+        return retval;
+    }
+
+    public static boolean shouldAskPermission(){
+        return Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1;
     }
 }

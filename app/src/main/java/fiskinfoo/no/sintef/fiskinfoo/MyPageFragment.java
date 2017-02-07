@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -176,14 +177,18 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public ArrayList<ParentObject> fetchMyPage() {
         BarentswatchApi barentswatchApi = new BarentswatchApi();
         barentswatchApi.setAccesToken(user.getToken());
-        final IBarentswatchApi api = barentswatchApi.getApi();
+
+        if(!barentswatchApi.isTargetProd()) {
+            Toast.makeText(getActivity(), "Targeting pilot environment", Toast.LENGTH_LONG).show();
+        }
+
         ArrayList<ParentObject> parentObjectList = new ArrayList<>();
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            List<PropertyDescription> availableSubscriptions = api.getSubscribable();
-            List<Subscription> currentSubscriptions = api.getSubscriptions();
-            List<Authorization> authorizations = api.getAuthorization();
+            List<PropertyDescription> availableSubscriptions = barentswatchApi.getApi().getSubscribable();
+            List<Subscription> currentSubscriptions = barentswatchApi.getApi().getSubscriptions();
+            List<Authorization> authorizations = barentswatchApi.getApi().getAuthorization();
             Map<Integer, Boolean> authMap = new HashMap<>();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
@@ -293,7 +298,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         View.OnClickListener subscriptionSwitchClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(subscription, user, TAG) :
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, TAG) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
@@ -301,8 +306,10 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
         }
 
+        String tmpUpdatedTime = subscription.LastUpdated == null ? (subscription.Created == null ? getString(R.string.abbreviation_na) : subscription.Created) : subscription.LastUpdated;
+
         currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
-        currentPropertyDescriptionChildObject.setLastUpdatedText(subscription.LastUpdated.replace("T", "\n"));
+        currentPropertyDescriptionChildObject.setLastUpdatedText(tmpUpdatedTime.replace("T", "\n"));
         currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
         currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
         currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);

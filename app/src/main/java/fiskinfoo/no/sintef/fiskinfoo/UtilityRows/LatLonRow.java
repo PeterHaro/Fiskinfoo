@@ -14,6 +14,7 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -29,8 +30,8 @@ public class LatLonRow extends BaseTableRow {
     private Button setPositionButton;
     private GpsLocationTracker locationTracker;
 
-    public LatLonRow(Context context, GpsLocationTracker gpsLocationTracker) {
-        super(context, R.layout.utility_row_lat_lon_row);
+    public LatLonRow(Activity activity, GpsLocationTracker gpsLocationTracker) {
+        super(activity, R.layout.utility_row_lat_lon_row);
 
         latitudeEditText = (EditText) super.getView().findViewById(R.id.utility_lat_lon_row_latitude_edit_text);
         longitudeEditText = (EditText) super.getView().findViewById(R.id.utility_lat_lon_row_longitude_edit_text);
@@ -82,8 +83,23 @@ public class LatLonRow extends BaseTableRow {
         double longitude = Double.NaN;
 
         try {
-            Double.parseDouble(latitudeEditText.getText().toString().trim());
-            Double.parseDouble(longitudeEditText.getText().toString().trim());
+            latitude = Double.parseDouble(latitudeEditText.getText().toString().trim());
+            longitude = Double.parseDouble(longitudeEditText.getText().toString().trim());
+            int minLat = longitudeEditText.getContext().getResources().getInteger(R.integer.valid_latitude_value_min);
+            int maxLat = longitudeEditText.getContext().getResources().getInteger(R.integer.valid_latitude_value_max);
+            int minLon = longitudeEditText.getContext().getResources().getInteger(R.integer.valid_longitude_value_min);
+            int maxLon = longitudeEditText.getContext().getResources().getInteger(R.integer.valid_longitude_value_max);
+
+            if(minLat >= latitude || latitude > maxLat) {
+                latitudeEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+
+                return null;
+            }
+            if(minLon >= longitude || longitude > maxLon) {
+                longitudeEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
+
+                return null;
+            }
         } catch(NumberFormatException e) {
             if(Double.isNaN(latitude)) {
                 latitudeEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));

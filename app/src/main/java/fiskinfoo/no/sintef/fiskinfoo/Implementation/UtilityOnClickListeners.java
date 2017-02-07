@@ -14,13 +14,16 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,11 +38,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
@@ -61,7 +67,9 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DatePickerRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ActionRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ErrorRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RadioButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
@@ -70,8 +78,8 @@ import retrofit.client.Response;
 
 public class UtilityOnClickListeners implements OnclickListenerInterface {
     @Override
-    public View.OnClickListener getDismissDialogListener(final Dialog dialog) {
-        return new View.OnClickListener() {
+    public OnClickListener getDismissDialogListener(final Dialog dialog) {
+        return new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -80,8 +88,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getShowToastListener(final Context context, final String message) {
-        return new View.OnClickListener() {
+    public OnClickListener getShowToastListener(final Context context, final String message) {
+        return new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
@@ -90,8 +98,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final PropertyDescription subscription, final User user, final String tag) {
-        return new View.OnClickListener() {
+    public OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag) {
+        return new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -116,7 +124,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 for (String format : subscription.Formats) {
                     final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);
 
-                    row.setOnClickListener(new View.OnClickListener() {
+                    row.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             for (int i = 0; i < ((ViewGroup)v.getParent()).getChildCount(); i++) {
@@ -124,7 +132,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             }
                             ((RadioButton)v.findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
 
-                            downloadButton.setOnClickListener(new View.OnClickListener() {
+                            downloadButton.setOnClickListener(new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     BarentswatchApi barentswatchApi = new BarentswatchApi();
@@ -143,7 +151,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                         byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
                                         if (fiskInfoUtility.isExternalStorageWritable()) {
-                                            fiskInfoUtility.writeMapLayerToExternalStorage(v.getContext(), fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
+                                            fiskInfoUtility.writeMapLayerToExternalStorage(activity, fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
                                         } else {
                                             Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
                                         }
@@ -169,18 +177,18 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getInformationDialogOnClickListener(final String title, final String message, final int iconId) {
-        View.OnClickListener onClickListener;
+    public OnClickListener getInformationDialogOnClickListener(final String title, final String message, final int iconId) {
+        OnClickListener onClickListener;
 
         if(message.contains("href") || message.contains("www.")) {
-            onClickListener = new View.OnClickListener() {
+            onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), title, message, iconId).show();
                 }
             };
         } else {
-            onClickListener = new View.OnClickListener() {
+            onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new UtilityDialogs().getAlertDialog(v.getContext(), title, message, iconId).show();
@@ -192,37 +200,37 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getInformationDialogOnClickListener(final int titleId, final int messageId, final int iconId) {
-        View.OnClickListener onClickListener;
+    public OnClickListener getInformationDialogOnClickListener(final int titleId, final int messageId, final int iconId) {
+        OnClickListener onClickListener;
 
-            onClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String message = v.getResources().getString(messageId);
-                    if(message.contains("href") || message.contains("www.")) {
-                        new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), titleId, messageId, iconId).show();
-                    } else {
-                        new UtilityDialogs().getAlertDialog(v.getContext(), titleId, messageId, iconId).show();
-                    }
+        onClickListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = v.getResources().getString(messageId);
+                if(message.contains("href") || message.contains("www.")) {
+                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), titleId, messageId, iconId).show();
+                } else {
+                    new UtilityDialogs().getAlertDialog(v.getContext(), titleId, messageId, iconId).show();
                 }
-            };
+            }
+        };
 
         return onClickListener;
     }
 
     @Override
-    public View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription) {
-        View.OnClickListener onClickListener;
+    public OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription) {
+        OnClickListener onClickListener;
 
         if(subscription.ErrorText.contains("href") || subscription.ErrorText.contains("www.")) {
-            onClickListener = new View.OnClickListener() {
+            onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
                 }
             };
         } else {
-            onClickListener = new View.OnClickListener() {
+            onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new UtilityDialogs().getAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
@@ -234,8 +242,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
-        return new View.OnClickListener() {
+    public OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
+        return new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 UtilityRowsInterface utilityRowsInterface = new UtilityRows();
@@ -255,6 +263,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 final LinearLayout formatsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_formats_container);
                 final LinearLayout intervalsContainer = (LinearLayout) dialog.findViewById(R.id.manage_subscription_intervals_container);
                 final EditText subscriptionEmailEditText = (EditText) dialog.findViewById(R.id.manage_subscription_email_edit_text);
+
                 final Button subscribeButton = (Button) dialog.findViewById(R.id.manage_subscription_update_button);
                 Button cancelButton = (Button) dialog.findViewById(R.id.manage_subscription_cancel_button);
 
@@ -306,7 +315,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     ((RadioButton)intervalsContainer.getChildAt(0).findViewById(R.id.radio_button_row_radio_button)).setChecked(true);
                 }
 
-                subscribeButton.setOnClickListener(new View.OnClickListener() {
+                subscribeButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View subscribeButton) {
                         String subscriptionFormat = null;
@@ -365,6 +374,9 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                 if(response.getStatus() == 204) {
                                     ((CheckBox) v).setChecked(false);
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                                 }
                             }
                         } else {
@@ -374,6 +386,10 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                             if(response != null) {
                                 ((CheckBox) v).setChecked(true);
+                                // TODO: add to "Mine abonnementer"
+                                Toast.makeText(v.getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(v.getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                             }
                         }
 
@@ -381,7 +397,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     }
                 });
 
-                cancelButton.setOnClickListener(new View.OnClickListener() {
+                cancelButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View cancelButton) {
                         ((CheckBox) v).setChecked(isSubscribed);
@@ -397,8 +413,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getOfflineModeInformationIconOnClickListener(final User user) {
-        return new View.OnClickListener() {
+    public OnClickListener getOfflineModeInformationIconOnClickListener(final User user) {
+        return new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Dialog dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_offline_mode_info, R.string.offline_mode);
@@ -422,7 +438,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         }
                     });
 
-                    row.setOnClickListener(new View.OnClickListener() {
+                    row.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             row.setChecked(!row.isChecked());
@@ -440,8 +456,8 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public View.OnClickListener getUserSettingsDialogOnClickListener(final User user) {
-        return new View.OnClickListener() {
+    public OnClickListener getUserSettingsDialogOnClickListener(final User user) {
+        return new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -489,7 +505,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                 vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
                 vesselRegistrationNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_help_description));
+                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_number_help_description));
 
                 fieldContainer.addView(contactPersonNameRow.getView());
                 fieldContainer.addView(contactPersonPhoneRow.getView());
@@ -516,14 +532,14 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     vesselRegistrationNumberRow.setText(settings.getRegistrationNumber());
                 }
 
-                saveSettingsButton.setOnClickListener(new View.OnClickListener() {
+                saveSettingsButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(final View v) {
                         FiskInfoUtility utility = new FiskInfoUtility();
 
                         boolean validated = false;
 
-                        validated = utility.validateName(contactPersonNameRow.getFieldText().trim());
+                        validated = utility.validateName(contactPersonNameRow.getFieldText().trim()) || contactPersonNameRow.getFieldText().trim().equals("");
                         contactPersonNameRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_name));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -537,7 +553,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim());
+                        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim()) || contactPersonPhoneRow.getFieldText().trim().equals("");
                         contactPersonPhoneRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_phone_number));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -551,7 +567,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim());
+                        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim()) || contactPersonEmailRow.getFieldText().trim().equals("");
                         contactPersonEmailRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_email));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -565,7 +581,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim());
+                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim()) || vesselIrcsNumberRow.getFieldText().trim().equals("");
                         vesselIrcsNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_ircs));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -579,7 +595,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim());
+                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim()) || vesselMmsiNumberRow.getFieldText().trim().equals("");
                         vesselMmsiNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_mmsi));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -593,7 +609,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim());
+                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim()) || vesselImoNumberRow.getFieldText().trim().equals("");
                         vesselImoNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_imo));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
@@ -625,7 +641,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     }
                 });
 
-                cancelButton.setOnClickListener(new View.OnClickListener() {
+                cancelButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
@@ -637,72 +653,190 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
         };
     }
 
-    public View.OnClickListener getToolEntryEditDialogOnClickListener(final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user) {
-        return new View.OnClickListener() {
+    public OnClickListener getToolEntryEditDialogOnClickListener(final Activity activity, final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user) {
+        return new OnClickListener() {
             @Override
-            public void onClick(final View v) {
-                DialogInterface dialogInterface = new UtilityDialogs();
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_register_new_tool, R.string.edit_tool);
-                ((Button)dialog.findViewById(R.id.dialog_register_tool_create_tool_button)).setText(v.getContext().getString(R.string.update));
+            public void onClick(final View editButton) {
+                final DialogInterface dialogInterface = new UtilityDialogs();
+                final Dialog dialog = dialogInterface.getDialog(editButton.getContext(), R.layout.dialog_register_new_tool, R.string.edit_tool);
+                ((Button)dialog.findViewById(R.id.dialog_register_tool_create_tool_button)).setText(editButton.getContext().getString(R.string.save));
 
                 final Button updateButton = (Button) dialog.findViewById(R.id.dialog_register_tool_create_tool_button);
                 final Button cancelButton = (Button) dialog.findViewById(R.id.dialog_register_tool_cancel_button);
                 final LinearLayout fieldContainer = (LinearLayout) dialog.findViewById(R.id.dialog_register_tool_main_container);
-                final DatePickerRow setupDateRow = new DatePickerRow(v.getContext(), v.getContext().getString(R.string.tool_set_date_colon), fragmentManager);
-                final TimePickerRow setupTimeRow = new TimePickerRow(v.getContext(), v.getContext().getString(R.string.tool_set_time_colon), fragmentManager);
-                final CoordinatesRow coordinatesRow = new CoordinatesRow(v.getContext(), locationTracker);
-                final SpinnerRow toolRow = new SpinnerRow(v.getContext(), v.getContext().getString(R.string.tool_type), ToolType.getValues());
-                final CheckBoxRow toolRemovedRow = new CheckBoxRow(v.getContext(), v.getContext().getString(R.string.tool_removed_row_text), true);
-                final EditTextRow commentRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.comment_field_header), v.getContext().getString(R.string.comment_field_hint));
+                final DatePickerRow setupDateRow = new DatePickerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_set_date_colon), fragmentManager);
+                final TimePickerRow setupTimeRow = new TimePickerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_set_time_colon), fragmentManager, false);
+                final CoordinatesRow coordinatesRow = new CoordinatesRow(activity, locationTracker);
+                final SpinnerRow toolRow = new SpinnerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_type), ToolType.getValues());
+                final CheckBoxRow toolRemovedRow = new CheckBoxRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_removed_row_text), true);
+                final EditTextRow commentRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.comment_field_header), editButton.getContext().getString(R.string.comment_field_hint));
 
-                final EditTextRow contactPersonNameRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_name), v.getContext().getString(R.string.contact_person_name));
-                final EditTextRow contactPersonPhoneRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_phone), v.getContext().getString(R.string.contact_person_phone));
-                final EditTextRow contactPersonEmailRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_email), v.getContext().getString(R.string.contact_person_email));
-                final EditTextRow vesselNameRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.vessel_name), v.getContext().getString(R.string.vessel_name));
-                final EditTextRow vesselPhoneNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.vessel_phone_number), v.getContext().getString(R.string.vessel_phone_number));
-                final EditTextRow vesselIrcsNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.ircs_number), v.getContext().getString(R.string.ircs_number));
-                final EditTextRow vesselMmsiNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.mmsi_number), v.getContext().getString(R.string.mmsi_number));
-                final EditTextRow vesselImoNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.imo_number), v.getContext().getString(R.string.imo_number));
-                final EditTextRow vesselRegistrationNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.registration_number), v.getContext().getString(R.string.registration_number));
+                final EditTextRow contactPersonNameRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.contact_person_name), editButton.getContext().getString(R.string.contact_person_name));
+                final EditTextRow contactPersonPhoneRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.contact_person_phone), editButton.getContext().getString(R.string.contact_person_phone));
+                final EditTextRow contactPersonEmailRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.contact_person_email), editButton.getContext().getString(R.string.contact_person_email));
+                final EditTextRow vesselNameRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.vessel_name), editButton.getContext().getString(R.string.vessel_name));
+                final EditTextRow vesselPhoneNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.vessel_phone_number), editButton.getContext().getString(R.string.vessel_phone_number));
+                final EditTextRow vesselIrcsNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.ircs_number), editButton.getContext().getString(R.string.ircs_number));
+                final EditTextRow vesselMmsiNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.mmsi_number), editButton.getContext().getString(R.string.mmsi_number));
+                final EditTextRow vesselImoNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.imo_number), editButton.getContext().getString(R.string.imo_number));
+                final EditTextRow vesselRegistrationNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.registration_number), editButton.getContext().getString(R.string.registration_number));
+                final ErrorRow errorRow = new ErrorRow(editButton.getContext(), editButton.getContext().getString(R.string.error_minimum_identification_factors_not_met), false);
+
+                final SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat(editButton.getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
+                final SimpleDateFormat sdf = new SimpleDateFormat(editButton.getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+
+                View.OnClickListener deleteButtonRowOnClickListener = new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String confirmationText;
+
+                        switch (toolEntry.getToolStatus()) {
+                            case STATUS_RECEIVED:
+                            case STATUS_SENT_UNCONFIRMED:
+                                confirmationText = v.getContext().getString(R.string.confirm_registered_tool_deletion_text);
+                                break;
+                            case STATUS_UNSENT:
+                            case STATUS_UNREPORTED:
+                                confirmationText = v.getContext().getString(R.string.confirm_tool_deletion_text);
+                                break;
+                            case STATUS_REMOVED_UNCONFIRMED:
+                                confirmationText = v.getContext().getString(R.string.confirm_registered_tool_with_local_changes_deletion_text);
+                                break;
+                            default:
+                                confirmationText = v.getContext().getString(R.string.confirm_tool_deletion_text_general);
+                                break;
+                        }
+
+                        final Dialog deleteToolDialog = dialogInterface.getConfirmationDialog(v.getContext(), v.getContext().getString(R.string.delete_tool), confirmationText, v.getContext().getString(R.string.delete));
+                        Button confirmToolDeletionButton = (Button) deleteToolDialog.findViewById(R.id.dialog_bottom_confirm_bottom);
+
+                        confirmToolDeletionButton.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                View parentView = (View)((editButton.getParent()).getParent());
+                                ((LinearLayout)parentView).removeView(((View)(editButton.getParent())));
+                                Toast.makeText(v.getContext(), v.getContext().getString(R.string.tool_deleted), Toast.LENGTH_LONG).show();
+
+                                user.getToolLog().removeTool(toolEntry.getSetupDate(), toolEntry.getToolLogId());
+                                user.writeToSharedPref(v.getContext());
+
+                                deleteToolDialog.dismiss();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        deleteToolDialog.show();
+                    }
+                };
+
+                View.OnClickListener archiveToolOnClickListener = new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String confirmationText;
+
+                        switch (toolEntry.getToolStatus()) {
+                            case STATUS_RECEIVED:
+                                confirmationText = v.getContext().getString(R.string.confirm_registered_tool_archiving);
+                                break;
+                            case STATUS_UNSENT:
+                                if(!toolEntry.getId().isEmpty()) {
+                                    confirmationText = v.getContext().getString(R.string.confirm_tool_archiving_text);
+                                } else {
+                                    confirmationText = v.getContext().getString(R.string.confirm_registered_tool_with_local_changes_archiving_text);
+                                }
+                                break;
+                            default:
+                                confirmationText = v.getContext().getString(R.string.confirm_tool_archiving_text_general);
+                                break;
+                        }
+
+                        final Dialog archiveDialog = dialogInterface.getConfirmationDialog(v.getContext(), v.getContext().getString(R.string.archive_tool), confirmationText, v.getContext().getString(R.string.archive));
+                        Button confirmToolArchiveButton = (Button) archiveDialog.findViewById(R.id.dialog_bottom_confirm_bottom);
+
+                        confirmToolArchiveButton.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                View parentView = (View)((editButton.getParent()).getParent()).getParent();
+                                ((LinearLayout)parentView).removeView(((View)(editButton.getParent()).getParent()));
+                                Toast.makeText(v.getContext(), v.getContext().getString(R.string.tool_archived), Toast.LENGTH_LONG).show();
+
+                                toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+                                user.writeToSharedPref(v.getContext());
+
+                                archiveDialog.dismiss();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        archiveDialog.show();
+                    }
+                };
+
+                ActionRow archiveRow = new ActionRow(editButton.getContext(), editButton.getContext().getString(R.string.archive_tool), R.drawable.ic_archive_black_24dp, archiveToolOnClickListener);
+                ActionRow deleteRow = new ActionRow(editButton.getContext(), editButton.getContext().getString(R.string.delete_tool), R.drawable.ic_delete_black_24dp, deleteButtonRowOnClickListener);
 
                 commentRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                commentRow.setHelpText(v.getContext().getString(R.string.comment_help_description));
-                setupDateRow.setDate(toolEntry.getSetupTime().substring(0, 10));
-                setupTimeRow.setTime(toolEntry.getSetupTime().substring(toolEntry.getSetupTime().indexOf('T') + 2, toolEntry.getSetupTime().indexOf('T') + 10));
+                commentRow.setHelpText(editButton.getContext().getString(R.string.comment_help_description));
                 vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
+                contactPersonPhoneRow.setHelpText(editButton.getContext().getString(R.string.vessel_name_help_description));
                 vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
                 vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                vesselIrcsNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
-                vesselIrcsNumberRow.setHelpText(v.getContext().getString(R.string.ircs_help_description));
+                vesselIrcsNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
+                vesselIrcsNumberRow.setHelpText(editButton.getContext().getString(R.string.ircs_help_description));
                 vesselMmsiNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
-                vesselMmsiNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_mmsi))});
-                vesselMmsiNumberRow.setHelpText(v.getContext().getString(R.string.mmsi_help_description));
+                vesselMmsiNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_mmsi))});
+                vesselMmsiNumberRow.setHelpText(editButton.getContext().getString(R.string.mmsi_help_description));
                 vesselImoNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
-                vesselImoNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_imo))});
-                vesselImoNumberRow.setHelpText(v.getContext().getString(R.string.imo_help_description));
+                vesselImoNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_imo))});
+                vesselImoNumberRow.setHelpText(editButton.getContext().getString(R.string.imo_help_description));
                 vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                vesselRegistrationNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_help_description));
+                vesselRegistrationNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(editButton.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
+                vesselRegistrationNumberRow.setHelpText(editButton.getContext().getString(R.string.registration_number_help_description));
                 contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
                 contactPersonEmailRow.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                contactPersonNameRow.setHelpText(v.getContext().getString(R.string.contact_person_name_help_description));
-                contactPersonPhoneRow.setHelpText(v.getContext().getString(R.string.contact_person_phone_help_description));
-                contactPersonEmailRow.setHelpText(v.getContext().getString(R.string.contact_person_email_help_description));
-                coordinatesRow.setCoordinates(toolEntry.getCoordinates());
+                contactPersonNameRow.setHelpText(editButton.getContext().getString(R.string.contact_person_name_help_description));
+                contactPersonPhoneRow.setHelpText(editButton.getContext().getString(R.string.contact_person_phone_help_description));
+                contactPersonEmailRow.setHelpText(editButton.getContext().getString(R.string.contact_person_email_help_description));
+                coordinatesRow.setCoordinates(activity, toolEntry.getCoordinates());
+
+                setupDateRow.setEnabled(false);
+
+                /* Should these fields be editable after tools are reported? */
+//                vesselRegistrationNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselImoNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselMmsiNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselNameRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
+//                vesselIrcsNumberRow.setEnabled(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED);
 
                 ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
                 toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(toolEntry.getToolType().toString()));
+                toolRemovedRow.setChecked(!toolEntry.getRemovedTime().isEmpty());
                 commentRow.setText(toolEntry.getComment());
                 contactPersonNameRow.setText(toolEntry.getContactPersonName());
-                contactPersonPhoneRow.setText(toolEntry.getContactPersonPhone());
-                contactPersonEmailRow.setText(toolEntry.getContactPersonEmail());
+                contactPersonPhoneRow.setText(!toolEntry.getContactPersonPhone().equals("") ? toolEntry.getContactPersonPhone() : toolEntry.getVesselPhone());
+                contactPersonEmailRow.setText(!toolEntry.getContactPersonEmail().equals("") ? toolEntry.getContactPersonEmail() : toolEntry.getVesselEmail());
                 vesselNameRow.setText(toolEntry.getVesselName());
                 vesselPhoneNumberRow.setText(toolEntry.getVesselPhone());
                 vesselIrcsNumberRow.setText(toolEntry.getIRCS());
                 vesselMmsiNumberRow.setText(toolEntry.getMMSI());
                 vesselImoNumberRow.setText(toolEntry.getIMO());
                 vesselRegistrationNumberRow.setText(toolEntry.getRegNum());
+
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date setupDate = null;
+                String toolSetupDateTime;
+
+                try {
+                    setupDate = sdf.parse(toolEntry.getSetupDateTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                sdfMilliSeconds.setTimeZone(TimeZone.getDefault());
+                toolSetupDateTime = sdfMilliSeconds.format(setupDate);
+                setupDateRow.setDate(toolSetupDateTime.substring(0, 10));
+                setupTimeRow.setTime(toolSetupDateTime.substring(toolEntry.getSetupDateTime().indexOf('T') + 1, toolEntry.getSetupDateTime().indexOf('T') + 6));
 
                 fieldContainer.addView(coordinatesRow.getView());
                 fieldContainer.addView(setupDateRow.getView());
@@ -719,8 +853,15 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 fieldContainer.addView(vesselMmsiNumberRow.getView());
                 fieldContainer.addView(vesselImoNumberRow.getView());
                 fieldContainer.addView(vesselRegistrationNumberRow.getView());
+                fieldContainer.addView(errorRow.getView());
 
-                updateButton.setOnClickListener(new View.OnClickListener() {
+                if(toolEntry.getToolStatus() != ToolEntryStatus.STATUS_UNREPORTED) {
+                    fieldContainer.addView(archiveRow.getView());
+                }
+
+                fieldContainer.addView(deleteRow.getView());
+
+                updateButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View updateButton) {
                         List<Point> coordinates = coordinatesRow.getCoordinates();
@@ -730,7 +871,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText();
                         String toolSetupDate = setupDateRow.getDate();
                         String toolSetupTime = setupTimeRow.getTime();
-                        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ".000Z";
+                        String toolSetupDateTime;
                         String commentString = commentRow.getFieldText();
                         String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText();
                         String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText();
@@ -740,9 +881,13 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         String contactPersonPhone = contactPersonPhoneRow.getFieldText();
                         String contactPersonEmail = contactPersonEmailRow.getFieldText();
                         FiskInfoUtility utility = new FiskInfoUtility();
-                        boolean validated = false;
+                        boolean validated;
                         boolean edited = false;
-                        boolean minimumIdentificationFactorsMet = false;
+                        boolean ircsValidated;
+                        boolean mmsiValidated;
+                        boolean imoValidated;
+                        boolean regNumValidated;
+                        boolean minimumIdentificationFactorsMet;
 
                         validated = coordinates != null;
                         if(!validated) {
@@ -819,7 +964,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim());
+                        validated = (ircsValidated = utility.validateIRCS(vesselIrcsNumber)) || vesselIrcsNumber.isEmpty();
                         vesselIrcsNumberRow.setError(validated ? null : updateButton.getContext().getString(R.string.error_invalid_ircs));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
@@ -833,7 +978,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim());
+                        validated = (mmsiValidated = utility.validateMMSI(vesselMmsiNumber)) || vesselMmsiNumber.isEmpty();
                         vesselMmsiNumberRow.setError(validated ? null : updateButton.getContext().getString(R.string.error_invalid_mmsi));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
@@ -847,7 +992,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
-                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim());
+                        validated = (imoValidated = utility.validateIMO(vesselImoNumber)) || vesselImoNumber.isEmpty();
                         vesselImoNumberRow.setError(validated ? null : updateButton.getContext().getString(R.string.error_invalid_imo));
                         if(!validated) {
                             ((ScrollView)fieldContainer.getParent()).post(new Runnable() {
@@ -861,19 +1006,50 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             return;
                         }
 
+                        validated = (regNumValidated = utility.validateRegistrationNumber(registrationNumber)) || registrationNumber.isEmpty();
+                        vesselRegistrationNumberRow.setError(validated ? null : editButton.getContext().getString(R.string.error_invalid_registration_number));
+                        if(!validated) {
+                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselRegistrationNumberRow.getView().getBottom());
+                                    vesselRegistrationNumberRow.requestFocus();
+                                }
+                            });
+
+                            return;
+                        }
+
+                        sdf.setTimeZone(TimeZone.getDefault());
+                        Date setupDate = null;
+                        String setupDateString = toolSetupDate + "T" + toolSetupTime + ":00Z";
+
+                        try {
+                            setupDate = sdf.parse(setupDateString);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        sdfMilliSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        setupDateString = sdfMilliSeconds.format(setupDate);
+                        toolSetupDateTime = setupDateString.substring(0, setupDateString.indexOf('.')).concat("Z");
+
+                        minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
+
                         if((coordinates != null && coordinates.size() != toolEntry.getCoordinates().size()) ||
                                 toolType != toolEntry.getToolType() ||
-                                (toolRemoved) != (toolEntry.getRemovedTime() == null) ||
+                                (toolRemoved) == (toolEntry.getRemovedTime().isEmpty()) ||
                                 (vesselName != null && !vesselName.equals(toolEntry.getVesselName())) ||
                                 (vesselPhoneNumber != null && !vesselPhoneNumber.equals(toolEntry.getVesselPhone())) ||
-                                (toolSetupDateTime != null && !toolSetupDate.equals(toolEntry.getSetupTime())) ||
+                                (toolSetupDateTime != null && !toolSetupDateTime.equals(toolEntry.getSetupDateTime())) ||
                                 (vesselIrcsNumber != null && !vesselIrcsNumber.equals(toolEntry.getIRCS())) ||
                                 (vesselMmsiNumber != null && !vesselMmsiNumber.equals(toolEntry.getMMSI())) ||
-                                (vesselImoNumber != null && !vesselImoNumber.equals(toolEntry.getMMSI())) ||
+                                (vesselImoNumber != null && !vesselImoNumber.equals(toolEntry.getIMO())) ||
                                 (registrationNumber != null && !registrationNumber.equals(toolEntry.getRegNum())) ||
                                 (contactPersonName != null && !contactPersonName.equals(toolEntry.getContactPersonName())) ||
                                 (contactPersonPhone != null && !contactPersonPhone.equals(toolEntry.getContactPersonPhone())) ||
-                                (contactPersonEmail != null && !contactPersonEmail.equals(toolEntry.getContactPersonEmail())))
+                                (contactPersonEmail != null && !contactPersonEmail.equals(toolEntry.getContactPersonEmail())) ||
+                                (commentString != null && !commentString.equals(toolEntry.getComment())))
                         {
                             edited = true;
                         } else {
@@ -889,60 +1065,149 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                         if(edited) {
                             if(!minimumIdentificationFactorsMet) {
-                                Toast.makeText(updateButton.getContext(), updateButton.getContext().getString(R.string.error_minimum_identification_factors_not_met), Toast.LENGTH_LONG).show();
-
+                                errorRow.setVisibility(!minimumIdentificationFactorsMet);
                                 return;
                             }
 
-
-                            String editedTime = "";
-
                             Date lastChangedDate = new Date();
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy'T'HH:mm:ss.SSS'Z'");
+                            Date previousSetupDate = null;
+                            SimpleDateFormat sdfSetupCompare = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
-                            toolEntry.setToolStatus(ToolEntryStatus.STATUS_UNSENT);
+                            String lastChangedDateString = sdfMilliSeconds.format(lastChangedDate)
+                                    .concat("Z");
+                            sdfSetupCompare.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                            try {
+                                previousSetupDate = sdf.parse(toolEntry.getSetupDateTime().substring(0, toolEntry.getSetupDateTime().length() - 1).concat(".000"));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            if(!sdfSetupCompare.format(previousSetupDate).equals(sdfSetupCompare.format(setupDate))) {
+                                // TODO: setup date is changed, tool needs to be moved in log so the app does not crash when trying to delete tool.
+//                                user.getToolLog().removeTool(toolEntry.getSetupDate(), toolEntry.getToolLogId());
+//                                user.getToolLog().addTool(toolEntry, toolEntry.getSetupDateTime().substring(0, 10));
+//                                user.writeToSharedPref(editButton.getContext());
+                            }
+
+                            ToolEntryStatus toolStatus = (toolRemoved ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : (toolEntry.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED ? ToolEntryStatus.STATUS_UNREPORTED : ToolEntryStatus.STATUS_UNSENT));
+
+                            toolEntry.setToolStatus(toolStatus);
                             toolEntry.setCoordinates(coordinates);
                             toolEntry.setToolType(toolType);
                             toolEntry.setVesselName(vesselName);
                             toolEntry.setVesselPhone(vesselPhoneNumber);
-                            toolEntry.setSetupTime(toolSetupDateTime);
-                            toolEntry.setRemovedTime(toolRemoved ? sdf.format(lastChangedDate) : null);
+                            toolEntry.setSetupDateTime(toolSetupDateTime);
+                            toolEntry.setRemovedTime(toolRemoved ? lastChangedDateString : null);
                             toolEntry.setComment(commentString);
                             toolEntry.setIRCS(vesselIrcsNumber);
                             toolEntry.setMMSI(vesselMmsiNumber);
                             toolEntry.setIMO(vesselImoNumber);
                             toolEntry.setRegNum(registrationNumber);
-                            toolEntry.setLastChangedDateTime(sdf.format(lastChangedDate));
+                            toolEntry.setLastChangedDateTime(lastChangedDateString);
+                            toolEntry.setLastChangedBySource(lastChangedDateString);
                             toolEntry.setContactPersonName(contactPersonName);
                             toolEntry.setContactPersonPhone(contactPersonPhone);
                             toolEntry.setContactPersonEmail(contactPersonEmail);
 
                             try {
-                                ImageView notificationView = (ImageView) ((View)v.getParent()).findViewById(R.id.tool_log_row_reported_image_view);
+                                ImageView notificationView = (ImageView) ((View)editButton.getParent()).findViewById(R.id.tool_log_row_reported_image_view);
 
                                 if(notificationView != null) {
                                     notificationView.setVisibility(View.VISIBLE);
-                                    notificationView.setOnClickListener(new View.OnClickListener() {
+                                    notificationView.setOnClickListener(new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            new Toast(v.getContext()).makeText(v.getContext(), R.string.notification_tool_unreported_changes, Toast.LENGTH_LONG).show();
+                                            Toast.makeText(v.getContext(), R.string.notification_tool_unreported_changes, Toast.LENGTH_LONG).show();
                                         }
                                     });
+                                }
+
+                                TextView dateTimeTextView = (TextView) ((View)editButton.getParent()).findViewById(R.id.tool_log_row_latest_date_text_view);
+                                TextView toolTypeTextView = (TextView)((View)editButton.getParent()).findViewById(R.id.tool_log_row_tool_type_text_view);
+                                TextView positionTextView = (TextView)((View)editButton.getParent()).findViewById(R.id.tool_log_row_tool_position_text_view);
+                                StringBuilder sb = new StringBuilder();
+
+
+
+                                sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(0).getLatitude())));
+                                sb.append(", ");
+                                sb.append(FiskInfoUtility.decimalToDMS((toolEntry.getCoordinates().get(0).getLongitude())));
+
+                                String coordinateString = sb.toString();
+                                coordinateString = toolEntry.getCoordinates().size() < 2 ? coordinateString : coordinateString + "\n..";
+
+                                sdfMilliSeconds.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+                                setupDateString = sdfMilliSeconds.format(setupDate);
+
+                                dateTimeTextView.setText(setupDateString.substring(0, 16).replace("T", " "));
+                                toolTypeTextView.setText(toolEntry.getToolType().toString());
+                                positionTextView.setText(coordinateString);
+
+                                Date toolDate;
+                                Date currentDate = new Date();
+                                try {
+                                    toolDate = sdf.parse(toolEntry.getSetupDateTime().substring(0, toolEntry.getSetupDateTime().length() - 1).concat(".000"));
+
+                                    long diff = currentDate.getTime() - toolDate.getTime();
+                                    double days = diff / updateButton.getContext().getResources().getInteger(R.integer.milliseconds_in_a_day);
+
+                                    if(days > 14) {
+                                        dateTimeTextView.setTextColor(ContextCompat.getColor(updateButton.getContext(), (R.color.error_red)));
+                                    } else {
+                                        dateTimeTextView.setTextColor(toolTypeTextView.getCurrentTextColor());
+                                    }
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                    return;
                                 }
                             } catch(ClassCastException e) {
                                 e.printStackTrace();
                             }
 
+
                             user.writeToSharedPref(updateButton.getContext());
+                        } else {
+                            Toast.makeText(editButton.getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
                         }
 
                         dialog.dismiss();
                     }
                 });
 
-                cancelButton.setOnClickListener(new View.OnClickListener() {
+                cancelButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+        };
+    }
+
+    public OnClickListener getHelpDialogOnClickListener() {
+        return new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final DialogInterface dialogInterface = new UtilityDialogs();
+                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_settings, R.string.about);
+
+                final Button closeDialogButton = (Button) dialog.findViewById(R.id.settings_dialog_close_button);
+                final LinearLayout fieldContainer = (LinearLayout) dialog.findViewById(R.id.dialog_user_settings_main_container);
+
+
+                closeDialogButton.setText(v.getContext().getString(R.string.back_to_settings));
+
+                closeDialogButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+
+
+
+
                         dialog.dismiss();
                     }
                 });
