@@ -43,4 +43,8 @@ public abstract class BaseTableRow {
     public void setTag(Object tag) {
         mTableRow.setTag(tag);
     }
+
+    public void setVisibility(boolean visible) {
+        getView().setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 }

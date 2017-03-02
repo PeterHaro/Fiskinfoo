@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         TabLayout tl = (TabLayout) findViewById(R.id.tabs);
         tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
         tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-//        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
+        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
 
         setSupportActionBar(toolbar);
         setupTabsInToolbar(tl);
@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
                     getFragmentManager().beginTransaction().
                             replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
                             commit();
-//                } else if (tab.getTag() == MyToolsFragment.TAG){
-//                    getFragmentManager().beginTransaction().
-//                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
-//                                    commit();
+                } else if (tab.getTag() == MyToolsFragment.TAG){
+                    getFragmentManager().beginTransaction().
+                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
+                                    commit();
                 } else {
                     Log.d(TAG, "Invalid tab selected");
                 }

@@ -17,6 +17,8 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 import android.content.Context;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -69,6 +71,13 @@ public class CheckBoxRow extends BaseTableRow {
     public void setOnClickListener(View.OnClickListener onClickListener) {
         mTextView.setOnClickListener(onClickListener);
     }
+
+    public void setOnCheckedChangedListener(OnCheckedChangeListener onCheckedChangedListener) {
+        if(mCheckBox != null) {
+            mCheckBox.setOnCheckedChangeListener(onCheckedChangedListener);
+        }
+    }
+
 
     @SuppressWarnings("unused")
     public void setChecked(boolean isChecked) {

@@ -255,6 +255,18 @@ limitations under the License.
         <item>Error:Feil</item>
     </string-array>
 
+    <string-array name="tool_lost_causes">
+        <item>Slitt</item>
+        <item>Revnet</item>
+        <item>Annet</item>
+    </string-array>
+
+    <string-array name="tool_lost_conditions">
+        <item>Stille</item>
+        <item>Sterk vind</item>
+        <item>Annet</item>
+    </string-array>
+
     <!-- Register tool fragment -->
     <string name="shoot_tool">Skyt redskap</string>
     <string name="finish_tool_text">Ferdig redskap </string>
@@ -356,6 +368,9 @@ limitations under the License.
     <string name="tool_fragement_explanation_title">Mine redskaper</string>
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
     <string name="contact_information">Kontaktinformasjon</string>
+    <string name="tool_lost_row_text">Tap av redskap</string>
+    <string name="tool_lost_cause_row_text">Tapsårsak</string>
+    <string name="tool_lost_conditions_row_text">Værforhold</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

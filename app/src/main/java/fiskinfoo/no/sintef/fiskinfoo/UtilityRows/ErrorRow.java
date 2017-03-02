@@ -43,10 +43,6 @@ public class ErrorRow extends BaseTableRow {
         textView.setText(errorText);
     }
 
-    public void setVisibility(boolean visible) {
-        getView().setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
     public void requestFocus() {
         textView.requestFocus();
     }

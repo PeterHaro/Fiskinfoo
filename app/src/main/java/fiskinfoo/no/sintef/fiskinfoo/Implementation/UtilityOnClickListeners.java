@@ -682,6 +682,20 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 final EditTextRow vesselRegistrationNumberRow = new EditTextRow(editButton.getContext(), editButton.getContext().getString(R.string.registration_number), editButton.getContext().getString(R.string.registration_number));
                 final ErrorRow errorRow = new ErrorRow(editButton.getContext(), editButton.getContext().getString(R.string.error_minimum_identification_factors_not_met), false);
 
+                /*
+                 * TODO: Add to view
+                 *      Add onCheckedChanged to toolRemoved view that toggles visibility
+                 *      Add logic for writing tool loss info to tool log
+                 *      Add logic for geojson
+                 */
+                final CheckBoxRow toolLostRow = new CheckBoxRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_lost_row_text), true);
+                final SpinnerRow toolLostCauseRow = new SpinnerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_lost_cause_row_text), editButton.getContext().getResources().getStringArray(R.array.tool_lost_causes));
+                final SpinnerRow toolLostConditionsRow = new SpinnerRow(editButton.getContext(), editButton.getContext().getString(R.string.tool_lost_conditions_row_text), editButton.getContext().getResources().getStringArray(R.array.tool_lost_conditions));
+
+                toolLostRow.setVisibility(false);
+                toolLostCauseRow.setVisibility(false);
+                toolLostConditionsRow.setVisibility(false);
+
                 final SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat(editButton.getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
                 final SimpleDateFormat sdf = new SimpleDateFormat(editButton.getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
 
@@ -811,7 +825,33 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                 ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
                 toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(toolEntry.getToolType().toString()));
+                toolRemovedRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                                if(checked) {
+                            toolLostRow.setVisibility(true);
+                        } else {
+                            toolLostRow.setVisibility(false);
+                        }
+                    }
+                });
+                toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                        if(checked) {
+                            toolLostCauseRow.setVisibility(true);
+                            toolLostConditionsRow.setVisibility(true);
+                        } else {
+                            toolLostCauseRow.setVisibility(false);
+                            toolLostConditionsRow.setVisibility(false);
+                        }
+                    }
+                });
                 toolRemovedRow.setChecked(!toolEntry.getRemovedTime().isEmpty());
+                // TODO: if(toolLost), show and populate views
+
                 commentRow.setText(toolEntry.getComment());
                 contactPersonNameRow.setText(toolEntry.getContactPersonName());
                 contactPersonPhoneRow.setText(!toolEntry.getContactPersonPhone().equals("") ? toolEntry.getContactPersonPhone() : toolEntry.getVesselPhone());
@@ -843,6 +883,11 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 fieldContainer.addView(setupTimeRow.getView());
                 fieldContainer.addView(toolRow.getView());
                 fieldContainer.addView(toolRemovedRow.getView());
+
+                fieldContainer.addView(toolLostRow.getView());
+                fieldContainer.addView(toolLostCauseRow.getView());
+                fieldContainer.addView(toolLostConditionsRow.getView());
+
                 fieldContainer.addView(commentRow.getView());
                 fieldContainer.addView(contactPersonNameRow.getView());
                 fieldContainer.addView(contactPersonPhoneRow.getView());
@@ -867,6 +912,10 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                         List<Point> coordinates = coordinatesRow.getCoordinates();
                         ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
                         boolean toolRemoved = toolRemovedRow.isChecked();
+                        // TODO: Add details for lost tools
+                        boolean toolLost = toolLostRow.isChecked();
+                        String toolLostCause = toolLostCauseRow.getCurrentSpinnerItem();
+                        String toolLostConditions = toolLostConditionsRow.getCurrentSpinnerItem();
                         String vesselName = vesselNameRow.getFieldText();
                         String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText();
                         String toolSetupDate = setupDateRow.getDate();
@@ -1036,6 +1085,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                         minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
 
+                        // TODO: add tool lost values
                         if((coordinates != null && coordinates.size() != toolEntry.getCoordinates().size()) ||
                                 toolType != toolEntry.getToolType() ||
                                 (toolRemoved) == (toolEntry.getRemovedTime().isEmpty()) ||
@@ -1109,6 +1159,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                             toolEntry.setContactPersonName(contactPersonName);
                             toolEntry.setContactPersonPhone(contactPersonPhone);
                             toolEntry.setContactPersonEmail(contactPersonEmail);
+                            // TODO: Add logic for when tool is reported as lost
 
                             try {
                                 ImageView notificationView = (ImageView) ((View)editButton.getParent()).findViewById(R.id.tool_log_row_reported_image_view);
