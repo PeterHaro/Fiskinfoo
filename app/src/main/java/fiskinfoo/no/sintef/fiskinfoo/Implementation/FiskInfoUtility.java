@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -313,7 +314,18 @@ public class FiskInfoUtility {
         }
 
         try {
-            outputStream = new FileOutputStream(new File(filePath + writableName + "." + fileEnding));
+            File dir = new File(filePath);
+            File file = new File(filePath + writableName + "." + fileEnding);
+
+            if(!dir.canWrite()) {
+                Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+                throw new IOException(activity.getResources().getString(R.string.error_cannot_write_to_directory));
+            }
+
+            // index 1 is leef when plugged in. Dirs[1].getAbsoluteFile() is writable
+//            File[] dirs = ContextCompat.getExternalFilesDirs(activity.getBaseContext(), null);
+
+            outputStream = new FileOutputStream(file);
             outputStream.write(data);
 
             if(showToasts) {

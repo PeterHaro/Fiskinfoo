@@ -1,5 +1,6 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -186,6 +187,20 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
             childViewHolder.subscribedCheckBox.setEnabled(false);
             childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
             childViewHolder.downloadButton.setOnClickListener(new UtilityOnClickListeners().getInformationDialogOnClickListener(((SubscriptionExpandableListChildObject) childObject).getTitleText(), context.getString(R.string.unable_to_download_no_network), -1));
+//            childViewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    byte[] array = new byte[7];
+//
+//                    for(int i = 0; i < array.length; i++) {
+//                        array[i] = (byte)i;
+//                    }
+//
+//                    FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
+//                    User user = User.readFromSharedPref(view.getContext());
+//                    fiskInfoUtility.writeMapLayerToExternalStorage((Activity) view.getContext(), array, "fileName", "JSON", user.getFilePathForExternalStorage(), true);
+//                }
+//            });
 
         } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized()) {
             childViewHolder.subscribedCheckBox.setEnabled(false);

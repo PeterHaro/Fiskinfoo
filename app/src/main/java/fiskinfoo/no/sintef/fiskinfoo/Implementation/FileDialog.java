@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -93,6 +94,13 @@ public class FileDialog extends ListActivity {
 
             @Override
             public void onClick(View v) {
+                File dir = new File(selectedFile.getAbsolutePath());
+
+                if(!dir.isDirectory() || !dir.canWrite()) {
+                    Toast.makeText(v.getContext(), R.string.error_invalid_directory_cannot_write, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 if (selectedFile != null) {
                     getIntent().putExtra(RESULT_PATH, selectedFile.getPath());
                     setResult(RESULT_OK, getIntent());

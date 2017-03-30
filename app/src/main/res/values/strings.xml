@@ -143,6 +143,8 @@ limitations under the License.
     <string name="confirm_subscription_cancelation">Er du sikker på at du vil avbryte dette abonnementet?</string>
     <string name="olex">OLEX</string>
     <string name="permission_denied_app_limited">Appens funksjoner er begrenset uten tillatelsen.</string>
+    <string name="error_cannot_write_to_directory">Kan ikke lagre i gitt mappe</string>
+    <string name="error_invalid_directory_cannot_write">Ugyldig valg, kan ikke skrive til mappe</string>
 
     <string name="create_proximity_checker">Sett varsling</string>
     <string name="proximity_alert_set">Kollisjonsvarsling opprettet</string>
