@@ -12,13 +12,13 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo;
+package Fragments;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.StrictMode;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,7 +44,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
@@ -52,13 +51,14 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
+import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
 public class MyPageFragment extends Fragment implements ExpandCollapseListener {
-    FragmentActivity listener;
-    public static final String TAG = "MyPageFragment";
-    private User user;
+    public static final String FRAGMENT_TAG = "MyPageFragment";
+
     private MyPageExpandableListAdapter myPageExpandableListAdapter;
     private ExpandableListAdapterChildOnClickListener childOnClickListener;
     private RecyclerView mCRecyclerView;
@@ -66,20 +66,57 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private UtilityOnClickListeners onClickListenerInterface;
     private FiskInfoUtility fiskInfoUtility;
     private ExpandCollapseListener expandCollapseListener;
+    private OnFragmentInteractionListener mListener;
+    private FragmentActivity listener;
+    private User user;
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.listener = (FragmentActivity) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.listener = (FragmentActivity) context;
+
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.listener = null;
+        this.user = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() != null) {
+            getView().refreshDrawableState();
+        }
+
+        MainActivity activity = (MainActivity) getActivity();
+        String title = getResources().getString(R.string.my_page_fragment_title);
+        activity.refreshTitle(title);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = getArguments().getParcelable("user");
         childOnClickListener = new ExpandableListAdapterChildOnClickListener();
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
+        user = mListener.getUser();
+    }
+
+    public static MyPageFragment newInstance() {
+        MyPageFragment fragment = new MyPageFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
 
@@ -113,7 +150,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            Log.d(TAG, savedInstanceState.toString());
+            Log.d(FRAGMENT_TAG, savedInstanceState.toString());
 
             myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
             Parcelable manager = savedInstanceState.getParcelable("recycleLayout");
@@ -161,7 +198,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (outState != null) {
-            Log.d(TAG, outState.toString());
+            Log.d(FRAGMENT_TAG, outState.toString());
         }
 
         if(mCRecyclerView != null && mCRecyclerView.getAdapter() != null) {
@@ -244,7 +281,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
             childOnClickListener.setPropertyDescriptions(availableSubscriptions);
         } catch (Exception e) {
-            Log.d(TAG, "Exception occured: " + e.toString());
+            Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
         }
 
         return parentObjectList;
@@ -286,7 +323,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
             childOnClickListener.setPropertyDescriptions(availableSubscriptions);
         } catch (Exception e) {
-            Log.d(TAG, "Exception occured: " + e.toString());
+            Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
         }
 
         return parentObjectList;
@@ -298,7 +335,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         View.OnClickListener subscriptionSwitchClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, TAG) :
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
@@ -333,7 +370,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     // INFO: we just treat active subscriptions in the same way as we treat available subscriptions, don't see a reason not to.
 //    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable, boolean canSubscribe) {
 //        if(subscribable == null) {
-//            Log.e(TAG, "subscribable is null");
+//            Log.e(FRAGMENT_TAG, "subscribable is null");
 //            return null;
 //        }
 //
@@ -408,7 +445,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             if (object == null) {
-                Log.d(TAG, "We failed at retrieving the object: ");
+                Log.d(FRAGMENT_TAG, "We failed at retrieving the object: ");
             }
 
             getFragmentManager().beginTransaction().
@@ -425,5 +462,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         CardViewFragment cardViewFragment = CardViewFragment.newInstance();
         cardViewFragment.setArguments(userBundle);
         return cardViewFragment;
+    }
+
+    public interface OnFragmentInteractionListener {
+        User getUser();
     }
 }

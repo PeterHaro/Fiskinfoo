@@ -14,9 +14,9 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,7 +24,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fiskinfoo.no.sintef.fiskinfoo.MyToolsFragment;
+import Fragments.MyToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class TimePickerRow extends BaseTableRow {

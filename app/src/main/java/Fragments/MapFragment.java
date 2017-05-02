@@ -12,13 +12,11 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo;
+package Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -30,6 +28,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -107,14 +106,17 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
+import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
 import retrofit.client.Response;
 import retrofit.mime.TypedInput;
 
 public class MapFragment extends Fragment {
+    public static final String FRAGMENT_TAG = "MapFragment";
+
     FragmentActivity listener;
-    public static final String TAG = "Map";
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
@@ -124,6 +126,7 @@ public class MapFragment extends Fragment {
     private UtilityOnClickListeners onClickListenerInterface;
     private ScheduledFuture proximityAlertWatcher;
     private GpsLocationTracker mGpsLocationTracker;
+    private OnFragmentInteractionListener mListener;
 
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
@@ -137,10 +140,12 @@ public class MapFragment extends Fragment {
     private Button searchToolsButton;
     private Button clearHighlightingButton;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.listener = (FragmentActivity) activity;
+
+    public static MapFragment newInstance() {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -149,9 +154,39 @@ public class MapFragment extends Fragment {
 
         user = getArguments().getParcelable("user");
         if (user == null) {
-            Log.d(TAG, "did not receive user");
+            Log.d(FRAGMENT_TAG, "did not receive user");
         }
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() != null) {
+            getView().refreshDrawableState();
+        }
+
+        MainActivity activity = (MainActivity) getActivity();
+        String title = getResources().getString(R.string.map_fragment_title);
+        activity.refreshTitle(title);
     }
 
     @Override
@@ -228,7 +263,7 @@ public class MapFragment extends Fragment {
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-                Log.d(TAG, message);
+                Log.d(FRAGMENT_TAG, message);
                 return super.onJsAlert(view, url, message, result);
             }
 
@@ -252,7 +287,7 @@ public class MapFragment extends Fragment {
 
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {
-            Log.d(TAG, message);
+            Log.d(FRAGMENT_TAG, message);
             try {
                 layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
@@ -503,7 +538,7 @@ public class MapFragment extends Fragment {
                     response = barentswatchApi.getApi().geoDataDownload(apiName, format);
 
                     if (response == null) {
-                        Log.d(TAG, "RESPONSE == NULL");
+                        Log.d(FRAGMENT_TAG, "RESPONSE == NULL");
                         throw new InternalError();
                     }
 
@@ -543,7 +578,7 @@ public class MapFragment extends Fragment {
                                 convertedLine = line.split("\\s+");
 
                                 if (line.length() > 150) {
-                                    Log.d(TAG, "line " + line);
+                                    Log.d(FRAGMENT_TAG, "line " + line);
                                 }
 
                                 if(convertedLine[0].startsWith("3sl")) {
@@ -592,7 +627,7 @@ public class MapFragment extends Fragment {
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (ArrayIndexOutOfBoundsException e) {
-                            Log.e(TAG, "Error when trying to serialize file.");
+                            Log.e(FRAGMENT_TAG, "Error when trying to serialize file.");
                             Toast error = Toast.makeText(getActivity(), "Ingen redskaper i området du definerte", Toast.LENGTH_LONG);
                             e.printStackTrace();
                             error.show();
@@ -613,7 +648,7 @@ public class MapFragment extends Fragment {
                     }
 
                 } catch (Exception e) {
-                    Log.d(TAG, "Could not download tools file");
+                    Log.d(FRAGMENT_TAG, "Could not download tools file");
                     Toast.makeText(getActivity(), R.string.download_failed, Toast.LENGTH_LONG).show();
                 }
 
@@ -924,7 +959,7 @@ public class MapFragment extends Fragment {
 
             } catch (ParseException e) {
                 e.printStackTrace();
-                Log.e(TAG, "Invalid datetime provided");
+                Log.e(FRAGMENT_TAG, "Invalid datetime provided");
             }
         } else {
             response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
@@ -963,7 +998,7 @@ public class MapFragment extends Fragment {
             inputField.setAdapter(adapter);
         } catch (JSONException e) {
             dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
-            Log.e(TAG, "JSON parse error");
+            Log.e(FRAGMENT_TAG, "JSON parse error");
             e.printStackTrace();
 
             return;
@@ -1068,5 +1103,9 @@ public class MapFragment extends Fragment {
                 searchToolsButton.setTag(null);
             }
         });
+    }
+
+    public interface OnFragmentInteractionListener {
+        User getUser();
     }
 }

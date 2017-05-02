@@ -17,19 +17,24 @@ package fiskinfoo.no.sintef.fiskinfoo;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -39,7 +44,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -60,6 +64,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import Fragments.MapFragment;
+import Fragments.MyPageFragment;
+import Fragments.MyToolsFragment;
+import Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -79,7 +87,13 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import retrofit.client.Response;
 
-public class MainActivity extends AppCompatActivity implements MyToolsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        MyPageFragment.OnFragmentInteractionListener,
+        SettingsFragment.OnFragmentInteractionListener,
+        MyToolsFragment.OnFragmentInteractionListener,
+        MapFragment.OnFragmentInteractionListener {
+
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
     private UtilityOnClickListeners utilityOnClickListeners;
@@ -94,6 +108,12 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
     public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
     public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
 
+    private NavigationView navigationView;
+    int currentMenuItemID = -1;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +127,22 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         utilityOnClickListeners = new UtilityOnClickListeners();
         dialogInterface = new UtilityDialogs();
         fiskInfoUtility = new FiskInfoUtility();
-        setupToolbar();
+//        setupToolbar();
+
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        initializeNavigationView();
+
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.inflateMenu(R.menu.navigation_drawer_menu);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView.getMenu().performIdentifierAction(R.id.navigation_view_subscriptions, 0);
+
 
         mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
 
@@ -116,68 +151,102 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         }
     }
 
-    private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TabLayout tl = (TabLayout) findViewById(R.id.tabs);
-        tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.TAG));
-        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.TAG));
-
-        setSupportActionBar(toolbar);
-        setupTabsInToolbar(tl);
-
-        toolbarOfflineModeView = (RelativeLayout) toolbar.findViewById(R.id.toolbar_offline_mode_container);
-
-        if(user.getOfflineMode()) {
-            initAndStartOfflineModeBackgroundThread();
-        }
-
+    public void refreshTitle(String title) {
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
+        if (actionBar != null) {
+            actionBar.setTitle(title);
         }
-
     }
 
-    private void setupTabsInToolbar(TabLayout tl) {
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
-        if(frameLayout.getChildCount() == 0) {
-            getFragmentManager().beginTransaction().
-                    replace(R.id.fragment_container, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).
-                    commit();
-        }
-
-        tl.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getTag() == MyPageFragment.TAG) {
-                    getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, createFragment(MyPageFragment.TAG), MyPageFragment.TAG).addToBackStack(null).
-                            commit();
-                } else if (tab.getTag() == MapFragment.TAG) {
-                    getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, createFragment(MapFragment.TAG), MapFragment.TAG).addToBackStack(null).
-                            commit();
-                } else if (tab.getTag() == MyToolsFragment.TAG){
-                    getFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.TAG).addToBackStack(null).
-                                    commit();
-                } else {
-                    Log.d(TAG, "Invalid tab selected");
-                }
+    private void initializeNavigationView() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer) {
+                @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
             }
+        };
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    public void navigate(int menuItemID) {
+        navigationView.getMenu().performIdentifierAction(menuItemID, 0);
+    }
+
+//    private void setupToolbar() {
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        TabLayout tl = (TabLayout) findViewById(R.id.tabs);
+//        tl.addTab(tl.newTab().setText(R.string.my_page).setTag(MyPageFragment.FRAGMENT_TAG));
+//        tl.addTab(tl.newTab().setText(R.string.map).setTag(MapFragment.FRAGMENT_TAG));
+//        tl.addTab(tl.newTab().setText(R.string.my_tools).setTag(MyToolsFragment.FRAGMENT_TAG));
+//
+//        setSupportActionBar(toolbar);
+//        setupTabsInToolbar(tl);
+//
+//        toolbarOfflineModeView = (RelativeLayout) toolbar.findViewById(R.id.toolbar_offline_mode_container);
+//
+//        if(user.getOfflineMode()) {
+//            initAndStartOfflineModeBackgroundThread();
+//        }
+//
+//        ActionBar actionBar = getSupportActionBar();
+//        if(actionBar != null) {
+//            actionBar.setDisplayShowTitleEnabled(false);
+//        }
+//
+//    }
+
+//    private void setupTabsInToolbar(TabLayout tl) {
+//        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+//        if(frameLayout.getChildCount() == 0) {
+//            getFragmentManager().beginTransaction().
+//                    replace(R.id.fragment_container, createFragment(MyPageFragment.FRAGMENT_TAG), MyPageFragment.FRAGMENT_TAG).
+//                    commit();
+//        }
+//
+//        tl.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                if (tab.getTag() == MyPageFragment.FRAGMENT_TAG) {
+//                    getFragmentManager().beginTransaction().
+//                            replace(R.id.fragment_container, createFragment(MyPageFragment.FRAGMENT_TAG), MyPageFragment.FRAGMENT_TAG).addToBackStack(null).
+//                            commit();
+//                } else if (tab.getTag() == MapFragment.FRAGMENT_TAG) {
+//                    getFragmentManager().beginTransaction().
+//                            replace(R.id.fragment_container, createFragment(MapFragment.FRAGMENT_TAG), MapFragment.FRAGMENT_TAG).addToBackStack(null).
+//                            commit();
+//                } else if (tab.getTag() == MyToolsFragment.FRAGMENT_TAG){
+//                    getFragmentManager().beginTransaction().
+//                            replace(R.id.fragment_container, MyToolsFragment.newInstance(user), MyToolsFragment.FRAGMENT_TAG).addToBackStack(null).
+//                                    commit();
+//                } else {
+//                    Log.d(FRAGMENT_TAG, "Invalid tab selected");
+//                }
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
+//    }
 
     private void createDownloadMapLayerDialog() {
         final Dialog dialog = dialogInterface.getDialogWithTitleIcon(this, R.layout.dialog_download_map_layer_from_list, R.string.download_map_layer_dialog_title, R.drawable.ikon_kart_til_din_kartplotter);
@@ -582,33 +651,23 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
         networkStateChanged = state;
     }
 
-    private Fragment createFragment(String tag) {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", user);
-        switch(tag) {
-            case MyPageFragment.TAG:
-                MyPageFragment myPageFragment = new MyPageFragment();
-                myPageFragment.setArguments(userBundle);
-                return myPageFragment;
-            case MapFragment.TAG:
-                MapFragment mapFragment = new MapFragment();
-                mapFragment.setArguments(userBundle);
-                return mapFragment;
-            default:
-                Log.d(TAG, "Trying to create invalid fragment with TAG: " + tag);
-        }
-        return null;
-    }
-
-    @Override
-    public void onBackPressed() {
-        int count = getFragmentManager().getBackStackEntryCount();
-        if (count == 0) {
-            super.onBackPressed();
-        } else {
-            getFragmentManager().popBackStack();
-        }
-    }
+//    private Fragment createFragment(String tag) {
+//        Bundle userBundle = new Bundle();
+//        userBundle.putParcelable("user", user);
+//        switch(tag) {
+//            case MyPageFragment.FRAGMENT_TAG:
+//                MyPageFragment myPageFragment = new MyPageFragment();
+//                myPageFragment.setArguments(userBundle);
+//                return myPageFragment;
+//            case MapFragment.FRAGMENT_TAG:
+//                MapFragment mapFragment = new MapFragment();
+//                mapFragment.setArguments(userBundle);
+//                return mapFragment;
+//            default:
+//                Log.d(FRAGMENT_TAG, "Trying to create invalid fragment with FRAGMENT_TAG: " + tag);
+//        }
+//        return null;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -641,7 +700,83 @@ public class MainActivity extends AppCompatActivity implements MyToolsFragment.O
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        //Not required for now as we communicate strictly using parcelables only for now.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        android.support.v4.app.Fragment fragment;
+        String tag;
+        switch (item.getItemId()) {
+            case R.id.navigation_view_subscriptions:
+                fragment = MyPageFragment.newInstance();
+                tag = MyPageFragment.FRAGMENT_TAG;
+                break;
+            case R.id.navigation_view_map:
+                fragment = MapFragment.newInstance();
+                tag = MapFragment.FRAGMENT_TAG;
+                break;
+            case R.id.navigation_view_tools:
+                fragment = MyToolsFragment.newInstance();
+                tag = MyToolsFragment.FRAGMENT_TAG;
+                break;
+            case R.id.navigation_view_settings:
+                fragment = SettingsFragment.newInstance();
+                tag = SettingsFragment.FRAGMENT_TAG;
+                break;
+            default:
+                return false;
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentByTag(tag);
+
+        if (currentFragment != null && currentFragment.isVisible()) {
+            mDrawerLayout.closeDrawers();
+            return true;
+        }
+
+        Bundle userBundle = new Bundle();
+        userBundle.putParcelable("user", user);
+        fragment.setArguments(userBundle);
+
+        fragmentManager.popBackStack();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
+                .replace(R.id.main_activity_fragment_container, fragment, tag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
+
+        currentMenuItemID = item.getItemId();
+        navigationView.setCheckedItem(item.getItemId());
+        mDrawerLayout.closeDrawers();
+        return true;
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(MyPageFragment.FRAGMENT_TAG);
+
+        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if ((getSupportFragmentManager().getBackStackEntryCount() > 0) ||
+                (fragment != null && fragment.isVisible())) {
+            super.onBackPressed();
+        }
+        else {
+            navigate(R.id.navigation_view_subscriptions);
+        }
+    }
+
+    @Override
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public void toggleOfflineMode(boolean offline) {
+        if(offline) {
+            initAndStartOfflineModeBackgroundThread();
+        } else {
+            stopOfflineModeBackgroundThread();
+        }
     }
 }

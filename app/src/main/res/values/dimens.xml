@@ -56,6 +56,17 @@ limitations under the License.
     <dimen name="tool_legend_row_margin_right">10dp</dimen>
     <dimen name="tool_legend_row_margin_top">5dp</dimen>
 
+    <!-- Navigation view -->
+    <dimen name="navigation_header_padding_bottom">10dp</dimen>
+    <dimen name="navigation_header_padding_top">40dp</dimen>
+    <dimen name="navigation_header_profile_image_view_width">65dp</dimen>
+    <dimen name="navigation_header_profile_image_view_height">65dp</dimen>
+    <dimen name="navigation_header_profile_image_margin_start">10dp</dimen>
+    <dimen name="navigation_header_name_text_view_margin_bottom">10dp</dimen>
+    <dimen name="navigation_header_name_text_view_margin_start">15dp</dimen>
+    <dimen name="navigation_header_verified_image_view_width">15dp</dimen>
+    <dimen name="navigation_header_verified_image_view_padding_start">5dp</dimen>
+
     <!-- Select map layers dialog margins -->
     <dimen name="select_map_layer_linear_layout_margin_left">10dp</dimen>
     <dimen name="select_map_layer_linear_layout_margin_right">10dp</dimen>
@@ -85,6 +96,15 @@ limitations under the License.
     <!-- Settings dialog -->
     <dimen name="settings_row_container_margin_left">30dp</dimen>
     <dimen name="settings_row_container_margin_right">30dp</dimen>
+    <dimen name="settings_row_margin_bottom">1dp</dimen>
+    <dimen name="settings_row_margin_top">1dp</dimen>
+    <dimen name="settings_row_padding_bottom">15dp</dimen>
+    <dimen name="settings_row_padding_top">15dp</dimen>
+    <dimen name="settings_row_icon_image_view_width">30dp</dimen>
+    <dimen name="settings_row_icon_image_view_height">30dp</dimen>
+    <dimen name="settings_row_text_view_margin_start">15dp</dimen>
+    <dimen name="settings_row_image_view_margin_start">25dp</dimen>
+    <dimen name="about_text_view_margin">15dp</dimen>
 
     <!-- Offline mode information dialog -->
     <dimen name="offline_mode_dialog_text_view_margin_top">15dp</dimen>
@@ -296,5 +316,19 @@ limitations under the License.
     <dimen name="tool_search_result_row_date_text_view_margin_left">10dp</dimen>
     <dimen name="tool_search_result_row_position_text_view_margin_left">10dp</dimen>
     <integer name="coordinate_input_field_max_length">14</integer>
+
+    <!-- Material cards -->
+    <!-- https://material.google.com/components/cards.html-->
+    <!-- Default values -->
+    <dimen name="material_card_default_margin_horizontal">8dp</dimen>
+    <dimen name="material_card_default_margin_bottom">8dp</dimen>
+    <dimen name="material_card_default_action_padding">8dp</dimen>
+    <dimen name="material_card_default_margin_top">8dp</dimen>
+    <dimen name="material_card_view_rounded_corners">2dp</dimen>
+
+    <dimen name="card_view_default_rounded_corners">2dp</dimen>
+    <dimen name="card_view_default_elevation">2dp</dimen>
+    <dimen name="card_view_medium_rounded_corners">2dp</dimen>
+    <dimen name="card_view_medium_default_elevation">2dp</dimen>
 
 </resources>

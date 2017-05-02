@@ -12,16 +12,14 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo;
+package Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -29,6 +27,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -89,6 +89,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
+import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DatePickerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
@@ -109,6 +111,8 @@ import retrofit.client.Response;
  * create an instance of this fragment.
  */
 public class MyToolsFragment extends Fragment {
+    public static final String FRAGMENT_TAG = "MyToolsFragment";
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private FloatingActionButton newToolButton = null;
@@ -116,26 +120,21 @@ public class MyToolsFragment extends Fragment {
     private final UtilityOnClickListeners utilityOnClickListeners = new UtilityOnClickListeners();
     private final DialogInterface dialogInterface = new UtilityDialogs();
     private final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
-    private static final String USER_PARAM = "user";
     private User user;
     private GpsLocationTracker mGpsLocationTracker;
     private BarentswatchApi barentswatchApi;
 
     private OnFragmentInteractionListener mListener;
 
-    public static final String TAG = "REGTOOLSF";
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param user The user instance.
      * @return A new instance of fragment MyToolsFragment.
      */
-    public static MyToolsFragment newInstance(User user) {
+    public static MyToolsFragment newInstance() {
         MyToolsFragment fragment = new MyToolsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(USER_PARAM, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -147,12 +146,10 @@ public class MyToolsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            user = getArguments().getParcelable(USER_PARAM);
-        }
 
         mGpsLocationTracker = new GpsLocationTracker(getActivity());
         barentswatchApi = new BarentswatchApi();
+        user = mListener.getUser();
 
         if (!mGpsLocationTracker.canGetLocation()) {
             mGpsLocationTracker.showSettingsAlert();
@@ -226,7 +223,7 @@ public class MyToolsFragment extends Fragment {
                                     continue;
                                 }
 
-                                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, toolEntry, user);
+                                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getActivity().getSupportFragmentManager(), mGpsLocationTracker, toolEntry, user);
                                 ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
                                 row.getView().setTag(toolEntry.getToolId());
                                 toolContainer.addView(row.getView());
@@ -599,7 +596,7 @@ public class MyToolsFragment extends Fragment {
             Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
 
             if (response == null) {
-                Log.d(TAG, "RESPONSE == NULL");
+                Log.d(FRAGMENT_TAG, "RESPONSE == NULL");
             }
 
             byte[] toolData;
@@ -944,7 +941,7 @@ public class MyToolsFragment extends Fragment {
             public void onClick(View v) {
                 if (headerDate.toString().equals(currentDate)) {
                     if (user.getToolLog().myLog.isEmpty()) {
-                        Log.d(TAG, "Decrementing date by one day, because the haul log is empty");
+                        Log.d(FRAGMENT_TAG, "Decrementing date by one day, because the haul log is empty");
                         decrementDateByOneInHeader(headerDate.getText().toString(), headerDate);
                     } else {
                         String currentKey = user.getToolLog().myLog.lastKey();
@@ -985,7 +982,7 @@ public class MyToolsFragment extends Fragment {
                 try {
                     selectedDate = sdf.parse(currentKey);
                 } catch (ParseException e) {
-                    Log.d(TAG, "Could not parse the given date in decrementByOneInHeader");
+                    Log.d(FRAGMENT_TAG, "Could not parse the given date in decrementByOneInHeader");
                     e.printStackTrace();
                 }
                 Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -1009,20 +1006,13 @@ public class MyToolsFragment extends Fragment {
         return time.split("\\s+")[0];
     }
 
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
@@ -1033,8 +1023,21 @@ public class MyToolsFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() != null) {
+            getView().refreshDrawableState();
+        }
+
+        MainActivity activity = (MainActivity) getActivity();
+        String title = getResources().getString(R.string.my_tools_fragment_title);
+        activity.refreshTitle(title);
+    }
+
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+        User getUser();
     }
 
     @Override

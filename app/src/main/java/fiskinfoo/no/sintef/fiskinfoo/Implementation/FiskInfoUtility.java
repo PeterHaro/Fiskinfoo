@@ -24,7 +24,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.content.res.Resources;
 import android.util.TypedValue;
@@ -55,9 +54,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
-import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
-import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
-import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
+import Fragments.MapFragment;
+import Fragments.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class FiskInfoUtility {
@@ -179,24 +177,6 @@ public class FiskInfoUtility {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
-    }
-
-    public Fragment createFragment(String tag, User user, String currentTag) {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", user);
-        switch(tag) {
-            case MyPageFragment.TAG:
-                MyPageFragment myPageFragment = new MyPageFragment();
-                myPageFragment.setArguments(userBundle);
-                return myPageFragment;
-            case MapFragment.TAG:
-                MapFragment mapFragment = new MapFragment();
-                mapFragment.setArguments(userBundle);
-                return mapFragment;
-            default:
-                Log.d(currentTag, "Trying to create invalid fragment with TAG: " + tag);
-        }
-        return null;
     }
 
     /**

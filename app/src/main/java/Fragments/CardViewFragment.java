@@ -12,12 +12,12 @@
  * limitations under the License.
  */
 
-package fiskinfoo.no.sintef.fiskinfoo;
+package Fragments;
 
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -45,10 +45,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
+import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 
 
@@ -282,7 +282,7 @@ public class CardViewFragment extends Fragment {
                     user.writeToSharedPref(getActivity());
 
 
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, new FiskInfoUtility().createFragment(MapFragment.TAG, user, TAG), MapFragment.TAG).addToBackStack(null).commit();
+//                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, new FiskInfoUtility().createFragment(MapFragment.FRAGMENT_TAG, user, FRAGMENT_TAG), MapFragment.FRAGMENT_TAG).addToBackStack(null).commit();
                 }
             });
 

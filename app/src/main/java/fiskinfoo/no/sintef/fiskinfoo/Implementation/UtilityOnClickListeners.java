@@ -16,8 +16,8 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.InputType;

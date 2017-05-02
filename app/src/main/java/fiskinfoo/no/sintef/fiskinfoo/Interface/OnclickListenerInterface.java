@@ -16,8 +16,8 @@ package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import java.util.ArrayList;
