@@ -360,6 +360,7 @@ limitations under the License.
     <string name="tool_deleted">Redskap slettet</string>
     <string name="tool_archived">Redskap arkivert</string>
     <string name="send_tool_report">Send redskapsrapport</string>
+    <string name="send_report">Send rapport</string>
     <string name="tool_report_recipient_email">fiskinfo@kystvakten.no</string>
     <string name="tool_report_email_header">Redskapsrapportering</string>
     <string name="send_tool_report_intent_header">Send redskapsrapport</string>
@@ -375,6 +376,8 @@ limitations under the License.
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
     <string name="contact_information">Kontaktinformasjon</string>
     <string name="my_tools_fragment_title">Mine redskaper</string>
+    <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
+    <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -411,9 +414,6 @@ limitations under the License.
     <string name="json_tool_property_last_changed_by_source">lastchangedbysource</string>
     <string name="json_tool_property_coordinates">coordinates</string>
     <string name="json_tool_property_null_string_value">null</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

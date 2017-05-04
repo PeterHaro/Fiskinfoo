@@ -13,15 +13,13 @@ limitations under the License.
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="fiskinfoo.no.sintef.fiskinfoo.Fragments.MapFragment"
     >
 
     <item
-        android:id="@+id/send_tool_report"
+        android:id="@+id/action_update_tool"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:title="@string/send_report"
+        android:title="@string/update"
         />
 </menu>

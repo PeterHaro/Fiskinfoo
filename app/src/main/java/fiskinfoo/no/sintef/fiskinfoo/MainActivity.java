@@ -64,11 +64,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import Fragments.EditToolFragment;
 import Fragments.MapFragment;
 import Fragments.MyPageFragment;
 import Fragments.MyToolsFragment;
 import Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
@@ -76,6 +78,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
@@ -92,7 +95,8 @@ public class MainActivity extends AppCompatActivity implements
         MyPageFragment.OnFragmentInteractionListener,
         SettingsFragment.OnFragmentInteractionListener,
         MyToolsFragment.OnFragmentInteractionListener,
-        MapFragment.OnFragmentInteractionListener {
+        MapFragment.OnFragmentInteractionListener,
+        EditToolFragment.OnFragmentInteractionListener {
 
     private final String TAG = MainActivity.this.getClass().getSimpleName();
     private UtilityRowsInterface utilityRowsInterface;
@@ -670,36 +674,6 @@ public class MainActivity extends AppCompatActivity implements
 //    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId()) {
-            case R.id.action_settings:
-                createSettingsDialog();
-                break;
-            case R.id.export_metadata_to_user:
-                if(fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
-                    createDownloadMapLayerDialog();
-                } else {
-                    dialogInterface.getAlertDialog(MainActivity.this, getString(R.string.download_map_error_no_network_access_title), getString(R.string.unable_to_download_no_network), -1).show();
-                }
-                break;
-            default:
-                return false;
-        }
-
-        return true;
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         android.support.v4.app.Fragment fragment;
@@ -769,6 +743,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public void updateTool(ToolEntry tool) {
+        if(tool != null && !tool.getSetupDate().isEmpty()) {
+            user.getToolLog().addTool(tool, tool.getSetupDate());
+            user.writeToSharedPref(this);
+        }
     }
 
     @Override

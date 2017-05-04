@@ -14,11 +14,13 @@ limitations under the License.
 
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/utility_coordinates_row_header_text_view"
@@ -28,7 +30,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
             android:text="@string/position"
             android:textSize="@dimen/card_view_information_row_text_size"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/utility_coordinates_row_help_button"
@@ -38,7 +41,8 @@ limitations under the License.
             android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
             android:background="@android:drawable/ic_menu_help"
-            android:layout_toEndOf="@+id/utility_coordinates_row_header_text_view" />
+            android:layout_toEndOf="@+id/utility_coordinates_row_header_text_view"
+            />
 
         <Button
             android:id="@+id/utility_coordinates_row_remove_position_button"
@@ -48,7 +52,8 @@ limitations under the License.
             android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
             android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_right_margin"
             android:layout_toStartOf="@+id/utility_coordinates_row_add_position_button"
-            android:background="@drawable/ic_remove_location_black_24dp" />
+            android:background="@drawable/ic_remove_location_black_24dp"
+            />
 
         <Button
             android:id="@+id/utility_coordinates_row_add_position_button"
@@ -58,24 +63,29 @@ limitations under the License.
             android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
             android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_right_margin"
             android:background="@drawable/ic_add_location_black_24dp"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            />
 
         <TextView
             android:id="@+id/utility_coordinates_row_help_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/utility_coordinates_row_header_text_view"
-            android:visibility="gone"
-            android:text="@string/coordinates_help_text"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="false"
+
+            android:text="@string/coordinates_help_text"
+            />
 
         <LinearLayout
             android:id="@+id/utility_coordinates_row_lat_lon_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/utility_coordinates_row_help_text_view"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
 
         </LinearLayout>
