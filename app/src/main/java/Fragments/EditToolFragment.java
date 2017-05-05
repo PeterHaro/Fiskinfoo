@@ -1,7 +1,9 @@
 package Fragments;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -17,9 +19,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
@@ -27,6 +40,9 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ActionRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.BaseTableRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DatePickerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
@@ -50,8 +66,25 @@ public class EditToolFragment extends DialogFragment {
     private OnFragmentInteractionListener mListener;
     private GpsLocationTracker locationTracker;
     private ToolEntry tool;
-    private User user;
     private LinearLayout fieldsContainer;
+    private DatePickerRow setupDateRow;
+    private TimePickerRow setupTimeRow;
+    private CoordinatesRow coordinatesRow;
+    private SpinnerRow toolRow;
+    CheckBoxRow toolRemovedRow;
+    private EditTextRow commentRow;
+    private EditTextRow contactPersonNameRow;
+    private EditTextRow contactPersonPhoneRow;
+    private EditTextRow contactPersonEmailRow;
+    private EditTextRow vesselNameRow;
+    private EditTextRow vesselPhoneNumberRow;
+    private EditTextRow vesselIrcsNumberRow;
+    private EditTextRow vesselMmsiNumberRow;
+    private EditTextRow vesselImoNumberRow;
+    private EditTextRow vesselRegistrationNumberRow;
+    ActionRow archiveRow;
+    ActionRow deleteRow;
+    private ErrorRow errorRow;
 
     public EditToolFragment() {
         // Required empty public constructor
@@ -78,7 +111,6 @@ public class EditToolFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             tool = getArguments().getParcelable(TOOL_PARAM);
-            user = mListener.getUser();
         }
 
         locationTracker = new GpsLocationTracker(getContext());
@@ -98,6 +130,8 @@ public class EditToolFragment extends DialogFragment {
 
         fieldsContainer = (LinearLayout) rootView.findViewById(R.id.dialog_fragment_edit_tool_linear_layout);
 
+        generateFields();
+
         if(tool != null) {
             populateFieldsFromTool();
         } else {
@@ -107,13 +141,9 @@ public class EditToolFragment extends DialogFragment {
         return rootView;
     }
 
-    private void populateFieldsFromTool() {
-        
-    }
-
-    private void populateFieldsFromSettings() {
-        if(FiskInfoUtility.shouldAskPermission()) {
-            String[] perms = { "android.permission.ACCESS_FINE_LOCATION" };
+    private void generateFields() {
+        if (FiskInfoUtility.shouldAskPermission()) {
+            String[] perms = {"android.permission.ACCESS_FINE_LOCATION"};
             int permsRequestCode = MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
 
             ActivityCompat.requestPermissions(getActivity(),
@@ -121,25 +151,25 @@ public class EditToolFragment extends DialogFragment {
                     permsRequestCode);
         }
 
-//        final Dialog dialog = dialogInterface.getDialog(getContext(), R.layout.dialog_register_new_tool, R.string.tool_registration);
-        final UserSettings settings = user.getSettings() != null ? user.getSettings() : new UserSettings();
+        setupDateRow = new DatePickerRow(getContext(), getString(R.string.tool_set_date_colon), getFragmentManager());
+        setupTimeRow = new TimePickerRow(getContext(), getString(R.string.tool_set_time_colon), getFragmentManager(), true);
+        coordinatesRow = new CoordinatesRow(getActivity(), locationTracker);
+        toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type), ToolType.getValues());
+        toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
+        commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
+        contactPersonNameRow = new EditTextRow(getContext(), getString(R.string.contact_person_name), getString(R.string.contact_person_name));
+        contactPersonPhoneRow = new EditTextRow(getContext(), getString(R.string.contact_person_phone), getString(R.string.contact_person_phone));
+        contactPersonEmailRow = new EditTextRow(getContext(), getString(R.string.contact_person_email), getString(R.string.contact_person_email));
+        vesselNameRow = new EditTextRow(getContext(), getString(R.string.vessel_name), getString(R.string.vessel_name));
+        vesselPhoneNumberRow = new EditTextRow(getContext(), getString(R.string.vessel_phone_number), getString(R.string.vessel_phone_number));
+        vesselIrcsNumberRow = new EditTextRow(getContext(), getString(R.string.ircs_number), getString(R.string.ircs_number));
+        vesselMmsiNumberRow = new EditTextRow(getContext(), getString(R.string.mmsi_number), getString(R.string.mmsi_number));
+        vesselImoNumberRow = new EditTextRow(getContext(), getString(R.string.imo_number), getString(R.string.imo_number));
+        vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
+        errorRow = new ErrorRow(getContext(), getString(R.string.error_minimum_identification_factors_not_met), false);
 
-        final DatePickerRow setupDateRow = new DatePickerRow(getContext(), getContext().getString(R.string.tool_set_date_colon), getFragmentManager());
-        final TimePickerRow setupTimeRow = new TimePickerRow(getContext(), getContext().getString(R.string.tool_set_time_colon), getFragmentManager(), true);
-        final CoordinatesRow coordinatesRow = new CoordinatesRow(getActivity(), locationTracker);
-        final SpinnerRow toolRow = new SpinnerRow(getContext(), getContext().getString(R.string.tool_type), ToolType.getValues());
-        final EditTextRow commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
-
-        final EditTextRow contactPersonNameRow = new EditTextRow(getContext(), getContext().getString(R.string.contact_person_name), getContext().getString(R.string.contact_person_name));
-        final EditTextRow contactPersonPhoneRow = new EditTextRow(getContext(), getContext().getString(R.string.contact_person_phone), getContext().getString(R.string.contact_person_phone));
-        final EditTextRow contactPersonEmailRow = new EditTextRow(getContext(), getContext().getString(R.string.contact_person_email), getContext().getString(R.string.contact_person_email));
-        final EditTextRow vesselNameRow = new EditTextRow(getContext(), getContext().getString(R.string.vessel_name), getContext().getString(R.string.vessel_name));
-        final EditTextRow vesselPhoneNumberRow = new EditTextRow(getContext(), getContext().getString(R.string.vessel_phone_number), getContext().getString(R.string.vessel_phone_number));
-        final EditTextRow vesselIrcsNumberRow = new EditTextRow(getContext(), getContext().getString(R.string.ircs_number), getContext().getString(R.string.ircs_number));
-        final EditTextRow vesselMmsiNumberRow = new EditTextRow(getContext(), getContext().getString(R.string.mmsi_number), getContext().getString(R.string.mmsi_number));
-        final EditTextRow vesselImoNumberRow = new EditTextRow(getContext(), getContext().getString(R.string.imo_number), getContext().getString(R.string.imo_number));
-        final EditTextRow vesselRegistrationNumberRow = new EditTextRow(getContext(), getContext().getString(R.string.registration_number), getContext().getString(R.string.registration_number));
-        final ErrorRow errorRow = new ErrorRow(getContext(), getString(R.string.error_minimum_identification_factors_not_met), false);
+        archiveRow = new ActionRow(getContext(), getString(R.string.archive_tool), R.drawable.ic_archive_black_24dp, getArchiveToolRowOnClickListener());
+        deleteRow = new ActionRow(getContext(), getString(R.string.delete_tool), R.drawable.ic_delete_black_24dp, getDeleteToolRowOnClickListener());
 
         commentRow.setInputType(InputType.TYPE_CLASS_TEXT);
         commentRow.setHelpText(getString(R.string.comment_help_description));
@@ -147,22 +177,22 @@ public class EditToolFragment extends DialogFragment {
         vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
         vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
         vesselIrcsNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
-        vesselIrcsNumberRow.setHelpText(getContext().getString(R.string.ircs_help_description));
+        vesselIrcsNumberRow.setHelpText(getString(R.string.ircs_help_description));
         vesselMmsiNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
         vesselMmsiNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_mmsi))});
-        vesselMmsiNumberRow.setHelpText(getContext().getString(R.string.mmsi_help_description));
+        vesselMmsiNumberRow.setHelpText(getString(R.string.mmsi_help_description));
         vesselImoNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
         vesselImoNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_imo))});
-        vesselImoNumberRow.setHelpText(getContext().getString(R.string.imo_help_description));
+        vesselImoNumberRow.setHelpText(getString(R.string.imo_help_description));
         vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
         vesselRegistrationNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-        vesselRegistrationNumberRow.setHelpText(getContext().getString(R.string.registration_number_help_description));
+        vesselRegistrationNumberRow.setHelpText(getString(R.string.registration_number_help_description));
         contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
         contactPersonEmailRow.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        contactPersonNameRow.setHelpText(getContext().getString(R.string.contact_person_name_help_description));
-        contactPersonPhoneRow.setHelpText(getContext().getString(R.string.contact_person_phone_help_description));
-        contactPersonEmailRow.setHelpText(getContext().getString(R.string.contact_person_email_help_description));
+        contactPersonNameRow.setHelpText(getString(R.string.contact_person_name_help_description));
+        contactPersonPhoneRow.setHelpText(getString(R.string.contact_person_phone_help_description));
+        contactPersonEmailRow.setHelpText(getString(R.string.contact_person_email_help_description));
 
         fieldsContainer.addView(coordinatesRow.getView());
         fieldsContainer.addView(setupDateRow.getView());
@@ -180,6 +210,39 @@ public class EditToolFragment extends DialogFragment {
         fieldsContainer.addView(vesselRegistrationNumberRow.getView());
         fieldsContainer.addView(errorRow.getView());
 
+        if (tool != null) {
+            fieldsContainer.addView(toolRemovedRow.getView(), 4);
+
+            if (tool.getToolStatus() != ToolEntryStatus.STATUS_UNREPORTED) {
+                fieldsContainer.addView(archiveRow.getView());
+            }
+
+            fieldsContainer.addView(deleteRow.getView());
+        }
+    }
+
+    private void populateFieldsFromTool() {
+        coordinatesRow.setCoordinates(getActivity(), tool.getCoordinates());
+        setupDateRow.setDate(tool.getSetupDate());
+        setupTimeRow.setTime(tool.getSetupDateTime().substring(tool.getSetupDateTime().indexOf('T') + 1, tool.getSetupDateTime().indexOf('T') + 6));
+
+        ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
+        toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(tool.getToolType() != null ? tool.getToolType().toString() : Tool.BUNNTRÅL.toString()));
+        toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
+        contactPersonNameRow.setText(tool.getContactPersonName());
+        contactPersonPhoneRow.setText(tool.getContactPersonPhone());
+        contactPersonEmailRow.setText(tool.getContactPersonEmail());
+        vesselNameRow.setText(tool.getVesselName());
+        vesselPhoneNumberRow.setText(tool.getVesselPhone());
+        vesselIrcsNumberRow.setText(tool.getIRCS());
+        vesselMmsiNumberRow.setText(tool.getMMSI());
+        vesselImoNumberRow.setText(tool.getIMO());
+        vesselRegistrationNumberRow.setText(tool.getRegNum());
+    }
+
+    private void populateFieldsFromSettings() {
+        UserSettings settings = mListener.getUser().getSettings() != null ? mListener.getUser().getSettings() : new UserSettings();
+
         if (settings != null) {
             ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
             toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(settings.getToolType() != null ? settings.getToolType().toString() : Tool.BUNNTRÅL.toString()));
@@ -195,206 +258,345 @@ public class EditToolFragment extends DialogFragment {
         }
     }
 
-    private void validateAndUpdateToolValues() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
+    private void validateAndCreateToolEntry() {
+        List<Point> coordinates = coordinatesRow.getCoordinates();
+        ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
+        String vesselName = vesselNameRow.getFieldText().trim();
+        String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
+        String toolSetupDate = setupDateRow.getDate().trim();
+        String toolSetupTime = setupTimeRow.getTime().trim();
+        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
+        String commentString = commentRow.getFieldText().trim();
+        String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
+        String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
+        String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
+        String registrationNumber = vesselRegistrationNumberRow.getFieldText().trim();
+        String contactPersonName = contactPersonNameRow.getFieldText().trim();
+        String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
+        String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        FiskInfoUtility utility = new FiskInfoUtility();
+        boolean validated;
+        boolean ircsValidated;
+        boolean mmsiValidated;
+        boolean imoValidated;
+        boolean regNumValidated;
+        boolean minimumIdentificationFactorsMet;
 
-//                List<Point> coordinates = coordinatesRow.getCoordinates();
-//                ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
-//                String vesselName = vesselNameRow.getFieldText().trim();
-//                String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
-//                String toolSetupDate = setupDateRow.getDate().trim();
-//                String toolSetupTime = setupTimeRow.getTime().trim();
-//                String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
-//                String commentString = commentRow.getFieldText().trim();
-//                String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
-//                String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
-//                String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
-//                String registrationNumber = vesselRegistrationNumberRow.getFieldText().trim();
-//                String contactPersonName = contactPersonNameRow.getFieldText().trim();
-//                String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
-//                String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
-//                FiskInfoUtility utility = new FiskInfoUtility();
-//                boolean validated;
-//                boolean ircsValidated;
-//                boolean mmsiValidated;
-//                boolean imoValidated;
-//                boolean regNumValidated;
-//                boolean minimumIdentificationFactorsMet;
-//
-//                validated = coordinates != null;
-//                if(!validated) {
-//                    return;
-//                }
-//
-//                validated = utility.validateName(contactPersonName);
-//                contactPersonNameRow.setError(validated ? null : getContext().getString(R.string.error_invalid_name));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, contactPersonNameRow.getView().getBottom());
-//                            contactPersonNameRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = utility.validatePhoneNumber(contactPersonPhone);
-//                contactPersonPhoneRow.setError(validated ? null : getContext().getString(R.string.error_invalid_phone_number));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, contactPersonPhoneRow.getView().getBottom());
-//                            contactPersonPhoneRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = utility.isEmailValid(contactPersonEmail) || contactPersonEmail.isEmpty();
-//                contactPersonEmailRow.setError(validated ? null : getContext().getString(R.string.error_invalid_email));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, contactPersonEmailRow.getView().getBottom());
-//                            contactPersonEmailRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = vesselNameRow.getFieldText().trim() != null && !vesselNameRow.getFieldText().isEmpty();
-//                vesselNameRow.setError(validated ? null : getContext().getString(R.string.error_invalid_vessel_name));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselNameRow.getView().getBottom());
-//                            vesselNameRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = vesselPhoneNumberRow.getFieldText().trim() != null && !vesselPhoneNumberRow.getFieldText().isEmpty();
-//                vesselPhoneNumberRow.setError(validated ? null : getContext().getString(R.string.error_invalid_phone_number));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselPhoneNumberRow.getView().getBottom());
-//                            vesselPhoneNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = (ircsValidated = utility.validateIRCS(vesselIrcsNumber)) || vesselIrcsNumber.isEmpty();
-//                vesselIrcsNumberRow.setError(validated ? null : getContext().getString(R.string.error_invalid_ircs));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselIrcsNumberRow.getView().getBottom());
-//                            vesselIrcsNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = (mmsiValidated = utility.validateMMSI(vesselMmsiNumber)) || vesselMmsiNumber.isEmpty();
-//                vesselMmsiNumberRow.setError(validated ? null : getContext().getString(R.string.error_invalid_mmsi));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselMmsiNumberRow.getView().getBottom());
-//                            vesselMmsiNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = (imoValidated = utility.validateIMO(vesselImoNumber)) || vesselImoNumber.isEmpty();
-//                vesselImoNumberRow.setError(validated ? null : getContext().getString(R.string.error_invalid_imo));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselImoNumberRow.getView().getBottom());
-//                            vesselImoNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                validated = (regNumValidated = utility.validateRegistrationNumber(registrationNumber)) || registrationNumber.isEmpty();
-//                vesselRegistrationNumberRow.setError(validated ? null : getContext().getString(R.string.error_invalid_registration_number));
-//                if(!validated) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, vesselRegistrationNumberRow.getView().getBottom());
-//                            vesselRegistrationNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
-//
-//                errorRow.setVisibility(!minimumIdentificationFactorsMet);
-//
-//                if(!minimumIdentificationFactorsMet) {
-//                    ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ((ScrollView)fieldsContainer.getParent()).scrollTo(0, errorRow.getView().getBottom());
-//                            vesselRegistrationNumberRow.requestFocus();
-//                        }
-//                    });
-//
-//                    return;
-//                }
-//
-//                ToolEntry toolEntry = new ToolEntry(coordinates, vesselName, vesselPhoneNumber, contactPersonEmail,
-//                        toolType, toolSetupDateTime, registrationNumber, contactPersonName, contactPersonPhone, contactPersonEmail);
-//
-//                toolEntry.setIRCS(vesselIrcsNumber);
-//                toolEntry.setMMSI(vesselMmsiNumber);
-//                toolEntry.setIMO(vesselImoNumber);
-//                toolEntry.setComment(commentString);
-//
-////                ToolLog toolLog = user.getToolLog();
-////                toolLog.addTool(toolEntry, toolSetupDate);
-////                user.writeToSharedPref(getContext());
-//                mListener.updateTool(toolEntry);
-//
-////                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, toolEntry, user);
-////                ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
-//
-////                row.getView().setTag(toolEntry.getToolId());
-////                toolContainer.addView(row.getView());
-            }
-        };
+        validated = coordinates != null;
+        if(!validated) {
+            return;
+        }
 
-        mListener.updateTool(tool);
+        validated = utility.validateName(contactPersonName);
+        contactPersonNameRow.setError(validated ? null : getString(R.string.error_invalid_name));
+        if(!validated) {
+            highlightInvalidField(contactPersonNameRow);
+
+            return;
+        }
+
+        validated = utility.validatePhoneNumber(contactPersonPhone);
+        contactPersonPhoneRow.setError(validated ? null : getString(R.string.error_invalid_phone_number));
+        if(!validated) {
+            highlightInvalidField(contactPersonPhoneRow);
+
+            return;
+        }
+
+        validated = utility.isEmailValid(contactPersonEmail) || contactPersonEmail.isEmpty();
+        contactPersonEmailRow.setError(validated ? null : getString(R.string.error_invalid_email));
+        if(!validated) {
+            highlightInvalidField(contactPersonEmailRow);
+
+            return;
+        }
+
+        validated = !vesselNameRow.getFieldText().isEmpty();
+        vesselNameRow.setError(validated ? null : getString(R.string.error_invalid_vessel_name));
+        if(!validated) {
+            highlightInvalidField(vesselNameRow);
+
+            return;
+        }
+
+        validated = !vesselPhoneNumberRow.getFieldText().isEmpty();
+        vesselPhoneNumberRow.setError(validated ? null : getString(R.string.error_invalid_phone_number));
+        if(!validated) {
+            highlightInvalidField(vesselPhoneNumberRow);
+
+            return;
+        }
+
+        validated = (ircsValidated = utility.validateIRCS(vesselIrcsNumber)) || vesselIrcsNumber.isEmpty();
+        vesselIrcsNumberRow.setError(validated ? null : getString(R.string.error_invalid_ircs));
+        if(!validated) {
+            highlightInvalidField(vesselIrcsNumberRow);
+
+            return;
+        }
+
+        validated = (mmsiValidated = utility.validateMMSI(vesselMmsiNumber)) || vesselMmsiNumber.isEmpty();
+        vesselMmsiNumberRow.setError(validated ? null : getString(R.string.error_invalid_mmsi));
+        if(!validated) {
+            highlightInvalidField(vesselMmsiNumberRow);
+
+            return;
+        }
+
+        validated = (imoValidated = utility.validateIMO(vesselImoNumber)) || vesselImoNumber.isEmpty();
+        vesselImoNumberRow.setError(validated ? null : getString(R.string.error_invalid_imo));
+        if(!validated) {
+            highlightInvalidField(vesselImoNumberRow);
+
+            return;
+        }
+
+        validated = (regNumValidated = utility.validateRegistrationNumber(registrationNumber)) || registrationNumber.isEmpty();
+        vesselRegistrationNumberRow.setError(validated ? null : getString(R.string.error_invalid_registration_number));
+        if(!validated) {
+            highlightInvalidField(vesselRegistrationNumberRow);
+
+            return;
+        }
+
+        minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
+
+        errorRow.setVisibility(!minimumIdentificationFactorsMet);
+
+        if(!minimumIdentificationFactorsMet) {
+            ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
+                @Override
+                public void run() {
+                    ((ScrollView)fieldsContainer.getParent()).scrollTo(0, errorRow.getView().getBottom());
+                    vesselRegistrationNumberRow.requestFocus();
+                }
+            });
+
+            return;
+        }
+
+        ToolEntry toolEntry = new ToolEntry(coordinates, vesselName, vesselPhoneNumber, contactPersonEmail,
+                toolType, toolSetupDateTime, registrationNumber, contactPersonName, contactPersonPhone, contactPersonEmail);
+
+        toolEntry.setIRCS(vesselIrcsNumber);
+        toolEntry.setMMSI(vesselMmsiNumber);
+        toolEntry.setIMO(vesselImoNumber);
+        toolEntry.setComment(commentString);
+
+        mListener.updateTool(toolEntry);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
     }
+
+    private void validateAndUpdateTool() {
+        final SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
+        final SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+
+        FiskInfoUtility utility = new FiskInfoUtility();
+        List<Point> coordinates = coordinatesRow.getCoordinates();
+        ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
+        String vesselName = vesselNameRow.getFieldText().trim();
+        String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
+        String toolSetupDate = setupDateRow.getDate().trim();
+        String toolSetupTime = setupTimeRow.getTime().trim();
+        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
+        String commentString = commentRow.getFieldText().trim();
+        String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
+        String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
+        String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
+        String registrationNumber = vesselRegistrationNumberRow.getFieldText().trim();
+        String contactPersonName = contactPersonNameRow.getFieldText().trim();
+        String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
+        String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        boolean toolRemoved = toolRemovedRow.isChecked();
+        boolean validated;
+        boolean edited = false;
+        boolean ircsValidated;
+        boolean mmsiValidated;
+        boolean imoValidated;
+        boolean regNumValidated;
+        boolean minimumIdentificationFactorsMet;
+
+        validated = coordinates != null;
+        if(!validated) {
+            return;
+        }
+
+        validated = utility.validateName(contactPersonName);
+        contactPersonNameRow.setError(validated ? null : getString(R.string.error_invalid_name));
+        if(!validated) {
+            highlightInvalidField(contactPersonNameRow);
+
+            return;
+        }
+
+        validated = utility.validatePhoneNumber(contactPersonPhone);
+        contactPersonPhoneRow.setError(validated ? null : getString(R.string.error_invalid_phone_number));
+        if(!validated) {
+            highlightInvalidField(contactPersonPhoneRow);
+
+            return;
+        }
+
+        validated = utility.isEmailValid(contactPersonEmail) || contactPersonEmail.isEmpty();
+        contactPersonEmailRow.setError(validated ? null : getString(R.string.error_invalid_email));
+        if(!validated) {
+            highlightInvalidField(contactPersonEmailRow);
+
+            return;
+        }
+
+        validated = !vesselNameRow.getFieldText().isEmpty();
+        vesselNameRow.setError(validated ? null : getString(R.string.error_invalid_vessel_name));
+        if(!validated) {
+            highlightInvalidField(vesselNameRow);
+
+            return;
+        }
+
+        validated = !vesselPhoneNumberRow.getFieldText().isEmpty();
+        vesselPhoneNumberRow.setError(validated ? null : getString(R.string.error_invalid_phone_number));
+        if(!validated) {
+            highlightInvalidField(vesselPhoneNumberRow);
+
+            return;
+        }
+
+        validated = (ircsValidated = utility.validateIRCS(vesselIrcsNumber)) || vesselIrcsNumber.isEmpty();
+        vesselIrcsNumberRow.setError(validated ? null : getString(R.string.error_invalid_ircs));
+        if(!validated) {
+            highlightInvalidField(vesselIrcsNumberRow);
+
+            return;
+        }
+
+        validated = (mmsiValidated = utility.validateMMSI(vesselMmsiNumber)) || vesselMmsiNumber.isEmpty();
+        vesselMmsiNumberRow.setError(validated ? null : getString(R.string.error_invalid_mmsi));
+        if(!validated) {
+            highlightInvalidField(vesselMmsiNumberRow);
+
+            return;
+        }
+
+        validated = (imoValidated = utility.validateIMO(vesselImoNumber)) || vesselImoNumber.isEmpty();
+        vesselImoNumberRow.setError(validated ? null : getString(R.string.error_invalid_imo));
+        if(!validated) {
+            highlightInvalidField(vesselImoNumberRow);
+
+            return;
+        }
+
+        validated = (regNumValidated = utility.validateRegistrationNumber(registrationNumber)) || registrationNumber.isEmpty();
+        vesselRegistrationNumberRow.setError(validated ? null : getString(R.string.error_invalid_registration_number));
+        if(!validated) {
+            highlightInvalidField(vesselRegistrationNumberRow);
+
+            return;
+        }
+
+        minimumIdentificationFactorsMet = !vesselName.isEmpty() && (ircsValidated || mmsiValidated || imoValidated || regNumValidated);
+        errorRow.setVisibility(!minimumIdentificationFactorsMet);
+
+        if(!minimumIdentificationFactorsMet) {
+            highlightInvalidField(errorRow);
+
+            return;
+        }
+
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date setupDate = null;
+        String setupDateString = toolSetupDate + "T" + toolSetupTime + ":00Z";
+
+        try {
+            setupDate = sdf.parse(setupDateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        sdfMilliSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
+        setupDateString = sdfMilliSeconds.format(setupDate);
+        toolSetupDateTime = setupDateString.substring(0, setupDateString.indexOf('.')).concat("Z");
+
+
+        if((coordinates.size() != tool.getCoordinates().size()) ||
+                toolType != tool.getToolType() ||
+                (toolRemoved) == (tool.getRemovedTime().isEmpty()) ||
+                (!vesselName.equals(tool.getVesselName())) ||
+                (!vesselPhoneNumber.equals(tool.getVesselPhone())) ||
+                (!toolSetupDateTime.equals(tool.getSetupDateTime())) ||
+                (!vesselIrcsNumber.equals(tool.getIRCS())) ||
+                (!vesselMmsiNumber.equals(tool.getMMSI())) ||
+                (!vesselImoNumber.equals(tool.getIMO())) ||
+                (!registrationNumber.equals(tool.getRegNum())) ||
+                (!contactPersonName.equals(tool.getContactPersonName())) ||
+                (!contactPersonPhone.equals(tool.getContactPersonPhone())) ||
+                (!contactPersonEmail.equals(tool.getContactPersonEmail())) ||
+                (!commentString.equals(tool.getComment())))
+        {
+            edited = true;
+        } else {
+            List<Point> points = tool.getCoordinates();
+            for(int i = 0; i < coordinates.size(); i++) {
+                if(coordinates.get(i).getLatitude() != points.get(i).getLatitude() ||
+                        coordinates.get(i).getLongitude() != points.get(i).getLongitude()) {
+                    edited = true;
+                    break;
+                }
+            }
+        }
+
+        if(edited) {
+            Date lastChangedDate = new Date();
+            Date previousSetupDate = null;
+            SimpleDateFormat sdfSetupCompare = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+
+            String lastChangedDateString = sdfMilliSeconds.format(lastChangedDate)
+                    .concat("Z");
+            sdfSetupCompare.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            try {
+                previousSetupDate = sdf.parse(tool.getSetupDateTime().substring(0, tool.getSetupDateTime().length() - 1).concat(".000"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if(!sdfSetupCompare.format(previousSetupDate).equals(sdfSetupCompare.format(setupDate))) {
+                // TODO: setup date is changed, tool needs to be moved in log so the app does not crash when trying to delete tool.
+//                user.getToolLog().removeTool(toolEntry.getSetupDate(), toolEntry.getToolLogId());
+//                user.getToolLog().addTool(toolEntry, toolEntry.getSetupDateTime().substring(0, 10));
+//                user.writeToSharedPref(editButton.getContext());
+            }
+
+            ToolEntryStatus toolStatus = (toolRemoved ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : (tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED ? ToolEntryStatus.STATUS_UNREPORTED : ToolEntryStatus.STATUS_UNSENT));
+//
+            tool.setToolStatus(toolStatus);
+            tool.setCoordinates(coordinates);
+            tool.setToolType(toolType);
+            tool.setVesselName(vesselName);
+            tool.setVesselPhone(vesselPhoneNumber);
+            tool.setSetupDateTime(toolSetupDateTime);
+            tool.setRemovedTime(toolRemoved ? lastChangedDateString : null);
+            tool.setComment(commentString);
+            tool.setIRCS(vesselIrcsNumber);
+            tool.setMMSI(vesselMmsiNumber);
+            tool.setIMO(vesselImoNumber);
+            tool.setRegNum(registrationNumber);
+            tool.setLastChangedDateTime(lastChangedDateString);
+            tool.setLastChangedBySource(lastChangedDateString);
+            tool.setContactPersonName(contactPersonName);
+            tool.setContactPersonPhone(contactPersonPhone);
+            tool.setContactPersonEmail(contactPersonEmail);
+
+            mListener.updateTool(tool);
+            Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
+        }
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.popBackStackImmediate();
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -408,8 +610,10 @@ public class EditToolFragment extends DialogFragment {
 
         switch(item.getItemId()) {
             case R.id.action_add_new_tool:
+                validateAndCreateToolEntry();
+                break;
             case R.id.action_update_tool:
-                validateAndUpdateToolValues();
+                validateAndUpdateTool();
                 break;
             case android.R.id.home:
                 break;
@@ -424,7 +628,6 @@ public class EditToolFragment extends DialogFragment {
 
         return super.onOptionsItemSelected(item);
     }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -455,6 +658,103 @@ public class EditToolFragment extends DialogFragment {
         mListener = null;
     }
 
+    public void highlightInvalidField(final BaseTableRow row) {
+        ((ScrollView)fieldsContainer.getParent()).post(new Runnable() {
+            @Override
+            public void run() {
+                ((ScrollView)fieldsContainer.getParent()).scrollTo(0, row.getView().getBottom());
+                row.getView().requestFocus();
+            }
+        });
+    }
+
+    public View.OnClickListener getDeleteToolRowOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String confirmationText;
+
+                switch (tool.getToolStatus()) {
+                    case STATUS_RECEIVED:
+                    case STATUS_SENT_UNCONFIRMED:
+                        confirmationText = v.getContext().getString(R.string.confirm_registered_tool_deletion_text);
+                        break;
+                    case STATUS_UNSENT:
+                    case STATUS_UNREPORTED:
+                        confirmationText = v.getContext().getString(R.string.confirm_tool_deletion_text);
+                        break;
+                    case STATUS_REMOVED_UNCONFIRMED:
+                        confirmationText = v.getContext().getString(R.string.confirm_registered_tool_with_local_changes_deletion_text);
+                        break;
+                    default:
+                        confirmationText = v.getContext().getString(R.string.confirm_tool_deletion_text_general);
+                        break;
+                }
+                new AlertDialog.Builder(getContext())
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setTitle(getString(R.string.delete_tool))
+                        .setMessage(confirmationText)
+                        .setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mListener.deleteToolLogEntry(tool);
+
+                                Toast.makeText(getContext(), R.string.tool_deleted, Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                fragmentManager.popBackStackImmediate();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show();
+            }
+        };
+    }
+
+    public View.OnClickListener getArchiveToolRowOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String confirmationText;
+
+                switch (tool.getToolStatus()) {
+                    case STATUS_RECEIVED:
+                        confirmationText = v.getContext().getString(R.string.confirm_registered_tool_archiving);
+                        break;
+                    case STATUS_UNSENT:
+                        if(!tool.getId().isEmpty()) {
+                            confirmationText = v.getContext().getString(R.string.confirm_tool_archiving_text);
+                        } else {
+                            confirmationText = v.getContext().getString(R.string.confirm_registered_tool_with_local_changes_archiving_text);
+                        }
+                        break;
+                    default:
+                        confirmationText = v.getContext().getString(R.string.confirm_tool_archiving_text_general);
+                        break;
+                }
+
+                new AlertDialog.Builder(getContext())
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setTitle(getString(R.string.archive_tool))
+                        .setMessage(confirmationText)
+                        .setPositiveButton(getString(R.string.archive), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                tool.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+                                mListener.updateTool(tool);
+
+                                Toast.makeText(getContext(), R.string.tool_archived, Toast.LENGTH_LONG).show();
+                                dialog.dismiss();
+                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                fragmentManager.popBackStackImmediate();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show();
+            }
+        };
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -468,5 +768,7 @@ public class EditToolFragment extends DialogFragment {
     public interface OnFragmentInteractionListener {
         User getUser();
         void updateTool(ToolEntry tool);
+
+        void deleteToolLogEntry(ToolEntry tool);
     }
 }

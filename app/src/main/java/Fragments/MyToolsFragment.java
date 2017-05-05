@@ -14,7 +14,6 @@
 
 package Fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -27,15 +26,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.JsonReader;
@@ -46,12 +42,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -78,15 +72,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.ToolLog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
@@ -94,12 +84,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DatePickerRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ErrorRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.TimePickerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolConfirmationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLogRow;
 import retrofit.client.Response;
@@ -126,6 +110,7 @@ public class MyToolsFragment extends Fragment {
     private User user;
     private GpsLocationTracker mGpsLocationTracker;
     private BarentswatchApi barentswatchApi;
+    private CheckToolsStatusAsyncTask checkToolsStatusTask;
 
     private OnFragmentInteractionListener mListener;
 
@@ -187,7 +172,7 @@ public class MyToolsFragment extends Fragment {
             dialog.show();
         } else {
             final List<ArrayList<ToolEntry>> tools = new ArrayList(user.getToolLog().myLog.values());
-            CheckToolsStatusAsyncTask checkToolsStatusTask = new CheckToolsStatusAsyncTask();
+            checkToolsStatusTask = new CheckToolsStatusAsyncTask();
             checkToolsStatusTask.execute(tools);
 
 
@@ -732,6 +717,15 @@ public class MyToolsFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        if(checkToolsStatusTask != null && checkToolsStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+            checkToolsStatusTask.cancel(true);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -878,20 +872,9 @@ public class MyToolsFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(List<ArrayList<ToolEntry>>... tools) {
-            // TODO: Do tool comparison with tools from API here. For now just check status of local tools.
-//            for(ArrayList<ToolEntry> toolList : user.getToolLog().myLog.values()) {
-//                for(ToolEntry tool : toolList) {
-//                    if((tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED) ||
-//                            (tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED)) {
-//                        return true;
-//                    }
-//                }
-//            }
-
             updateToolList(tools[0]);
 
-
-            return false;
+            return true;
         }
 
         @Override
@@ -992,15 +975,15 @@ public class MyToolsFragment extends Fragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog d = new DatePickerDialog(getActivity(), this, year, month, day);
-            DatePicker dp = d.getDatePicker();
-            dp.setMaxDate(new Date().getTime());  //Deprecated 5.0
-            return d;
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
+            DatePicker datePicker = dialog.getDatePicker();
+            datePicker.setMaxDate(new Date().getTime());  //Deprecated 5.0
+            return dialog;
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {

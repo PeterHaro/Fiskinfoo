@@ -725,6 +725,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void deleteToolLogEntry(ToolEntry tool) {
+        user.getToolLog().removeTool(tool.getSetupDate(), tool.getToolLogId());
+        user.writeToSharedPref(this);
+    }
+
+    @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(MyPageFragment.FRAGMENT_TAG);
