@@ -756,6 +756,7 @@ public class MainActivity extends AppCompatActivity implements
         if(tool != null && !tool.getSetupDate().isEmpty()) {
             user.getToolLog().addTool(tool, tool.getSetupDate());
             user.writeToSharedPref(this);
+            Toast.makeText(this, R.string.tool_updated, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -283,6 +283,7 @@ limitations under the License.
     <!-- TODO: Using the following string until the above is sorted -->
     <string name="report_tools">Rapporter redskaper</string>
     <string name="tool_type">Redskapstype</string>
+    <string name="tool_type_colon">Redskapstype:</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>
     <string name="vessel_name">Fartøynavn</string>
@@ -378,6 +379,7 @@ limitations under the License.
     <string name="my_tools_fragment_title">Mine redskaper</string>
     <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
     <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
+    <string name="tool_updated">Redskap oppdatert</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

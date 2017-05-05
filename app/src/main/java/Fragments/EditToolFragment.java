@@ -71,7 +71,7 @@ public class EditToolFragment extends DialogFragment {
     private TimePickerRow setupTimeRow;
     private CoordinatesRow coordinatesRow;
     private SpinnerRow toolRow;
-    CheckBoxRow toolRemovedRow;
+    private CheckBoxRow toolRemovedRow;
     private EditTextRow commentRow;
     private EditTextRow contactPersonNameRow;
     private EditTextRow contactPersonPhoneRow;
@@ -82,8 +82,8 @@ public class EditToolFragment extends DialogFragment {
     private EditTextRow vesselMmsiNumberRow;
     private EditTextRow vesselImoNumberRow;
     private EditTextRow vesselRegistrationNumberRow;
-    ActionRow archiveRow;
-    ActionRow deleteRow;
+    private ActionRow archiveRow;
+    private ActionRow deleteRow;
     private ErrorRow errorRow;
 
     public EditToolFragment() {
@@ -154,7 +154,7 @@ public class EditToolFragment extends DialogFragment {
         setupDateRow = new DatePickerRow(getContext(), getString(R.string.tool_set_date_colon), getFragmentManager());
         setupTimeRow = new TimePickerRow(getContext(), getString(R.string.tool_set_time_colon), getFragmentManager(), true);
         coordinatesRow = new CoordinatesRow(getActivity(), locationTracker);
-        toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type), ToolType.getValues());
+        toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type_colon), ToolType.getValues());
         toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
         commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
         contactPersonNameRow = new EditTextRow(getContext(), getString(R.string.contact_person_name), getString(R.string.contact_person_name));
@@ -399,7 +399,7 @@ public class EditToolFragment extends DialogFragment {
         String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
         String toolSetupDate = setupDateRow.getDate().trim();
         String toolSetupTime = setupTimeRow.getTime().trim();
-        String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
+        String toolSetupDateTime;
         String commentString = commentRow.getFieldText().trim();
         String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
         String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
@@ -587,8 +587,7 @@ public class EditToolFragment extends DialogFragment {
             tool.setContactPersonPhone(contactPersonPhone);
             tool.setContactPersonEmail(contactPersonEmail);
 
-            mListener.updateTool(tool);
-            Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
+            mListener.getUser().writeToSharedPref(getContext());
         } else {
             Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
         }
@@ -741,7 +740,7 @@ public class EditToolFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 tool.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-                                mListener.updateTool(tool);
+                                mListener.getUser().writeToSharedPref(getContext());
 
                                 Toast.makeText(getContext(), R.string.tool_archived, Toast.LENGTH_LONG).show();
                                 dialog.dismiss();

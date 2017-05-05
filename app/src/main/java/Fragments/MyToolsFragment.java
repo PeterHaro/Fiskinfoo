@@ -111,6 +111,9 @@ public class MyToolsFragment extends Fragment {
     private GpsLocationTracker mGpsLocationTracker;
     private BarentswatchApi barentswatchApi;
     private CheckToolsStatusAsyncTask checkToolsStatusTask;
+    private List<ToolEntry> unconfirmedRemovedTools;
+    private List<ToolEntry> synchedTools;
+    private JSONArray matchedTools;
 
     private OnFragmentInteractionListener mListener;
 
@@ -202,27 +205,17 @@ public class MyToolsFragment extends Fragment {
                 public void onRefresh() {
                     // TODO: Will not work if token has expired, should look into fixing this in general
                     if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                        List<ArrayList<ToolEntry>> localTools = new ArrayList(user.getToolLog().myLog.values());
+
                         ((MainActivity) getActivity()).toggleNetworkErrorTextView(true);
-                        toolContainer.removeAllViews();
-                        updateToolList(tools);
 
-                        for(final ArrayList<ToolEntry> dateEntry : tools) {
-                            for(final ToolEntry toolEntry : dateEntry) {
-                                if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
-                                    continue;
-                                }
-
-                                View.OnClickListener onClickListener = utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getActivity().getSupportFragmentManager(), mGpsLocationTracker, toolEntry, user);
-                                ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
-                                row.getView().setTag(toolEntry.getToolId());
-                                toolContainer.addView(row.getView());
-                            }
+                        if(checkToolsStatusTask != null && checkToolsStatusTask.getStatus() != AsyncTask.Status.RUNNING) {
+                            checkToolsStatusTask = new CheckToolsStatusAsyncTask();
+                            checkToolsStatusTask.execute(localTools);
                         }
                     }else {
                         ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
                     }
-
-                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             });
 
@@ -236,7 +229,7 @@ public class MyToolsFragment extends Fragment {
                     fragmentManager.beginTransaction()
                             .replace(R.id.main_activity_fragment_container, fragment)
                             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                            .addToBackStack(getString(R.string.edit_tool_fragment_edit_title))
+                            .addToBackStack(getString(R.string.edit_tool_fragment_new_tool_title))
                             .commit();
                 }
             });
@@ -267,8 +260,8 @@ public class MyToolsFragment extends Fragment {
     private void updateToolList(List<ArrayList<ToolEntry>> tools) {
         if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
             List<ToolEntry> localTools = new ArrayList<>();
-            final List<ToolEntry> unconfirmedRemovedTools = new ArrayList<>();
-            final List<ToolEntry> synchedTools = new ArrayList<>();
+            unconfirmedRemovedTools = new ArrayList<>();
+            synchedTools = new ArrayList<>();
 
             for(final ArrayList<ToolEntry> dateEntry : tools) {
                 for (final ToolEntry toolEntry : dateEntry) {
@@ -297,7 +290,7 @@ public class MyToolsFragment extends Fragment {
                 toolData = FiskInfoUtility.toByteArray(response.getBody().in());
                 JSONObject featureCollection = new JSONObject(new String(toolData));
                 JSONArray jsonTools = featureCollection.getJSONArray("features");
-                JSONArray matchedTools = new JSONArray();
+                matchedTools = new JSONArray();
                 UserSettings settings = user.getSettings();
 
                 for(int i = 0; i < jsonTools.length(); i++) {
@@ -383,194 +376,7 @@ public class MyToolsFragment extends Fragment {
                         }
                     }
                 }
-
-                if(matchedTools.length() > 0) {
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button addToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-                    final List<ToolConfirmationRow> matchedToolsList = new ArrayList<>();
-
-                    for(int i = 0; i < matchedTools.length(); i++) {
-                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), matchedTools.getJSONObject(i));
-                        linearLayoutToolContainer.addView(confirmationRow.getView());
-                        matchedToolsList.add(confirmationRow);
-                    }
-
-                    addToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for(ToolConfirmationRow row : matchedToolsList) {
-                                if(row.isChecked()) {
-                                    ToolEntry newTool = row.getToolEntry();
-                                    user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
-                                    ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, newTool, user));
-                                    row.getView().setTag(newTool.getToolId());
-                                    toolContainer.addView(newRow.getView());
-                                }
-                            }
-
-                            user.writeToSharedPref(v.getContext());
-                            dialog.dismiss();
-                        }
-                    });
-
-                    cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-                    dialog.show();
-                }
-
-                if(unconfirmedRemovedTools.size() > 0) {
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                    TextView infoTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-
-                    infoTextView.setText(R.string.removed_tools_information_text);
-                    archiveToolsButton.setText(R.string.ok);
-                    cancelButton.setVisibility(View.GONE);
-
-                    for(ToolEntry removedEntry : unconfirmedRemovedTools) {
-                        ToolLogRow removedToolRow = new ToolLogRow(getActivity(), removedEntry, null);
-                        removedToolRow.setToolNotificationImageViewVisibility(false);
-                        removedToolRow.setEditToolImageViewVisibility(false);
-                        linearLayoutToolContainer.addView(removedToolRow.getView());
-                    }
-
-                    archiveToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for(ToolEntry removedEntry : unconfirmedRemovedTools) {
-                                removedEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-
-                                for(int i = 0; i < toolContainer.getChildCount(); i++) {
-                                    if(removedEntry.getToolId().equals(toolContainer.getChildAt(i).getTag().toString())) {
-                                        toolContainer.removeViewAt(i);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            user.writeToSharedPref(v.getContext());
-                            dialog.dismiss();
-                        }
-                    });
-
-                    dialog.show();
-                }
-
-                if(synchedTools.size() > 0) {
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                    TextView infoTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-
-                    infoTextView.setText(R.string.unexpected_tool_removal_info_text);
-                    archiveToolsButton.setText(R.string.archive);
-
-                    for(ToolEntry removedEntry : synchedTools) {
-                        ToolLogRow removedToolRow = new ToolLogRow(getActivity(), removedEntry, null);
-                        removedToolRow.setToolNotificationImageViewVisibility(false);
-                        removedToolRow.setEditToolImageViewVisibility(false);
-                        linearLayoutToolContainer.addView(removedToolRow.getView());
-                    }
-
-                    archiveToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for(ToolEntry removedEntry : synchedTools) {
-                                removedEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-
-                                for(int i = 0; i < toolContainer.getChildCount(); i++) {
-                                    if(removedEntry.getToolId().equals(toolContainer.getChildAt(i).getTag().toString())) {
-                                        toolContainer.removeViewAt(i);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            user.writeToSharedPref(v.getContext());
-                            dialog.dismiss();
-                        }
-                    });
-
-                    cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-                    dialog.show();
-                }
-
-
-                if(unconfirmedRemovedTools.size() > 0) {
-                    // TODO: If not found server side, tool is assumed to be removed. Inform user.
-
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.reported_tools_removed_title);
-                    TextView informationTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-
-                    informationTextView.setText(getString(R.string.removed_tools_information_text));
-                    cancelButton.setVisibility(View.GONE);
-                    archiveToolsButton.setText(getString(R.string.ok));
-
-                    for(ToolEntry toolEntry : unconfirmedRemovedTools) {
-                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), toolEntry);
-                        linearLayoutToolContainer.addView(confirmationRow.getView());
-                    }
-
-                    archiveToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                        for(ToolEntry toolEntry : unconfirmedRemovedTools) {
-                            toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-                        }
-
-                        user.writeToSharedPref(v.getContext());
-                        dialog.dismiss();
-                        }
-                    });
-
-                    dialog.show();
-                }
-
-                if(synchedTools.size() > 0) {
-//                    // TODO: Prompt user: Tool was confirmed, now is no longer at BW, remove or archive?
-
-                    final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                    TextView informationTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
-                    Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                    Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                    final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
-
-                    informationTextView.setText(getString(R.string.unexpected_tool_removal_info_text));
-                    archiveToolsButton.setText(getString(R.string.ok));
-
-                    for(ToolEntry toolEntry : synchedTools) {
-                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), toolEntry);
-                        linearLayoutToolContainer.addView(confirmationRow.getView());
-                    }
-
-                    archiveToolsButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for(ToolEntry toolEntry : synchedTools) {
-                                toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-                            }
-
-                            user.writeToSharedPref(v.getContext());
-                            dialog.dismiss();
-                        }
-                    });
-
-                    cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-
-                    dialog.show();
-                }
-
-                user.writeToSharedPref(getActivity());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -879,8 +685,124 @@ public class MyToolsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            if(matchedTools.length() > 0) {
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
+                Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
+                Button addToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
+                final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
+                final List<ToolConfirmationRow> matchedToolsList = new ArrayList<>();
+
+                for(int i = 0; i < matchedTools.length(); i++) {
+                    try {
+                        ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), matchedTools.getJSONObject(i));
+                        linearLayoutToolContainer.addView(confirmationRow.getView());
+                        matchedToolsList.add(confirmationRow);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                addToolsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for(ToolConfirmationRow row : matchedToolsList) {
+                            if(row.isChecked()) {
+                                ToolEntry newTool = row.getToolEntry();
+                                user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
+                                ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, newTool, user));
+                                row.getView().setTag(newTool.getToolId());
+                                toolContainer.addView(newRow.getView());
+                            }
+                        }
+
+//                            user.writeToSharedPref(v.getContext());
+                        dialog.dismiss();
+                    }
+                });
+
+                cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
+                dialog.show();
+            }
+
+            if(synchedTools.size() > 0) {
+//                    // TODO: Prompt user: Tool was confirmed, now is no longer at BW, remove or archive?
+
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
+                TextView informationTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
+                Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
+                Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
+                final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
+
+                informationTextView.setText(getString(R.string.unexpected_tool_removal_info_text));
+                archiveToolsButton.setText(getString(R.string.ok));
+
+                for(ToolEntry toolEntry : synchedTools) {
+                    ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), toolEntry);
+                    linearLayoutToolContainer.addView(confirmationRow.getView());
+                }
+
+                archiveToolsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for(ToolEntry toolEntry : synchedTools) {
+                            toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+
+                            for(int i = 0; i < toolContainer.getChildCount(); i++) {
+                                if(toolEntry.getToolId().equals(toolContainer.getChildAt(i).getTag().toString())) {
+                                    toolContainer.removeViewAt(i);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(toolContainer.getChildCount() == 0) {
+                            setHasOptionsMenu(false);
+                        }
+
+                        user.writeToSharedPref(v.getContext());
+                        dialog.dismiss();
+                    }
+                });
+
+                cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
+
+                dialog.show();
+            }
+
+            if(unconfirmedRemovedTools.size() > 0) {
+                // TODO: If not found server side, tool is assumed to be removed. Inform user.
+
+                final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.reported_tools_removed_title);
+                TextView informationTextView = (TextView) dialog.findViewById(R.id.dialog_description_text_view);
+                Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
+                Button archiveToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
+                final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
+
+                informationTextView.setText(getString(R.string.removed_tools_information_text));
+                cancelButton.setVisibility(View.GONE);
+                archiveToolsButton.setText(getString(R.string.ok));
+
+                for(ToolEntry toolEntry : unconfirmedRemovedTools) {
+                    ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), toolEntry);
+                    linearLayoutToolContainer.addView(confirmationRow.getView());
+                    toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+                }
+
+                archiveToolsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+
+            user.writeToSharedPref(getActivity());
+
             final List<ArrayList<ToolEntry>> tools = new ArrayList(user.getToolLog().myLog.values());
             boolean localChanges = false;
+            toolContainer.removeAllViews();
 
             for(final List<ToolEntry> dateEntry : tools) {
                 for(final ToolEntry toolEntry : dateEntry) {
