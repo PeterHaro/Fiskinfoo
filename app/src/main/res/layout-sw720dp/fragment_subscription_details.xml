@@ -55,13 +55,13 @@ limitations under the License.
                 android:id="@+id/card_notification_image_view"
                 android:layout_width="@dimen/card_view_notification_icon_width"
                 android:layout_height="@dimen/card_view_notification_icon_height"
-                android:layout_alignTop="@+id/card_view_download_map_button"
+                android:layout_alignTop="@+id/card_view_download_map_image_view"
                 android:layout_marginRight="@dimen/card_view_notification_icon_margin_right"
-                android:layout_toLeftOf="@+id/card_view_download_map_button"
+                android:layout_toLeftOf="@+id/card_view_download_map_image_view"
                 android:visibility="gone"/>
 
             <Button
-                android:id="@+id/card_view_download_map_button"
+                android:id="@+id/card_view_download_map_image_view"
                 android:layout_width="@dimen/card_view_notification_icon_width"
                 android:layout_height="@dimen/card_view_notification_icon_height"
                 android:layout_alignParentEnd="true"

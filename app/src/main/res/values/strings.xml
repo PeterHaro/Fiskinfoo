@@ -224,7 +224,7 @@ limitations under the License.
     </string>
     <string name="cardview_radius_seekbar_text">Radius</string>
     <string name="cardview_elevation_seekbar_text">Elevation</string>
-    <string name="card_view_base_title"> Noe gikk feil: </string>
+    <string name="card_view_base_title">Noe gikk feil: </string>
     <string name="update_frequency">Oppdateringsfrekvens:</string>
     <string name="manage_subscription_subscription_active">Du abonnerer på dette kartet</string>
     <string name="manage_subscription_subscription_inactive">Abonnementet er ikke aktivt</string>
@@ -417,5 +417,7 @@ limitations under the License.
     <string name="json_tool_property_coordinates">coordinates</string>
     <string name="json_tool_property_null_string_value">null</string>
 
+    <!-- Subscription details fragment -->
+    <string name="subscription_details_fragment_title">Kart</string>
 
 </resources>

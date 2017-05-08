@@ -449,7 +449,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             getFragmentManager().beginTransaction().
-                    replace(R.id.fragment_container, createFragment(object, type), CardViewFragment.TAG).addToBackStack(null).
+                    replace(R.id.main_activity_fragment_container, createFragment(object, type), SubscriptionDetailsFragment.TAG).addToBackStack(null).
                     commit();
         }
     }
@@ -459,9 +459,9 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         userBundle.putParcelable("user", user);
         userBundle.putString("type", type);
         userBundle.putString("args", object.toString());
-        CardViewFragment cardViewFragment = CardViewFragment.newInstance();
-        cardViewFragment.setArguments(userBundle);
-        return cardViewFragment;
+        SubscriptionDetailsFragment fragment = SubscriptionDetailsFragment.newInstance();
+        fragment.setArguments(userBundle);
+        return fragment;
     }
 
     public interface OnFragmentInteractionListener {

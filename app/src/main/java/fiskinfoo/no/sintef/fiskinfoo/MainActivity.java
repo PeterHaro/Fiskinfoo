@@ -31,6 +31,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -38,7 +39,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -69,6 +69,7 @@ import Fragments.MapFragment;
 import Fragments.MyPageFragment;
 import Fragments.MyToolsFragment;
 import Fragments.SettingsFragment;
+import Fragments.SubscriptionDetailsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
@@ -78,13 +79,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
@@ -96,10 +94,14 @@ public class MainActivity extends AppCompatActivity implements
         SettingsFragment.OnFragmentInteractionListener,
         MyToolsFragment.OnFragmentInteractionListener,
         MapFragment.OnFragmentInteractionListener,
-        EditToolFragment.OnFragmentInteractionListener {
+        EditToolFragment.OnFragmentInteractionListener,
+        SubscriptionDetailsFragment.OnFragmentInteractionListener
+        {
 
+    public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
+    public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
     private final String TAG = MainActivity.this.getClass().getSimpleName();
-    private UtilityRowsInterface utilityRowsInterface;
+
     private UtilityOnClickListeners utilityOnClickListeners;
     private UtilityDialogs dialogInterface;
     private FiskInfoUtility fiskInfoUtility;
@@ -109,8 +111,7 @@ public class MainActivity extends AppCompatActivity implements
     boolean offlineModeLooperPrepared = false;
     private TextView mNetworkErrorTextView;
     private boolean networkStateChanged;
-    public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
-    public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
+    private TextView navigationHeaderUserNameTextView;
 
     private NavigationView navigationView;
     int currentMenuItemID = -1;
@@ -127,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements
             Log.d(TAG, "did not receive user");
         }
 
-        utilityRowsInterface = new UtilityRows();
         utilityOnClickListeners = new UtilityOnClickListeners();
         dialogInterface = new UtilityDialogs();
         fiskInfoUtility = new FiskInfoUtility();
@@ -146,7 +146,11 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
         navigationView.getMenu().performIdentifierAction(R.id.navigation_view_subscriptions, 0);
+        navigationHeaderUserNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
 
+        if(user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
+            navigationHeaderUserNameTextView.setText(user.getSettings().getContactPersonName());
+        }
 
         mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
 
@@ -353,59 +357,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
-
-        dialog.show();
-    }
-
-    private void createSettingsDialog() {
-        final Dialog dialog = new UtilityDialogs().getDialog(this, R.layout.dialog_settings, R.string.settings);
-
-        LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.settings_dialog_fields_container);
-        Button closeDialogButton = (Button) dialog.findViewById(R.id.settings_dialog_close_button);
-        OptionsButtonRow setDownloadPathButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.set_download_path));
-        OptionsButtonRow toggleOfflineModeRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.offline_mode), getOfflineModeInfoOnClickListener());
-        OptionsButtonRow logOutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.log_out));
-        OptionsButtonRow settingsButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.contact_information));
-        OptionsButtonRow aboutButtonRow = utilityRowsInterface.getSettingsButtonRow(this, getString(R.string.help));
-
-        setDownloadPathButtonRow.setButtonOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createSetFileDownloadPathDialog();
-            }
-        });
-
-        settingsButtonRow.setButtonOnClickListener(utilityOnClickListeners.getUserSettingsDialogOnClickListener(user));
-
-        logOutButtonRow.setButtonOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(v.getContext())
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(getString(R.string.log_out))
-                        .setMessage(getString(R.string.confirm_log_out))
-                        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                userLogout();
-                            }
-
-                        })
-                        .setNegativeButton(getString(R.string.no), null)
-                        .show();
-            }
-        });
-
-        aboutButtonRow.setButtonOnClickListener(utilityOnClickListeners.getHelpDialogOnClickListener());
-
-        linearLayout.addView(toggleOfflineModeRow.getView());
-        linearLayout.addView(setDownloadPathButtonRow.getView());
-        linearLayout.addView(settingsButtonRow.getView());
-        linearLayout.addView(aboutButtonRow.getView());
-        linearLayout.addView(logOutButtonRow.getView());
-
-        closeDialogButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
 
         dialog.show();
     }
@@ -640,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements
     public void toggleNetworkErrorTextView(boolean networkAvailable) {
         if(!networkAvailable) {
             mNetworkErrorTextView.setText(R.string.no_internet_access);
-            mNetworkErrorTextView.setTextColor(getResources().getColor(R.color.error_red));
+            mNetworkErrorTextView.setTextColor(ContextCompat.getColor(this, R.color.error_red));
             mNetworkErrorTextView.setVisibility(View.VISIBLE);
         } else {
             mNetworkErrorTextView.setVisibility(View.GONE);
@@ -672,6 +623,10 @@ public class MainActivity extends AppCompatActivity implements
 //        }
 //        return null;
 //    }
+
+    public void updateNavigationHeaderDetails(String name) {
+        navigationHeaderUserNameTextView.setText(name);
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

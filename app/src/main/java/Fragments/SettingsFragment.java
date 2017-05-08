@@ -33,14 +33,11 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.LoginActivity;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
 
@@ -364,6 +361,10 @@ public class SettingsFragment extends Fragment {
 
                         user.setSettings(settings);
                         user.writeToSharedPref(v.getContext()); //Need wait ? Let's find out
+
+                        if(user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
+                            ((MainActivity) getActivity()).updateNavigationHeaderDetails(user.getSettings().getContactPersonName());
+                        }
 
                         dialog.dismiss();
                     }

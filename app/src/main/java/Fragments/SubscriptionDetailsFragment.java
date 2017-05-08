@@ -14,6 +14,7 @@
 
 package Fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -47,21 +49,19 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 
 
-public class CardViewFragment extends Fragment {
+public class SubscriptionDetailsFragment extends Fragment {
+    public static final String TAG = SubscriptionDetailsFragment.class.getSimpleName();
 
-    public static final String TAG = CardViewFragment.class.getSimpleName();
-    private User user;
-
+    private OnFragmentInteractionListener mListener;
     // Must be a better way (HINT: IT IS)
     private Subscription subscription = null;
     private String warning = null;
     private PropertyDescription propertyDescription = null;
-    private UtilityRows utilityRows;
     private UtilityOnClickListeners utilityOnClickListeners;
     List<Integer> takenIds;
     //END HINT
@@ -72,13 +72,13 @@ public class CardViewFragment extends Fragment {
      *
      * @return A new instance of fragment NotificationFragment.
      */
-    public static CardViewFragment newInstance() {
-        CardViewFragment fragment = new CardViewFragment();
+    public static SubscriptionDetailsFragment newInstance() {
+        SubscriptionDetailsFragment fragment = new SubscriptionDetailsFragment();
         fragment.setRetainInstance(true);
         return fragment;
     }
 
-    public CardViewFragment() {
+    public SubscriptionDetailsFragment() {
         // Required empty public constructor
     }
 
@@ -87,7 +87,6 @@ public class CardViewFragment extends Fragment {
 
         String type;
         super.onCreate(savedInstanceState);
-        user = getArguments().getParcelable("user");
         type = getArguments().getString("type");
         Log.d(TAG, type);
         Gson gson = new Gson();
@@ -110,16 +109,15 @@ public class CardViewFragment extends Fragment {
                 Log.d(TAG, "INVALID type of object sent to cardview");
         }
 
-        utilityRows = new UtilityRows();
         utilityOnClickListeners = new UtilityOnClickListeners();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_card_view, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_subscription_details, container, false);
 
-        RelativeLayout textAreaPlaceHolder = (RelativeLayout) rootView.findViewById(R.id.card_view_container);
+        LinearLayout textAreaPlaceHolder = (LinearLayout) rootView.findViewById(R.id.card_view_container);
         TextView title = (TextView) rootView.findViewById(R.id.card_view_title_text_view);
 
         if (subscription != null) {
@@ -144,31 +142,32 @@ public class CardViewFragment extends Fragment {
         }
         if (propertyDescription != null) {
             title.setText(propertyDescription.Name);
-
-            Button notificationIconButton = (Button) rootView.findViewById(R.id.card_notification_image_view);
-            CardViewInformationRow row;
-            Button downloadMapButton;
-            Button showOnMapButton;
+            final User user = mListener.getUser();
 
             final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.card_view_scroll_view);
             final LinearLayout informationContainer = (LinearLayout) rootView.findViewById(R.id.card_view_information_container);
+            ImageView notificationImageView = (ImageView) rootView.findViewById(R.id.card_notification_image_view);
+            ImageView downloadMapImageView = (ImageView) rootView.findViewById(R.id.card_view_download_map_image_view);
+            CardViewInformationRow row;
             LinearLayout bottomButtonContainer = (LinearLayout) rootView.findViewById(R.id.bottom_button_container);
-            showOnMapButton = new Button(getActivity());
-            downloadMapButton = (Button) rootView.findViewById(R.id.card_view_download_map_button);
+            Button showOnMapButton = new Button(getActivity());
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.last_updated), propertyDescription.LastUpdated.replace('T', ' '), true);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.last_updated), propertyDescription.LastUpdated.replace('T', ' '), true);
             informationContainer.addView(row.getView());
 
             String description = (propertyDescription.LongDescription == null || propertyDescription.LongDescription.trim().equals("")) ? propertyDescription.Description : propertyDescription.LongDescription;
             String hyperlink = null;
+            description = description.replace("<p>", "");
+            description = description.replace("</p>", "");
+
             // TODO: should rewrite in order to handle multiple links.
             if(description.contains("<a href=\"")) {
-                hyperlink = "<a href='" + description.substring(description.indexOf("href=") + 6, description.indexOf(">") - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
-                description = description.substring(0, description.indexOf('<')) + description.substring(description.indexOf('>') + 1, description.indexOf("</a")) +
+                hyperlink = "<a href='" + description.substring(description.indexOf("href=") + 6, description.indexOf(">", description.indexOf("href=")) - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
+                description = description.substring(0, description.indexOf("<a href")) + description.substring(description.indexOf(">", description.indexOf("<a href")) + 1, description.indexOf("</a")) +
                         "*" +  (description.indexOf("a>") > description.length() - 3 ? "" : description.substring(description.indexOf("a>") + 2, description.length()));
             }
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.information), description, true);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.information), description, true);
             informationContainer.addView(row.getView());
 
             if(hyperlink != null) {
@@ -183,19 +182,19 @@ public class CardViewFragment extends Fragment {
 
             String updateFrequency = (propertyDescription.UpdateFrequencyText == null || propertyDescription.UpdateFrequencyText.trim().equals("")) ? getString(R.string.update_frequency_not_available) : propertyDescription.UpdateFrequencyText;
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.update_frequency), updateFrequency, true);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.update_frequency), updateFrequency, true);
             informationContainer.addView(row.getView());
 
             if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
-                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
+                row = new CardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
                 final View dataField = row.getView();
                 final Animation animation = getBlinkAnimation();
 
-                notificationIconButton.setVisibility(View.VISIBLE);
-                notificationIconButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_36dp));
+                notificationImageView.setVisibility(View.VISIBLE);
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_36dp));
                 row.setTextColor(getResources().getColor(R.color.warning_orange));
 
-                notificationIconButton.setOnClickListener(new View.OnClickListener() {
+                notificationImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         focusOnView(scrollView, dataField);
@@ -206,15 +205,15 @@ public class CardViewFragment extends Fragment {
                 informationContainer.addView(row.getView());
 
             } else if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
-                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
+                row = new CardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
                 final TextView dataField = row.getFieldDataTextView();
                 final Animation animation = getBlinkAnimation();
 
-                notificationIconButton.setVisibility(View.VISIBLE);
-                notificationIconButton.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_36dp));
+                notificationImageView.setVisibility(View.VISIBLE);
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_36dp));
                 row.setTextColor(getResources().getColor(R.color.error_red));
 
-                notificationIconButton.setOnClickListener(new View.OnClickListener() {
+                notificationImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         focusOnView(scrollView, dataField);
@@ -225,7 +224,7 @@ public class CardViewFragment extends Fragment {
                 informationContainer.addView(row.getView());
             }
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner), propertyDescription.DataOwner, true);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.data_owner), propertyDescription.DataOwner, true);
             informationContainer.addView(row.getView());
 
             if(propertyDescription.DataOwnerLink != null && !propertyDescription.DataOwnerLink.trim().equals("")) {
@@ -233,7 +232,7 @@ public class CardViewFragment extends Fragment {
                         "<a href='" + propertyDescription.DataOwnerLink + "'>" + propertyDescription.DataOwnerLink + "</a>":
                         "<a href='" + getString(R.string.about_partners_base_address) + propertyDescription.DataOwnerLink + "'>" + getString(R.string.about_partners_base_address) + propertyDescription.DataOwnerLink + "</a>";
 
-                row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.data_owner_link), partnerLink, true);
+                row = new CardViewInformationRow(getActivity(), getString(R.string.data_owner_link), partnerLink, true);
                 row.setHyperlink(partnerLink);
                 row.getFieldDataTextView().setMovementMethod(LinkMovementMethod.getInstance());
                 informationContainer.addView(row.getView());
@@ -246,7 +245,7 @@ public class CardViewFragment extends Fragment {
                 stringBuilder.append("\n");
             }
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.formats), stringBuilder.toString().trim(), false);
             informationContainer.addView(row.getView());
 
             stringBuilder.setLength(0);
@@ -255,11 +254,11 @@ public class CardViewFragment extends Fragment {
                 stringBuilder.append("\n");
             }
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), stringBuilder.toString().trim(), false);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.subscription_frequencies), stringBuilder.toString().trim(), false);
             informationContainer.addView(row.getView());
 
 
-            row = utilityRows.getCardViewInformationRow(getActivity(), getString(R.string.map_creation_date), propertyDescription.Created.substring(0, propertyDescription.Created.indexOf('T')), true);
+            row = new CardViewInformationRow(getActivity(), getString(R.string.map_creation_date), propertyDescription.Created.substring(0, propertyDescription.Created.indexOf('T')), true);
             informationContainer.addView(row.getView());
 
             LinearLayout.LayoutParams bottomButtonLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -288,7 +287,7 @@ public class CardViewFragment extends Fragment {
 
             bottomButtonContainer.addView(showOnMapButton);
 
-            downloadMapButton.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
+            downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
 
         }
         if(warning != null) {
@@ -304,6 +303,37 @@ public class CardViewFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.mListener = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() != null) {
+            getView().refreshDrawableState();
+        }
+
+        MainActivity activity = (MainActivity) getActivity();
+        String title = getResources().getString(R.string.subscription_details_fragment_title);
+        activity.refreshTitle(title);
     }
 
     private TextView generateTextViewWithText(String text, TextView parent) {
@@ -364,5 +394,9 @@ public class CardViewFragment extends Fragment {
                 scrollView.scrollTo(0, focusView.getTop());
             }
         });
+    }
+
+    public interface OnFragmentInteractionListener {
+        User getUser();
     }
 }

@@ -104,11 +104,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityRows;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
 import retrofit.client.Response;
 import retrofit.mime.TypedInput;
@@ -120,7 +119,6 @@ public class MapFragment extends Fragment {
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
-    private UtilityRowsInterface rowsInterface;
     private FiskInfoUtility fiskInfoUtility;
     private UtilityDialogs dialogInterface;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -217,7 +215,6 @@ public class MapFragment extends Fragment {
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
-        rowsInterface = new UtilityRows();
         searchToolsButton = (Button) (getView() != null ? getView().findViewById(R.id.map_search_button) : null);
         searchToolsButton = (Button) getView().findViewById(R.id.map_search_button);
         clearHighlightingButton = (Button) getView().findViewById(R.id.map_clear_highlighting_button);
@@ -391,7 +388,7 @@ public class MapFragment extends Fragment {
             boolean isActive;
             isActive = layer.isVisible;
 
-            CheckBoxRow row = rowsInterface.getCheckBoxRow(getActivity(), layer.name, false, isActive);
+            CheckBoxRow row = new CheckBoxRow(getActivity(), layer.name, false, isActive);
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);
@@ -436,7 +433,7 @@ public class MapFragment extends Fragment {
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
         for (ToolType toolType : ToolType.values()) {
-            View toolLegendRow = rowsInterface.getToolLegendRow(getActivity(), toolType.getHexColorValue(), toolType.toString()).getView();
+            View toolLegendRow = new ToolLegendRow(getActivity(), toolType.getHexColorValue(), toolType.toString()).getView();
             tableLayout.addView(toolLegendRow);
         }
 
@@ -1044,7 +1041,7 @@ public class MapFragment extends Fragment {
                         return;
                     }
 
-                    ToolSearchResultRow row = rowsInterface.getToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, toolFeature);
+                    ToolSearchResultRow row = new ToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, toolFeature);
                     long toolTime = System.currentTimeMillis() - toolSetDate.getTime();
                     long highlightCutoff = ((long)getResources().getInteger(R.integer.milliseconds_in_a_day)) * ((long)getResources().getInteger(R.integer.days_to_highlight_active_tool));
 

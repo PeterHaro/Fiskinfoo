@@ -62,7 +62,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscri
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.SubscriptionSubmitObject;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.OnclickListenerInterface;
-import fiskinfoo.no.sintef.fiskinfoo.Interface.UtilityRowsInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
@@ -246,7 +245,6 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
         return new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                UtilityRowsInterface utilityRowsInterface = new UtilityRows();
                 final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
 
                 final Dialog dialog;
@@ -292,7 +290,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 }
 
                 for (String format : subscription.Formats) {
-                    final RadioButtonRow row = utilityRowsInterface.getRadioButtonRow(v.getContext(), format);
+                    final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);
                     if(isSubscribed && activeSubscription.FileFormatType.equals(format)) {
                         row.setSelected(true);
                     }
@@ -301,7 +299,7 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 }
 
                 for(String interval : subscription.SubscriptionInterval) {
-                    final RadioButtonRow row = utilityRowsInterface.getRadioButtonRow(v.getContext(), SubscriptionInterval.getType(interval).toString());
+                    final RadioButtonRow row = new RadioButtonRow(v.getContext(), SubscriptionInterval.getType(interval).toString());
 
                     if(activeSubscription != null) {
                         row.setSelected(activeSubscription.SubscriptionIntervalName.equals(interval));

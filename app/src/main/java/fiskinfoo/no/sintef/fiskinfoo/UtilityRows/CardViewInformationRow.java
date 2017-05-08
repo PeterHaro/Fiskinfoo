@@ -69,7 +69,8 @@ public class CardViewInformationRow extends BaseTableRow {
 
     @SuppressWarnings("unused")
     public void setFieldData(String fieldData) {
-        fieldDataTextView.setText("\t\t" + fieldData);
+        String text = "\t\t" + fieldData;
+        fieldDataTextView.setText(text);
     }
 
     @SuppressWarnings("unused")
