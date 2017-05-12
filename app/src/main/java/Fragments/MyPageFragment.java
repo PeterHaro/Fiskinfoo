@@ -24,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
@@ -66,7 +68,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private UtilityOnClickListeners onClickListenerInterface;
     private FiskInfoUtility fiskInfoUtility;
     private ExpandCollapseListener expandCollapseListener;
-    private OnFragmentInteractionListener mListener;
+    private UserInterface userInterface;
     private FragmentActivity listener;
     private User user;
 
@@ -75,8 +77,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         super.onAttach(context);
         this.listener = (FragmentActivity) context;
 
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof UserInterface) {
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -109,7 +111,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         childOnClickListener = new ExpandableListAdapterChildOnClickListener();
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
-        user = mListener.getUser();
+        user = userInterface.getUser();
     }
 
     public static MyPageFragment newInstance() {
@@ -212,6 +214,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     }
 
     public ArrayList<ParentObject> fetchMyPage() {
+        /*
+         * TODO:    Add downloadables when available
+         *      /api/v1/geodata/service/downloadable/ offers layers that are rarely updates, and as such do not make much sense to subscribe to.
+          *     Does not seem to offer any data as of now though.
+         */
         BarentswatchApi barentswatchApi = new BarentswatchApi();
         barentswatchApi.setAccesToken(user.getToken());
 
@@ -226,7 +233,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             List<PropertyDescription> availableSubscriptions = barentswatchApi.getApi().getSubscribable();
             List<Subscription> currentSubscriptions = barentswatchApi.getApi().getSubscriptions();
             List<Authorization> authorizations = barentswatchApi.getApi().getAuthorization();
-            Map<Integer, Boolean> authMap = new HashMap<>();
+            SparseBooleanArray authMap = new SparseBooleanArray();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
             ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
@@ -263,7 +270,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
 
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                boolean isAuthed = (authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false);
+                boolean isAuthed = authMap.get(propertyDescription.Id);
 
                 SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
 
@@ -295,7 +302,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
             ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
             List<PropertyDescription> availableSubscriptions = new ArrayList<>();
-            Map<Integer, Boolean> authMap = new HashMap<>();
+            SparseBooleanArray authMap = new SparseBooleanArray();
 
             for(SubscriptionEntry subscriptionEntry : subscriptionEntries) {
                 availableSubscriptions.add(subscriptionEntry.mSubscribable);
@@ -306,7 +313,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             }
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                boolean isAuthed = (authMap.get(propertyDescription.Id) != null ? authMap.get(propertyDescription.Id) : false);
+                boolean isAuthed = authMap.get(propertyDescription.Id);
                 SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
 
                 availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
@@ -391,11 +398,11 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         List<String> warnings;
         List<Subscription> subscriptions;
 
-        public ExpandableListAdapterChildOnClickListener() {
+        ExpandableListAdapterChildOnClickListener() {
 
         }
 
-        public void setPropertyDescriptions(List<PropertyDescription> propertyDescriptions) {
+        void setPropertyDescriptions(List<PropertyDescription> propertyDescriptions) {
             this.propertyDescriptions = propertyDescriptions;
         }
 
@@ -462,9 +469,5 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         SubscriptionDetailsFragment fragment = SubscriptionDetailsFragment.newInstance();
         fragment.setArguments(userBundle);
         return fragment;
-    }
-
-    public interface OnFragmentInteractionListener {
-        User getUser();
     }
 }

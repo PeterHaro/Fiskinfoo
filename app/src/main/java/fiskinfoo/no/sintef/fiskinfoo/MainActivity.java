@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -81,8 +82,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Legacy.LegacyExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.OptionsButtonRow;
@@ -90,12 +93,9 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        MyPageFragment.OnFragmentInteractionListener,
         SettingsFragment.OnFragmentInteractionListener,
-        MyToolsFragment.OnFragmentInteractionListener,
-        MapFragment.OnFragmentInteractionListener,
         EditToolFragment.OnFragmentInteractionListener,
-        SubscriptionDetailsFragment.OnFragmentInteractionListener
+        UserInterface
         {
 
     public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
@@ -563,8 +563,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
+    public void onRequestPermissionsResult(int permsRequestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        super.onRequestPermissionsResult(permsRequestCode, permissions, grantResults);
 
+        // Most requests are made from fragments. Since
         switch(permsRequestCode){
             case 200:
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
@@ -572,7 +574,7 @@ public class MainActivity extends AppCompatActivity implements
                 boolean writeAccepted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
                 break;
             default:
-                Toast.makeText(this, R.string.permission_denied_app_limited, Toast.LENGTH_LONG).show();
+//                Toast.makeText(this, R.string.permission_denied_app_limited, Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -604,28 +606,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void setNetworkStateChanged(boolean state) {
         networkStateChanged = state;
-    }
-
-//    private Fragment createFragment(String tag) {
-//        Bundle userBundle = new Bundle();
-//        userBundle.putParcelable("user", user);
-//        switch(tag) {
-//            case MyPageFragment.FRAGMENT_TAG:
-//                MyPageFragment myPageFragment = new MyPageFragment();
-//                myPageFragment.setArguments(userBundle);
-//                return myPageFragment;
-//            case MapFragment.FRAGMENT_TAG:
-//                MapFragment mapFragment = new MapFragment();
-//                mapFragment.setArguments(userBundle);
-//                return mapFragment;
-//            default:
-//                Log.d(FRAGMENT_TAG, "Trying to create invalid fragment with FRAGMENT_TAG: " + tag);
-//        }
-//        return null;
-//    }
-
-    public void updateNavigationHeaderDetails(String name) {
-        navigationHeaderUserNameTextView.setText(name);
     }
 
     @Override
@@ -704,6 +684,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public void updateUserSettings(UserSettings userSettings) {
+        user.setSettings(userSettings);
+        user.writeToSharedPref(this);
+//        Toast.makeText(this, R.string.user_settings_updated, Toast.LENGTH_LONG).show();
     }
 
     @Override

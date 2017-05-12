@@ -26,6 +26,7 @@ import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class CoordinatesRow extends BaseTableRow {
@@ -35,10 +36,10 @@ public class CoordinatesRow extends BaseTableRow {
     private Button removeCoordinateRowButton;
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
-    private GpsLocationTracker locationTracker;
+    private LocationProviderInterface locationTracker;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
-    public CoordinatesRow(final Activity activity, GpsLocationTracker gpsLocationTracker) {
+    public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
         super(activity, R.layout.utility_row_coordinates_row);
 
         header = (TextView) getView().findViewById(R.id.utility_coordinates_row_header_text_view);
@@ -47,9 +48,8 @@ public class CoordinatesRow extends BaseTableRow {
         removeCoordinateRowButton = (Button) getView().findViewById(R.id.utility_coordinates_row_remove_position_button);
         latLonViewContainer = (LinearLayout) getView().findViewById(R.id.utility_coordinates_row_lat_lon_container);
         helpTextView = (TextView) getView().findViewById(R.id.utility_coordinates_row_help_text_view);
-        this.locationTracker = gpsLocationTracker;
 
-        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationTracker);
+        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
 
         coordinateRows.add(coordinatesRow);
         latLonViewContainer.addView(coordinatesRow.getView());
@@ -64,7 +64,7 @@ public class CoordinatesRow extends BaseTableRow {
         addCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
+                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
 
                 coordinateRows.add(row);
                 latLonViewContainer.addView(row.getView());
@@ -105,15 +105,21 @@ public class CoordinatesRow extends BaseTableRow {
         return coordinates;
     }
 
-    public void setCoordinates(Activity activity, List<Point> coordinates) {
+    public void setCoordinates(Activity activity, List<Point> coordinates, LocationProviderInterface locationProviderInterface) {
         coordinateRows.clear();
         latLonViewContainer.removeAllViews();
 
         for(Point position : coordinates) {
-            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
+            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
             row.setCoordinates(position);
             coordinateRows.add(row);
             latLonViewContainer.addView(row.getView());
+        }
+    }
+
+    public void setPositionButtonOnClickListener(View.OnClickListener onClickListener) {
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.SetPositionButtonOnClickListener(onClickListener);
         }
     }
 }

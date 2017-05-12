@@ -1,14 +1,15 @@
 package Fragments;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -36,8 +37,9 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ActionRow;
@@ -50,6 +52,9 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ErrorRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.TimePickerRow;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -58,12 +63,14 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.TimePickerRow;
  * Use the {@link EditToolFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditToolFragment extends DialogFragment {
+public class EditToolFragment extends DialogFragment implements LocationProviderInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TOOL_PARAM = "tool";
 
     private OnFragmentInteractionListener mListener;
+    private UserInterface userInterface;
+
     private GpsLocationTracker locationTracker;
     private ToolEntry tool;
     private LinearLayout fieldsContainer;
@@ -142,18 +149,9 @@ public class EditToolFragment extends DialogFragment {
     }
 
     private void generateFields() {
-        if (FiskInfoUtility.shouldAskPermission()) {
-            String[] perms = {"android.permission.ACCESS_FINE_LOCATION"};
-            int permsRequestCode = MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    permsRequestCode);
-        }
-
         setupDateRow = new DatePickerRow(getContext(), getString(R.string.tool_set_date_colon), getFragmentManager());
         setupTimeRow = new TimePickerRow(getContext(), getString(R.string.tool_set_time_colon), getFragmentManager(), true);
-        coordinatesRow = new CoordinatesRow(getActivity(), locationTracker);
+        coordinatesRow = new CoordinatesRow(getActivity(), this);
         toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type_colon), ToolType.getValues());
         toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
         commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
@@ -222,9 +220,18 @@ public class EditToolFragment extends DialogFragment {
     }
 
     private void populateFieldsFromTool() {
-        coordinatesRow.setCoordinates(getActivity(), tool.getCoordinates());
+        coordinatesRow.setCoordinates(getActivity(), tool.getCoordinates(), this);
         setupDateRow.setDate(tool.getSetupDate());
         setupTimeRow.setTime(tool.getSetupDateTime().substring(tool.getSetupDateTime().indexOf('T') + 1, tool.getSetupDateTime().indexOf('T') + 6));
+
+        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            coordinatesRow.setPositionButtonOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    requestPermissions(new String[] { ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                }
+            });
+        }
 
         ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
         toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(tool.getToolType() != null ? tool.getToolType().toString() : Tool.BUNNTRÅL.toString()));
@@ -241,7 +248,16 @@ public class EditToolFragment extends DialogFragment {
     }
 
     private void populateFieldsFromSettings() {
-        UserSettings settings = mListener.getUser().getSettings() != null ? mListener.getUser().getSettings() : new UserSettings();
+        UserSettings settings = userInterface.getUser().getSettings() != null ? userInterface.getUser().getSettings() : new UserSettings();
+
+        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            coordinatesRow.setPositionButtonOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    requestPermissions(new String[] { ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                }
+            });
+        }
 
         if (settings != null) {
             ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
@@ -587,7 +603,7 @@ public class EditToolFragment extends DialogFragment {
             tool.setContactPersonPhone(contactPersonPhone);
             tool.setContactPersonEmail(contactPersonEmail);
 
-            mListener.getUser().writeToSharedPref(getContext());
+            userInterface.getUser().writeToSharedPref(getContext());
         } else {
             Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
         }
@@ -596,6 +612,22 @@ public class EditToolFragment extends DialogFragment {
         fragmentManager.popBackStackImmediate();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
+        switch(requestCode) {
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                for(int i = 0; i < permissions.length; i++) {
+                    if(permissions[i].equals(ACCESS_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_GRANTED) {
+                        locationTracker = new GpsLocationTracker(getActivity());
+                        coordinatesRow.setPositionButtonOnClickListener(null);
+                    }
+                }
+
+                break;
+            default:
+
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -645,6 +677,7 @@ public class EditToolFragment extends DialogFragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -655,6 +688,7 @@ public class EditToolFragment extends DialogFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        userInterface = null;
     }
 
     public void highlightInvalidField(final BaseTableRow row) {
@@ -740,7 +774,7 @@ public class EditToolFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 tool.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
-                                mListener.getUser().writeToSharedPref(getContext());
+                                userInterface.getUser().writeToSharedPref(getContext());
 
                                 Toast.makeText(getContext(), R.string.tool_archived, Toast.LENGTH_LONG).show();
                                 dialog.dismiss();
@@ -754,6 +788,16 @@ public class EditToolFragment extends DialogFragment {
         };
     }
 
+    @Override
+    public double getLatitude() {
+        return locationTracker.getLatitude();
+    }
+
+    @Override
+    public double getLongitude() {
+        return locationTracker.getLongitude();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -765,7 +809,6 @@ public class EditToolFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        User getUser();
         void updateTool(ToolEntry tool);
 
         void deleteToolLogEntry(ToolEntry tool);

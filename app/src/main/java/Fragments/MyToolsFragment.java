@@ -82,6 +82,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolConfirmationRow;
@@ -92,7 +93,7 @@ import retrofit.client.Response;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MyToolsFragment.OnFragmentInteractionListener} interface
+ * {@link UserInterface} interface
  * to handle interaction events.
  * Use the {@link MyToolsFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -115,7 +116,7 @@ public class MyToolsFragment extends Fragment {
     private List<ToolEntry> synchedTools;
     private JSONArray matchedTools;
 
-    private OnFragmentInteractionListener mListener;
+    private UserInterface userInterface;
 
     /**
      * Use this factory method to create a new instance of
@@ -140,7 +141,7 @@ public class MyToolsFragment extends Fragment {
 
         mGpsLocationTracker = new GpsLocationTracker(getActivity());
         barentswatchApi = new BarentswatchApi();
-        user = mListener.getUser();
+        user = userInterface.getUser();
 
         if (!mGpsLocationTracker.canGetLocation()) {
             mGpsLocationTracker.showSettingsAlert();
@@ -151,7 +152,6 @@ public class MyToolsFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_tool_registration, menu);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -175,6 +175,34 @@ public class MyToolsFragment extends Fragment {
             dialog.show();
         } else {
             final List<ArrayList<ToolEntry>> tools = new ArrayList(user.getToolLog().myLog.values());
+
+            for(final List<ToolEntry> dateEntry : tools) {
+                for(final ToolEntry toolEntry : dateEntry) {
+                    if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                        continue;
+                    }
+
+                    View.OnClickListener onClickListener = new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                            EditToolFragment fragment = EditToolFragment.newInstance(toolEntry);
+
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.main_activity_fragment_container, fragment)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .addToBackStack(getString(R.string.edit_tool_fragment_edit_title))
+                                    .commit();
+                        }
+                    };
+
+                    ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                    row.getView().setTag(toolEntry.getToolId());
+                    toolContainer.addView(row.getView());
+                }
+            }
+
             checkToolsStatusTask = new CheckToolsStatusAsyncTask();
             checkToolsStatusTask.execute(tools);
 
@@ -215,6 +243,7 @@ public class MyToolsFragment extends Fragment {
                         }
                     }else {
                         ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             });
@@ -257,7 +286,7 @@ public class MyToolsFragment extends Fragment {
         return rootView;
     }
 
-    private void updateToolList(List<ArrayList<ToolEntry>> tools) {
+    private boolean updateToolList(List<ArrayList<ToolEntry>> tools) {
         if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
             List<ToolEntry> localTools = new ArrayList<>();
             unconfirmedRemovedTools = new ArrayList<>();
@@ -376,10 +405,14 @@ public class MyToolsFragment extends Fragment {
                         }
                     }
                 }
+
+                return true;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
+
+        return false;
     }
 
 
@@ -508,8 +541,8 @@ public class MyToolsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof UserInterface) {
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -519,7 +552,7 @@ public class MyToolsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        userInterface = null;
     }
 
     @Override
@@ -542,10 +575,6 @@ public class MyToolsFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
         String title = getResources().getString(R.string.my_tools_fragment_title);
         activity.refreshTitle(title);
-    }
-
-    public interface OnFragmentInteractionListener {
-        User getUser();
     }
 
     @Override
@@ -678,13 +707,18 @@ public class MyToolsFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(List<ArrayList<ToolEntry>>... tools) {
-            updateToolList(tools[0]);
-
-            return true;
+            return updateToolList(tools[0]);
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            if(!success) {
+                Toast.makeText(getContext(), R.string.error_could_not_validate_tool_status, Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if(matchedTools.length() > 0) {
                 final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
                 Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
@@ -707,9 +741,26 @@ public class MyToolsFragment extends Fragment {
                     public void onClick(View v) {
                         for(ToolConfirmationRow row : matchedToolsList) {
                             if(row.isChecked()) {
-                                ToolEntry newTool = row.getToolEntry();
+                                final ToolEntry newTool = row.getToolEntry();
                                 user.getToolLog().addTool(newTool, newTool.getSetupDateTime().substring(0, 10));
-                                ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, utilityOnClickListeners.getToolEntryEditDialogOnClickListener(getActivity(), getFragmentManager(), mGpsLocationTracker, newTool, user));
+
+
+                                View.OnClickListener onClickListener = new View.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(View v) {
+                                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                        EditToolFragment fragment = EditToolFragment.newInstance(newTool);
+
+                                        fragmentManager.beginTransaction()
+                                                .replace(R.id.main_activity_fragment_container, fragment)
+                                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                                .addToBackStack(getString(R.string.edit_tool_fragment_edit_title))
+                                                .commit();
+                                    }
+                                };
+
+                                ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, onClickListener);
                                 row.getView().setTag(newTool.getToolId());
                                 toolContainer.addView(newRow.getView());
                             }
@@ -835,7 +886,6 @@ public class MyToolsFragment extends Fragment {
                 }
             }
 
-            mSwipeRefreshLayout.setRefreshing(false);
             setHasOptionsMenu(localChanges);
         }
 

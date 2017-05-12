@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.LoginActivity;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -54,6 +56,7 @@ public class SettingsFragment extends Fragment {
     public static final String FRAGMENT_TAG = "SettingsFragment";
 
     private OnFragmentInteractionListener mListener;
+    private UserInterface userInterface;
     private LinearLayout linearLayout;
 
     public SettingsFragment() {
@@ -90,7 +93,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initOfflineModeRow() {
-        final User user = mListener.getUser();
+        final User user = userInterface.getUser();
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,203 +184,18 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initUserDetailsRow() {
-        final User user = mListener.getUser();
         View.OnClickListener onClickListener = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                final fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface dialogInterface = new UtilityDialogs();
-                final Dialog dialog = dialogInterface.getDialog(v.getContext(), R.layout.dialog_user_settings, R.string.user_settings);
-                final UserSettings settings = user.getSettings() != null ? user.getSettings() : new UserSettings();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                UserSettingsFragment fragment = UserSettingsFragment.newInstance(userInterface.getUser().getSettings());
 
-                final Button saveSettingsButton = (Button) dialog.findViewById(R.id.user_settings_save_settings_button);
-                final Button cancelButton = (Button) dialog.findViewById(R.id.dialog_cancel_button);
-                final LinearLayout fieldContainer = (LinearLayout) dialog.findViewById(R.id.dialog_user_settings_main_container);
-
-                final EditTextRow contactPersonNameRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_name), v.getContext().getString(R.string.contact_person_name));
-                final EditTextRow contactPersonPhoneRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_phone), v.getContext().getString(R.string.contact_person_phone));
-                final EditTextRow contactPersonEmailRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.contact_person_email), v.getContext().getString(R.string.contact_person_email));
-
-                final SpinnerRow toolRow = new SpinnerRow(v.getContext(), v.getContext().getString(R.string.tool_type), ToolType.getValues());
-                final EditTextRow vesselNameRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.vessel_name), v.getContext().getString(R.string.vessel_name));
-                final EditTextRow vesselPhoneNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.vessel_phone_number), v.getContext().getString(R.string.vessel_phone_number));
-                final EditTextRow vesselIrcsNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.ircs_number), v.getContext().getString(R.string.ircs_number));
-                final EditTextRow vesselMmsiNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.mmsi_number), v.getContext().getString(R.string.mmsi_number));
-                final EditTextRow vesselImoNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.imo_number), v.getContext().getString(R.string.imo_number));
-                final EditTextRow vesselRegistrationNumberRow = new EditTextRow(v.getContext(), v.getContext().getString(R.string.registration_number), v.getContext().getString(R.string.registration_number));
-
-                contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-                contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
-                contactPersonEmailRow.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                contactPersonNameRow.setHelpText(v.getContext().getString(R.string.contact_person_name_help_description));
-                contactPersonPhoneRow.setHelpText(v.getContext().getString(R.string.contact_person_phone_help_description));
-                contactPersonEmailRow.setHelpText(v.getContext().getString(R.string.contact_person_email_help_description));
-
-                vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
-
-                vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                vesselIrcsNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
-                vesselIrcsNumberRow.setHelpText(v.getContext().getString(R.string.ircs_help_description));
-
-                vesselMmsiNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
-                vesselMmsiNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_mmsi))});
-                vesselMmsiNumberRow.setHelpText(v.getContext().getString(R.string.mmsi_help_description));
-
-                vesselImoNumberRow.setInputType(InputType.TYPE_CLASS_NUMBER);
-                vesselImoNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_imo))});
-                vesselImoNumberRow.setHelpText(v.getContext().getString(R.string.imo_help_description));
-
-                vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
-                vesselRegistrationNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(v.getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-                vesselRegistrationNumberRow.setHelpText(v.getContext().getString(R.string.registration_number_help_description));
-
-                fieldContainer.addView(contactPersonNameRow.getView());
-                fieldContainer.addView(contactPersonPhoneRow.getView());
-                fieldContainer.addView(contactPersonEmailRow.getView());
-                fieldContainer.addView(vesselNameRow.getView());
-                fieldContainer.addView(toolRow.getView());
-                fieldContainer.addView(vesselPhoneNumberRow.getView());
-                fieldContainer.addView(vesselIrcsNumberRow.getView());
-                fieldContainer.addView(vesselMmsiNumberRow.getView());
-                fieldContainer.addView(vesselImoNumberRow.getView());
-                fieldContainer.addView(vesselRegistrationNumberRow.getView());
-
-                if (settings != null) {
-                    ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
-                    toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(settings.getToolType() != null ? settings.getToolType().toString() : Tool.BUNNTRÅL.toString()));
-                    contactPersonNameRow.setText(settings.getContactPersonName());
-                    contactPersonPhoneRow.setText(settings.getContactPersonPhone());
-                    contactPersonEmailRow.setText(settings.getContactPersonEmail());
-                    vesselNameRow.setText(settings.getVesselName());
-                    vesselPhoneNumberRow.setText(settings.getVesselPhone());
-                    vesselIrcsNumberRow.setText(settings.getIrcs());
-                    vesselMmsiNumberRow.setText(settings.getMmsi());
-                    vesselImoNumberRow.setText(settings.getImo());
-                    vesselRegistrationNumberRow.setText(settings.getRegistrationNumber());
-                }
-
-                saveSettingsButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        FiskInfoUtility utility = new FiskInfoUtility();
-
-                        boolean validated = false;
-
-                        validated = utility.validateName(contactPersonNameRow.getFieldText().trim()) || contactPersonNameRow.getFieldText().trim().equals("");
-                        contactPersonNameRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_name));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonNameRow.getView().getBottom());
-                                    contactPersonNameRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim()) || contactPersonPhoneRow.getFieldText().trim().equals("");
-                        contactPersonPhoneRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_phone_number));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonPhoneRow.getView().getBottom());
-                                    contactPersonPhoneRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim()) || contactPersonEmailRow.getFieldText().trim().equals("");
-                        contactPersonEmailRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_email));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, contactPersonEmailRow.getView().getBottom());
-                                    contactPersonEmailRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim()) || vesselIrcsNumberRow.getFieldText().trim().equals("");
-                        vesselIrcsNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_ircs));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselIrcsNumberRow.getView().getBottom());
-                                    vesselIrcsNumberRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim()) || vesselMmsiNumberRow.getFieldText().trim().equals("");
-                        vesselMmsiNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_mmsi));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselMmsiNumberRow.getView().getBottom());
-                                    vesselMmsiNumberRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim()) || vesselImoNumberRow.getFieldText().trim().equals("");
-                        vesselImoNumberRow.setError(validated ? null : v.getContext().getString(R.string.error_invalid_imo));
-                        if(!validated) {
-                            ((ScrollView)fieldContainer.getParent().getParent()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ((ScrollView)fieldContainer.getParent().getParent()).scrollTo(0, vesselImoNumberRow.getView().getBottom());
-                                    vesselImoNumberRow.requestFocus();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        settings.setToolType(ToolType.createFromValue(toolRow.getCurrentSpinnerItem()));
-                        settings.setVesselName(vesselNameRow.getFieldText().trim());
-                        settings.setVesselPhone(vesselPhoneNumberRow.getFieldText().trim());
-                        settings.setIrcs(vesselIrcsNumberRow.getFieldText().trim());
-                        settings.setMmsi(vesselMmsiNumberRow.getFieldText().trim());
-                        settings.setImo(vesselImoNumberRow.getFieldText().trim());
-                        settings.setRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim());
-                        settings.setContactPersonEmail(contactPersonEmailRow.getFieldText().toLowerCase().trim());
-                        settings.setContactPersonName(contactPersonNameRow.getFieldText().trim());
-                        settings.setContactPersonPhone(contactPersonPhoneRow.getFieldText().trim());
-
-                        user.setSettings(settings);
-                        user.writeToSharedPref(v.getContext()); //Need wait ? Let's find out
-
-                        if(user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
-                            ((MainActivity) getActivity()).updateNavigationHeaderDetails(user.getSettings().getContactPersonName());
-                        }
-
-                        dialog.dismiss();
-                    }
-                });
-
-                cancelButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_fragment_container, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(getString(R.string.user_settings_fragment_title))
+                        .commit();
             }
         };
 
@@ -440,6 +258,7 @@ public class SettingsFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -450,6 +269,7 @@ public class SettingsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        userInterface = null;
     }
 
     @Override
@@ -466,8 +286,6 @@ public class SettingsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        User getUser();
-
         void toggleOfflineMode(boolean offline);
     }
 }

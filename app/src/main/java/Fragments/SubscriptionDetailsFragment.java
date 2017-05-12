@@ -49,6 +49,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
@@ -57,7 +58,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 public class SubscriptionDetailsFragment extends Fragment {
     public static final String TAG = SubscriptionDetailsFragment.class.getSimpleName();
 
-    private OnFragmentInteractionListener mListener;
+    private UserInterface userInterface;
     // Must be a better way (HINT: IT IS)
     private Subscription subscription = null;
     private String warning = null;
@@ -142,7 +143,7 @@ public class SubscriptionDetailsFragment extends Fragment {
         }
         if (propertyDescription != null) {
             title.setText(propertyDescription.Name);
-            final User user = mListener.getUser();
+            final User user = userInterface.getUser();
 
             final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.card_view_scroll_view);
             final LinearLayout informationContainer = (LinearLayout) rootView.findViewById(R.id.card_view_information_container);
@@ -309,18 +310,18 @@ public class SubscriptionDetailsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof UserInterface) {
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement UserInterface");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        this.mListener = null;
+        this.userInterface = null;
     }
 
     @Override
@@ -394,9 +395,5 @@ public class SubscriptionDetailsFragment extends Fragment {
                 scrollView.scrollTo(0, focusView.getTop());
             }
         });
-    }
-
-    public interface OnFragmentInteractionListener {
-        User getUser();
     }
 }

@@ -41,6 +41,7 @@ limitations under the License.
     <string name="archive">Arkiver</string>
     <string name="null_string_lowercase">null</string>
     <string name="do_not_show_message_again">Ikke vis denne meldingen igjen</string>
+    <string name="not_available">Ikke tilgjengelig</string>
 
     <!-- Placeholder strings -->
     <string name="placeholder_string">Placeholder</string>
@@ -48,6 +49,13 @@ limitations under the License.
     <string name="date_placeholder_string">Dato</string>
     <string name="placeholder_name">Navn</string>
     <string name="placeholder_setting_name">Setting</string>
+    <string name="placeholder_phone_number">Phone number</string>
+    <string name="placeholder_date">Date</string>
+    <string name="placeholder_tool_type">Tool type</string>
+    <string name="placeholder_position">Position</string>
+    <string name="placeholder_vessel_name">Vessel</string>
+    <string name="placeholder_seismic_type">Seismikkområde</string>
+
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -115,6 +123,22 @@ limitations under the License.
     <string name="tool_set_date_placeholder">Dato</string>
     <string name="tool">Redskap</string>
     <string name="map_fragment_title">Kart</string>
+    <string name="seismic_survey_ongoing">Pågående seismikkområde</string>
+    <string name="seismic_survey_planned">Planlagt seismikkområde</string>
+    <string name="planned_from">Planlagt fra:</string>
+    <string name="planned_to">Planlagt til:</string>
+    <string name="survey_type">Type</string>
+    <string name="view_ais_tracking">Vis AIS-sporing</string>
+    <string name="company">Selskap</string>
+    <string name="responsible_party">Ansvarlig</string>
+    <string name="seismic_type">Type</string>
+    <string name="seismic_period">Periode</string>
+    <string name="seismic_fact_hyperlink_text">Faktaside</string>
+    <string name="seismic_map_hyperlink_text">Kartoversikt</string>
+    <string name="download_file_to_view_position">Last ned fil for å se posisjon</string>
+    <string name="ais_tracking">AIS-sporing</string>
+    <string name="seismic_ais_tracking_not_implemented_yet">Denne funksjonen vil bli tilgjengelig ved en senere oppdatering.</string>
+    <string name="seismic_area_start_date">Startdato</string>
 
 
     <!-- Map fragment menu strings -->
@@ -135,6 +159,7 @@ limitations under the License.
     <string name="range_format_info">Bruk bryteren under for å velge mellom meter og nautiske mil.</string>
     <string name="range_format_meters">Distansetype: Meter</string>
     <string name="range_format_nautical_miles">Distansetype: Nautiske mil</string>
+    <string name="tool_search_hint">Søk etter fartøy..</string>
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>
@@ -191,6 +216,7 @@ limitations under the License.
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
     <string name="user_settings">Brukerinnstillinger</string>
+    <string name="user_settings_fragment_title">Brukerinnstillinger</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Epostadresse</string>
@@ -380,6 +406,7 @@ limitations under the License.
     <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
     <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
     <string name="tool_updated">Redskap oppdatert</string>
+    <string name="error_could_not_validate_tool_status">Nettverksfeil, kunne ikke kontrollere redskapsstatus</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

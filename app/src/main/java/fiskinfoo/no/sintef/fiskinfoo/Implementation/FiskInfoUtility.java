@@ -14,18 +14,15 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.content.res.Resources;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
@@ -54,9 +51,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
-import Fragments.MapFragment;
-import Fragments.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class FiskInfoUtility {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
@@ -265,9 +263,7 @@ public class FiskInfoUtility {
             int permsRequestCode = 0x001;
 //            activity.requestPermissions(perms, permsRequestCode);
 
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    permsRequestCode);
+            ActivityCompat.requestPermissions(activity, new String[]{ WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
 
         String filePath;
@@ -298,7 +294,10 @@ public class FiskInfoUtility {
             File file = new File(filePath + writableName + "." + fileEnding);
 
             if(!dir.canWrite()) {
-                Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+                if(showToasts) {
+                    Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+                }
+
                 throw new IOException(activity.getResources().getString(R.string.error_cannot_write_to_directory));
             }
 
@@ -728,6 +727,10 @@ public class FiskInfoUtility {
         retval = retval.replace("Å", "AA");
 
         return retval;
+    }
+
+    public static String getHyperLinkString(String url, String link) {
+        return "<a href=" + url + ">" + link + "</a>";
     }
 
     public static boolean shouldAskPermission(){

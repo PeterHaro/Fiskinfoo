@@ -38,6 +38,5 @@ public interface OnclickListenerInterface {
     View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
     View.OnClickListener getOfflineModeInformationIconOnClickListener(User user);
     View.OnClickListener getUserSettingsDialogOnClickListener(final User user);
-    View.OnClickListener getToolEntryEditDialogOnClickListener(final Activity activity, final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user);
     View.OnClickListener getHelpDialogOnClickListener();
 }

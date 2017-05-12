@@ -105,6 +105,9 @@ limitations under the License.
     <dimen name="settings_row_text_view_margin_start">15dp</dimen>
     <dimen name="settings_row_image_view_margin_start">25dp</dimen>
     <dimen name="about_text_view_margin">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_start">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_end">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_vertical">15dp</dimen>
 
     <!-- Offline mode information dialog -->
     <dimen name="offline_mode_dialog_text_view_margin_top">15dp</dimen>
@@ -247,7 +250,10 @@ limitations under the License.
     <dimen name="map_search_tools_button_height">40dp</dimen>
     <dimen name="map_search_tools_button_margin_left">10dp</dimen>
     <dimen name="map_search_tools_button_margin_top">150dp</dimen>
-    <dimen name="map_search_tools_clear_highlighting_button_margin_top">10dp</dimen>
+    <dimen name="map_search_tools_clear_highlighting_button_margin_top">150dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_elevation">2dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_container_padding_start">20dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_tool_details_drawable_margin">5dp</dimen>
 
     <!-- Search tools dialog -->
     <dimen name="search_tools_dialog_input_field_margin_left">30dp</dimen>

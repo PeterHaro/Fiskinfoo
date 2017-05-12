@@ -14,33 +14,45 @@
 
 package Fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -52,7 +64,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -82,38 +93,63 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Feature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Line;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LineFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.PointFeature;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Polygon;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.GeometryType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CheckBoxRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLegendRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolSearchResultRow;
 import retrofit.client.Response;
 import retrofit.mime.TypedInput;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+
 public class MapFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MapFragment";
+
+    private AutoCompleteTextView searchEditText;
+    private Button clearHighlightingButton;
+    private LinearLayout bottomSheetLayout;
+    private LinearLayout bottomSheetToolLayout;
+    private LinearLayout bottomSheetSeismicLayout;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private TextView bottomSheetToolTypeTextView;
+    private TextView bottomSheetToolSetupDateTextView;
+    private TextView bottomSheetToolVesselTextView;
+    private TextView bottomSheetToolPhoneNumberTextView;
+    private TextView bottomSheetToolPositionTextView;
+    private TextView bottomSheetSeismicAreaTypeTextView;
+    private TextView bottomSheetSeismicPeriodTextView;
+    private TextView bottomSheetSeismicStartDateTextView;
+    private TextView bottomSheetSeismicVesselTextView;
+    private TextView bottomSheetSeismicCompanyTextView;
+    private TextView bottomSheetSeismicTypeTextView;
+    private TextView bottomSheetSeismicFactLinkTextView;
+    private TextView bottomSheetSeismicMapLinkTextView;
+    private TextView bottomSheetSeismicPositionTextView;
+    private TextView bottomSheetSeismicAisTrackingTextView;
 
     FragmentActivity listener;
     private WebView browser;
@@ -124,19 +160,19 @@ public class MapFragment extends Fragment {
     private UtilityOnClickListeners onClickListenerInterface;
     private ScheduledFuture proximityAlertWatcher;
     private GpsLocationTracker mGpsLocationTracker;
-    private OnFragmentInteractionListener mListener;
-
+    private UserInterface userInterface;
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
     private FiskInfoPolygon2D tools = null;
+    private JSONArray layersAndVisibility = null;
     private boolean cacheDeserialized = false;
     private boolean alarmFiring = false;
     protected double cachedLat;
     protected double cachedLon;
     protected double cachedDistance;
-    private JSONArray layersAndVisibility = null;
-    private Button searchToolsButton;
-    private Button clearHighlightingButton;
+    private Map<String, JSONObject> toolMap;
+    private JSONObject toolsFeatureCollection;
+    private boolean pageLoaded = false;
 
 
     public static MapFragment newInstance() {
@@ -150,18 +186,20 @@ public class MapFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        user = getArguments().getParcelable("user");
+        user = userInterface.getUser();
         if (user == null) {
-            Log.d(FRAGMENT_TAG, "did not receive user");
+            Log.d(FRAGMENT_TAG, "Could not get user");
         }
+
+        toolMap = new HashMap<>();
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof UserInterface) {
+            userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -171,7 +209,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        userInterface = null;
     }
 
     @Override
@@ -201,7 +239,97 @@ public class MapFragment extends Fragment {
     // Use onCreateView to get a handle to views as soon as they are freshly inflated
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
-        return inf.inflate(R.layout.fragment_map, parent, false);
+
+        final View rootView = inf.inflate(R.layout.fragment_map, parent, false);;
+
+        searchEditText = (AutoCompleteTextView) rootView.findViewById(R.id.map_fragment_tool_search_edit_text);
+        bottomSheetLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout_bottom_sheet);
+        bottomSheetToolLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_tool_information_container);
+        bottomSheetSeismicLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_seismic_information_container);
+
+        bottomSheetToolTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
+        bottomSheetToolSetupDateTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_setup_date_text_view);
+        bottomSheetToolVesselTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_vessel_text_view);
+        bottomSheetToolPhoneNumberTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_phone_text_view);
+        bottomSheetToolPositionTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_position_text_view);
+
+        bottomSheetSeismicAreaTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_type_text_view);
+        bottomSheetSeismicPeriodTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_period_text_view);
+        bottomSheetSeismicStartDateTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_start_date_text_view);
+        bottomSheetSeismicVesselTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_vessel_text_view);
+        bottomSheetSeismicCompanyTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_company_text_view);
+        bottomSheetSeismicTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_text_view);
+        bottomSheetSeismicFactLinkTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_fact_link_text_view);
+        bottomSheetSeismicMapLinkTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_map_link_text_view);
+        bottomSheetSeismicPositionTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_position_text_view);
+        bottomSheetSeismicAisTrackingTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_ais_text_view);
+
+        // TODO: Disable search if user is not authenticated
+
+        searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.text_white_transparent));
+
+        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                switch(i) {
+                    case EditorInfo.IME_ACTION_SEARCH:
+                        highlightToolsInMap(textView.getText().toString());
+                        InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                        break;
+                    default:
+                        return false;
+                }
+
+                return true;
+            }
+        });
+
+        searchEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (searchEditText.getRight() - searchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+
+                        searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        return rootView;
     }
 
     // This fires 4th, and this is the first time the Activity is fully created.
@@ -215,21 +343,8 @@ public class MapFragment extends Fragment {
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
-        searchToolsButton = (Button) (getView() != null ? getView().findViewById(R.id.map_search_button) : null);
-        searchToolsButton = (Button) getView().findViewById(R.id.map_search_button);
         clearHighlightingButton = (Button) getView().findViewById(R.id.map_clear_highlighting_button);
         configureWebParametersAndLoadDefaultMapApplication();
-
-        if(user.getIsFishingFacilityAuthenticated()) {
-            searchToolsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createSearchDialog();
-                }
-            });
-        } else {
-            searchToolsButton.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -300,6 +415,182 @@ public class MapFragment extends Fragment {
             startActivity(browserIntent);
         }
 
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public void updateToolBottomSheet(String toolId) {
+            final JSONObject tool = toolMap.get(toolId);
+
+            if(tool == null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.VISIBLE);
+                    bottomSheetSeismicLayout.setVisibility(View.GONE);
+
+                    try {
+                        final String vesselName = tool.getJSONObject("properties").getString("vesselname");
+                        String setupDateString = tool.getJSONObject("properties").getString("setupdatetime");
+                        Date setupDate = null;
+
+                        setupDateString = (setupDateString != null && setupDateString.length() > 19) ? setupDateString.substring(0, 19) : setupDateString;
+
+                        SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+                        SimpleDateFormat sdfDate = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
+
+                        sdf.setTimeZone(TimeZone.getDefault());
+
+                        try {
+                            setupDate = sdf.parse(setupDateString);
+                            setupDateString = sdfDate.format(setupDate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        bottomSheetToolTypeTextView.setText(ToolType.createFromValue(tool.getJSONObject("properties").getString("tooltypecode")).toString());
+                        bottomSheetToolSetupDateTextView.setText(setupDateString);
+                        bottomSheetToolVesselTextView.setText(vesselName);
+                        bottomSheetToolVesselTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_directions_boat_black_24dp, 0, 0, 0);
+                        bottomSheetToolPhoneNumberTextView.setText(tool.getJSONObject("properties").getString("vesselphone") != null ? tool.getJSONObject("properties").getString("vesselphone") : getString(R.string.not_available));
+
+                        bottomSheetToolVesselTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.hyperlink_blue));
+                        bottomSheetToolVesselTextView.setTypeface(Typeface.DEFAULT_BOLD);
+                        bottomSheetToolVesselTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                highlightToolsInMap(vesselName);
+                            }
+                        });
+
+                        JSONArray toolJsonCoordinates = tool.getJSONObject("geometry").getJSONArray("coordinates");
+
+                        if(tool.getJSONObject("geometry").getString("type").equals(GeometryType.LINESTRING.toString())) {
+                            String dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getJSONArray(0).getDouble(1));
+                            dmsPosition += " " + toolJsonCoordinates.getJSONArray(0).getDouble(0);
+
+                            bottomSheetToolPositionTextView.setText(dmsPosition);
+                        } else {
+                            String dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(1));
+                            dmsPosition += " " + FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(0));
+
+                            bottomSheetToolPositionTextView.setText(dmsPosition);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                }
+            });
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
+        public void updateSeismicBottomSheet(final String jsonString) {
+
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(jsonObject == null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+            final JSONObject finalJsonObject = jsonObject;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeismicLayout.setVisibility(View.VISIBLE);
+
+                    try {
+                        JSONArray toolJsonCoordinates = finalJsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+                        String fromDateString = finalJsonObject.getJSONObject("properties").getString("plnfrmdate");
+                        String toDateString = finalJsonObject.getJSONObject("properties").getString("plntodate");
+                        String vesselName = finalJsonObject.getJSONObject("properties").getString("vesselall");
+                        String company = finalJsonObject.getJSONObject("properties").getString("compreport");
+                        String factUrl = finalJsonObject.getJSONObject("properties").getString("factv2url");
+                        String mapUrl = finalJsonObject.getJSONObject("properties").getString("mapurl");
+                        Date date;
+
+                        fromDateString = (fromDateString != null && fromDateString.length() > 10) ? fromDateString.substring(0, 10) : fromDateString;
+                        toDateString = (toDateString != null && toDateString.length() > 10) ? toDateString.substring(0, 10) : toDateString;
+
+                        SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
+
+                        sdf.setTimeZone(TimeZone.getDefault());
+
+                        try {
+                            date = sdf.parse(fromDateString);
+                            fromDateString = sdf.format(date);
+                            date = sdf.parse(toDateString);
+                            toDateString = sdf.format(date);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(finalJsonObject.getString("fid").contains("npdsurveyongoing")) {
+                            String startDate = finalJsonObject.getJSONObject("properties").getString("dtstart") != null ? finalJsonObject.getJSONObject("properties").getString("dtstart").substring(0, 10) : getString(R.string.not_available);
+                            bottomSheetSeismicAreaTypeTextView.setText(R.string.seismic_survey_ongoing);
+                            bottomSheetSeismicStartDateTextView.setText(getString(R.string.seismic_area_start_date) + ": " + startDate);
+                            bottomSheetSeismicStartDateTextView.setVisibility(View.VISIBLE);
+
+                        } else {
+                            bottomSheetSeismicAreaTypeTextView.setText(R.string.seismic_survey_planned);
+                            bottomSheetSeismicStartDateTextView.setVisibility(View.GONE);
+                        }
+
+                        bottomSheetSeismicPeriodTextView.setText(getString(R.string.seismic_period) + ": " + fromDateString + " - " + toDateString);
+                        bottomSheetSeismicVesselTextView.setText(vesselName);
+                        bottomSheetSeismicCompanyTextView.setText(company);
+                        bottomSheetSeismicTypeTextView.setText(finalJsonObject.getJSONObject("properties").getString("surmaintyp"));
+                        // TODO: Implement or link to web client?
+                        bottomSheetSeismicAisTrackingTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new AlertDialog.Builder(view.getContext())
+                                        .setIcon(R.drawable.ic_warning_black_24dp)
+                                        .setTitle(getString(R.string.ais_tracking))
+                                        .setMessage(getString(R.string.seismic_ais_tracking_not_implemented_yet))
+                                        .setPositiveButton(getString(R.string.ok), null)
+                                        .show();
+                            }
+                        });
+
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            bottomSheetSeismicFactLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(factUrl, getString(R.string.seismic_fact_hyperlink_text)), Html.FROM_HTML_MODE_LEGACY));
+                            bottomSheetSeismicMapLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(mapUrl, getString(R.string.seismic_map_hyperlink_text)), Html.FROM_HTML_MODE_LEGACY));
+                        } else {
+                            bottomSheetSeismicFactLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(factUrl, getString(R.string.seismic_fact_hyperlink_text))));
+                            bottomSheetSeismicMapLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(mapUrl, getString(R.string.seismic_map_hyperlink_text))));
+                        }
+
+                        bottomSheetSeismicFactLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                        bottomSheetSeismicMapLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                }
+            });
+        }
 
         @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
@@ -335,6 +626,11 @@ public class MapFragment extends Fragment {
             return jsonString.toString();
         }
 
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public String getToolFeatureCollection() {
+            return toolsFeatureCollection.toString();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -360,6 +656,11 @@ public class MapFragment extends Fragment {
             view.loadUrl("javascript:populateMap();");
             view.loadUrl("javascript:toggleLayers(" + json + ");");
 
+            if(toolsFeatureCollection != null) {
+                view.loadUrl("javascript:getToolDataFromAndroid();");
+            }
+
+            pageLoaded = true;
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -369,6 +670,201 @@ public class MapFragment extends Fragment {
         }
     }
 
+
+    public class AsynchApiCallTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            BarentswatchApi barentswatchApi;
+            barentswatchApi = new BarentswatchApi();
+
+            String format = "JSON";
+
+            Response response;
+
+
+
+            List<PropertyDescription> subscribables;
+            PropertyDescription newestSubscribable = null;
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            Date cachedUpdateDateTime;
+            Date newestUpdateDateTime;
+            SubscriptionEntry cachedEntry;
+//            final JSONObject toolsFeatureCollection;
+            final JSONArray toolsArray;
+            final ArrayAdapter<String> adapter;
+            String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+            final List<String> vesselNames;
+            final Map<String, List<Integer>> vesselToolIdsMap =  new HashMap<>();
+            byte[] data = new byte[0];
+            File file = null;
+            String directoryFilePath;
+
+            cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
+
+            if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                subscribables = barentswatchApi.getApi().getSubscribable();
+                for(PropertyDescription subscribable : subscribables) {
+                    if(subscribable.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
+                        newestSubscribable = subscribable;
+                        break;
+                    }
+                }
+            } else if(cachedEntry == null){
+                return false;
+            }
+
+            if(cachedEntry != null) {
+                directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+                file = new File(directoryFilePath + cachedEntry.mSubscribable.Name + ".JSON");
+            }
+
+            if(cachedEntry != null && file != null && file.exists()) {
+                try {
+                    cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
+                    newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
+
+                    if(newestSubscribable == null && cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
+                        response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
+                        try {
+                            data = FiskInfoUtility.toByteArray(response.getBody().in());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                            if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                                SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
+                                entry.mLastUpdated = newestSubscribable.LastUpdated;
+                                user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
+                                user.writeToSharedPref(getActivity());
+                            }
+                        }
+
+                    } else {
+                        StringBuilder jsonString = new StringBuilder();
+                        BufferedReader bufferReader = null;
+
+                        try {
+                            bufferReader = new BufferedReader(new FileReader(file));
+                            String line;
+
+                            while ((line = bufferReader.readLine()) != null) {
+                                jsonString.append(line);
+                                jsonString.append('\n');
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if(bufferReader != null) {
+                                try {
+                                    bufferReader.close();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        data = jsonString.toString().getBytes();
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Log.e(FRAGMENT_TAG, "Invalid datetime provided");
+                }
+            } else if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
+                try {
+                    data = FiskInfoUtility.toByteArray(response.getBody().in());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                        SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
+                        entry.mLastUpdated = newestSubscribable.LastUpdated;
+                        user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
+                        user.writeToSharedPref(getActivity());
+                }
+                }
+            } else {
+                return false;
+            }
+
+            try {
+                toolsFeatureCollection = new JSONObject(new String(data));
+                toolsArray = toolsFeatureCollection.getJSONArray("features");
+                vesselNames = new ArrayList<>();
+                adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, vesselNames);
+
+                for (int i = 0; i < toolsArray.length(); i++) {
+                    JSONObject feature = toolsArray.getJSONObject(i);
+                    String vesselName = (feature.getJSONObject("properties").getString("vesselname") != null && !feature.getJSONObject("properties").getString("vesselname").equals("null")) ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
+                    List<Integer> toolsIdList = vesselToolIdsMap.get(vesselName) != null ? vesselToolIdsMap.get(vesselName) : new ArrayList<Integer>();
+
+                    if (vesselName != null && !vesselNames.contains(vesselName)) {
+                        vesselNames.add(vesselName);
+                    }
+
+                    toolsIdList.add(i);
+                    vesselToolIdsMap.put(vesselName, toolsIdList);
+                    toolMap.put(feature.getJSONObject("properties").getString("toolid"), feature);
+                }
+            } catch (JSONException e) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
+                    }
+                });
+                Log.e(FRAGMENT_TAG, "JSON parse error");
+                e.printStackTrace();
+
+                return false;
+            }
+
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchEditText.setVisibility(View.VISIBLE);
+                    searchEditText.setAdapter(adapter);
+
+                    searchEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String vesselName = ((TextView) view).getText().toString();
+                            highlightToolsInMap(vesselName);
+
+                            InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                        }
+                    });
+                }
+            });
+
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if(success) {
+                if(pageLoaded) {
+                    browser.loadUrl("javascript:getToolDataFromAndroid();");
+                }
+            } else {
+                Dialog infoDialog = dialogInterface.getAlertDialog(getActivity(), R.string.tools_search_no_data_title, R.string.tools_search_no_data, -1);
+                infoDialog.show();
+            }
+        }
+    }
     //
     private void createMapLayerSelectionDialog() {
         if(layersAndVisibility == null) {
@@ -817,14 +1313,23 @@ public class MapFragment extends Fragment {
     }
 
     public void updateMap() {
+        pageLoaded = false;
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
+
+            AsynchApiCallTask asynchApiCallTask = new AsynchApiCallTask();
+            asynchApiCallTask.execute();
             ((MainActivity)getActivity()).toggleNetworkErrorTextView(true);
         } else {
             browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
 
             if((!new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
-                dialogInterface.getAlertDialog(getActivity(), R.string.offline_mode_map_used_title, R.string.offline_mode_map_used_info, -1).show();
+                new AlertDialog.Builder(getContext())
+                        .setIcon(R.drawable.ic_warning_black_24dp)
+                        .setTitle(getString(R.string.offline_mode_map_used_title))
+                        .setMessage(getString(R.string.offline_mode_map_used_info))
+                        .setPositiveButton(getString(R.string.ok), null)
+                        .show();
             }
         }
     }
@@ -838,10 +1343,10 @@ public class MapFragment extends Fragment {
             case R.id.zoom_to_user_position:
                 if(FiskInfoUtility.shouldAskPermission()) {
                     String[] perms = {"android.permission.ACCESS_FINE_LOCATION"};
-                    int permsRequestCode = MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+                    int permsRequestCode = MY_PERMISSIONS_REQUEST_FINE_LOCATION;
 
                     ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            new String[]{ACCESS_FINE_LOCATION},
                             permsRequestCode);
                 }
 
@@ -861,232 +1366,6 @@ public class MapFragment extends Fragment {
         }
     }
 
-    //getAllVesselNames
-    private void createSearchDialog() {
-        final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_search_tools, R.string.search_tools_title);
-
-        final ScrollView scrollView = (ScrollView) dialog.findViewById(R.id.search_tools_dialog_scroll_view);
-        final AutoCompleteTextView inputField = (AutoCompleteTextView) dialog.findViewById(R.id.search_tools_input_field);
-        final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.search_tools_row_container);
-        final Button viewInMapButton = (Button) dialog.findViewById(R.id.search_tools_view_in_map_button);
-        final Button jumpToBottomButton = (Button) dialog.findViewById(R.id.search_tools_jump_to_bottom_button);
-        Button dismissButton = (Button) dialog.findViewById(R.id.search_tools_dismiss_button);
-
-        List<PropertyDescription> subscribables;
-        PropertyDescription newestSubscribable = null;
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        Date cachedUpdateDateTime;
-        Date newestUpdateDateTime;
-        SubscriptionEntry cachedEntry;
-        Response response;
-        final JSONArray toolsArray;
-        ArrayAdapter<String> adapter;
-        String format = "JSON";
-        String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
-        final JSONObject tools;
-        final List<String> vesselNames;
-        final Map<String, List<Integer>> toolIdMap =  new HashMap<>();
-        byte[] data = new byte[0];
-
-        cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
-
-        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
-            subscribables = barentswatchApi.getApi().getSubscribable();
-            for(PropertyDescription subscribable : subscribables) {
-                if(subscribable.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
-                    newestSubscribable = subscribable;
-                    break;
-                }
-            }
-        } else if(cachedEntry == null){
-            Dialog infoDialog = dialogInterface.getAlertDialog(getActivity(), R.string.tools_search_no_data_title, R.string.tools_search_no_data, -1);
-
-            infoDialog.show();
-            return;
-        }
-
-        if(cachedEntry != null) {
-            try {
-                cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
-                newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
-
-                if(cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
-                    response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
-                    try {
-                        data = FiskInfoUtility.toByteArray(response.getBody().in());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
-                        SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
-                        entry.mLastUpdated = newestSubscribable.LastUpdated;
-                        user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
-                        user.writeToSharedPref(getActivity());
-                    }
-                } else {
-                    String directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
-
-                    File file = new File(directoryFilePath + newestSubscribable.Name + ".JSON");
-                    StringBuilder jsonString = new StringBuilder();
-                    BufferedReader bufferReader = null;
-
-                    try {
-                        bufferReader = new BufferedReader(new FileReader(file));
-                        String line;
-
-                        while ((line = bufferReader.readLine()) != null) {
-                            jsonString.append(line);
-                            jsonString.append('\n');
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if(bufferReader != null) {
-                            try {
-                                bufferReader.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    data = jsonString.toString().getBytes();
-                }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-                Log.e(FRAGMENT_TAG, "Invalid datetime provided");
-            }
-        } else {
-            response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
-            try {
-                data = FiskInfoUtility.toByteArray(response.getBody().in());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
-                SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
-                entry.mLastUpdated = newestSubscribable.LastUpdated;
-                user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
-            }
-        }
-
-        try {
-            tools = new JSONObject(new String(data));
-            toolsArray = tools.getJSONArray("features");
-            vesselNames = new ArrayList<>();
-            adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, vesselNames);
-
-            for (int i = 0; i < toolsArray.length(); i++) {
-                JSONObject feature = toolsArray.getJSONObject(i);
-                String vesselName = (feature.getJSONObject("properties").getString("vesselname") != null && !feature.getJSONObject("properties").getString("vesselname").equals("null")) ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
-                List<Integer> toolsIdList = toolIdMap.get(vesselName) != null ? toolIdMap.get(vesselName) : new ArrayList<Integer>();
-
-                if (vesselName != null && !vesselNames.contains(vesselName)) {
-                    vesselNames.add(vesselName);
-                }
-
-                toolsIdList.add(i);
-                toolIdMap.put(vesselName, toolsIdList);
-            }
-
-            inputField.setAdapter(adapter);
-        } catch (JSONException e) {
-            dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
-            Log.e(FRAGMENT_TAG, "JSON parse error");
-            e.printStackTrace();
-
-            return;
-        }
-
-        if(searchToolsButton.getTag() != null) {
-            inputField.requestFocus();
-            inputField.setText(searchToolsButton.getTag().toString());
-            inputField.selectAll();
-        }
-
-        inputField.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedVesselName = ((TextView) view).getText().toString();
-                List<Integer> selectedTools = toolIdMap.get(selectedVesselName);
-                Gson gson = new Gson();
-                String toolSetDateString;
-                Date toolSetDate;
-
-                rowsContainer.removeAllViews();
-
-                for(int toolId : selectedTools) {
-                    JSONObject feature;
-                            Feature toolFeature;
-
-                    try {
-                        feature = toolsArray.getJSONObject(toolId);
-
-                        if(feature.getJSONObject("geometry").getString("type").equals("LineString")) {
-                            toolFeature = gson.fromJson(feature.toString(), LineFeature.class);
-                        } else {
-                            toolFeature = gson.fromJson(feature.toString(), PointFeature.class);
-                        }
-
-                        toolSetDateString = toolFeature.properties.setupdatetime != null ? toolFeature.properties.setupdatetime : "2038-00-00T00:00:00";
-                        toolSetDate = simpleDateFormat.parse(toolSetDateString);
-
-                    } catch (JSONException | ParseException e) {
-                        dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
-                        e.printStackTrace();
-
-                        return;
-                    }
-
-                    ToolSearchResultRow row = new ToolSearchResultRow(getActivity(), R.drawable.ikon_kystfiske, toolFeature);
-                    long toolTime = System.currentTimeMillis() - toolSetDate.getTime();
-                    long highlightCutoff = ((long)getResources().getInteger(R.integer.milliseconds_in_a_day)) * ((long)getResources().getInteger(R.integer.days_to_highlight_active_tool));
-
-                    if(toolTime > highlightCutoff) {
-                        int colorId = ContextCompat.getColor(getActivity(), R.color.error_red);
-                        row.setDateTextViewTextColor(colorId);
-                    }
-
-                    rowsContainer.addView(row.getView());
-                }
-
-                viewInMapButton.setEnabled(true);
-                inputField.setTag(selectedVesselName);
-                searchToolsButton.setTag(selectedVesselName);
-                jumpToBottomButton.setVisibility(View.VISIBLE);
-                jumpToBottomButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                scrollView.scrollTo(0, rowsContainer.getBottom());
-                            }
-                        });
-                    }
-                });
-
-            }
-        });
-
-        viewInMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String vesselName = inputField.getTag().toString();
-                highlightToolsInMap(vesselName);
-
-                dialog.dismiss();
-            }
-        });
-
-        dismissButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        dialog.show();
-    }
-
     private void highlightToolsInMap(String vesselName) {
         browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
         clearHighlightingButton.setVisibility(View.VISIBLE);
@@ -1097,12 +1376,7 @@ public class MapFragment extends Fragment {
                 String nullString = null;
                 browser.loadUrl("javascript:highlightTools(" + nullString + ")");
                 clearHighlightingButton.setVisibility(View.GONE);
-                searchToolsButton.setTag(null);
             }
         });
-    }
-
-    public interface OnFragmentInteractionListener {
-        User getUser();
     }
 }

@@ -15,17 +15,16 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class DegreesMinutesSecondsRow extends BaseTableRow {
+public class DegreesMinutesSecondsRow extends BaseTableRow  {
     private EditText latitudeDegreesEditText;
     private EditText latitudeMinutesEditText;
     private EditText latitudeSecondsEditText;
@@ -33,9 +32,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
     private EditText longitudeMinutesEditText;
     private EditText longitudeSecondsEditText;
     private Button setPositionButton;
-    private GpsLocationTracker locationTracker;
+    private LocationProviderInterface mLocationProvider;
 
-    public DegreesMinutesSecondsRow(Activity activity, GpsLocationTracker gpsLocationTracker) {
+    public DegreesMinutesSecondsRow(final Activity activity, LocationProviderInterface gpsLocationTracker) {
         super(activity, R.layout.utility_row_degrees_minutes_seconds_row);
 
 
@@ -47,13 +46,13 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         longitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_minutes_edit_text);
         longitudeSecondsEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_seconds_edit_text);
         setPositionButton = (Button) super.getView().findViewById(R.id.utility_lat_lon_row_set_position_button);
-        locationTracker = gpsLocationTracker;
+        mLocationProvider = gpsLocationTracker;
 
         setPositionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double latitude = locationTracker.getLatitude();
-                double longitude = locationTracker.getLongitude();
+                double latitude = mLocationProvider.getLatitude();
+                double longitude = mLocationProvider.getLongitude();
 
                 double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
                 double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
@@ -102,7 +101,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
     public String getLatitude() {
         double latitudeDegrees = Double.NaN;
         double latitudeMinutes = Double.NaN;
-        double latitudeSeconds = Double.NaN;
+        double latitudeSeconds;
         double latitude;
 
         try {
@@ -275,5 +274,29 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         point = new Point(latitude, longitude);
 
         return point;
+    }
+
+    public void SetPositionButtonOnClickListener(View.OnClickListener onClickListener) {
+        if(onClickListener != null) {
+            setPositionButton.setOnClickListener(onClickListener);
+        } else {
+            setPositionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    double latitude = mLocationProvider.getLatitude();
+                    double longitude = mLocationProvider.getLongitude();
+
+                    double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+                    double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+
+                    latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+                    latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+                    latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
+                    longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+                    longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+                    longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+                }
+            });
+        }
     }
 }

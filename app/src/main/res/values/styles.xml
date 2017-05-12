@@ -33,6 +33,7 @@ limitations under the License.
     <color name="nak_red">#f00</color>
     <color name="message_blue">#4C85D3</color>
     <color name="footer_gray">#4C4747</color>
+    <color name="text_white_transparent">#E6FFFFFF</color>
     <color name="unavailable_grey">#B9B9B9</color>
     <color name="helpful_grey">#D5D5D5</color>
     <color name="hyperlink_blue">#0000EE</color>
