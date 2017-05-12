@@ -135,6 +135,16 @@ limitations under the License.
                 android:text="@string/placeholder_position"
                 />
 
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_marinogram_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/show_marinogram_from_yr"
+                />
+
         </LinearLayout>
 
         <LinearLayout
@@ -144,6 +154,7 @@ limitations under the License.
             android:orientation="vertical"
             android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
             android:showDividers="beginning|middle|end"
+            android:visibility="gone"
             >
 
             <TextView
@@ -207,7 +218,7 @@ limitations under the License.
                 />
 
             <TextView
-                android:id="@+id/map_fragment_bottom_sheet_fact_link_text_view"
+                android:id="@+id/map_fragment_bottom_sheet_seismic_fact_link_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -217,7 +228,7 @@ limitations under the License.
                 />
 
             <TextView
-                android:id="@+id/map_fragment_bottom_sheet_map_link_text_view"
+                android:id="@+id/map_fragment_bottom_sheet_seismic_map_link_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -247,6 +258,107 @@ limitations under the License.
                 android:textColor="@color/hyperlink_blue"
                 android:text="@string/view_ais_tracking"
                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_sea_floor_installation_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:showDividers="beginning|middle|end"
+            >
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/sea_floor_installation"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_type_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_build_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/type"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_function_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_build_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/function"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_depth_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_vertical_align_bottom_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/depth"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_field_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_grid_on_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/field"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_start_date_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_schedule_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/sea_floor_installation_area_start_date"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_operator_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_location_city_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/operator"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_position_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/position"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_marinogram_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/show_marinogram_from_yr"
+                />
+
         </LinearLayout>
 
     </LinearLayout>

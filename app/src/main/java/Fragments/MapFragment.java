@@ -18,6 +18,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -125,6 +126,7 @@ import retrofit.mime.TypedInput;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class MapFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MapFragment";
@@ -134,12 +136,14 @@ public class MapFragment extends Fragment {
     private LinearLayout bottomSheetLayout;
     private LinearLayout bottomSheetToolLayout;
     private LinearLayout bottomSheetSeismicLayout;
+    private LinearLayout bottomSheetSeaFloorInstallationLayout;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView bottomSheetToolTypeTextView;
     private TextView bottomSheetToolSetupDateTextView;
     private TextView bottomSheetToolVesselTextView;
     private TextView bottomSheetToolPhoneNumberTextView;
     private TextView bottomSheetToolPositionTextView;
+    private TextView bottomSheetToolMarinogramTextView;
     private TextView bottomSheetSeismicAreaTypeTextView;
     private TextView bottomSheetSeismicPeriodTextView;
     private TextView bottomSheetSeismicStartDateTextView;
@@ -148,8 +152,18 @@ public class MapFragment extends Fragment {
     private TextView bottomSheetSeismicTypeTextView;
     private TextView bottomSheetSeismicFactLinkTextView;
     private TextView bottomSheetSeismicMapLinkTextView;
-    private TextView bottomSheetSeismicPositionTextView;
     private TextView bottomSheetSeismicAisTrackingTextView;
+    private TextView bottomSheetSeaFloorInstallationNameTextView;
+    private TextView bottomSheetSeaFloorInstallationTypeTextView;
+    private TextView bottomSheetSeaFloorInstallationFunctionTextView;
+    private TextView bottomSheetSeaFloorInstallationDepthTextView;
+    private TextView bottomSheetSeaFloorInstallationFieldTextView;
+    private TextView bottomSheetSeaFloorInstallationStartupDateTextView;
+    private TextView bottomSheetSeaFloorInstallationOperatorTextView;
+    private TextView bottomSheetSeaFloorInstallationPositionTextView;
+    private TextView bottomSheetSeaFloorInstallationMarinogramTextView;
+
+
 
     FragmentActivity listener;
     private WebView browser;
@@ -246,23 +260,36 @@ public class MapFragment extends Fragment {
         bottomSheetLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout_bottom_sheet);
         bottomSheetToolLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_tool_information_container);
         bottomSheetSeismicLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_seismic_information_container);
+        bottomSheetSeaFloorInstallationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_sea_floor_installation_information_container);
 
-        bottomSheetToolTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
-        bottomSheetToolSetupDateTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_setup_date_text_view);
-        bottomSheetToolVesselTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_vessel_text_view);
-        bottomSheetToolPhoneNumberTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_phone_text_view);
-        bottomSheetToolPositionTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_position_text_view);
 
-        bottomSheetSeismicAreaTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_type_text_view);
-        bottomSheetSeismicPeriodTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_period_text_view);
-        bottomSheetSeismicStartDateTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_start_date_text_view);
-        bottomSheetSeismicVesselTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_vessel_text_view);
-        bottomSheetSeismicCompanyTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_company_text_view);
-        bottomSheetSeismicTypeTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_text_view);
-        bottomSheetSeismicFactLinkTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_fact_link_text_view);
-        bottomSheetSeismicMapLinkTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_map_link_text_view);
-        bottomSheetSeismicPositionTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_position_text_view);
-        bottomSheetSeismicAisTrackingTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_ais_text_view);
+        bottomSheetToolTypeTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
+        bottomSheetToolSetupDateTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_setup_date_text_view);
+        bottomSheetToolVesselTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_vessel_text_view);
+        bottomSheetToolPhoneNumberTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_phone_text_view);
+        bottomSheetToolPositionTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_position_text_view);
+        bottomSheetToolMarinogramTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_marinogram_text_view);
+
+        bottomSheetSeismicAreaTypeTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_type_text_view);
+        bottomSheetSeismicPeriodTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_period_text_view);
+        bottomSheetSeismicStartDateTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_start_date_text_view);
+        bottomSheetSeismicVesselTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_vessel_text_view);
+        bottomSheetSeismicCompanyTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_company_text_view);
+        bottomSheetSeismicTypeTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_type_text_view);
+        bottomSheetSeismicFactLinkTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_fact_link_text_view);
+        bottomSheetSeismicMapLinkTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_map_link_text_view);
+        bottomSheetSeismicAisTrackingTextView = (TextView) bottomSheetSeismicLayout.findViewById(R.id.map_fragment_bottom_sheet_seismic_ais_text_view);
+
+        bottomSheetSeaFloorInstallationNameTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_name_text_view);
+        bottomSheetSeaFloorInstallationTypeTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_type_type_text_view);
+        bottomSheetSeaFloorInstallationFunctionTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_function_text_view);
+        bottomSheetSeaFloorInstallationDepthTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_depth_text_view);
+        bottomSheetSeaFloorInstallationFieldTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_field_text_view);
+        bottomSheetSeaFloorInstallationStartupDateTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_start_date_text_view);
+        bottomSheetSeaFloorInstallationOperatorTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_operator_text_view);
+        bottomSheetSeaFloorInstallationPositionTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_position_text_view);
+        bottomSheetSeaFloorInstallationMarinogramTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_marinogram_text_view);
+
 
         // TODO: Disable search if user is not authenticated
 
@@ -431,11 +458,13 @@ public class MapFragment extends Fragment {
                 public void run() {
                     bottomSheetToolLayout.setVisibility(View.VISIBLE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
 
                     try {
                         final String vesselName = tool.getJSONObject("properties").getString("vesselname");
                         String setupDateString = tool.getJSONObject("properties").getString("setupdatetime");
-                        Date setupDate = null;
+                        Date setupDate;
+                        String marinogramUrl;
 
                         setupDateString = (setupDateString != null && setupDateString.length() > 19) ? setupDateString.substring(0, 19) : setupDateString;
 
@@ -467,18 +496,30 @@ public class MapFragment extends Fragment {
                         });
 
                         JSONArray toolJsonCoordinates = tool.getJSONObject("geometry").getJSONArray("coordinates");
-
                         if(tool.getJSONObject("geometry").getString("type").equals(GeometryType.LINESTRING.toString())) {
                             String dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getJSONArray(0).getDouble(1));
                             dmsPosition += " " + toolJsonCoordinates.getJSONArray(0).getDouble(0);
+                            marinogramUrl = "http://www.yr.no/sted/hav/" + String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getJSONArray(0).getDouble(1)) + "_" +
+                                    String.format(Locale.ENGLISH , "%.2f", toolJsonCoordinates.getJSONArray(0).getDouble(1));
 
                             bottomSheetToolPositionTextView.setText(dmsPosition);
                         } else {
+                            marinogramUrl = "http://www.yr.no/sted/hav/" + String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getDouble(1)) + "_" +
+                                    String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getDouble(0));
                             String dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(1));
                             dmsPosition += " " + FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(0));
 
                             bottomSheetToolPositionTextView.setText(dmsPosition);
                         }
+
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            bottomSheetToolMarinogramTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(marinogramUrl, getString(R.string.show_marinogram_from_yr)), Html.FROM_HTML_MODE_LEGACY));
+                        } else {
+                            bottomSheetToolMarinogramTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(marinogramUrl, getString(R.string.show_marinogram_from_yr))));
+                        }
+
+                        bottomSheetToolMarinogramTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -513,6 +554,7 @@ public class MapFragment extends Fragment {
                 @Override
                 public void run() {
                     bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -580,6 +622,91 @@ public class MapFragment extends Fragment {
                         bottomSheetSeismicFactLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
                         bottomSheetSeismicMapLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                }
+            });
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
+        public void updateSeaFloorInstallationBottomSheet(final String jsonString) {
+
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(jsonObject == null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+            final JSONObject finalJsonObject = jsonObject;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.VISIBLE);
+
+                    try {
+                        JSONArray toolJsonCoordinates = finalJsonObject.getJSONObject("geometry").getJSONArray("coordinates");
+                        String dateString = finalJsonObject.getJSONObject("properties").getString("dtstartup");
+                        String name = finalJsonObject.getJSONObject("properties").getString("facname");
+                        String operatorName = finalJsonObject.getJSONObject("properties").getString("curopernam");
+                        String type = finalJsonObject.getJSONObject("properties").getString("fackind");
+                        String function = finalJsonObject.getJSONObject("properties").getString("facfunc");
+                        String depth = finalJsonObject.getJSONObject("properties").getString("waterdepth");
+                        String fieldName = finalJsonObject.getJSONObject("properties").getString("belong2nm");
+                        String dmsPosition;
+                        String marinogramUrl;
+                        Date date;
+
+                        dateString = (dateString != null && dateString.length() > 10) ? dateString.substring(0, 10) : getString(R.string.not_available);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
+
+                        sdf.setTimeZone(TimeZone.getDefault());
+
+                        if(!dateString.equals(getString(R.string.not_available))) {
+                            try {
+                                date = sdf.parse(dateString);
+                                dateString = sdf.format(date);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        marinogramUrl = "http://www.yr.no/sted/hav/" + String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getDouble(1)) + "_" +
+                                String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getDouble(0));
+                        dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(1));
+                        dmsPosition += " " + FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getDouble(0));
+
+                        bottomSheetSeaFloorInstallationNameTextView.setText(name + " - " + getString(R.string.sea_floor_installation));
+                        bottomSheetSeaFloorInstallationTypeTextView.setText(getString(R.string.type) + ": " + type);
+                        bottomSheetSeaFloorInstallationFunctionTextView.setText(getString(R.string.function) + ": " + function);
+                        bottomSheetSeaFloorInstallationDepthTextView.setText(getString(R.string.depth) + ": " + depth);
+                        bottomSheetSeaFloorInstallationFieldTextView.setText(getString(R.string.field) + ": " + fieldName);
+                        bottomSheetSeaFloorInstallationStartupDateTextView.setText(getString(R.string.startup_date) + ": " + dateString);
+                        bottomSheetSeaFloorInstallationOperatorTextView.setText(getString(R.string.operator) + ": " + operatorName);
+                        bottomSheetSeaFloorInstallationPositionTextView.setText(dmsPosition);
+
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            bottomSheetSeaFloorInstallationMarinogramTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(marinogramUrl, getString(R.string.show_marinogram_from_yr)), Html.FROM_HTML_MODE_LEGACY));
+                        } else {
+                            bottomSheetSeaFloorInstallationMarinogramTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(marinogramUrl, getString(R.string.show_marinogram_from_yr))));
+                        }
+
+                        bottomSheetSeaFloorInstallationMarinogramTextView.setMovementMethod(LinkMovementMethod.getInstance());
                     } catch (JSONException e) {
                         e.printStackTrace();
                         return;
@@ -723,7 +850,7 @@ public class MapFragment extends Fragment {
                 file = new File(directoryFilePath + cachedEntry.mSubscribable.Name + ".JSON");
             }
 
-            if(cachedEntry != null && file != null && file.exists()) {
+            if(cachedEntry != null && file.exists() && ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 try {
                     cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
                     newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
@@ -790,7 +917,26 @@ public class MapFragment extends Fragment {
                         entry.mLastUpdated = newestSubscribable.LastUpdated;
                         user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
                         user.writeToSharedPref(getActivity());
-                }
+                    }
+                }else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new AlertDialog.Builder(getContext())
+                                    .setIcon(R.drawable.ic_warning_black_24dp)
+                                    .setTitle(getString(R.string.request_write_access_dialog_title))
+                                    .setMessage(getString(R.string.request_write_access_map_rationale))
+                                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // After click on Ok, request the permission.
+                                            requestPermissions(new String[] { WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.cancel, null)
+                                    .show();
+                        }
+                    });
                 }
             } else {
                 return false;
@@ -816,7 +962,6 @@ public class MapFragment extends Fragment {
                     toolMap.put(feature.getJSONObject("properties").getString("toolid"), feature);
                 }
             } catch (JSONException e) {
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1331,6 +1476,22 @@ public class MapFragment extends Fragment {
                         .setPositiveButton(getString(R.string.ok), null)
                         .show();
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
+        switch(requestCode) {
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+                for(int i = 0; i < permissions.length; i++) {
+                    if(permissions[i].equals(WRITE_EXTERNAL_STORAGE) && results[i] == PackageManager.PERMISSION_GRANTED) {
+                        updateMap();
+                    }
+                }
+
+                break;
+            default:
+
         }
     }
 

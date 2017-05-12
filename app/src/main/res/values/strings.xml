@@ -139,6 +139,17 @@ limitations under the License.
     <string name="ais_tracking">AIS-sporing</string>
     <string name="seismic_ais_tracking_not_implemented_yet">Denne funksjonen vil bli tilgjengelig ved en senere oppdatering.</string>
     <string name="seismic_area_start_date">Startdato</string>
+    <string name="show_marinogram_from_yr">Se marinogram fra yr.no</string>
+    <string name="request_write_access_dialog_title">Filtilgang</string>
+    <string name="request_write_access_map_rationale">Fiskinfo kan lagre redskapsdata på enheten så du ikke laster ned data gjentatte ganger, men dette krever skrivetillatelse på telefonen. Ønsker du å tillate dette?</string>
+    <string name="sea_floor_installation">Havbunnsinstallasjon</string>
+    <string name="type">Type</string>
+    <string name="function">Funksjon</string>
+    <string name="depth">Dybde</string>
+    <string name="field">Felt</string>
+    <string name="sea_floor_installation_area_start_date">Oppstartsdato</string>
+    <string name="operator">Operatør</string>
+    <string name="startup_date">Oppstart</string>
 
 
     <!-- Map fragment menu strings -->

@@ -215,7 +215,7 @@ limitations under the License.
     <dimen name="map_search_tools_button_height">40dp</dimen>
     <dimen name="map_search_tools_button_margin_left">10dp</dimen>
     <dimen name="map_search_tools_button_margin_top">150dp</dimen>
-    <dimen name="map_search_tools_clear_highlighting_button_margin_top">10dp</dimen>
+    <dimen name="map_search_tools_clear_highlighting_button_margin_top">150dp</dimen>
 
     <!-- Search tools dialog -->
     <dimen name="search_tools_dialog_input_field_margin_left">30dp</dimen>

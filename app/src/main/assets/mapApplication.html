@@ -732,6 +732,7 @@
         }
 
         function toolClickNotice(feature) {
+            <!--mFeature = feature;-->
 
             if(!feature.hasOwnProperty("cluster")) {
                 Android.updateToolBottomSheet(feature.data.toolid);
@@ -749,6 +750,8 @@
         }
 
         function seismicClickNotice(feature) {
+            <!--mFeature = feature;-->
+
             var wgs84 = feature.geometry.clone();
             var jsonObject = {
                 type: "Feature",
@@ -773,68 +776,37 @@
         }
 
         function npdFacilityClickNotice(feature) {
-            mFeature = feature;
-            var facilityName;
-            var facilityType;
-            var waterDepth;
-            var dateStartup;
-            var lifetime;
-            var position;
+            <!--mFeature = feature;-->
 
-            if (!feature.hasOwnProperty("cluster")) {
-                if (feature.data.facname != null) {
-                    facilityName = "<p>Navn: " + feature.data.facname + "</p>";
-                } else {
-                    facilityName = "<p>Navn: Ikke tilgjengelig" + "</p>";
-                }
-                if (feature.data.fackind != null) {
-                    facilityType = "<p>" + "Type: " + feature.data.fackind + "</p>";
-                } else {
-                    facilityType = "<p>Type: Ikke tilgjengelig</p>";
-                }
-                if (feature.data.waterdepth != null) {
-                    waterDepth = "<p>" + "Dypde (m): " + feature.data.waterdepth + "</p>";
-                } else {
-                    waterDepth = "<p>Dypde: Ikke tilgjengelig</p>";
-                }
-                if (feature.data.facfunc != null) {
-                    facilityFuncion = "<p>" + "Funksjon: " + feature.data.facfunc + "</p>";
-                } else {
-                    facilityFuncion = "<p>" + "Startdato: Ikke tilgjengelig</p>";
-                }
-                if (feature.data.dtstartup != null) {
-                    dateStartup = "<p>" + "Startdato: " + feature.data.dtstartup + "</p>";
-                } else {
-                    dateStartup = "<p>Startdato: Ikke tilgjengelig</p>";
-                }
-                if (feature.data.lifetime != null && feature.data.dtfinlizd !== "") {
-                    lifetime = "<p>" + "Livstid: " + feature.data.lifetime + "</p>";
-                } else {
-                    lifetime = "<p>Livstid: Ikke tilgjengelig</p>";
-                }
-                if (feature.geometry != null) {
-                    var wgs84 = feature.geometry.clone();
-                    wgs84.transform("EPSG:900913", "EPSG:4326");
-                    position = "Posisjon: " + wgs84.getBounds().getCenterLonLat().lat + ", " + wgs84.getBounds().getCenterLonLat().lon;
-                } else {
-                    position = "<p>Posisjon: Ikke tilgjengelig</p>";
+            if(!feature.hasOwnProperty("cluster")) {
+                var wgs84 = feature.geometry.clone();
+                var jsonObject = {
+                    type: "Feature",
+                    id: feature.id,
+                    fid: feature.fid,
+                    geometry: {
+                        id: feature.geometry.id,
+                        coordinates: []
+                    },
+                    geometry_name: "geom",
+                    properties: feature.attributes
                 }
 
-                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
-                feature.geometry.getBounds().getCenterLonLat(),
-                    null, "<p>Seismikkinformasjon</p>" + facilityName + facilityType + waterDepth + facilityFuncion + dateStartup + lifetime + position, null, true, onPopupClose);
-                popup.panMapIfOutOfView = false;
-                popup.autoSize = true;
-                feature.popup = popup;
-                map.addPopup(popup);
+                wgs84.transform("EPSG:900913", "EPSG:4326");
+
+                jsonObject.geometry.coordinates.push(wgs84.x, wgs84.y);
+
+                Android.updateSeaFloorInstallationBottomSheet(JSON.stringify(jsonObject));
             } else {
-                popup = new OpenLayers.Popup.FramedCloud("Informasjon",
-                feature.geometry.getBounds().getCenterLonLat(),
-                    null, "<p>Dette er en gruppering av plattformer, zoom inn for å se info om individuelle platformer.</p>", null, true, onPopupClose);
-                popup.panMapIfOutOfView = false;
-                popup.autoSize = true;
-                feature.popup = popup;
-                map.addPopup(popup);
+                var highlightedBounds = new OpenLayers.Bounds();
+
+                feature.cluster.forEach(function(feature) {
+                    highlightedBounds.extend(feature.geometry.getBounds());
+                });
+
+                map.zoomToExtent(highlightedBounds);
+
+                Android.updateToolBottomSheet(null);
             }
         }
 
@@ -937,7 +909,8 @@
 
         function onPopupClose(evt) {
             if(mFeature != null) {
-                selectFeature.unselect(mFeature);
+                selectFeature
+                .unselect(mFeature);
             } else if(popup != null) {
                 map.removePopup(popup);
                 popup.destroy();
