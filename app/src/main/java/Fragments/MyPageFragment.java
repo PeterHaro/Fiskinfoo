@@ -187,7 +187,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
                     mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     mCRecyclerView.setAdapter(myPageExpandableListAdapter);
 
-                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
+                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }

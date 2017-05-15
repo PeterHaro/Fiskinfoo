@@ -5,11 +5,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -42,6 +45,9 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 
 /**
@@ -93,71 +99,17 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initOfflineModeRow() {
-        final User user = userInterface.getUser();
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dialog dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_offline_mode_info, R.string.offline_mode);
-                TextView textView = (TextView) dialog.findViewById(R.id.offline_mode_info_dialog_text_view);
-                LinearLayout linearLayout = (LinearLayout) dialog.findViewById(R.id.offline_mode_info_dialog_linear_layout);
-                Button okButton = (Button) dialog.findViewById(R.id.offline_mode_info_dialog_dismiss_button);
-                final Switch offlineModeSwitch = (Switch) dialog.findViewById(R.id.offline_mode_info_dialog_switch);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                OfflineModeFragment fragment = OfflineModeFragment.newInstance(userInterface.getUser());
 
-                offlineModeSwitch.setChecked(user.getOfflineMode());
-
-                if(user.getOfflineMode()) {
-                    offlineModeSwitch.setText(v.getResources().getString(R.string.offline_mode_active));
-                } else {
-                    offlineModeSwitch.setText(v.getResources().getString(R.string.offline_mode_deactivated));
-                }
-
-                textView.setText(R.string.offline_mode_info);
-
-                for (final SubscriptionEntry entry : user.getSubscriptionCacheEntries()) {
-                    final InfoSwitchRow row = new InfoSwitchRow(v.getContext(), entry.mName, entry.mLastUpdated.replace("T", "\n"));
-
-                    row.setChecked(entry.mOfflineActive);
-                    row.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            SubscriptionEntry updateEntry = user.getSubscriptionCacheEntry(entry.mSubscribable.ApiName);
-                            updateEntry.mOfflineActive = isChecked;
-                            user.setSubscriptionCacheEntry(entry.mSubscribable.ApiName, updateEntry);
-                            user.writeToSharedPref(buttonView.getContext());
-                        }
-                    });
-
-                    row.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            row.setChecked(!row.isChecked());
-                        }
-                    });
-
-                    linearLayout.addView(row.getView());
-                }
-
-                offlineModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        user.setOfflineMode(isChecked);
-                        user.writeToSharedPref(buttonView.getContext());
-
-                        if (isChecked) {
-                            offlineModeSwitch.setText(R.string.offline_mode_active);
-                            mListener.toggleOfflineMode(true);
-                            Toast.makeText(buttonView.getContext(), R.string.offline_mode_activated, Toast.LENGTH_LONG).show();
-                        } else {
-                            offlineModeSwitch.setText(R.string.offline_mode_deactivated);
-                            mListener.toggleOfflineMode(false);
-                            Toast.makeText(buttonView.getContext(), R.string.offline_mode_deactivated, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-                okButton.setOnClickListener(new UtilityOnClickListeners().getDismissDialogListener(dialog));
-
-                dialog.show();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_fragment_container, fragment, getString(R.string.offline_mode))
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(getString(R.string.offline_mode))
+                        .commit();
             }
         };
 

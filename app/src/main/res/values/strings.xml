@@ -42,6 +42,8 @@ limitations under the License.
     <string name="null_string_lowercase">null</string>
     <string name="do_not_show_message_again">Ikke vis denne meldingen igjen</string>
     <string name="not_available">Ikke tilgjengelig</string>
+    <string name="on">På</string>
+    <string name="off">Av</string>
 
     <!-- Placeholder strings -->
     <string name="placeholder_string">Placeholder</string>
@@ -83,6 +85,7 @@ limitations under the License.
     <string name="about_detailed">Info om appen.\nHvorfor kreves de forskjellige tilgangene?\nNevne open source libs brukt.\n</string>
     <string name="about_fragment_title">Om appen</string>
     <string name="user_information">Brukerinformasjon</string>
+    <string name="request_write_access_offline_mode_rationale">Offlinemodus trenger skrivetillatelse til å laste ned og lagre kart for å fungere. Ønsker du å tillate dette?</string>
 
     <!-- MyPage fragment strings -->
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
@@ -222,7 +225,7 @@ limitations under the License.
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
     <string name="offline_mode">Offline-modus</string>
     <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.\n\nUnder kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
-    <string name="offline_mode_info_downloads">Under kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
+    <string name="offline_mode_info_downloads">Under kan du bestemme hvilke kartlag som skal bli lasted ned, samt se når nyeste lokale versjon ble oppdatert:</string>
     <string name="offline_mode_activated">Offline-modus aktivert</string>
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
@@ -418,6 +421,9 @@ limitations under the License.
     <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
     <string name="tool_updated">Redskap oppdatert</string>
     <string name="error_could_not_validate_tool_status">Nettverksfeil, kunne ikke kontrollere redskapsstatus</string>
+    <string name="tool_lost_row_text">Tap av redskap</string>
+    <string name="tool_lost_cause_row_text">Tapsårsak</string>
+    <string name="tool_lost_conditions_row_text">Værforhold</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -457,5 +463,17 @@ limitations under the License.
 
     <!-- Subscription details fragment -->
     <string name="subscription_details_fragment_title">Kart</string>
+
+    <string-array name="tool_lost_causes">
+        <item>Slitt</item>
+        <item>Revnet</item>
+        <item>Annet</item>
+    </string-array>
+
+    <string-array name="tool_lost_conditions">
+        <item>Stille</item>
+        <item>Sterk vind</item>
+        <item>Annet</item>
+    </string-array>
 
 </resources>

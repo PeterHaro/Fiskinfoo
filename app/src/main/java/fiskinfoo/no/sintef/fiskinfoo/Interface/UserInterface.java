@@ -10,4 +10,5 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 public interface UserInterface {
     User getUser();
     void updateUserSettings(UserSettings userSettings);
+    void setOfflineMode(boolean active);
 }

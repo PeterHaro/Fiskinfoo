@@ -58,8 +58,11 @@ public class ToolEntry implements Parcelable {
     private String ToolId;
     private String LastChangedDateTime;
     private String LastChangedBySource;
+    private String toolLostReason;
+    private String toolLostWeather;
     private ToolEntryStatus toolStatus;
     private int toolLogId;
+    private boolean toolLost;
 
     protected ToolEntry(Parcel in) {
         id = in.readString();
@@ -87,6 +90,40 @@ public class ToolEntry implements Parcelable {
         LastChangedBySource = in.readString();
         toolStatus = ToolEntryStatus.createFromValue(in.readString());
         toolLogId = in.readInt();
+        toolLostReason = in.readString();
+        toolLostWeather = in.readString();
+        toolLost = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeList(coordinates);
+        dest.writeString(geometry.toString());
+        dest.writeString(IMO);
+        dest.writeString(IRCS);
+        dest.writeString(MMSI);
+        dest.writeString(RegNum);
+        dest.writeString(VesselName);
+        dest.writeString(VesselPhone);
+        dest.writeString(VesselEmail);
+        dest.writeString(ContactPersonEmail);
+        dest.writeString(ContactPersonPhone);
+        dest.writeString(ContactPersonName);
+        dest.writeString(ToolTypeCode.toString());
+        dest.writeString(Source);
+        dest.writeString(Comment);
+        dest.writeString(ShortComment);
+        dest.writeString(RemovedTime);
+        dest.writeString(SetupDateTime);
+        dest.writeString(ToolId);
+        dest.writeString(LastChangedDateTime);
+        dest.writeString(LastChangedBySource);
+        dest.writeString(toolStatus.toString());
+        dest.writeInt(toolLogId);
+        dest.writeString(toolLostReason);
+        dest.writeString(toolLostWeather);
+        dest.writeByte((byte) (toolLost ? 1 : 0));
     }
 
     public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, String vesselEmail, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
@@ -408,6 +445,12 @@ public class ToolEntry implements Parcelable {
             properties.put("ContactPersonPhone", this.ContactPersonPhone == null ? JSONObject.NULL : this.ContactPersonPhone);
             properties.put("ContactPersonEmail", this.ContactPersonEmail == null ? JSONObject.NULL : this.ContactPersonEmail);
 
+            if(this.toolLost) {
+                properties.put("ToolLostReason", this.toolLostReason == null ? JSONObject.NULL : this.toolLostReason);
+                properties.put("ToolLostWeather", this.toolLostWeather == null ? JSONObject.NULL : this.toolLostWeather);
+                properties.put("ToolLost", true);
+            }
+
             Date toolReportDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
             double toolReportingLatitude = gpsLocationTracker.getLatitude();
@@ -446,34 +489,6 @@ public class ToolEntry implements Parcelable {
             return new ToolEntry[size];
         }
     };
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeList(coordinates);
-        dest.writeString(geometry.toString());
-        dest.writeString(IMO);
-        dest.writeString(IRCS);
-        dest.writeString(MMSI);
-        dest.writeString(RegNum);
-        dest.writeString(VesselName);
-        dest.writeString(VesselPhone);
-        dest.writeString(VesselEmail);
-        dest.writeString(ContactPersonEmail);
-        dest.writeString(ContactPersonPhone);
-        dest.writeString(ContactPersonName);
-        dest.writeString(ToolTypeCode.toString());
-        dest.writeString(Source);
-        dest.writeString(Comment);
-        dest.writeString(ShortComment);
-        dest.writeString(RemovedTime);
-        dest.writeString(SetupDateTime);
-        dest.writeString(ToolId);
-        dest.writeString(LastChangedDateTime);
-        dest.writeString(LastChangedBySource);
-        dest.writeString(toolStatus.toString());
-        dest.writeInt(toolLogId);
-    }
 
     public String getId() {
         return id == null ? "" : id;
@@ -682,6 +697,30 @@ public class ToolEntry implements Parcelable {
 
     public void setToolLogId(int id) {
         toolLogId = id;
+    }
+
+    public String getToolLostReason() {
+        return toolLostReason;
+    }
+
+    public void setToolLostReason(String toolLostReason) {
+        this.toolLostReason = toolLostReason;
+    }
+
+    public String getToolLostWeather() {
+        return toolLostWeather;
+    }
+
+    public void setToolLostWeather(String toolLostWeather) {
+        this.toolLostWeather = toolLostWeather;
+    }
+
+    public boolean isToolLost() {
+        return toolLost;
+    }
+
+    public void setToolLost(boolean toolLost) {
+        this.toolLost = toolLost;
     }
 
     @Override

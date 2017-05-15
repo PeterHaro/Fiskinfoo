@@ -256,6 +256,9 @@ limitations under the License.
     <dimen name="table_row_padding_bottom">7dp</dimen>
     <dimen name="table_row_padding_top">7dp</dimen>
 
+    <!-- Offline mode fragment -->
+    <dimen name="offline_mode_fragment_switch_padding_vertical">10dp</dimen>
+
     <!-- tool search result row -->
     <dimen name="tool_search_result_row_tool_icon_width">45dp</dimen>
     <dimen name="tool_search_result_row_tool_icon_height">45dp</dimen>
