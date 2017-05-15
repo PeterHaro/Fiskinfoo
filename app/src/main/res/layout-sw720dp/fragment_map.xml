@@ -22,18 +22,6 @@ limitations under the License.
         android:layout_height="match_parent"
         >
 
-        <Button
-            android:id="@+id/map_clear_highlighting_button"
-            android:layout_width="@dimen/map_search_tools_button_width"
-            android:layout_height="@dimen/map_search_tools_button_height"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:visibility="gone"
-            android:layout_marginStart="@dimen/map_search_tools_button_margin_left"
-            android:layout_marginTop="@dimen/map_search_tools_clear_highlighting_button_margin_top"
-            android:background="@drawable/ic_highlight_off_black_36dp"
-            />
-
         <WebView
             android:id="@+id/map_fragment_web_view"
             android:layout_width="match_parent"
@@ -58,6 +46,7 @@ limitations under the License.
             android:lines="1"
             android:maxLines="1"
             android:hint="@string/tool_search_hint"
+            android:tag="@string/map_search_view_tag_search"
             />
     </RelativeLayout>
 
@@ -267,6 +256,7 @@ limitations under the License.
             android:orientation="vertical"
             android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
             android:showDividers="beginning|middle|end"
+            android:visibility="gone"
             >
 
             <TextView
@@ -357,6 +347,55 @@ limitations under the License.
                 android:drawableStart="@drawable/ic_place_black_24dp"
                 android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/show_marinogram_from_yr"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_ice_concentration_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:showDividers="beginning|middle|end"
+            >
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/ice_concentration"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_ice_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_ac_unit_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/ice_type"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_satellite_images_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 />
 
         </LinearLayout>

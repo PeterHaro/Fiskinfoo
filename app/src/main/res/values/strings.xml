@@ -153,6 +153,16 @@ limitations under the License.
     <string name="sea_floor_installation_area_start_date">Oppstartsdato</string>
     <string name="operator">Operatør</string>
     <string name="startup_date">Oppstart</string>
+    <string name="ice_concentration">Iskonsentrasjon</string>
+    <string name="ice_type">Istype</string>
+    <string name="satellite_images_of_sea_ice">Satellittbilder av havis</string>
+    <string name="satellite_images_of_sea_ice_url">http://www.polarview.aq/arctic</string>
+    <string name="met_ice_information_url">http://polarview.met.no/</string>
+    <string name="met_ice_information">Meterologisk institutts isinformasjon</string>
+    <string name="unknown_ice_concentration">Ukjent iskonsentrasjonstype</string>
+    <string name="map_search_view_tag_search">Søk</string>
+    <string name="map_search_view_tag_clear">Fjern</string>
+    <string name="error_no_match_for_vessel_search">Ingen treff</string>
 
 
     <!-- Map fragment menu strings -->

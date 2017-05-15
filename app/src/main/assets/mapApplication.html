@@ -811,37 +811,9 @@
         }
 
         function iceChartClickNotice(feature) {
-            mFeature = feature;
-            var iceType;
-            if (feature.data.hasOwnProperty("icetype")) {
-                if (feature.data.icetype != null) {
-                    var type = feature.data.icetype;
-                    if (type === "Close Drift Ice") {
-                        iceType = "Tett drivis";
-                    } else if (type === "Very Close Drift Ice") {
-                        iceType = "Veldig tett drivis";
-                    } else if (type === "Fast Ice") {
-                        iceType = "Fast is";
-                    } else if (type === "Open Drift Ice") {
-                        iceType = "Åpen drivis";
-                    } else if (type === "Very Open Drift Ice") {
-                        iceType = "Veldig åpen drivis";
-                    } else if (type === "Open Water") {
-                        iceType = "Åpent vann";
-                    } else {
-                        iceType = "Detaljer ikke tilgjengelig";
-                    }
-                } else {
-                    iceType = "Detaljer ikke tilgjengelig";
-                }
-                popup = new OpenLayers.Popup.FramedCloud("Redskapsinformasjon",
-                feature.geometry.getBounds().getCenterLonLat(),
-                    null, iceType + "<p></p>", null, true, onPopupClose);
-                popup.panMapIfOutOfView = true;
-                popup.autoSize = true;
-                feature.popup = popup;
-                map.addPopup(popup);
-            }
+            <!--mFeature = feature;-->
+
+            Android.updateIceConcentrationBottomSheet(feature.attributes.icetype);
         }
 
         function mapClick(e) {

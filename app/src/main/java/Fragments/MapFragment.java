@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -100,6 +101,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.IceConcentrationType;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.LayerAndVisibility;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Line;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
@@ -132,11 +134,11 @@ public class MapFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MapFragment";
 
     private AutoCompleteTextView searchEditText;
-    private Button clearHighlightingButton;
     private LinearLayout bottomSheetLayout;
     private LinearLayout bottomSheetToolLayout;
     private LinearLayout bottomSheetSeismicLayout;
     private LinearLayout bottomSheetSeaFloorInstallationLayout;
+    private LinearLayout bottomSheetIceConcentrationLayout;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView bottomSheetToolTypeTextView;
     private TextView bottomSheetToolSetupDateTextView;
@@ -162,10 +164,10 @@ public class MapFragment extends Fragment {
     private TextView bottomSheetSeaFloorInstallationOperatorTextView;
     private TextView bottomSheetSeaFloorInstallationPositionTextView;
     private TextView bottomSheetSeaFloorInstallationMarinogramTextView;
+    private TextView bottomSheetIceConcentrationTypeTextView;
+    private TextView bottomSheetIceConcentrationSatelliteImagesLinkTextView;
+    private TextView bottomSheetIceConcentrationMetIceInformationTextView;
 
-
-
-    FragmentActivity listener;
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
@@ -186,6 +188,7 @@ public class MapFragment extends Fragment {
     protected double cachedDistance;
     private Map<String, JSONObject> toolMap;
     private JSONObject toolsFeatureCollection;
+    private Map<String, List<Integer>> vesselToolIdsMap =  new HashMap<>();
     private boolean pageLoaded = false;
 
 
@@ -261,6 +264,7 @@ public class MapFragment extends Fragment {
         bottomSheetToolLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_tool_information_container);
         bottomSheetSeismicLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_seismic_information_container);
         bottomSheetSeaFloorInstallationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_sea_floor_installation_information_container);
+        bottomSheetIceConcentrationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_information_container);
 
 
         bottomSheetToolTypeTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
@@ -289,7 +293,9 @@ public class MapFragment extends Fragment {
         bottomSheetSeaFloorInstallationOperatorTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_operator_text_view);
         bottomSheetSeaFloorInstallationPositionTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_position_text_view);
         bottomSheetSeaFloorInstallationMarinogramTextView = (TextView) bottomSheetSeaFloorInstallationLayout.findViewById(R.id.map_fragment_bottom_sheet_sea_floor_installation_marinogram_text_view);
-
+        bottomSheetIceConcentrationTypeTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_ice_type_text_view);
+        bottomSheetIceConcentrationSatelliteImagesLinkTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_satellite_images_link_text_view);
+        bottomSheetIceConcentrationMetIceInformationTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view);
 
         // TODO: Disable search if user is not authenticated
 
@@ -301,6 +307,8 @@ public class MapFragment extends Fragment {
                 switch(i) {
                     case EditorInfo.IME_ACTION_SEARCH:
                         highlightToolsInMap(textView.getText().toString());
+                        searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
+                        searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
                         InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
                         break;
@@ -315,16 +323,34 @@ public class MapFragment extends Fragment {
         searchEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
                 final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
 
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (searchEditText.getRight() - searchEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        // your action here
+                        if(getString(R.string.map_search_view_tag_search).equals(searchEditText.getTag())) {
+                            searchEditText.setError(null);
 
-                        searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
+                            if(vesselToolIdsMap.get(searchEditText.getText().toString().toUpperCase()) != null) {
+                                searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
+                                searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
+
+                                highlightToolsInMap(searchEditText.getText().toString().toUpperCase());
+                                InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                            } else{
+                                searchEditText.setError(getString(R.string.error_no_match_for_vessel_search));
+                            }
+                        } else{
+                            searchEditText.setTag(getString(R.string.map_search_view_tag_search));
+                            searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search_black_24dp, 0);
+
+                            String nullString = null;
+                            browser.loadUrl("javascript:highlightTools(" + nullString + ")");
+                            searchEditText.setText("");
+                            InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+                        }
+
 
                         return true;
                     }
@@ -370,7 +396,6 @@ public class MapFragment extends Fragment {
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
         onClickListenerInterface = new UtilityOnClickListeners();
-        clearHighlightingButton = (Button) getView().findViewById(R.id.map_clear_highlighting_button);
         configureWebParametersAndLoadDefaultMapApplication();
     }
 
@@ -458,6 +483,7 @@ public class MapFragment extends Fragment {
                 public void run() {
                     bottomSheetToolLayout.setVisibility(View.VISIBLE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
 
                     try {
@@ -555,6 +581,7 @@ public class MapFragment extends Fragment {
                 public void run() {
                     bottomSheetToolLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -656,6 +683,7 @@ public class MapFragment extends Fragment {
                 public void run() {
                     bottomSheetToolLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -711,6 +739,40 @@ public class MapFragment extends Fragment {
                         e.printStackTrace();
                         return;
                     }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                }
+            });
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
+        public void updateIceConcentrationBottomSheet(final String iceType) {
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.VISIBLE);
+
+                    String iceConcentrationType = iceType != null ? iceType : getString(R.string.unknown_ice_concentration);
+
+                    bottomSheetIceConcentrationTypeTextView.setText(IceConcentrationType.createFromValue(iceConcentrationType).toString());
+
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        bottomSheetIceConcentrationSatelliteImagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(getString(R.string.satellite_images_of_sea_ice_url), getString(R.string.satellite_images_of_sea_ice)), Html.FROM_HTML_MODE_LEGACY));
+                        bottomSheetIceConcentrationMetIceInformationTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(getString(R.string.met_ice_information_url), getString(R.string.met_ice_information)), Html.FROM_HTML_MODE_LEGACY));
+                    } else {
+                        bottomSheetIceConcentrationSatelliteImagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(getString(R.string.satellite_images_of_sea_ice_url), getString(R.string.satellite_images_of_sea_ice))));
+                        bottomSheetIceConcentrationMetIceInformationTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(getString(R.string.met_ice_information_url), getString(R.string.met_ice_information))));
+                    }
+
+                    bottomSheetIceConcentrationSatelliteImagesLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                    bottomSheetIceConcentrationMetIceInformationTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
                     bottomSheetBehavior.setPeekHeight(200);
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -821,12 +883,10 @@ public class MapFragment extends Fragment {
             Date cachedUpdateDateTime;
             Date newestUpdateDateTime;
             SubscriptionEntry cachedEntry;
-//            final JSONObject toolsFeatureCollection;
             final JSONArray toolsArray;
             final ArrayAdapter<String> adapter;
             String downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
             final List<String> vesselNames;
-            final Map<String, List<Integer>> vesselToolIdsMap =  new HashMap<>();
             byte[] data = new byte[0];
             File file = null;
             String directoryFilePath;
@@ -986,6 +1046,9 @@ public class MapFragment extends Fragment {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             String vesselName = ((TextView) view).getText().toString();
                             highlightToolsInMap(vesselName);
+
+                            searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
+                            searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
 
                             InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), 0);
@@ -1529,15 +1592,6 @@ public class MapFragment extends Fragment {
 
     private void highlightToolsInMap(String vesselName) {
         browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
-        clearHighlightingButton.setVisibility(View.VISIBLE);
-
-        clearHighlightingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String nullString = null;
-                browser.loadUrl("javascript:highlightTools(" + nullString + ")");
-                clearHighlightingButton.setVisibility(View.GONE);
-            }
-        });
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
