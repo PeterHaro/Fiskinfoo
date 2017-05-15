@@ -517,6 +517,11 @@ public class MapFragment extends Fragment {
                         bottomSheetToolVesselTextView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                highlightToolsInMap(((TextView)view).getText().toString());
+                                searchEditText.setError(null);
+                                searchEditText.setText(((TextView)view).getText().toString());
+                                searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
+                                searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
                                 highlightToolsInMap(vesselName);
                             }
                         });
@@ -790,29 +795,31 @@ public class MapFragment extends Fragment {
             StringBuilder jsonString = new StringBuilder();
             BufferedReader bufferReader = null;
 
-            try {
-                bufferReader = new BufferedReader(new FileReader(file));
-                String line;
+            if(file.exists()) {
+                try {
+                    bufferReader = new BufferedReader(new FileReader(file));
+                    String line;
 
-                while ((line = bufferReader.readLine()) != null) {
-                    jsonString.append(line);
-                    jsonString.append('\n');
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (bufferReader != null) {
-                    try {
-                        bufferReader.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    while ((line = bufferReader.readLine()) != null) {
+                        jsonString.append(line);
+                        jsonString.append('\n');
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (bufferReader != null) {
+                        try {
+                            bufferReader.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+
+                System.out.println("Sent following layer: " + fileName);
             }
 
-            System.out.println("Sent following layer: " + fileName);
-
-            return jsonString.toString();
+            return file.exists() ? jsonString.toString() : null;
         }
 
         @SuppressWarnings("unused")
@@ -845,7 +852,7 @@ public class MapFragment extends Fragment {
             view.loadUrl("javascript:populateMap();");
             view.loadUrl("javascript:toggleLayers(" + json + ");");
 
-            if(toolsFeatureCollection != null) {
+            if(toolsFeatureCollection != null && ((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
                 view.loadUrl("javascript:getToolDataFromAndroid();");
             }
 
@@ -1539,7 +1546,82 @@ public class MapFragment extends Fragment {
                         .setPositiveButton(getString(R.string.ok), null)
                         .show();
             }
+
+            populateSearchFieldFromLocalFile();
         }
+    }
+
+    private void populateSearchFieldFromLocalFile() {
+        String directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+
+        List<String> vesselNames = new ArrayList<>();
+        final JSONArray toolsArray;
+        File file = new File(directoryFilePath + "Redskap" + ".JSON");
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferReader = null;
+
+        if(file.exists()) {
+            try {
+                bufferReader = new BufferedReader(new FileReader(file));
+                String line;
+
+                while ((line = bufferReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (bufferReader != null) {
+                    try {
+                        bufferReader.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            return;
+        }
+
+        try {
+            toolsFeatureCollection = new JSONObject(stringBuilder.toString());
+            toolsArray = toolsFeatureCollection.getJSONArray("features");
+
+            for (int i = 0; i < toolsArray.length(); i++) {
+                JSONObject feature = toolsArray.getJSONObject(i);
+                String vesselName = (feature.getJSONObject("properties").getString("vesselname") != null && !feature.getJSONObject("properties").getString("vesselname").equals("null")) ? feature.getJSONObject("properties").getString("vesselname") : getString(R.string.vessel_name_unknown);
+                List<Integer> toolsIdList = vesselToolIdsMap.get(vesselName) != null ? vesselToolIdsMap.get(vesselName) : new ArrayList<Integer>();
+
+                if (vesselName != null && !vesselNames.contains(vesselName)) {
+                    vesselNames.add(vesselName);
+                }
+
+                toolsIdList.add(i);
+                vesselToolIdsMap.put(vesselName, toolsIdList);
+                toolMap.put(feature.getJSONObject("properties").getString("toolid"), feature);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, vesselNames);
+        searchEditText.setVisibility(View.VISIBLE);
+        searchEditText.setAdapter(adapter);
+
+        searchEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String vesselName = ((TextView) view).getText().toString();
+                highlightToolsInMap(vesselName);
+
+                searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
+                searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
+
+                InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+            }
+        });
     }
 
     @Override

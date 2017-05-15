@@ -712,7 +712,6 @@
             return layers;
         }
 
-
         function clickNotice(feature) {
             if(popup != null) {
                 onPopupClose();
@@ -732,8 +731,6 @@
         }
 
         function toolClickNotice(feature) {
-            <!--mFeature = feature;-->
-
             if(!feature.hasOwnProperty("cluster")) {
                 Android.updateToolBottomSheet(feature.data.toolid);
             } else {
@@ -750,8 +747,6 @@
         }
 
         function seismicClickNotice(feature) {
-            <!--mFeature = feature;-->
-
             var wgs84 = feature.geometry.clone();
             var jsonObject = {
                 type: "Feature",
@@ -776,8 +771,6 @@
         }
 
         function npdFacilityClickNotice(feature) {
-            <!--mFeature = feature;-->
-
             if(!feature.hasOwnProperty("cluster")) {
                 var wgs84 = feature.geometry.clone();
                 var jsonObject = {
@@ -811,8 +804,6 @@
         }
 
         function iceChartClickNotice(feature) {
-            <!--mFeature = feature;-->
-
             Android.updateIceConcentrationBottomSheet(feature.attributes.icetype);
         }
 
