@@ -231,76 +231,60 @@
             var toolsStyleLayer = new OpenLayers.Style( toolStyle, {
                 context: {
                     strokeWidth: function(feature) {
-                        if(feature.hasOwnProperty( 'geometry')) {
-                            <!-- There is probably a better way of getting the tool type -->
-                            var type = feature.geometry.toString().split("(")[0];
+                            // Is type point or line
+                            var type = feature.geometry.hasOwnProperty("x") ? 0 : 1;
                             var retVal;
-
-                            if (feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null)) {
-                                return 4;
-                            }
-
-                            if(type.toLowerCase() === "LineString".toLowerCase()) {
+                            if(type === 1) {
                                 retVal = map.getZoom() > 7 ? 10 : 1;
-                            } else if(type.toLowerCase() === "Point".toLowerCase()) {
-                                if (highlightVesselName != null && feature.hasOwnProperty("cluster")) {
-                                    if (highlightVesselName === "Ukjent fartøy") {
-                                        for (i = 0; i < feature.cluster.length; i++) {
-                                            toolFeature = feature.cluster[i];
-                                            if (toolFeature.attributes.vesselname === null) {
-                                                return 3;
+                            } else if(type === 0) {
+                                if (highlightVesselName == null) {
+                                    retVal = 1;
+                                } else {
+                                    if(feature.hasOwnProperty("cluster")) {
+                                        if (highlightVesselName === "Ukjent fartøy") {
+                                            for (i = 0; i < feature.cluster.length; i++) {
+                                                if (feature.cluster[i].attributes.vesselname === null) {
+                                                    return 3;
+                                                }
                                             }
-                                        }
-                                    } else {
-                                        for (i = 0; i < feature.cluster.length; i++) {
-                                            toolFeature = feature.cluster[i];
-                                            if (toolFeature.attributes.vesselname === highlightVesselName) {
-                                                return 3;
+                                        } else {
+                                            for (i = 0; i < feature.cluster.length; i++) {
+                                                if (feature.cluster[i].attributes.vesselname === highlightVesselName) {
+                                                    return 3;
+                                                }
                                             }
                                         }
                                     }
 
-                                    return 1;
-                                } else {
                                     retVal = 1;
                                 }
                             } else {
                                 retVal = 4;
                             }
                             return retVal;
-                        } else {
-                            return 1;
-                        }
                     },
                     pointRadius: function(feature) {
-                            var retVal;
-                            if(feature.data.tooltypename != null || feature.hasOwnProperty("cluster")) {
-                                retVal = map.getZoom() > 6 ? 11 : 7;
-                            } else {
-                                retVal = 7;
-                            }
-                            return retVal;
+                        return (feature.data.hasOwnProperty("tooltypename") || feature.hasOwnProperty("cluster")) &&
+                            map.getZoom() > 6 ? 11 : 13;
                     },
                     strokeColor: function (feature) {
                         if (highlightVesselName != null) {
                             if (!feature.hasOwnProperty("cluster")) {
-                                if (feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null)) {
+                                if (!(feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null))) {
+                                    return "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+                                } else {
                                     return "#00FF00";
                                 }
                             } else {
-                                var toolFeature;
-
-                                if (highlightVesselName === "Ukjent fartøy") {
+                                if (highlightVesselName != "Ukjent fartøy") {
                                     for (i = 0; i < feature.cluster.length; i++) {
-                                        toolFeature = feature.cluster[i];
-                                        if (toolFeature.data.vesselname === null) {
+                                        if (feature.cluster[i].data.vesselname === highlightVesselName) {
                                             return "#00FF00";
                                         }
                                     }
                                 } else {
                                     for (i = 0; i < feature.cluster.length; i++) {
-                                        toolFeature = feature.cluster[i];
-                                        if (toolFeature.data.vesselname === highlightVesselName) {
+                                        if (feature.cluster[i].data.vesselname === null) {
                                             return "#00FF00";
                                         }
                                     }
@@ -308,14 +292,8 @@
 
                                 return "#00007A";
                             }
-                        }
-
-                        if (!feature.hasOwnProperty("cluster")) {
-                            var color = "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
-
-                            return color;
                         } else {
-                            return "#00007A";
+                            return feature.hasOwnProperty("cluster") ? "#00007A" : "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
                         }
                     },
                     fillColor: function (feature) {
@@ -635,12 +613,9 @@
                 shouldCluster: function(cluster, feature) {
                     var cc = cluster.geometry.getBounds().getCenterLonLat();
                     var fc = feature.geometry.getBounds().getCenterLonLat();
-                    var distance = (
-                        Math.sqrt(Math.pow((cc.lon - fc.lon), 2) + Math.pow((cc.lat - fc.lat), 2)) /
-                        this.resolution
-                    );
 
-                    return ((map.getZoom() > 7 ? false : distance <= 60) && cluster.cluster[0].data.tooltypecode == feature.data.tooltypecode);
+                    return (cluster.cluster[0].data.tooltypecode == feature.data.tooltypecode &&
+                        (Math.sqrt(Math.pow((cc.lon - fc.lon), 2) + Math.pow((cc.lat - fc.lat), 2)) / this.resolution) <= (map.getZoom() > 7 ? 10 : 60));
                  },
 
                  CLASS_NAME: "OpenLayers.Strategy.RuleCluster"
