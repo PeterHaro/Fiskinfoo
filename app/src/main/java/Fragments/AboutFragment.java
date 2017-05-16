@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -16,6 +17,8 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
  * create an instance of this fragment.
  */
 public class AboutFragment extends Fragment {
+
+    WebView webView;
 
     public AboutFragment() {
         // Required empty public constructor
@@ -43,7 +46,13 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_about, container, false);
+
+        webView = (WebView) rootView.findViewById(R.id.about_fragment_web_view);
+        webView.loadUrl("file:///android_asset/about.html");
+        webView.getSettings().setDomStorageEnabled(true);
+
+        return rootView;
     }
 
     @Override
