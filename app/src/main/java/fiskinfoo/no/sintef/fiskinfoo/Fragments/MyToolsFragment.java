@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -92,9 +92,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolConfirmationRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLogRow;
 import retrofit.client.Response;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
 import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 

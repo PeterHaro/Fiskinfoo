@@ -1,4 +1,4 @@
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;

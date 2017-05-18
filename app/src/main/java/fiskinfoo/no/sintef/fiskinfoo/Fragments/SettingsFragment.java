@@ -1,53 +1,27 @@
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.LoginActivity;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.InfoSwitchRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SettingsRow;
-import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 
 /**

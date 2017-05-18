@@ -24,7 +24,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import Fragments.MyToolsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class TimePickerRow extends BaseTableRow {

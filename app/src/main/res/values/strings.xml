@@ -163,6 +163,7 @@ limitations under the License.
     <string name="map_search_view_tag_search">Søk</string>
     <string name="map_search_view_tag_clear">Fjern</string>
     <string name="error_no_match_for_vessel_search">Ingen treff</string>
+    <string name="primary_background_map">Grunnkart</string>
 
 
     <!-- Map fragment menu strings -->

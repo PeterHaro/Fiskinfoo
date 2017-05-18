@@ -48,12 +48,12 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import Fragments.EditToolFragment;
-import Fragments.MapFragment;
-import Fragments.MyPageFragment;
-import Fragments.MyToolsFragment;
-import Fragments.OfflineModeFragment;
-import Fragments.SettingsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.EditToolFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.MapFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyPageFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyToolsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.OfflineModeFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;

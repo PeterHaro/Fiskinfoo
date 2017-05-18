@@ -12,13 +12,15 @@
  * limitations under the License.
  */
 
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -272,17 +274,24 @@ public class SubscriptionDetailsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //TODO: Need to update the toolbar as well.
-                    List<String> layersList = new ArrayList<>();
+                    List<String> layersList = user.getActiveLayers();
                     String layerName = propertyDescription.Name;
 
-                    layersList.add("Grunnkart");
-                    layersList.add(layerName);
-
+                    if(layersList != null && !layersList.contains(propertyDescription.Name)) {
+                        layersList.add(layerName);
+                    }
+                    
                     user.setActiveLayers(layersList);
                     user.writeToSharedPref(getActivity());
 
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    MapFragment fragment = MapFragment.newInstance();
 
-//                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, new FiskInfoUtility().createFragment(MapFragment.FRAGMENT_TAG, user, FRAGMENT_TAG), MapFragment.FRAGMENT_TAG).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.main_activity_fragment_container, fragment)
+                            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                            .addToBackStack(getString(R.string.map_fragment_title))
+                            .commit();
                 }
             });
 

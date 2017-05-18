@@ -1,6 +1,5 @@
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,7 +19,6 @@ import android.widget.ScrollView;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;

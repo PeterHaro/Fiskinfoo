@@ -1,4 +1,4 @@
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -855,7 +855,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
      * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * >Communicating with Other fiskinfoo.no.sintef.fiskinfoo.Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
         void updateTool(ToolEntry tool);

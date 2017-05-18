@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import Fragments.MyToolsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyToolsFragment;
 
 public class DatePickerRow extends BaseTableRow {
     private TextView header;

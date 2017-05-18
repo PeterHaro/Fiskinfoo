@@ -1,4 +1,4 @@
-package Fragments;
+package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
