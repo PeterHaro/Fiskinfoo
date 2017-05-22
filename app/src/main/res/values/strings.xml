@@ -46,6 +46,7 @@ limitations under the License.
     <string name="off">Av</string>
     <string name="error_field_required">Dette feltet er påkrevd</string>
     <string name="error_field_required_short">Påkrevd</string>
+    <string name="error_lost_tool_must_be_marked_removed">Tapt redskap må merkes som tatt opp</string>
 
     <!-- Placeholder strings -->
     <string name="placeholder_string">Placeholder</string>
@@ -385,6 +386,7 @@ limitations under the License.
     <string name="edit_tool">Redskapsredigering</string>
     <string name="error_invalid_latitude">Ugyldig breddegrad</string>
     <string name="error_invalid_longitude">Ugyldig lengdegrad</string>
+    <string name="error_invalid_format">Ugyldig format</string>
     <string name="tool_report_file_name">Redskapsrapport</string>
     <string name="format_geojson">geojson</string>
     <string name="comment_field_header">Kommentar</string>
@@ -423,7 +425,7 @@ limitations under the License.
     <string name="send_tool_report_not_authorized_error_message">For å rapportere inn redskaper gjennom Fiskinfo må brukeren din ha tilgang til bruksdata. Du kan søke om tilgang til bruksdata ved å følge lenken under.\nhttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
     <string name="send_tool_report_not_authorized_error_title">Redskapsrapportering</string>
     <string name="removed_tools_information_text">Følgende redskaper har blitt utrapportert og vil nå bli arkivert.</string>
-    <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
+    <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen, eller at redskapet ble utrapportert før appen fikk registrert redskapet som innrapportert. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
     <string name="reported_tools_removed_title">Utrapporterte redskaper</string>
     <string name="tool_fragement_explanation_title">Mine redskaper</string>
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>

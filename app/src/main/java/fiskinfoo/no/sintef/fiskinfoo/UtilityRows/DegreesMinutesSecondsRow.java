@@ -232,22 +232,22 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
             int maxSecond = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
 
             if(minDegree > latitudeDegrees || maxDegree < latitudeDegrees) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             } else if(minMinute > latitudeMinutes || maxMinute < latitudeMinutes) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             } else if(minSecond > latitudeSeconds || maxSecond < latitudeSeconds) {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             } else if(minDegree > longitudeDegrees || maxDegree < longitudeDegrees) {
-                longitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                longitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             } else if(minMinute > longitudeMinutes || maxMinute < longitudeMinutes) {
-                longitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                longitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             } else if(minSecond > longitudeSeconds || maxSecond < longitudeSeconds) {
-                longitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+                longitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_format));
                 return null;
             }
 

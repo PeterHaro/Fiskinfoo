@@ -53,11 +53,14 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="3"
                     android:selectAllOnFocus="true"
                     android:gravity="end"
-                    android:nextFocusForward="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:nextFocusDown="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:nextFocusLeft="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:nextFocusRight="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:nextFocusUp="@+id/utility_dms_row_latitude_minutes_edit_text"
                     />
 
                 <TextView
@@ -76,11 +79,14 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="2"
                     android:selectAllOnFocus="true"
                     android:gravity="end"
-                    android:nextFocusForward="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:nextFocusDown="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:nextFocusLeft="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:nextFocusRight="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:nextFocusUp="@+id/utility_dms_row_latitude_seconds_edit_text"
                     />
 
                 <TextView
@@ -99,11 +105,14 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="2"
                     android:selectAllOnFocus="true"
                     android:gravity="end"
-                    android:nextFocusForward="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:nextFocusDown="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:nextFocusLeft="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:nextFocusRight="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:nextFocusUp="@+id/utility_dms_row_longitude_degrees_edit_text"
                     />
 
                 <TextView
@@ -136,11 +145,14 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="3"
                     android:selectAllOnFocus="true"
                     android:gravity="end"
-                    android:nextFocusForward="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:nextFocusDown="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:nextFocusLeft="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:nextFocusRight="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:nextFocusUp="@+id/utility_dms_row_longitude_minutes_edit_text"
                     />
 
                 <TextView
@@ -159,11 +171,14 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="2"
                     android:selectAllOnFocus="true"
                     android:gravity="end"
-                    android:nextFocusForward="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:nextFocusDown="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:nextFocusLeft="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:nextFocusRight="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:nextFocusUp="@+id/utility_dms_row_longitude_seconds_edit_text"
                     />
 
                 <TextView
@@ -182,7 +197,7 @@ limitations under the License.
                     android:layout_weight="1.0"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberSigned"
                     android:maxLength="2"
                     android:selectAllOnFocus="true"
                     android:gravity="end"

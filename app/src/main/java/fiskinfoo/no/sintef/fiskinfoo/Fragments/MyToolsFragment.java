@@ -300,11 +300,13 @@ public class MyToolsFragment extends Fragment {
 
             for(final ArrayList<ToolEntry> dateEntry : tools) {
                 for (final ToolEntry toolEntry : dateEntry) {
-                    if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                    if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED ||
+                            toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
                         continue;
                     } else if(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED) {
                         synchedTools.add(toolEntry);
-                    } else if(!(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED)) {
+                    } else if(!(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED) ||
+                            toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED) {
                         localTools.add(toolEntry);
                     } else {
                         unconfirmedRemovedTools.add(toolEntry);
@@ -630,11 +632,13 @@ public class MyToolsFragment extends Fragment {
             for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
                 for(final ToolEntry toolEntry : dateEntry.getValue()) {
                     if (toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED ||
-                            toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED) {
+                            toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED ||
+                            toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
                         continue;
                     }
 
-                    toolEntry.setToolStatus(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED);
+                    toolEntry.setToolStatus(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED :
+                            ((toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED) ? ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED));
                     JSONObject gjsonTool = toolEntry.toGeoJson(mGpsLocationTracker);
                     featureList.put(gjsonTool);
                 }
@@ -862,7 +866,7 @@ public class MyToolsFragment extends Fragment {
                 for(ToolEntry toolEntry : unconfirmedRemovedTools) {
                     ToolConfirmationRow confirmationRow = new ToolConfirmationRow(getActivity(), toolEntry);
                     linearLayoutToolContainer.addView(confirmationRow.getView());
-                    toolEntry.setToolStatus(ToolEntryStatus.STATUS_REMOVED);
+                    toolEntry.setToolStatus(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED ? ToolEntryStatus.STATUS_REMOVED : ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED);
                 }
 
                 archiveToolsButton.setOnClickListener(new View.OnClickListener() {

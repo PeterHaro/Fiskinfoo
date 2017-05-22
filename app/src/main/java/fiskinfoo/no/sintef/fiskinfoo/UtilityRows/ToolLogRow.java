@@ -88,18 +88,21 @@ public class ToolLogRow extends BaseTableRow {
                     switch(tool.getToolStatus()) {
                         case STATUS_REMOVED_UNCONFIRMED:
                         case STATUS_SENT_UNCONFIRMED:
+                        case STATUS_TOOL_LOST_UNCONFIRMED:
                             errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
                             break;
                         case STATUS_UNREPORTED:
-                        case STATUS_UNSENT:
+                        case STATUS_TOOL_LOST_UNREPORTED:
                             errorMessageId = R.string.notification_tool_not_reported;
                             break;
+                        case STATUS_UNSENT:
+                            errorMessageId = R.string.notification_tool_unreported_changes;
                         default:
                             break;
                     }
 
                     if(errorMessageId != -1) {
-                        new Toast(v.getContext()).makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
+                        Toast.makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
                     }
                 }
             });

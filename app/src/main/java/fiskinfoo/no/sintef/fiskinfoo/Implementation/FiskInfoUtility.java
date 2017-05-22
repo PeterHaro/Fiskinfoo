@@ -170,7 +170,7 @@ public class FiskInfoUtility {
      *            the address to check
      * @return true if address is a valid E-mail address, false otherwise.
      */
-    public boolean isEmailValid(String email) {
+    public static boolean isEmailValid(String email) {
         String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
@@ -648,15 +648,15 @@ public class FiskInfoUtility {
             return myView.getLeft() + getRelativeLeft((View) myView.getParent());
     }
 
-    public boolean validateName(String name) {
+    public static boolean validateName(String name) {
         return name != null && name.length() >= 2;// TODO: Add regex matching
     }
 
-    public boolean validatePhoneNumber(String phoneNumber) {
+    public static boolean validatePhoneNumber(String phoneNumber) {
         return phoneNumber != null && phoneNumber.length() >= 8; //TODO: Add regex matching
     }
 
-    public boolean validateIRCS(String ircs) {
+    public static boolean validateIRCS(String ircs) {
         boolean success = false;
 
         if(ircs != null && (ircs.length() >= 4))
@@ -670,7 +670,7 @@ public class FiskInfoUtility {
     /*
      *  A valid MMSI is a 9 digit code.
      */
-    public boolean validateMMSI(String mmsi) {
+    public static boolean validateMMSI(String mmsi) {
         boolean success = false;
 
         if(mmsi != null && (mmsi.length() == 9 &&
@@ -683,7 +683,7 @@ public class FiskInfoUtility {
         return success;
     }
 
-    public boolean validateIMO(String imo) {
+    public static boolean validateIMO(String imo) {
         boolean success = false;
 
         if(imo != null && ((imo.length() == 7 &&
@@ -706,7 +706,7 @@ public class FiskInfoUtility {
         return success;
     }
 
-    public boolean validateRegistrationNumber(String regnum) {
+    public static boolean validateRegistrationNumber(String regnum) {
         // TODO: Relax validation, invalidates correct values.
         return regnum != null && regnum.length() >= 3;
 //        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
