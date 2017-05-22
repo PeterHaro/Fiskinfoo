@@ -65,8 +65,6 @@ import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_
  * create an instance of this fragment.
  */
 public class EditToolFragment extends DialogFragment implements LocationProviderInterface {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TOOL_PARAM = "tool";
 
     private OnFragmentInteractionListener mListener;
@@ -96,6 +94,13 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private CheckBoxRow toolLostRow;
     private SpinnerRow toolLostCauseRow;
     private SpinnerRow toolLostConditionsRow;
+
+    private EditTextRow toolLostCrabPotsLostRow;
+    private EditTextRow toolLostLineLengthLostRow;
+    private EditTextRow toolLostLineHooksLostRow;
+    private EditTextRow toolLostNetsLengthLostRow;
+    private SpinnerRow toolLostNetsTypeRow;
+
 
     public EditToolFragment() {
         // Required empty public constructor
@@ -173,6 +178,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolLostRow = new CheckBoxRow(getContext(), getString(R.string.tool_lost_row_text), true);
         toolLostCauseRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_cause_row_text), getResources().getStringArray(R.array.tool_lost_causes));
         toolLostConditionsRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_conditions_row_text), getResources().getStringArray(R.array.tool_lost_conditions));
+        toolLostCauseRow.add(getString(R.string.not_selected), 0);
+        toolLostConditionsRow.add(getString(R.string.not_selected), 0);
 
         toolLostRow.setVisibility(true);
         toolLostCauseRow.setVisibility(false);
@@ -182,13 +189,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked) {
-                    toolLostCauseRow.setVisibility(true);
-                    toolLostConditionsRow.setVisibility(true);
-                } else {
-                    toolLostCauseRow.setVisibility(false);
-                    toolLostConditionsRow.setVisibility(false);
-                }
+                toggleToolLostRows(checked);
             }
         });
 
@@ -245,6 +246,20 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             }
 
             fieldsContainer.addView(deleteRow.getView());
+        }
+    }
+
+    private void toggleToolLostRows(boolean checked) {
+        if(checked) {
+//            switch(toolRow.getCurrentSpinnerItem()) {
+//                case R.string.
+//            }
+
+            toolLostCauseRow.setVisibility(true);
+            toolLostConditionsRow.setVisibility(true);
+        } else {
+            toolLostCauseRow.setVisibility(false);
+            toolLostConditionsRow.setVisibility(false);
         }
     }
 
@@ -340,6 +355,22 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         validated = coordinates != null;
         if(!validated) {
+            return;
+        }
+
+        validated = !toolLost || toolLostCauseRow.getCurrentSpinnerIndex() > 0;
+        toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
+        if(!validated) {
+            highlightInvalidField(toolLostCauseRow);
+
+            return;
+        }
+
+        validated = !toolLost || toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
+        toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
+        if(!validated) {
+            highlightInvalidField(toolLostConditionsRow);
+
             return;
         }
 
@@ -439,8 +470,11 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolEntry.setIMO(vesselImoNumber);
         toolEntry.setComment(commentString);
         toolEntry.setToolLost(toolLost);
-        toolEntry.setToolLostReason(toolLostReason);
-        toolEntry.setToolLostWeather(toolLostWeather);
+
+        if(toolLost) {
+            toolEntry.setToolLostReason(toolLostReason);
+            toolEntry.setToolLostWeather(toolLostWeather);
+        }
 
         mListener.updateTool(toolEntry);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -481,6 +515,22 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         validated = coordinates != null;
         if(!validated) {
+            return;
+        }
+
+        validated = !toolLost || toolLostCauseRow.getCurrentSpinnerIndex() > 0;
+        toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
+        if(!validated) {
+            highlightInvalidField(toolLostCauseRow);
+
+            return;
+        }
+
+        validated = !toolLost || toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
+        toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
+        if(!validated) {
+            highlightInvalidField(toolLostConditionsRow);
+
             return;
         }
 
@@ -593,7 +643,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                 (!contactPersonName.equals(tool.getContactPersonName())) ||
                 (!contactPersonPhone.equals(tool.getContactPersonPhone())) ||
                 (!contactPersonEmail.equals(tool.getContactPersonEmail())) ||
-                (!commentString.equals(tool.getComment())))
+                (!commentString.equals(tool.getComment())) ||
+                (toolLost != tool.isToolLost()))
         {
             edited = true;
         } else {
@@ -649,8 +700,11 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             tool.setContactPersonPhone(contactPersonPhone);
             tool.setContactPersonEmail(contactPersonEmail);
             tool.setToolLost(toolLost);
-            tool.setToolLostReason(toolLostReason);
-            tool.setToolLostWeather(toolLostWeather);
+
+            if(toolLost) {
+                tool.setToolLostReason(toolLostReason);
+                tool.setToolLostWeather(toolLostWeather);
+            }
 
             userInterface.getUser().writeToSharedPref(getContext());
         } else {

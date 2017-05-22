@@ -44,6 +44,8 @@ limitations under the License.
     <string name="not_available">Ikke tilgjengelig</string>
     <string name="on">På</string>
     <string name="off">Av</string>
+    <string name="error_field_required">Dette feltet er påkrevd</string>
+    <string name="error_field_required_short">Påkrevd</string>
 
     <!-- Placeholder strings -->
     <string name="placeholder_string">Placeholder</string>
@@ -253,7 +255,6 @@ limitations under the License.
     <string name="error_incorrect_password">Feil passord</string>
     <string name="error_account_creation_failed">Oppretting av ny bruker feilet</string>
     <string name="error_password_reset_failed">Gjenoppretting av passordet feilet</string>
-    <string name="error_field_required">Dette feltet er påkrevd</string>
     <string name="action_forgot_password">Glemt passord</string>
     <string name="action_sign_up">Registrer bruker</string>
     <string name="title_activity_my_page">MyPageActivity</string>
@@ -435,6 +436,8 @@ limitations under the License.
     <string name="tool_lost_row_text">Tap av redskap</string>
     <string name="tool_lost_cause_row_text">Tapsårsak</string>
     <string name="tool_lost_conditions_row_text">Værforhold</string>
+    <string name="not_selected">Ikke valgt</string>
+    <string name="error_no_option_selected">Ikke valgt</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

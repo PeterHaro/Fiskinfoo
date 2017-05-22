@@ -280,7 +280,7 @@ public class SubscriptionDetailsFragment extends Fragment {
                     if(layersList != null && !layersList.contains(propertyDescription.Name)) {
                         layersList.add(layerName);
                     }
-                    
+
                     user.setActiveLayers(layersList);
                     user.writeToSharedPref(getActivity());
 
