@@ -255,6 +255,15 @@ limitations under the License.
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>
     <dimen name="table_row_padding_top">7dp</dimen>
+    <dimen name="utility_row_help_button_height">20dp</dimen>
+    <dimen name="utility_row_help_button_width">20dp</dimen>
+    <dimen name="utility_coordinates_row_add_button_right_margin">20dp</dimen>
+    <dimen name="utility_row_header_margin_left">5dp</dimen>
+    <dimen name="utility_row_margin_top">5dp</dimen>
+    <dimen name="utility_row_margin_left_15">15dp</dimen>
+    <dimen name="tool_log_notification_view_width">30dp</dimen>
+    <dimen name="tool_log_notification_view_height">30dp</dimen>
+    <dimen name="utility_tool_map_preview_web_view_height">200dp</dimen>
 
     <!-- Offline mode fragment -->
     <dimen name="offline_mode_fragment_switch_padding_vertical">10dp</dimen>

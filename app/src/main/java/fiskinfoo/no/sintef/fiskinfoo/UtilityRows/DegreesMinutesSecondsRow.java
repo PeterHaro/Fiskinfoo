@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -90,12 +91,12 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
         double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
-        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-        latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
-        longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-        longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
-        longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+        latitudeDegreesEditText.setText(String.valueOf((int) latitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf((int) latitudeDMS[1]));
+        latitudeSecondsEditText.setText(String.valueOf((int) latitudeDMS[2]));
+        longitudeDegreesEditText.setText(String.valueOf((int) longitudeDMS[0]));
+        longitudeMinutesEditText.setText(String.valueOf((int) longitudeDMS[1]));
+        longitudeSecondsEditText.setText(String.valueOf((int) longitudeDMS[2]));
     }
 
     public String getLatitude() {
@@ -146,9 +147,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
     public void setLatitude(String latitude) {
         double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(latitude));
 
-        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-        latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
+        latitudeDegreesEditText.setText(String.valueOf((int) latitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf((int) latitudeDMS[1]));
+        latitudeSecondsEditText.setText(String.valueOf((int) latitudeDMS[2]));
     }
 
     public String getLongitude() {
@@ -199,9 +200,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
     public void setLongitude(String longitude) {
         double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(longitude));
 
-        latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-        latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
-        latitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+        latitudeDegreesEditText.setText(String.valueOf((int) longitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf((int) longitudeDMS[1]));
+        latitudeSecondsEditText.setText(String.valueOf((int) longitudeDMS[2]));
     }
 
     public Point getCoordinates() {
@@ -289,14 +290,23 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
                     double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
                     double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
-                    latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-                    latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-                    latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
-                    longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-                    longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
-                    longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+                    latitudeDegreesEditText.setText(String.valueOf((int) latitudeDMS[0]));
+                    latitudeMinutesEditText.setText(String.valueOf((int) latitudeDMS[1]));
+                    latitudeSecondsEditText.setText(String.valueOf((int) latitudeDMS[2]));
+                    longitudeDegreesEditText.setText(String.valueOf((int) longitudeDMS[0]));
+                    longitudeMinutesEditText.setText(String.valueOf((int) longitudeDMS[1]));
+                    longitudeSecondsEditText.setText(String.valueOf((int) longitudeDMS[2]));
                 }
             });
         }
+    }
+
+    public void setTextWatcher(TextWatcher watcher) {
+        latitudeDegreesEditText.addTextChangedListener(watcher);
+        latitudeMinutesEditText.addTextChangedListener(watcher);
+        latitudeSecondsEditText.addTextChangedListener(watcher);
+        longitudeDegreesEditText.addTextChangedListener(watcher);
+        longitudeMinutesEditText.addTextChangedListener(watcher);
+        longitudeSecondsEditText.addTextChangedListener(watcher);
     }
 }

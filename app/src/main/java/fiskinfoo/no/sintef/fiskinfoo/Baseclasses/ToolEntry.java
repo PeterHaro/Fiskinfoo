@@ -416,7 +416,7 @@ public class ToolEntry implements Parcelable {
             }
 
             geoJsonTool.put("id", this.id == null ? JSONObject.NULL : this.id);
-            geometry.put("coordinates", Toolcoordinates == null ? JSONObject.NULL : Toolcoordinates);
+            geometry.put("coordinates", Toolcoordinates.length() == 0 ? JSONObject.NULL : Toolcoordinates);
             geometry.put("type", this.geometry == null ? JSONObject.NULL : this.geometry.toString());
             geometry.put("crs", JSONObject.NULL);
             geometry.put("bbox", JSONObject.NULL);

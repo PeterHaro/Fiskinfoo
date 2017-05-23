@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -37,6 +37,7 @@ public class CoordinatesRow extends BaseTableRow {
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
     private LocationProviderInterface locationTracker;
+    private TextWatcher watcher;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
     public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
@@ -112,6 +113,11 @@ public class CoordinatesRow extends BaseTableRow {
         for(Point position : coordinates) {
             DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
             row.setCoordinates(position);
+
+            if(watcher != null) {
+                row.setTextWatcher(watcher);
+            }
+
             coordinateRows.add(row);
             latLonViewContainer.addView(row.getView());
         }
@@ -120,6 +126,15 @@ public class CoordinatesRow extends BaseTableRow {
     public void setPositionButtonOnClickListener(View.OnClickListener onClickListener) {
         for(DegreesMinutesSecondsRow row : coordinateRows) {
             row.SetPositionButtonOnClickListener(onClickListener);
+        }
+    }
+
+    public void setTextWatcher(TextWatcher watcher) {
+        this.watcher = watcher;
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setTextWatcher(this.watcher);
+            break;
         }
     }
 }

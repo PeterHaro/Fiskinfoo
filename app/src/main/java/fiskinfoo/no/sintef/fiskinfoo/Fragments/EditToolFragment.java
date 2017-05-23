@@ -3,24 +3,18 @@ package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.method.LinkMovementMethod;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.GeolocationPermissions;
-import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -38,7 +31,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -56,14 +48,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.IceConcentrationType;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GeometryType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
@@ -121,6 +111,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private CheckBoxRow toolLostRow;
     private SpinnerRow toolLostCauseRow;
     private SpinnerRow toolLostConditionsRow;
+    private WebView toolMapPreviewWebView;
 
     private EditTextRow toolLostCrabPotsLostRow;
     private EditTextRow toolLostLineLengthLostRow;
@@ -168,11 +159,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_edit_tool, container, false);
 
         fieldsContainer = (LinearLayout) rootView.findViewById(R.id.dialog_fragment_edit_tool_linear_layout);
-
         generateFields();
 
         if(tool != null) {
@@ -182,6 +171,79 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         }
         
         return rootView;
+    }
+
+    private class barentswatchFiskInfoWebClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        public void onPageFinished(WebView view, String url) {
+            view.loadUrl("javascript:populateMap();");
+
+            if(tool != null) {
+                view.loadUrl("javascript:highlightTool(" + tool.toGeoJson(locationTracker) + ");");
+            }
+        }
+    }
+
+    public class JavaScriptInterface {
+        Context mContext;
+
+        JavaScriptInterface(Context context) {
+            mContext = context;
+        }
+
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public String getToken() {
+            return userInterface.getUser().getToken();
+        }
+
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public String getGeoJSONFile(String fileName) {
+            String directoryFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
+
+            File file = new File(directoryFilePath + fileName + ".JSON");
+            StringBuilder jsonString = new StringBuilder();
+            BufferedReader bufferReader = null;
+
+            if(file.exists()) {
+                try {
+                    bufferReader = new BufferedReader(new FileReader(file));
+                    String line;
+
+                    while ((line = bufferReader.readLine()) != null) {
+                        jsonString.append(line);
+                        jsonString.append('\n');
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (bufferReader != null) {
+                        try {
+                            bufferReader.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                System.out.println("Sent following layer: " + fileName);
+            }
+
+            return file.exists() ? jsonString.toString() : null;
+        }
+
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public String getToolFeatureCollection() {
+//            return toolsFeatureCollection.toString();
+            return null;
+        }
     }
 
     private void generateFields() {
@@ -211,6 +273,70 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolLostRow.setVisibility(true);
         toolLostCauseRow.setVisibility(false);
         toolLostConditionsRow.setVisibility(false);
+
+        WebView view = new WebView(getContext());
+        toolMapPreviewWebView = (WebView) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, view, false);
+
+        toolMapPreviewWebView.loadUrl("file:///android_asset/tool_map_preview.html");
+        toolMapPreviewWebView.getSettings().setJavaScriptEnabled(true);
+        toolMapPreviewWebView.getSettings().setDomStorageEnabled(true);
+        toolMapPreviewWebView.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
+        toolMapPreviewWebView.setWebViewClient(new barentswatchFiskInfoWebClient());
+        toolMapPreviewWebView.setWebChromeClient(new WebChromeClient() {
+
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                Log.d("geolocation permission", "permission >>>" + origin);
+                callback.invoke(origin, true, false);
+            }
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                return super.onJsAlert(view, url, message, result);
+            }
+
+        });
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(coordinatesRow.getCoordinates() != null) {
+                    JSONObject jsonTool = tool.toGeoJson(locationTracker);
+                    JSONArray toolCoordinates = new JSONArray();
+
+                    try {
+                        if(coordinatesRow.getCoordinates().size() == 0) {
+                            toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
+                            toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
+                        } else {
+                            for(Point currentPosition : coordinatesRow.getCoordinates()) {
+                                JSONArray position = new JSONArray();
+                                position.put(currentPosition.getLongitude());
+                                position.put(currentPosition.getLatitude());
+
+                                toolCoordinates.put(position);
+                            }
+                        }
+
+                        jsonTool.getJSONObject("geometry").put("coordinates", toolCoordinates);
+                        toolMapPreviewWebView.loadUrl("javascript:highlightTool(" + jsonTool + ");");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+        coordinatesRow.setTextWatcher(textWatcher);
 
         toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
 
@@ -256,6 +382,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRemovedRow.setVisibility(false);
 
         fieldsContainer.addView(coordinatesRow.getView());
+        fieldsContainer.addView(toolMapPreviewWebView);
         fieldsContainer.addView(setupDateRow.getView());
         fieldsContainer.addView(setupTimeRow.getView());
         fieldsContainer.addView(toolRow.getView());
