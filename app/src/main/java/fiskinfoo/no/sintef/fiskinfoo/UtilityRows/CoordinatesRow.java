@@ -36,7 +36,6 @@ public class CoordinatesRow extends BaseTableRow {
     private Button removeCoordinateRowButton;
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
-    private LocationProviderInterface locationTracker;
     private TextWatcher watcher;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
@@ -66,6 +65,10 @@ public class CoordinatesRow extends BaseTableRow {
             @Override
             public void onClick(View v) {
                 DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
+
+                if(watcher != null) {
+                    row.setTextWatcher(watcher);
+                }
 
                 coordinateRows.add(row);
                 latLonViewContainer.addView(row.getView());

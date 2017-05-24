@@ -309,27 +309,72 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             @Override
             public void afterTextChanged(Editable editable) {
                 if(coordinatesRow.getCoordinates() != null) {
-                    JSONObject jsonTool = tool.toGeoJson(locationTracker);
-                    JSONArray toolCoordinates = new JSONArray();
+                    if(tool != null) {
+                        JSONObject jsonTool = tool.toGeoJson(locationTracker);
+                        JSONArray toolCoordinates = new JSONArray();
 
-                    try {
-                        if(coordinatesRow.getCoordinates().size() == 0) {
-                            toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
-                            toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
-                        } else {
-                            for(Point currentPosition : coordinatesRow.getCoordinates()) {
-                                JSONArray position = new JSONArray();
-                                position.put(currentPosition.getLongitude());
-                                position.put(currentPosition.getLatitude());
+                        try {
+                            if(coordinatesRow.getCoordinates().size() == 0) {
+                                toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
+                                toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
+                            } else {
+                                for(Point currentPosition : coordinatesRow.getCoordinates()) {
+                                    JSONArray position = new JSONArray();
+                                    position.put(currentPosition.getLongitude());
+                                    position.put(currentPosition.getLatitude());
 
-                                toolCoordinates.put(position);
+                                    toolCoordinates.put(position);
+                                }
                             }
-                        }
 
-                        jsonTool.getJSONObject("geometry").put("coordinates", toolCoordinates);
-                        toolMapPreviewWebView.loadUrl("javascript:highlightTool(" + jsonTool + ");");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                            jsonTool.getJSONObject("geometry").put("coordinates", toolCoordinates);
+                            toolMapPreviewWebView.loadUrl("javascript:highlightTool(" + jsonTool + ");");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        JSONObject geoJsonTool = new JSONObject();
+                        JSONArray toolCoordinates = new JSONArray();
+
+                        try {
+                            JSONObject geometry = new JSONObject();
+                            JSONObject properties = new JSONObject();
+
+                            if(coordinatesRow.getCoordinates().size() == 1) {
+                                toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
+                                toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
+                                geometry.put("type", "Point");
+                            } else {
+                                for(Point currentPosition : coordinatesRow.getCoordinates()) {
+                                    JSONArray position = new JSONArray();
+                                    position.put(currentPosition.getLongitude());
+                                    position.put(currentPosition.getLatitude());
+
+                                    toolCoordinates.put(position);
+                                }
+
+                                geometry.put("type", "LineString");
+                            }
+
+                            geometry.put("coordinates", toolCoordinates);
+                            geometry.put("crs", JSONObject.NULL);
+                            geometry.put("bbox", JSONObject.NULL);
+                            geoJsonTool.put("geometry", geometry);
+
+                            properties.put("ToolTypeCode", ToolType.createFromValue(toolRow.getCurrentSpinnerItem()).getToolCode());
+                            properties.put("ToolTypeName", ToolType.createFromValue(toolRow.getCurrentSpinnerItem()).toString());
+                            properties.put("ToolColor", "#" + Integer.toHexString(ToolType.createFromValue(toolRow.getCurrentSpinnerItem()).getHexColorValue()).toUpperCase());
+
+                            geoJsonTool.put("properties", properties);
+
+                            geoJsonTool.put("type", "Feature");
+                            geoJsonTool.put("crs", JSONObject.NULL);
+                            geoJsonTool.put("bbox", JSONObject.NULL);
+
+                            toolMapPreviewWebView.loadUrl("javascript:highlightTool(" + geoJsonTool + ");");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 }

@@ -47,4 +47,8 @@ public abstract class BaseTableRow {
     public void setVisibility(boolean visible) {
         getView().setVisibility(visible ? View.VISIBLE : View.GONE);
     }
+
+    protected Context getContext() {
+        return mTableRow.getContext();
+    }
 }

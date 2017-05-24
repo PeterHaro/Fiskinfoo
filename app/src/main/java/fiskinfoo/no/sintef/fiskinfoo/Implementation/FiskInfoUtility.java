@@ -459,8 +459,8 @@ public class FiskInfoUtility {
         return output;
     }
 
-    public static double[] decimalToDMSArray(double coord) {
-        double[] output = new double[3];
+    public static int[] decimalToDMSArray(double coord) {
+        int[] output = new int[3];
 
         double mod = coord % 1;
         int intPart = (int) coord;
