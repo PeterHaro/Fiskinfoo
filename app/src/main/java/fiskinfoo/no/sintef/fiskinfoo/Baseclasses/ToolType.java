@@ -18,7 +18,7 @@ public enum ToolType {
     LONG_LINE, NETS, CRAB_POTS, SEISMIC, SENSOR_CABLE, DANISH_PURSE_SEINE, MOORING_SYSTEM, UNKNOWN;
 
     public static String[] getValues() {
-        String[] retval = {"Line", "Garn", "Teine", "Sensorkabel", "Sensor / kabel", "Snurpenot", "Fortøyningssystem", "Ukjent redskap"};
+        String[] retval = {"Line", "Garn", "Teine", "Snurpenot", "Ukjent redskap"};
         return retval;
     }
 

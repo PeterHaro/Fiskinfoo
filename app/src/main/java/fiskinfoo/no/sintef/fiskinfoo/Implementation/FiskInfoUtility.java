@@ -706,10 +706,28 @@ public class FiskInfoUtility {
         return success;
     }
 
+    /**
+     * Matches the given string against the following pattern:
+     *      County: Either two alpha characters or one alpha character followed by a space
+     *      numbers: four numbers
+     *      Municipality: one or two alpha characters
+     * @param regnum
+     * @return
+     */
     public static boolean validateRegistrationNumber(String regnum) {
-        // TODO: Relax validation, invalidates correct values.
-        return regnum != null && regnum.length() >= 3;
-//        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+        return regnum != null && regnum.matches("^[a-zA-Z][a-zA-Z ]\\d{4}[a-zA-Z]{1,2}$");
+    }
+
+    public static boolean isValidCountyCode(String countyCode) {
+        return countyCode != null && countyCode.matches("^[a-zA-Z]{1,2}$");
+    }
+
+    public static boolean isValidVesselNumber(String vesselNumber) {
+        return vesselNumber != null && vesselNumber.matches("^\\d{1,4}$");
+    }
+
+    public static boolean isValidMunicipalityCode(String municipalityCode) {
+        return municipalityCode != null && municipalityCode.matches("^[a-zA-Z]{1,2}$");
     }
 
     /**

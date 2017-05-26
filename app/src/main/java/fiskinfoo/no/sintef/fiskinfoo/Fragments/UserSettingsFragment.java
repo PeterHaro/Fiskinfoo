@@ -25,6 +25,7 @@ import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.BaseTableRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.EditTextRow;
+import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.RegistrationNumberRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
 
 /**
@@ -50,7 +51,7 @@ public class UserSettingsFragment extends Fragment {
     private EditTextRow vesselIrcsNumberRow;
     private EditTextRow vesselMmsiNumberRow;
     private EditTextRow vesselImoNumberRow;
-    private EditTextRow vesselRegistrationNumberRow;
+    private RegistrationNumberRow vesselRegistrationNumberRow;
 
     public UserSettingsFragment() {
         // Required empty public constructor
@@ -105,7 +106,7 @@ public class UserSettingsFragment extends Fragment {
         vesselIrcsNumberRow = new EditTextRow(getContext(), getString(R.string.ircs_number), getString(R.string.ircs_number));
         vesselMmsiNumberRow = new EditTextRow(getContext(), getString(R.string.mmsi_number), getString(R.string.mmsi_number));
         vesselImoNumberRow = new EditTextRow(getContext(), getString(R.string.imo_number), getString(R.string.imo_number));
-        vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
+        vesselRegistrationNumberRow = new RegistrationNumberRow(getContext());
 
         contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -129,10 +130,6 @@ public class UserSettingsFragment extends Fragment {
         vesselImoNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_imo))});
         vesselImoNumberRow.setHelpText(getString(R.string.imo_help_description));
 
-        vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
-        vesselRegistrationNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps()});
-        vesselRegistrationNumberRow.setHelpText(getString(R.string.registration_number_help_description));
-
         fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
         fieldsContainer.addView(contactPersonEmailRow.getView());
@@ -155,7 +152,7 @@ public class UserSettingsFragment extends Fragment {
             vesselIrcsNumberRow.setText(userSettings.getIrcs());
             vesselMmsiNumberRow.setText(userSettings.getMmsi());
             vesselImoNumberRow.setText(userSettings.getImo());
-            vesselRegistrationNumberRow.setText(userSettings.getRegistrationNumber());
+            vesselRegistrationNumberRow.setRegistrationNumber(userSettings.getRegistrationNumber());
         }
     }
 
@@ -185,10 +182,9 @@ public class UserSettingsFragment extends Fragment {
     }
 
     private void validateFieldsAndUpdateUserSettings() {
-        FiskInfoUtility utility = new FiskInfoUtility();
         boolean validated;
 
-        validated = utility.validateName(contactPersonNameRow.getFieldText().trim()) || contactPersonNameRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.validateName(contactPersonNameRow.getFieldText().trim()) || contactPersonNameRow.getFieldText().trim().equals("");
         contactPersonNameRow.setError(validated ? null : getString(R.string.error_invalid_name));
         if(!validated) {
             highlightInvalidField(contactPersonNameRow);
@@ -196,14 +192,14 @@ public class UserSettingsFragment extends Fragment {
             return;
         }
 
-        validated = utility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim()) || contactPersonPhoneRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.validatePhoneNumber(contactPersonPhoneRow.getFieldText().trim()) || contactPersonPhoneRow.getFieldText().trim().equals("");
         contactPersonPhoneRow.setError(validated ? null : getString(R.string.error_invalid_phone_number));
         if(!validated) {
             highlightInvalidField(contactPersonPhoneRow);
 
             return;
         }
-        validated = utility.isEmailValid(contactPersonEmailRow.getFieldText().trim()) || contactPersonEmailRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.isEmailValid(contactPersonEmailRow.getFieldText().trim()) || contactPersonEmailRow.getFieldText().trim().equals("");
         contactPersonEmailRow.setError(validated ? null : getString(R.string.error_invalid_email));
         if(!validated) {
             highlightInvalidField(contactPersonEmailRow);
@@ -211,7 +207,7 @@ public class UserSettingsFragment extends Fragment {
             return;
         }
 
-        validated = utility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim()) || vesselIrcsNumberRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.validateIRCS(vesselIrcsNumberRow.getFieldText().trim()) || vesselIrcsNumberRow.getFieldText().trim().equals("");
         vesselIrcsNumberRow.setError(validated ? null : getString(R.string.error_invalid_ircs));
         if(!validated) {
             highlightInvalidField(vesselIrcsNumberRow);
@@ -219,7 +215,7 @@ public class UserSettingsFragment extends Fragment {
             return;
         }
 
-        validated = utility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim()) || vesselMmsiNumberRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.validateMMSI(vesselMmsiNumberRow.getFieldText().trim()) || vesselMmsiNumberRow.getFieldText().trim().equals("");
         vesselMmsiNumberRow.setError(validated ? null : getString(R.string.error_invalid_mmsi));
         if(!validated) {
             highlightInvalidField(vesselMmsiNumberRow);
@@ -227,10 +223,18 @@ public class UserSettingsFragment extends Fragment {
             return;
         }
 
-        validated = utility.validateIMO(vesselImoNumberRow.getFieldText().trim()) || vesselImoNumberRow.getFieldText().trim().equals("");
+        validated = FiskInfoUtility.validateIMO(vesselImoNumberRow.getFieldText().trim()) || vesselImoNumberRow.getFieldText().trim().equals("");
         vesselImoNumberRow.setError(validated ? null : getString(R.string.error_invalid_imo));
         if(!validated) {
             highlightInvalidField(vesselImoNumberRow);
+
+            return;
+        }
+
+        validated = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getRegistrationNumber()) ||
+                (vesselRegistrationNumberRow.getCountyText().trim().isEmpty() && vesselRegistrationNumberRow.getRegistrationNumber().trim().isEmpty() && vesselRegistrationNumberRow.getMunicipalityText().trim().isEmpty());
+        if(!validated) {
+            highlightInvalidField(vesselRegistrationNumberRow);
 
             return;
         }
@@ -241,7 +245,7 @@ public class UserSettingsFragment extends Fragment {
         userSettings.setIrcs(vesselIrcsNumberRow.getFieldText().trim());
         userSettings.setMmsi(vesselMmsiNumberRow.getFieldText().trim());
         userSettings.setImo(vesselImoNumberRow.getFieldText().trim());
-        userSettings.setRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim());
+        userSettings.setRegistrationNumber(vesselRegistrationNumberRow.getRegistrationNumber());
         userSettings.setContactPersonEmail(contactPersonEmailRow.getFieldText().toLowerCase().trim());
         userSettings.setContactPersonName(contactPersonNameRow.getFieldText().trim());
         userSettings.setContactPersonPhone(contactPersonPhoneRow.getFieldText().trim());

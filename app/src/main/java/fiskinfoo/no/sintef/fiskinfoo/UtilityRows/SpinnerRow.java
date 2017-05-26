@@ -76,7 +76,8 @@ public class SpinnerRow extends BaseTableRow {
     }
 
     public void setSelectedSpinnerItem (int index) {
-        spinner.setSelection(index);
+
+        spinner.setSelection(index < spinner.getAdapter().getCount() ? index : 0);
     }
 
     public void setSelectedSpinnerItem (String spinnerText) {
