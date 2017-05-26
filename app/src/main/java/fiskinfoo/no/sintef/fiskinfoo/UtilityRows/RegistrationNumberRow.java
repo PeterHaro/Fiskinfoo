@@ -81,7 +81,7 @@ public class RegistrationNumberRow extends BaseTableRow {
 
         countyEditText.setText(registrationNumber.substring(0, 2));
         vesselNumberEditText.setText(registrationNumber.substring(2, 6));
-        municipalityEditText.setText(registrationNumber.substring(6, 8));
+        municipalityEditText.setText(registrationNumber.substring(6, registrationNumber.length()));
     }
 
     public void setCountyError(String error) {
