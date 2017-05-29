@@ -446,6 +446,10 @@ limitations under the License.
     <string name="error_invalid_county_code">Ugyldig fylkeskode</string>
     <string name="error_invalid_vessel_number">Ugyldig fartøynr</string>
     <string name="error_invalid_municipality_code">Ugyldig kommunekode</string>
+    <string name="cardinal_direction_symbol_north">N</string>
+    <string name="cardinal_direction_symbol_south">S</string>
+    <string name="cardinal_direction_symbol_west">W</string>
+    <string name="cardinal_direction_symbol_east">E</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

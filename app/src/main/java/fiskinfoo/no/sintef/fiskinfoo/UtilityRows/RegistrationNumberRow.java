@@ -84,7 +84,7 @@ public class RegistrationNumberRow extends BaseTableRow {
         municipalityEditText.setText(registrationNumber.substring(6, registrationNumber.length()));
     }
 
-    public void setCountyError(String error) {
+    public void setCountyCodeError(String error) {
         countyEditText.setError(error);
 
         if(error != null) {
@@ -100,7 +100,7 @@ public class RegistrationNumberRow extends BaseTableRow {
         }
     }
 
-    public void setMunicipalityError(String error) {
+    public void setMunicipalityCodeError(String error) {
         municipalityEditText.setError(error);
 
         if(error != null) {

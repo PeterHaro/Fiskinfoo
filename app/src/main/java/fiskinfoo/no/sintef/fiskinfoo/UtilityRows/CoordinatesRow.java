@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ public class CoordinatesRow extends BaseTableRow {
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
     private TextWatcher watcher;
+    private CompoundButton.OnCheckedChangeListener cardinalDirectionSwitchOnCheckedChangedListener;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
 
     public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
@@ -68,6 +70,9 @@ public class CoordinatesRow extends BaseTableRow {
 
                 if(watcher != null) {
                     row.setTextWatcher(watcher);
+                }
+                if(cardinalDirectionSwitchOnCheckedChangedListener != null) {
+                    row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
                 }
 
                 coordinateRows.add(row);
@@ -120,6 +125,9 @@ public class CoordinatesRow extends BaseTableRow {
             if(watcher != null) {
                 row.setTextWatcher(watcher);
             }
+            if(cardinalDirectionSwitchOnCheckedChangedListener != null) {
+                row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
+            }
 
             coordinateRows.add(row);
             latLonViewContainer.addView(row.getView());
@@ -137,7 +145,14 @@ public class CoordinatesRow extends BaseTableRow {
 
         for(DegreesMinutesSecondsRow row : coordinateRows) {
             row.setTextWatcher(this.watcher);
-            break;
+        }
+    }
+
+    public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangedListener) {
+        this.cardinalDirectionSwitchOnCheckedChangedListener = onCheckedChangedListener;
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setCardinalDirectionSwitchOnCheckedChangedListener(this.cardinalDirectionSwitchOnCheckedChangedListener);
         }
     }
 }
