@@ -367,7 +367,7 @@ limitations under the License.
     <string name="ircs_help_description">Internasjonalt radiokallesignal (IRCS) har normalt en lengde på 6 tegn, hvor de to første er bokstaver, og de fire resterende tegnene er tall. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="mmsi_help_description">Maritime Mobile Service Identity (MMSI) koden er en tallkode på ni siffer. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="imo_help_description">International Maritime Organization (IMO) nummeret er en identifikasjonskode for skip og består av de tre bokstavene IMO etterfulgt av syv tall. Du trenger bare å skrive inn tallene i feltet under. Dette feltet kan ikke endres etter innrapportering.</string>
-    <string name="registration_number_help_description">Fartøyets registreringsnummer består av tre deler: fylkeskode, fartøynummer, og kommunekode. Fylke- og kommunekode består av en eller to bokstaver, mens fartøynummer er ett tall med opp til fire siffer.\nDette feltet kan ikke endres etter innrapportering.</string>
+    <string name="registration_number_help_description">Registreringsnummer skrives inn uten mellomrom, bindestrek, eller andre tegn. Registreringsnummeret skal bestå av tre deler: fylkeskode, fartøynummer, og kommunekode. Fylke- og kommunekode består av en eller to bokstaver, mens fartøynummer er ett tall med opp til fire siffer.\nDette feltet kan ikke endres etter innrapportering.</string>
     <string name="error_invalid_registration_number">Ugyldig registreringsnr.</string>
     <string name="add_tool">Legg til</string>
     <string name="tool_registration">Redskapsregistrering</string>
@@ -450,6 +450,7 @@ limitations under the License.
     <string name="cardinal_direction_symbol_south">S</string>
     <string name="cardinal_direction_symbol_west">W</string>
     <string name="cardinal_direction_symbol_east">E</string>
+    <string name="registration_number_allowed_characters">ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ0123456789</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

@@ -715,7 +715,7 @@ public class FiskInfoUtility {
      * @return
      */
     public static boolean validateRegistrationNumber(String regnum) {
-        return regnum != null && regnum.matches("^[a-zA-Z][a-zA-Z ]\\d{4}[a-zA-Z]{1,2}$");
+        return regnum != null && regnum.matches("^[a-zA-Z]{1,2}\\d{1,4}[a-zA-Z]{1,2}$");
     }
 
     public static boolean isValidCountyCode(String countyCode) {
@@ -728,6 +728,27 @@ public class FiskInfoUtility {
 
     public static boolean isValidMunicipalityCode(String municipalityCode) {
         return municipalityCode != null && municipalityCode.matches("^[a-zA-Z]{1,2}$");
+    }
+
+    public static String formatRegistrationNumber(String regnum) {
+        if(regnum == null || !validateRegistrationNumber(regnum)) {
+            return null;
+        }
+
+        StringBuilder registrationNumber = new StringBuilder();
+        String countyCode = regnum.substring(0, Character.isDigit(regnum.charAt(1)) ? 1 : 2);
+        String vesselNumber = regnum.substring(Character.isDigit(regnum.charAt(1)) ? 1 : 2, Character.isDigit(regnum.charAt(regnum.length() - 2)) ? regnum.length() - 1 : regnum.length() - 2);
+        String municipalityCode = regnum.substring(Character.isDigit(regnum.charAt(regnum.length() - 2)) ? regnum.length() - 1 : regnum.length() - 2, regnum.length());
+
+        while(vesselNumber.length() < 4) {
+            vesselNumber = "0" + vesselNumber;
+        }
+
+        registrationNumber.append(countyCode.length() == 2 ? countyCode : countyCode + " ");
+        registrationNumber.append(vesselNumber);
+        registrationNumber.append(municipalityCode);
+
+        return registrationNumber.toString();
     }
 
     /**

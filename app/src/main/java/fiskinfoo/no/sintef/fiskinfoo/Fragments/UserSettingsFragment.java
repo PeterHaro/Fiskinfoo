@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,7 +52,7 @@ public class UserSettingsFragment extends Fragment {
     private EditTextRow vesselIrcsNumberRow;
     private EditTextRow vesselMmsiNumberRow;
     private EditTextRow vesselImoNumberRow;
-    private RegistrationNumberRow vesselRegistrationNumberRow;
+    private EditTextRow vesselRegistrationNumberRow;
 
     public UserSettingsFragment() {
         // Required empty public constructor
@@ -106,7 +107,7 @@ public class UserSettingsFragment extends Fragment {
         vesselIrcsNumberRow = new EditTextRow(getContext(), getString(R.string.ircs_number), getString(R.string.ircs_number));
         vesselMmsiNumberRow = new EditTextRow(getContext(), getString(R.string.mmsi_number), getString(R.string.mmsi_number));
         vesselImoNumberRow = new EditTextRow(getContext(), getString(R.string.imo_number), getString(R.string.imo_number));
-        vesselRegistrationNumberRow = new RegistrationNumberRow(getContext());
+        vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
 
         contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -130,6 +131,25 @@ public class UserSettingsFragment extends Fragment {
         vesselImoNumberRow.setInputFilters(new InputFilter[] { new InputFilter.LengthFilter(getContext().getResources().getInteger(R.integer.input_length_imo))});
         vesselImoNumberRow.setHelpText(getString(R.string.imo_help_description));
 
+        vesselRegistrationNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
+        vesselRegistrationNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getResources().getInteger(R.integer.input_length_registration_number)), new InputFilter.AllCaps(), new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+                if (i1 > i) {
+
+                    char[] acceptedChars = getString(R.string.registration_number_allowed_characters).toCharArray();
+
+                    for (int index = i; index < i1; index++) {
+                        if (!new String(acceptedChars).contains(String.valueOf(charSequence.charAt(index)))) {
+                            return "";
+                        }
+                    }
+                }
+                return null;
+            }
+        }});
+        vesselRegistrationNumberRow.setHelpText(getString(R.string.registration_number_help_description));
+
         fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
         fieldsContainer.addView(contactPersonEmailRow.getView());
@@ -152,7 +172,7 @@ public class UserSettingsFragment extends Fragment {
             vesselIrcsNumberRow.setText(userSettings.getIrcs());
             vesselMmsiNumberRow.setText(userSettings.getMmsi());
             vesselImoNumberRow.setText(userSettings.getImo());
-            vesselRegistrationNumberRow.setRegistrationNumber(userSettings.getRegistrationNumber());
+            vesselRegistrationNumberRow.setText(userSettings.getRegistrationNumber().replace(" ", ""));
         }
     }
 
@@ -231,13 +251,15 @@ public class UserSettingsFragment extends Fragment {
             return;
         }
 
-        validated = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getRegistrationNumber()) ||
-                (vesselRegistrationNumberRow.getCountyText().trim().isEmpty() && vesselRegistrationNumberRow.getRegistrationNumber().trim().isEmpty() && vesselRegistrationNumberRow.getMunicipalityText().trim().isEmpty());
+        validated = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) || vesselRegistrationNumberRow.getFieldText().trim().isEmpty();
+        vesselRegistrationNumberRow.setError(validated ? null : getString(R.string.error_invalid_registration_number));
         if(!validated) {
             highlightInvalidField(vesselRegistrationNumberRow);
 
             return;
         }
+
+        String registrationNumber = FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText());
 
         userSettings.setToolType(ToolType.createFromValue(toolRow.getCurrentSpinnerItem()));
         userSettings.setVesselName(vesselNameRow.getFieldText().trim());
@@ -245,7 +267,7 @@ public class UserSettingsFragment extends Fragment {
         userSettings.setIrcs(vesselIrcsNumberRow.getFieldText().trim());
         userSettings.setMmsi(vesselMmsiNumberRow.getFieldText().trim());
         userSettings.setImo(vesselImoNumberRow.getFieldText().trim());
-        userSettings.setRegistrationNumber(vesselRegistrationNumberRow.getRegistrationNumber());
+        userSettings.setRegistrationNumber(registrationNumber);
         userSettings.setContactPersonEmail(contactPersonEmailRow.getFieldText().toLowerCase().trim());
         userSettings.setContactPersonName(contactPersonNameRow.getFieldText().trim());
         userSettings.setContactPersonPhone(contactPersonPhoneRow.getFieldText().trim());
