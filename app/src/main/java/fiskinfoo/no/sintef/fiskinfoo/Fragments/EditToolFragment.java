@@ -392,22 +392,25 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     }
 
     private void updateMapPreview() {
-        if(coordinatesRow.getCoordinates() != null) {
+        List<Point> coordinates = coordinatesRow.getCoordinates();
+        if(coordinates != null) {
             if(tool != null) {
                 JSONObject jsonTool = tool.toGeoJson(locationTracker);
                 JSONArray toolCoordinates = new JSONArray();
 
                 try {
-                    if(coordinatesRow.getCoordinates().size() == 1) {
-                        toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
-                        toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
+                    if(coordinates.size() == 1) {
+                        toolCoordinates.put(coordinates.get(0).getLongitude());
+                        toolCoordinates.put(coordinates.get(0).getLatitude());
+                        jsonTool.getJSONObject("geometry").put("type", "Point");
                     } else {
-                        for(Point currentPosition : coordinatesRow.getCoordinates()) {
+                        for(Point currentPosition : coordinates) {
                             JSONArray position = new JSONArray();
                             position.put(currentPosition.getLongitude());
                             position.put(currentPosition.getLatitude());
 
                             toolCoordinates.put(position);
+                            jsonTool.getJSONObject("geometry").put("type", "LineString");
                         }
                     }
 
@@ -424,9 +427,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     JSONObject geometry = new JSONObject();
                     JSONObject properties = new JSONObject();
 
-                    if(coordinatesRow.getCoordinates().size() == 1) {
-                        toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLongitude());
-                        toolCoordinates.put(coordinatesRow.getCoordinates().get(0).getLatitude());
+                    if(coordinates.size() == 1) {
+                        toolCoordinates.put(coordinates.get(0).getLongitude());
+                        toolCoordinates.put(coordinates.get(0).getLatitude());
                         geometry.put("type", "Point");
                     } else {
                         for(Point currentPosition : coordinatesRow.getCoordinates()) {
