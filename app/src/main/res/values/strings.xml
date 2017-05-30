@@ -29,6 +29,7 @@ limitations under the License.
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
     <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
+    <string name="datetime_format_yyyy_mm_dd_no_separator">yyyyMMdd</string>
     <string name="datetime_format_yyyy_mm_dd">yyyy-MM-dd</string>
     <string name="datetime_format_yyyy_mm_dd_hh_mm">yyyy-MM-dd HH:mm</string>
     <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss">yyyy-MM-dd\'T\'HH:mm:ss</string>

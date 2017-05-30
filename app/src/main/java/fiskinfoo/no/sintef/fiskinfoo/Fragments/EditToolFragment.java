@@ -397,7 +397,6 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         fieldsContainer.addView(vesselImoNumberRow.getView());
         fieldsContainer.addView(vesselRegistrationNumberRow.getView());
         fieldsContainer.addView(errorRow.getView());
-
         fieldsContainer.addView(toolRemovedRow.getView(), 4);
 
         if (tool != null) {
@@ -498,9 +497,34 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     }
 
     private void populateFieldsFromTool() {
+
+        final SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+        SimpleDateFormat sdfDisplay = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+
+        sdfDisplay.setTimeZone(TimeZone.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date setupDateTime;
+        String setupDateTimeString;
+        String setupDateString;
+        String setupTimeString;
+
+        try {
+            setupDateTime = sdf.parse(tool.getSetupDateTime());
+            setupDateTimeString = sdfDisplay.format(setupDateTime);
+            setupDateString = setupDateTimeString.substring(0, 10);
+            setupTimeString = setupDateTimeString.substring(setupDateTimeString.indexOf("T") + 1, setupDateTimeString.indexOf("T") + 6);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            setupDateString = tool.getSetupDate();
+            setupTimeString = tool.getSetupDateTime().substring(tool.getSetupDateTime().indexOf('T') + 1, tool.getSetupDateTime().indexOf('T') + 6);
+        }
+
+
+
+
         coordinatesRow.setCoordinates(getActivity(), tool.getCoordinates(), this);
-        setupDateRow.setDate(tool.getSetupDate());
-        setupTimeRow.setTime(tool.getSetupDateTime().substring(tool.getSetupDateTime().indexOf('T') + 1, tool.getSetupDateTime().indexOf('T') + 6));
+        setupDateRow.setDate(setupDateString);
+        setupTimeRow.setTime(setupTimeString);
 
         if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             coordinatesRow.setPositionButtonOnClickListener(new View.OnClickListener() {
@@ -613,7 +637,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         } else {
             sdf.setTimeZone(TimeZone.getDefault());
             Date setupDate = null;
-            String setupDateString = toolSetupDate + "T" + toolSetupTime + ":00Z";
+            String setupDateString = toolSetupDate + "T" + toolSetupTime + ":00";
 
             try {
                 setupDate = sdf.parse(setupDateString);
