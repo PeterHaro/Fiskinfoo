@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -96,7 +97,7 @@ public class SpinnerRow extends BaseTableRow {
         spinner.setSelection(index);
     }
 
-    public void add(Object object, int index) {
+    public void addSpinnerOption(Object object, int index) {
         List<Object> objects = new ArrayList<>();
         for(int i = 0; i < spinner.getAdapter().getCount(); i++) {
             objects.add(spinner.getAdapter().getItem(i));
@@ -110,5 +111,9 @@ public class SpinnerRow extends BaseTableRow {
         errorTextView.setError(error);
         errorTextView.setText(error);
         errorTextView.setVisibility(error != null ? View.VISIBLE : View.GONE);
+    }
+
+    public void setOnSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener) {
+        spinner.setOnItemSelectedListener(onItemSelectedListener);
     }
 }

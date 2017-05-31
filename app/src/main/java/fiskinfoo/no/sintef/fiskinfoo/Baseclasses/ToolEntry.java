@@ -63,6 +63,8 @@ public class ToolEntry implements Parcelable {
     private ToolEntryStatus toolStatus;
     private int toolLogId;
     private boolean toolLost;
+    private int toolLostLength;
+    private int numberOfLostTools;
 
     protected ToolEntry(Parcel in) {
         id = in.readString();
@@ -93,6 +95,8 @@ public class ToolEntry implements Parcelable {
         toolLostReason = in.readString();
         toolLostWeather = in.readString();
         toolLost = in.readByte() != 0;
+        toolLostLength = in.readInt();
+        numberOfLostTools = in.readInt();
     }
 
     @Override
@@ -124,6 +128,8 @@ public class ToolEntry implements Parcelable {
         dest.writeString(toolLostReason);
         dest.writeString(toolLostWeather);
         dest.writeByte((byte) (toolLost ? 1 : 0));
+        dest.writeInt(toolLostLength);
+        dest.writeInt(numberOfLostTools);
     }
 
     public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, String vesselEmail, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
@@ -446,9 +452,15 @@ public class ToolEntry implements Parcelable {
             properties.put("ContactPersonEmail", this.ContactPersonEmail == null ? JSONObject.NULL : this.ContactPersonEmail);
 
             if(this.toolLost) {
-                properties.put("ToolLostReason", this.toolLostReason == null ? JSONObject.NULL : this.toolLostReason);
+                properties.put("ToolLostCause", this.toolLostReason == null ? JSONObject.NULL : this.toolLostReason);
                 properties.put("ToolLostWeather", this.toolLostWeather == null ? JSONObject.NULL : this.toolLostWeather);
                 properties.put("ToolLost", true);
+                properties.put("ToolLengthLost", this.toolLostLength);
+
+                if(ToolTypeCode == ToolType.CRAB_POTS ||
+                        ToolTypeCode == ToolType.NETS) {
+                    properties.put("NumberOfToolsLost", this.numberOfLostTools);
+                }
             }
 
             Date toolReportDate = new Date();
@@ -721,6 +733,22 @@ public class ToolEntry implements Parcelable {
 
     public void setToolLost(boolean toolLost) {
         this.toolLost = toolLost;
+    }
+
+    public int getToolLostLength() {
+        return toolLostLength;
+    }
+
+    public void setToolLostLength(int toolLostLength) {
+        this.toolLostLength = toolLostLength;
+    }
+
+    public int getNumberOfLostTools() {
+        return numberOfLostTools;
+    }
+
+    public void setNumberOfLostTools(int numberOfLostTools) {
+        this.numberOfLostTools = numberOfLostTools;
     }
 
     @Override

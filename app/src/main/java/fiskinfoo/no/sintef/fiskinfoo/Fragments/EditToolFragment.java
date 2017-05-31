@@ -28,6 +28,7 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -114,11 +115,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private SpinnerRow toolLostConditionsRow;
     private WebView toolMapPreviewWebView;
 
-    private EditTextRow toolLostCrabPotsLostRow;
-    private EditTextRow toolLostLineLengthLostRow;
-    private EditTextRow toolLostLineHooksLostRow;
-    private EditTextRow toolLostNetsLengthLostRow;
-    private SpinnerRow toolLostNetsTypeRow;
+    private EditTextRow numberOfToolsLostRow;
+    private EditTextRow lostToolLengthRow;
 
 
     public EditToolFragment() {
@@ -268,12 +266,16 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolLostRow = new CheckBoxRow(getContext(), getString(R.string.tool_lost_row_text), true);
         toolLostCauseRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_cause_row_text), getResources().getStringArray(R.array.tool_lost_causes));
         toolLostConditionsRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_conditions_row_text), getResources().getStringArray(R.array.tool_lost_conditions));
-        toolLostCauseRow.add(getString(R.string.not_selected), 0);
-        toolLostConditionsRow.add(getString(R.string.not_selected), 0);
-
+        toolLostCauseRow.addSpinnerOption(getString(R.string.not_selected), 0);
+        toolLostConditionsRow.addSpinnerOption(getString(R.string.not_selected), 0);
         toolLostRow.setVisibility(true);
         toolLostCauseRow.setVisibility(false);
         toolLostConditionsRow.setVisibility(false);
+
+        numberOfToolsLostRow = new EditTextRow(getContext(), getString(R.string.number_of_crab_pots_lost), "");
+        lostToolLengthRow = new EditTextRow(getContext(), getString(R.string.number_of_meters_of_line_lost), "");
+        numberOfToolsLostRow.setVisibility(false);
+        lostToolLengthRow.setVisibility(false);
 
         WebView view = new WebView(getContext());
         toolMapPreviewWebView = (WebView) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, view, false);
@@ -336,6 +338,21 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             }
         });
 
+        toolRow.setOnSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(toolLostRow.isChecked()) {
+                    toggleToolLostRows(true);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         archiveRow = new ActionRow(getContext(), getString(R.string.archive_tool), R.drawable.ic_archive_black_24dp, getArchiveToolRowOnClickListener());
         deleteRow = new ActionRow(getContext(), getString(R.string.delete_tool), R.drawable.ic_delete_black_24dp, getDeleteToolRowOnClickListener());
 
@@ -376,6 +393,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         contactPersonNameRow.setHelpText(getString(R.string.contact_person_name_help_description));
         contactPersonPhoneRow.setHelpText(getString(R.string.contact_person_phone_help_description));
         contactPersonEmailRow.setHelpText(getString(R.string.contact_person_email_help_description));
+        numberOfToolsLostRow.setInputType(InputType.TYPE_CLASS_NUMBER);
+        lostToolLengthRow.setInputType(InputType.TYPE_CLASS_NUMBER);
+
         toolRemovedRow.setVisibility(false);
 
         fieldsContainer.addView(coordinatesRow.getView());
@@ -386,6 +406,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         fieldsContainer.addView(toolLostRow.getView());
         fieldsContainer.addView(toolLostCauseRow.getView());
         fieldsContainer.addView(toolLostConditionsRow.getView());
+        fieldsContainer.addView(lostToolLengthRow.getView());
+        fieldsContainer.addView(numberOfToolsLostRow.getView());
         fieldsContainer.addView(commentRow.getView());
         fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
@@ -483,14 +505,37 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     }
 
     private void toggleToolLostRows(boolean checked) {
+
         if(checked) {
-//            switch(toolRow.getCurrentSpinnerItem()) {
-//                case R.string.
-//            }
+            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot))) {
+                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
+                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_crab_pots_lost));
+                lostToolLengthRow.setVisibility(true);
+                numberOfToolsLostRow.setVisibility(true);
+            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
+                lostToolLengthRow.setRowHeader(getString(R.string.size_of_nets_in_meters));
+                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_nets_lost));
+                lostToolLengthRow.setVisibility(true);
+                numberOfToolsLostRow.setVisibility(true);
+            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line))) {
+                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
+                lostToolLengthRow.setVisibility(true);
+                numberOfToolsLostRow.setVisibility(false);
+            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine))){
+                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_net_lost));
+                lostToolLengthRow.setVisibility(true);
+                numberOfToolsLostRow.setVisibility(false);
+            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
+                lostToolLengthRow.setRowHeader(getString(R.string.size_of_lost_tool));
+                lostToolLengthRow.setVisibility(true);
+                numberOfToolsLostRow.setVisibility(false);
+            }
 
             toolLostCauseRow.setVisibility(true);
             toolLostConditionsRow.setVisibility(true);
         } else {
+            numberOfToolsLostRow.setVisibility(false);
+            lostToolLengthRow.setVisibility(false);
             toolLostCauseRow.setVisibility(false);
             toolLostConditionsRow.setVisibility(false);
         }
@@ -554,6 +599,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             toolLostCauseRow.setVisibility(true);
             toolLostCauseRow.setSelectedSpinnerItem(tool.getToolLostReason());
             toolLostConditionsRow.setSelectedSpinnerItem(tool.getToolLostWeather());
+            lostToolLengthRow.setText(String.valueOf(tool.getToolLostLength()));
+
+            if(tool.getToolType() == ToolType.CRAB_POTS ||
+                    tool.getToolType() == ToolType.NETS) {
+                numberOfToolsLostRow.setText(String.valueOf(tool.getToolLostLength()));
+            }
         }
     }
 
@@ -605,6 +656,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
         String toolLostReason = toolLostCauseRow.getCurrentSpinnerItem();
         String toolLostWeather = toolLostConditionsRow.getCurrentSpinnerItem();
+        int lostToolLength = lostToolLengthRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(lostToolLengthRow.getFieldText());
+        int numberOfToolsLost = numberOfToolsLostRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(numberOfToolsLostRow.getFieldText());
         boolean toolLost = toolLostRow.isChecked();
         boolean toolRemoved = toolRemovedRow.isChecked();
         boolean edited = false;
@@ -631,6 +684,14 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                 toolEntry.setToolLostReason(toolLostReason);
                 toolEntry.setToolLostWeather(toolLostWeather);
                 toolEntry.setToolStatus(ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED);
+                toolEntry.setToolLostLength(lostToolLength);
+
+                if(toolType == ToolType.CRAB_POTS ||
+                        toolType == ToolType.NETS) {
+                    toolEntry.setNumberOfLostTools(numberOfToolsLost);
+                } else {
+                    toolEntry.setNumberOfLostTools(0);
+                }
             }
 
             mListener.updateTool(toolEntry);
@@ -664,7 +725,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     (!contactPersonPhone.equals(tool.getContactPersonPhone())) ||
                     (!contactPersonEmail.equals(tool.getContactPersonEmail())) ||
                     (!commentString.equals(tool.getComment())) ||
-                    (toolLost != tool.isToolLost()))
+                    (toolLost != tool.isToolLost()) ||
+                    (numberOfToolsLost != tool.getNumberOfLostTools()) ||
+                    (lostToolLength != tool.getToolLostLength()))
             {
                 edited = true;
             } else {
@@ -724,6 +787,14 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     ToolEntryStatus toolStatus = ((tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED) ?
                             ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED : ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED);
                     tool.setToolStatus(toolStatus);
+                    tool.setToolLostLength(lostToolLength);
+
+                    if(toolType == ToolType.CRAB_POTS ||
+                            toolType == ToolType.NETS) {
+                        tool.setNumberOfLostTools(numberOfToolsLost);
+                    } else {
+                        tool.setNumberOfLostTools(0);
+                    }
                 } else {
                     ToolEntryStatus toolStatus = (toolRemoved ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : ((tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED) ?
                             ToolEntryStatus.STATUS_UNREPORTED : ToolEntryStatus.STATUS_UNSENT));
@@ -777,20 +848,55 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return false;
         }
 
-        validated = !toolLost || toolLostCauseRow.getCurrentSpinnerIndex() > 0;
-        toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
-        if(!validated) {
-            highlightInvalidField(toolLostCauseRow);
+        if(toolLost) {
+            validated = toolLostCauseRow.getCurrentSpinnerIndex() > 0;
+            toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
+            if(!validated) {
+                highlightInvalidField(toolLostCauseRow);
 
-            return false;
-        }
+                return false;
+            }
 
-        validated = !toolLost || toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
-        toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
-        if(!validated) {
-            highlightInvalidField(toolLostConditionsRow);
+            validated = toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
+            toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
+            if(!validated) {
+                highlightInvalidField(toolLostConditionsRow);
 
-            return false;
+                return false;
+            }
+
+            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot)) ||
+                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
+
+                validated = !lostToolLengthRow.getFieldText().isEmpty();
+                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
+                if(!validated) {
+                    highlightInvalidField(lostToolLengthRow);
+
+                    return false;
+                }
+
+                validated = !numberOfToolsLostRow.getFieldText().isEmpty();
+                numberOfToolsLostRow.setError(validated ? null : getString(R.string.error_field_required_short));
+                if(!validated) {
+                    highlightInvalidField(numberOfToolsLostRow);
+
+                    return false;
+                }
+            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line)) ||
+                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine)) ||
+                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
+
+                validated = !lostToolLengthRow.getFieldText().isEmpty();
+                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
+                if(!validated) {
+                    highlightInvalidField(lostToolLengthRow);
+
+                    return false;
+                }
+            } else {
+                return false;
+            }
         }
 
         validated = FiskInfoUtility.validateName(contactPersonName);

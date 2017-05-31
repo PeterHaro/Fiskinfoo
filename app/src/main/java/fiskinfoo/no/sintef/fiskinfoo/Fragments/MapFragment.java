@@ -1405,9 +1405,6 @@ public class MapFragment extends Fragment {
                     String filePath = directoryPath + "/" + directoryName + "/" + filename + "." + format;
                     tools = fiskInfoUtility.deserializeFiskInfoPolygon2D(filePath);
                     cacheDeserialized = true;
-                    // DEMO: add point here for testing/demo purposes
-//                         Point point = new Point(69.650543, 18.956831);
-//                         tools.addPoint(point);
                 } else {
                     if(alarmFiring) {
                         return;

@@ -452,6 +452,12 @@ limitations under the License.
     <string name="cardinal_direction_symbol_west">W</string>
     <string name="cardinal_direction_symbol_east">E</string>
     <string name="registration_number_allowed_characters">ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ0123456789</string>
+    <string name="number_of_crab_pots_lost">Antall teiner tapt</string>
+    <string name="number_of_meters_of_line_lost">Antall meter line tapt</string>
+    <string name="number_of_meters_of_net_lost">Antall meter garn tapt</string>
+    <string name="number_of_nets_lost">Antall garn tapt</string>
+    <string name="size_of_nets_in_meters">Garnlengde i meter (per garn)</string>
+    <string name="size_of_lost_tool">Lengde på redskap (meter)</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -489,6 +495,13 @@ limitations under the License.
     <string name="json_tool_property_coordinates">coordinates</string>
     <string name="json_tool_property_null_string_value">null</string>
 
+    <!-- Tool types -->
+    <string name="tool_type_line">Line</string>
+    <string name="tool_type_net">Garn</string>
+    <string name="tool_type_crab_pot">Teine</string>
+    <string name="tool_type_purseine">Snurpenot</string>
+    <string name="tool_type_unknown">Ukjent redskap</string>
+
     <!-- Subscription details fragment -->
     <string name="subscription_details_fragment_title">Kart</string>
 
@@ -502,6 +515,14 @@ limitations under the License.
         <item>Stille</item>
         <item>Sterk vind</item>
         <item>Annet</item>
+    </string-array>
+
+    <string-array name="tool_types_array">
+        <item>@string/tool_type_line</item>
+        <item>@string/tool_type_net</item>
+        <item>@string/tool_type_crab_pot</item>
+        <item>@string/tool_type_purseine</item>
+        <item>@string/tool_type_unknown</item>
     </string-array>
 
 </resources>
