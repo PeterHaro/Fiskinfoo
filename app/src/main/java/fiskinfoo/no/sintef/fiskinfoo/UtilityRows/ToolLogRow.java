@@ -51,10 +51,11 @@ public class ToolLogRow extends BaseTableRow {
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolImageView = (ImageView) getView().findViewById(R.id.tool_log_row_edit_image_view);
         relativeLayout = (RelativeLayout) getView().findViewById(R.id.tool_log_row_relative_layout);
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(tool.getCoordinates().get(0).getLatitude() < 0 ? "S" : "N");
 
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));
         sb.append(", ");
+        sb.append(tool.getCoordinates().get(0).getLongitude() < 0 ? "W" : "E");
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLongitude())));
 
         String coordinateString = sb.toString();

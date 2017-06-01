@@ -436,18 +436,19 @@ public class FiskInfoUtility {
      *      The given coordinate in DMS format
      */
     public static String decimalToDMS(double coord) {
+        double absCoord = Math.abs(coord);
         String output, degrees, minutes, seconds;
 
-        double mod = coord % 1;
-        int intPart = (int) coord;
+        double mod = absCoord % 1;
+        int intPart = (int) absCoord;
 
         degrees = String.valueOf(intPart);
-        coord = mod * 60;
-        mod = coord % 1;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
         minutes = String.valueOf(intPart);
-        coord = mod * 60;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        intPart = (int) absCoord;
         seconds = String.valueOf(intPart);
 
         // e.g. output = "87/1,43/1,41/1"
@@ -460,19 +461,20 @@ public class FiskInfoUtility {
     }
 
     public static int[] decimalToDMSArray(double coord) {
+        double absCoord = Math.abs(coord);
         int[] output = new int[3];
 
-        double mod = coord % 1;
-        int intPart = (int) coord;
+        double mod = absCoord % 1;
+        int intPart = (int) absCoord;
         output[0] = intPart;
 
-        coord = mod * 60;
-        mod = coord % 1;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
         output[1] = intPart;
 
-        coord = mod * 60;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        intPart = (int) absCoord;
         output[2] = intPart;
 
         return output;

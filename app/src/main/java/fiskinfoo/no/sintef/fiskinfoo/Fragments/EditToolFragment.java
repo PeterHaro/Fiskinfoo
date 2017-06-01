@@ -30,8 +30,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -114,6 +116,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private SpinnerRow toolLostCauseRow;
     private SpinnerRow toolLostConditionsRow;
     private WebView toolMapPreviewWebView;
+    private RelativeLayout mapPreviewContainer;
+    private Button mapPreviewZoomButton;
 
     private EditTextRow numberOfToolsLostRow;
     private EditTextRow lostToolLengthRow;
@@ -183,7 +187,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             view.loadUrl("javascript:populateMap();");
 
             if(tool != null) {
-                view.loadUrl("javascript:highlightTool(" + tool.toGeoJson(locationTracker) + ");");
+                JSONObject jsonTool = tool.toGeoJson(locationTracker);
+                view.loadUrl("javascript:removeFarTools(" + jsonTool + ");");
+                view.loadUrl("javascript:highlightTool(" + jsonTool + ");");
             }
         }
     }
@@ -277,8 +283,29 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         numberOfToolsLostRow.setVisibility(false);
         lostToolLengthRow.setVisibility(false);
 
-        WebView view = new WebView(getContext());
-        toolMapPreviewWebView = (WebView) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, view, false);
+
+        RelativeLayout relativeLayout = new RelativeLayout(getContext());
+        mapPreviewContainer = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, relativeLayout, false);
+//        WebView view = new WebView(getContext());
+//        toolMapPreviewWebView = (WebView) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, view, false);
+        toolMapPreviewWebView = (WebView) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_web_view);
+        mapPreviewZoomButton = (Button) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_zoom_button);
+        mapPreviewZoomButton.setTag(null);
+
+        mapPreviewZoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(view.getTag() == null) {
+                    toolMapPreviewWebView.loadUrl("javascript:zoomMap(8);");
+                    view.setBackgroundResource(R.drawable.ic_zoom_in_black_24dp);
+                    view.setTag("");
+                } else {
+                    toolMapPreviewWebView.loadUrl("javascript:zoomToToolExtent();");
+                    view.setBackgroundResource(R.drawable.ic_zoom_out_black_24dp);
+                    view.setTag(null);
+                }
+            }
+        });
 
         toolMapPreviewWebView.loadUrl("file:///android_asset/tool_map_preview.html");
         toolMapPreviewWebView.getSettings().setJavaScriptEnabled(true);
@@ -399,7 +426,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRemovedRow.setVisibility(false);
 
         fieldsContainer.addView(coordinatesRow.getView());
-        fieldsContainer.addView(toolMapPreviewWebView);
+        fieldsContainer.addView(mapPreviewContainer);
         fieldsContainer.addView(setupDateRow.getView());
         fieldsContainer.addView(setupTimeRow.getView());
         fieldsContainer.addView(toolRow.getView());
@@ -455,6 +482,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
                     jsonTool.getJSONObject("geometry").put("coordinates", toolCoordinates);
                     toolMapPreviewWebView.loadUrl("javascript:highlightTool(" + jsonTool + ");");
+                    mapPreviewZoomButton.setBackgroundResource(R.drawable.ic_zoom_out_black_24dp);
+                    mapPreviewZoomButton.setTag(null);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -666,7 +695,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return;
         }
 
-        registrationNumber = FiskInfoUtility.formatRegistrationNumber(registrationNumber);
+        registrationNumber = FiskInfoUtility.validateRegistrationNumber(registrationNumber) ? FiskInfoUtility.formatRegistrationNumber(registrationNumber) : "";
 
         if(tool == null) {
             ToolEntry toolEntry = new ToolEntry(coordinates, vesselName, vesselPhoneNumber, contactPersonEmail,

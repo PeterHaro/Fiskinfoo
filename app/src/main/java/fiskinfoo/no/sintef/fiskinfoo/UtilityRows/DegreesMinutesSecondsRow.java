@@ -69,7 +69,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
                 longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
                 longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
                 latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
-                longitudeCardinalDirectionSwitch.setChecked(longitude < 0);
+                longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
             }
         });
         setPositionButton.setVisibility(gpsLocationTracker == null ? View.GONE : View.VISIBLE);
@@ -104,7 +104,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
         latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
-        longitudeCardinalDirectionSwitch.setChecked(longitude < 0);
+        longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
     }
 
     public String getLatitude() {
@@ -218,7 +218,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         latitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
-        longitudeCardinalDirectionSwitch.setChecked(Double.valueOf(longitude) < 0);
+        longitudeCardinalDirectionSwitch.setChecked(Double.valueOf(longitude) >= 0);
     }
 
     public Point getCoordinates() {
@@ -272,7 +272,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
             }
 
             latitude = FiskInfoUtility.DMSToDecimal(new double[] { latitudeDegrees, latitudeMinutes, latitudeSeconds }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1);
-            longitude = FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds }) * (longitudeCardinalDirectionSwitch.isChecked() ? -1 : 1);
+            longitude = FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds }) * (longitudeCardinalDirectionSwitch.isChecked() ? 1 : -1);
 
             return new Point(latitude, longitude);
         } catch(NumberFormatException e) {
@@ -307,7 +307,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
                     longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
                     longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
                     latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
-                    longitudeCardinalDirectionSwitch.setChecked(longitude < 0);
+                    longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
                 }
             });
         }
