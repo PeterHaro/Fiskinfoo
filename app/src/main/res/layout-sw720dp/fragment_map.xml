@@ -68,7 +68,7 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:divider="@drawable/default_view_divider"
             android:showDividers="beginning|middle|end"
             android:visibility="gone"
             >
@@ -141,7 +141,7 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:divider="@drawable/default_view_divider"
             android:showDividers="beginning|middle|end"
             android:visibility="gone"
             >
@@ -254,7 +254,7 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:divider="@drawable/default_view_divider"
             android:showDividers="beginning|middle|end"
             android:visibility="gone"
             >
@@ -356,7 +356,7 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/map_fragment_bottom_sheet_item_divider"
+            android:divider="@drawable/default_view_divider"
             android:showDividers="beginning|middle|end"
             >
 

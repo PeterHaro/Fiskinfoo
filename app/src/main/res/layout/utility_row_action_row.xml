@@ -16,32 +16,36 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/check_box_row_padding_bottom"
-    android:paddingTop="@dimen/check_box_row_padding_top">
+    android:paddingTop="@dimen/check_box_row_padding_top"
+    android:gravity="center_vertical"
+    >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/action_row_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
+        android:layout_marginStart="@dimen/utility_row_header_margin_left"
+        android:layout_marginEnd="@dimen/dialog_container_margin_right"
+        android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
+        android:textStyle="bold"
+        android:textSize="@dimen/card_view_information_row_text_size"
+        android:text="@string/placeholder_string"
+        />
 
-        <TextView
-            android:id="@+id/action_row_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-            android:layout_marginStart="@dimen/utility_row_header_margin_left"
-            android:layout_marginEnd="@dimen/dialog_container_margin_right"
-            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-            android:text="@string/placeholder_string"
-            android:textStyle="bold"
-            android:textSize="@dimen/card_view_information_row_text_size"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        />
 
-        <Button
-            android:id="@+id/action_row_button"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-            android:layout_marginEnd="@dimen/check_box_row_check_box_margin_right"
-            android:layout_marginTop="@dimen/dialog_internal_container_margin_top" />
-    </RelativeLayout>
+    <Button
+        android:id="@+id/action_row_button"
+        android:layout_width="@dimen/small_image_view_and_button_width"
+        android:layout_height="@dimen/small_image_view_and_button_height"
+        android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
+        android:layout_marginEnd="@dimen/check_box_row_check_box_margin_right"
+        android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
+        />
 </TableRow>

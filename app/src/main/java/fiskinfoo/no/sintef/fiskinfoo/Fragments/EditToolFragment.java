@@ -188,8 +188,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
             if(tool != null) {
                 JSONObject jsonTool = tool.toGeoJson(locationTracker);
-                view.loadUrl("javascript:removeFarTools(" + jsonTool + ");");
                 view.loadUrl("javascript:highlightTool(" + jsonTool + ");");
+
             }
         }
     }

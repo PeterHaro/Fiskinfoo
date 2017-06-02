@@ -20,6 +20,8 @@ limitations under the License.
     <dimen name="activity_vertical_margin_small">8dp</dimen>
     <dimen name="default_image_view_and_button_width">48dp</dimen>
     <dimen name="default_image_view_and_button_height">48dp</dimen>
+    <dimen name="small_image_view_and_button_width">32dp</dimen>
+    <dimen name="small_image_view_and_button_height">32dp</dimen>
 
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>
