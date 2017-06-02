@@ -336,6 +336,7 @@ public class MyToolsFragment extends Fragment {
 
                     for(int j = 0; j < localTools.size(); j++) {
                         if(localTools.get(j).getToolId().equals(tool.getJSONObject("properties").getString("toolid"))) {
+                            localTools.get(j).setHasBeenRegistered(true);
                             SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
                             SimpleDateFormat sdfMilliSecondsRemote = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss_sss), Locale.getDefault());
                             SimpleDateFormat sdfRemote = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
@@ -366,7 +367,6 @@ public class MyToolsFragment extends Fragment {
                                     localTools.get(j).updateFromGeoJson(tool, getActivity());
 
                                     localTools.get(j).setToolStatus(ToolEntryStatus.STATUS_RECEIVED);
-                                    localTools.get(j).setHasBeenRegistered(true);
                                 } else if(serverUpdatedBySourceDateTime != null && localUpdatedBySourceDateTime.after(serverUpdatedBySourceDateTime)) {
                                     // TODO: Do nothing, local changes should be reported.
 
