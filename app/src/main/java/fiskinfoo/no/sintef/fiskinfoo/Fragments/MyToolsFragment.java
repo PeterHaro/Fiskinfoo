@@ -366,6 +366,7 @@ public class MyToolsFragment extends Fragment {
                                     localTools.get(j).updateFromGeoJson(tool, getActivity());
 
                                     localTools.get(j).setToolStatus(ToolEntryStatus.STATUS_RECEIVED);
+                                    localTools.get(j).setHasBeenRegistered(true);
                                 } else if(serverUpdatedBySourceDateTime != null && localUpdatedBySourceDateTime.after(serverUpdatedBySourceDateTime)) {
                                     // TODO: Do nothing, local changes should be reported.
 
@@ -927,12 +928,13 @@ public class MyToolsFragment extends Fragment {
     @SuppressLint("ValidFragment")
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
-        TextView mTextView;
+        TextView timeTextView;
+        TextView dateTextView;
         boolean hasMaxTime;
 
         @SuppressLint("ValidFragment")
-        public TimePickerFragment(TextView tx, boolean maxTime) {
-            mTextView = tx;
+        public TimePickerFragment(TextView textView, boolean maxTime) {
+            timeTextView = textView;
             hasMaxTime = maxTime;
         }
 
@@ -954,13 +956,40 @@ public class MyToolsFragment extends Fragment {
             SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_hh_mm_ss), Locale.getDefault());
             sdf.setTimeZone(TimeZone.getDefault());
             String toolTime = sdf.format(calendar.getTime());
-            String currentTime = sdf.format(new Date());
+            Date currentDate = new Date();
+            String currentTime = sdf.format(currentDate);
+
+            if(dateTextView != null) {
+                String setupDateString = dateTextView.getText().toString();
+                String setupTimeString = toolTime.substring(0, 5);
+                String setupDateTime = setupDateString + "T" + setupTimeString + ":00.000";
+                Date setupDate;
+                sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+
+                try {
+                    setupDate = sdf.parse(setupDateTime);
+
+                    if(setupDate.before(currentDate)) {
+                        timeTextView.setText(toolTime.substring(0, 5));
+                    } else {
+                        Toast.makeText(getActivity(), getString(R.string.error_cannot_set_time_to_future), Toast.LENGTH_LONG).show();
+                    }
+
+                    return;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
 
             if (hasMaxTime && FiskInfoUtility.compareDates(toolTime, currentTime, getString(R.string.datetime_format_hh_mm_ss)) > 0 ) {
                 Toast.makeText(getActivity(), getString(R.string.error_cannot_set_time_to_future), Toast.LENGTH_LONG).show();
             } else {
-                mTextView.setText(toolTime.substring(0, 5));
+                timeTextView.setText(toolTime.substring(0, 5));
             }
+        }
+
+        public void setDateTextView(TextView dateTextView) {
+            this.dateTextView = dateTextView;
         }
     }
 

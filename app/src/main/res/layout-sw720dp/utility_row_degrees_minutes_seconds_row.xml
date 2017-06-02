@@ -234,6 +234,7 @@ limitations under the License.
                     android:textOff="@string/cardinal_direction_symbol_west"
                     android:textOn="@string/cardinal_direction_symbol_east"
                     app:showText="true"
+                    android:checked="true"
                     />
 
             </LinearLayout>

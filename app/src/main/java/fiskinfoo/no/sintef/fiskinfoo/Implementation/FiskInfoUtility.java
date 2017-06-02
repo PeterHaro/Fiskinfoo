@@ -441,12 +441,13 @@ public class FiskInfoUtility {
 
         double mod = absCoord % 1;
         int intPart = (int) absCoord;
-
         degrees = String.valueOf(intPart);
+
         absCoord = mod * 60;
         mod = absCoord % 1;
         intPart = (int) absCoord;
         minutes = String.valueOf(intPart);
+
         absCoord = mod * 60;
         intPart = (int) absCoord;
         seconds = String.valueOf(intPart);
@@ -474,7 +475,7 @@ public class FiskInfoUtility {
         output[1] = intPart;
 
         absCoord = mod * 60;
-        intPart = (int) absCoord;
+        intPart = (int) Math.round(absCoord);
         output[2] = intPart;
 
         return output;

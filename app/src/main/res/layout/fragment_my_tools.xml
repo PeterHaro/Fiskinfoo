@@ -10,7 +10,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        >
 
         <!-- background colour and hard coded height only to see that layout is roughly right -->
 
@@ -80,7 +81,10 @@
                     android:id="@+id/register_tool_current_tools_table_layout"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/default_view_divider"
+                    android:showDividers="beginning|middle|end"
+                    >
                 </LinearLayout>
             </ScrollView>
 

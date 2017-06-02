@@ -283,11 +283,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         numberOfToolsLostRow.setVisibility(false);
         lostToolLengthRow.setVisibility(false);
 
-
         RelativeLayout relativeLayout = new RelativeLayout(getContext());
         mapPreviewContainer = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, relativeLayout, false);
-//        WebView view = new WebView(getContext());
-//        toolMapPreviewWebView = (WebView) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, view, false);
         toolMapPreviewWebView = (WebView) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_web_view);
         mapPreviewZoomButton = (Button) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_zoom_button);
         mapPreviewZoomButton.setTag(null);
@@ -349,19 +346,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             }
         });
 
-        toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
+        setupTimeRow.setDateTextView(setupDateRow.getDateTextView());
 
+        toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 toggleToolLostRows(checked);
-
-                if(checked) {
-                    toolRemovedRow.setChecked(true);
-                    toolRemovedRow.setVisibility(true);
-                } else if(tool == null || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED) {
-                    toolRemovedRow.setChecked(false);
-                    toolRemovedRow.setVisibility(false);
-                }
             }
         });
 
@@ -609,6 +599,10 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             });
         }
 
+        if(tool.hasBeenRegistered()) {
+            toolRemovedRow.setVisibility(true);
+        }
+
         ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
         toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(tool.getToolType() != null ? tool.getToolType().toString() : Tool.BUNNTRÅL.toString()));
         toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
@@ -632,7 +626,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
             if(tool.getToolType() == ToolType.CRAB_POTS ||
                     tool.getToolType() == ToolType.NETS) {
-                numberOfToolsLostRow.setText(String.valueOf(tool.getToolLostLength()));
+                numberOfToolsLostRow.setText(String.valueOf(tool.getNumberOfLostTools()));
             }
         }
     }
@@ -868,11 +862,11 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return false;
         }
 
-        validated = !toolLost || toolRemoved;
+        validated = toolLost != toolRemoved || (!toolLost);
 
         if(!validated) {
             highlightInvalidField(toolRemovedRow);
-            Toast.makeText(getContext(), R.string.error_lost_tool_must_be_marked_removed, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), R.string.error_lost_tool_cannot_be_marked_removed, Toast.LENGTH_LONG).show();
 
             return false;
         }

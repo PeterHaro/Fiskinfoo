@@ -65,6 +65,7 @@ public class ToolEntry implements Parcelable {
     private boolean toolLost;
     private int toolLostLength;
     private int numberOfLostTools;
+    private boolean hasBeenRegistered;
 
     protected ToolEntry(Parcel in) {
         id = in.readString();
@@ -97,6 +98,7 @@ public class ToolEntry implements Parcelable {
         toolLost = in.readByte() != 0;
         toolLostLength = in.readInt();
         numberOfLostTools = in.readInt();
+        hasBeenRegistered = in.readByte() != 0;
     }
 
     @Override
@@ -130,6 +132,7 @@ public class ToolEntry implements Parcelable {
         dest.writeByte((byte) (toolLost ? 1 : 0));
         dest.writeInt(toolLostLength);
         dest.writeInt(numberOfLostTools);
+        dest.writeByte((byte) (hasBeenRegistered ? 1 : 0));
     }
 
     public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, String vesselEmail, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
@@ -169,7 +172,7 @@ public class ToolEntry implements Parcelable {
         this.SetupDateTime = setupDateString.substring(0, setupDateString.indexOf('.')).concat("Z");
         this.LastChangedBySource = lastChangedDateString.concat("Z");
         this.LastChangedDateTime = lastChangedDateString.concat("Z");
-
+        this.hasBeenRegistered = false;
     }
 
     /**
@@ -273,6 +276,7 @@ public class ToolEntry implements Parcelable {
             }
 
             toolStatus =  ToolEntryStatus.STATUS_RECEIVED;
+            hasBeenRegistered = true;
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (ParseException e) {
@@ -465,6 +469,7 @@ public class ToolEntry implements Parcelable {
 
             Date toolReportDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             double toolReportingLatitude = gpsLocationTracker.getLatitude();
             double toolReportingLongitude = gpsLocationTracker.getLongitude();
 
@@ -749,6 +754,14 @@ public class ToolEntry implements Parcelable {
 
     public void setNumberOfLostTools(int numberOfLostTools) {
         this.numberOfLostTools = numberOfLostTools;
+    }
+
+    public boolean hasBeenRegistered() {
+        return hasBeenRegistered;
+    }
+
+    public void setHasBeenRegistered(boolean hasBeenRegistered) {
+        this.hasBeenRegistered = hasBeenRegistered;
     }
 
     @Override

@@ -15,6 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
@@ -110,6 +112,33 @@ public class ToolLogRow extends BaseTableRow {
         }
 
         highlightOldTool(true);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            switch (tool.getToolStatus()) {
+                case STATUS_RECEIVED:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.ack_green));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.ack_green));
+                    break;
+                case STATUS_UNREPORTED:
+                case STATUS_REMOVED_UNCONFIRMED:
+                case STATUS_TOOL_LOST_UNREPORTED:
+                case STATUS_UNSENT:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.error_red));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.error_red));
+                    break;
+                case STATUS_SENT_UNCONFIRMED:
+                case STATUS_TOOL_LOST_UNCONFIRMED:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.done_yellow));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.done_yellow));
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
     public String getDate() {

@@ -66,7 +66,8 @@
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/my_tools_swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <ScrollView
                 android:id="@+id/register_tool_main_container_middle"
@@ -74,13 +75,17 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/boarder"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true">
+                android:layout_alignParentStart="true"
+                >
 
                 <LinearLayout
                     android:id="@+id/register_tool_current_tools_table_layout"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/default_view_divider"
+                    android:showDividers="beginning|middle|end"
+                    >
                 </LinearLayout>
             </ScrollView>
 

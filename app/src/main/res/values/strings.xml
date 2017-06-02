@@ -47,7 +47,7 @@ limitations under the License.
     <string name="off">Av</string>
     <string name="error_field_required">Dette feltet er påkrevd</string>
     <string name="error_field_required_short">Påkrevd</string>
-    <string name="error_lost_tool_must_be_marked_removed">Tapt redskap må merkes som tatt opp</string>
+    <string name="error_lost_tool_cannot_be_marked_removed">Redskap må enten merkes som tatt opp eller tapt, ikke begge.</string>
 
     <!-- Placeholder strings -->
     <string name="placeholder_string">Placeholder</string>

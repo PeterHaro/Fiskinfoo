@@ -74,4 +74,8 @@ public class DatePickerRow extends BaseTableRow {
         dateTextView.setEnabled(enabled);
         datePickerButton.setEnabled(enabled);
     }
+
+    public TextView getDateTextView() {
+        return this.dateTextView;
+    }
 }
