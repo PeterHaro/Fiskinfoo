@@ -317,7 +317,7 @@
 
             toolStyle.strokeWidth = "${strokeWidth}";
             toolStyle.strokeColor = "${strokeColor}";
-            toolStyle.fillColor = "#00FF00";
+            toolStyle.fillColor = "#165E00";
             toolStyle.fill = true;
             toolStyle.pointRadius = 11;
             toolStyle.fillOpacity = 1;
@@ -330,7 +330,7 @@
                         if(feature.geometry.hasOwnProperty("x")) {
                             return 1;
                         } else {
-                            return 3;
+                            return 4;
                         }
                     },
                     strokeColor: function(feature) {
@@ -338,7 +338,7 @@
                         if(feature.geometry.hasOwnProperty("x")) {
                             return "#000000";
                         } else {
-                            return "#00FF00";
+                            return "#165E00";
                         }
                     }
                 }

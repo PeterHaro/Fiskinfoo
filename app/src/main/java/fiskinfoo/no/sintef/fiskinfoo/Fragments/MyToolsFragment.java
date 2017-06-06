@@ -83,7 +83,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.DialogInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
@@ -107,13 +106,12 @@ import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_
 public class MyToolsFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MyToolsFragment";
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private final DialogInterface dialogInterface = new UtilityDialogs();
+    private final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private FloatingActionButton newToolButton = null;
     private LinearLayout toolContainer;
-    private final UtilityOnClickListeners utilityOnClickListeners = new UtilityOnClickListeners();
-    private final DialogInterface dialogInterface = new UtilityDialogs();
-    private final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
     private User user;
     private GpsLocationTracker mGpsLocationTracker;
     private BarentswatchApi barentswatchApi;
@@ -164,13 +162,8 @@ public class MyToolsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView =  inflater.inflate(R.layout.fragment_my_tools, container, false);
-        final TextView headerDate = (TextView) rootView.findViewById(R.id.register_tool_header_date_field);
         toolContainer = (LinearLayout) rootView.findViewById(R.id.register_tool_current_tools_table_layout);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.my_tools_swipe_refresh_layout);
-
-        final String currentDate = getCurrentDate();
-        headerDate.setText(currentDate);
-
         newToolButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
 
         if(!user.getIsFishingFacilityAuthenticated()) {
@@ -269,25 +262,6 @@ public class MyToolsFragment extends Fragment {
                 }
             });
         }
-
-        //Arrow logic
-        final Button arrowRightButton = (Button) rootView.findViewById(R.id.register_tool_header_arrow_right);
-        setupRightArrowButton(headerDate, currentDate, arrowRightButton);
-
-        Button arrowLeftButton = (Button) rootView.findViewById(R.id.register_tool_header_arrow_left);
-        setupLeftArrowButton(headerDate, currentDate, arrowRightButton, arrowLeftButton);
-
-        final Button dateButton = (Button) rootView.findViewById(R.id.register_tool_calendar_picker);
-        dateButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                DialogFragment dateFragment = new DatePickerFragment(headerDate);
-                dateFragment.show(getFragmentManager(), "datePicker");
-            }
-        });
-
-        setupTextChangedListenerOnHeaderDate(headerDate, currentDate, arrowRightButton);
 
         return rootView;
     }
@@ -639,7 +613,8 @@ public class MyToolsFragment extends Fragment {
                     }
 
                     toolEntry.setToolStatus(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED :
-                            ((toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED) ? ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED));
+                            ((toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNSENT || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED) ?
+                                    ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED));
                     JSONObject gjsonTool = toolEntry.toGeoJson(mGpsLocationTracker);
                     featureList.put(gjsonTool);
                 }
@@ -724,6 +699,41 @@ public class MyToolsFragment extends Fragment {
 
                 startActivity(Intent.createChooser(intent, getString(R.string.send_tool_report_intent_header)));
 
+                toolContainer.removeAllViews();
+
+                for(final Map.Entry<String, ArrayList<ToolEntry>> dateEntry : tools) {
+                    for(final ToolEntry toolEntry : dateEntry.getValue()) {
+                        if (toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED ||
+                                toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED ||
+                                toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
+                            continue;
+                        }
+
+                        View.OnClickListener onClickListener = new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                EditToolFragment fragment = EditToolFragment.newInstance(toolEntry);
+
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.main_activity_fragment_container, fragment)
+                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                        .addToBackStack(getString(R.string.edit_tool_fragment_edit_title))
+                                        .commit();
+                            }
+                        };
+
+                        ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                        toolContainer.addView(row.getView());
+                    }
+                }
+
+                if(featureList.length() == 0) {
+                    Toast.makeText(getActivity(), getString(R.string.no_changes_to_report), Toast.LENGTH_LONG).show();
+
+                    return;
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -802,7 +812,12 @@ public class MyToolsFragment extends Fragment {
                     }
                 });
 
-                cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
                 dialog.show();
             }
 
@@ -846,7 +861,12 @@ public class MyToolsFragment extends Fragment {
                     }
                 });
 
-                cancelButton.setOnClickListener(utilityOnClickListeners.getDismissDialogListener(dialog));
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
 
                 dialog.show();
             }

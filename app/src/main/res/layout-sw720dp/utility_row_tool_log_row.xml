@@ -15,15 +15,15 @@ limitations under the License.
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:drawable/picture_frame"
-    android:paddingBottom="@dimen/table_row_padding_bottom"
-    android:paddingTop="@dimen/table_row_padding_top">
+    android:background="@drawable/gradient_border_background"
+    >
 
     <RelativeLayout
         android:id="@+id/tool_log_row_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/table_row_padding_bottom">
+
+        >
 
         <ImageView
             android:id="@+id/tool_log_row_tool_type_image_view"
@@ -33,7 +33,8 @@ limitations under the License.
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
             android:duplicateParentState="true"
-            android:background="@drawable/ikon_kystfiske"/>
+            android:background="@drawable/ikon_kystfiske"
+            />
 
         <TextView
             android:id="@+id/tool_log_row_latest_date_text_view"
@@ -43,7 +44,8 @@ limitations under the License.
             android:layout_toEndOf="@+id/tool_log_row_tool_type_image_view"
             android:text="@string/date_placeholder_string"
             android:duplicateParentState="true"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            />
 
         <TextView
             android:id="@+id/tool_log_row_tool_type_text_view"
@@ -53,7 +55,8 @@ limitations under the License.
             android:layout_below="@+id/tool_log_row_latest_date_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/tool_type"/>
+            android:text="@string/tool_type"
+            />
 
         <TextView
             android:id="@+id/tool_log_row_tool_position_text_view"
@@ -63,7 +66,8 @@ limitations under the License.
             android:layout_below="@+id/tool_log_row_tool_type_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/position"/>
+            android:text="@string/position"
+            />
 
         <ImageView
             android:id="@+id/tool_log_row_reported_image_view"
@@ -73,7 +77,8 @@ limitations under the License.
             android:visibility="invisible"
             android:layout_toStartOf="@+id/tool_log_row_edit_image_view"
             android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
-            android:background="@drawable/ic_priority_high_black_36dp"/>
+            android:background="@drawable/ic_priority_high_black_36dp"
+            />
 
         <ImageView
             android:id="@+id/tool_log_row_edit_image_view"
@@ -84,7 +89,8 @@ limitations under the License.
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:duplicateParentState="true"
-            android:background="@drawable/ic_mode_edit_black_36dp"/>
+            android:background="@drawable/ic_mode_edit_black_36dp"
+            />
 
 
     </RelativeLayout>

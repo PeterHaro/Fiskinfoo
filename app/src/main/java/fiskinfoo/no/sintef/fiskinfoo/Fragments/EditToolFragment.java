@@ -808,7 +808,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     tool.setToolLostReason(toolLostReason);
                     tool.setToolLostWeather(toolLostWeather);
                     ToolEntryStatus toolStatus = ((tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED) ?
-                            ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED : ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED);
+                            ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED : ToolEntryStatus.STATUS_TOOL_LOST_UNSENT);
                     tool.setToolStatus(toolStatus);
                     tool.setToolLostLength(lostToolLength);
 

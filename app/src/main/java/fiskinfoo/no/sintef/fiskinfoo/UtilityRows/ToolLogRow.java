@@ -123,6 +123,7 @@ public class ToolLogRow extends BaseTableRow {
                 case STATUS_UNREPORTED:
                 case STATUS_REMOVED_UNCONFIRMED:
                 case STATUS_TOOL_LOST_UNREPORTED:
+                case STATUS_TOOL_LOST_UNSENT:
                 case STATUS_UNSENT:
                     getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
                     getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.error_red));
@@ -206,5 +207,13 @@ public class ToolLogRow extends BaseTableRow {
     public void setEditToolOnClickListener(View.OnClickListener onClickListener) {
         relativeLayout.setOnClickListener(onClickListener);
         editToolImageView.setVisibility(onClickListener == null ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    public void updateBorderColor(int colorId) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+            getView().setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
+            toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
+        }
     }
 }
