@@ -315,15 +315,34 @@
         function highlightTool(tool) {
             var toolStyle = OpenLayers.Util.extend( {}, OpenLayers.Feature.Vector.style[ "default" ] );
 
-            toolStyle.strokeWidth = 1;
-            toolStyle.strokeColor = "#00FF00";
+            toolStyle.strokeWidth = "${strokeWidth}";
+            toolStyle.strokeColor = "${strokeColor}";
             toolStyle.fillColor = "#00FF00";
             toolStyle.fill = true;
             toolStyle.pointRadius = 11;
             toolStyle.fillOpacity = 1;
             toolStyle.graphicName = "triangle";
 
-            var toolsStyleLayer = new OpenLayers.Style(toolStyle);
+            var toolsStyleLayer = new OpenLayers.Style( toolStyle, {
+                context: {
+                    strokeWidth: function(feature) {
+                        // Is type point or line
+                        if(feature.geometry.hasOwnProperty("x")) {
+                            return 1;
+                        } else {
+                            return 3;
+                        }
+                    },
+                    strokeColor: function(feature) {
+                        // Is type point or line
+                        if(feature.geometry.hasOwnProperty("x")) {
+                            return "#000000";
+                        } else {
+                            return "#00FF00";
+                        }
+                    }
+                }
+            });
 
             var toolsStyleMap = new OpenLayers.StyleMap({
                 "default": toolsStyleLayer
