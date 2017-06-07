@@ -432,6 +432,8 @@ limitations under the License.
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
     <string name="contact_information">Kontaktinformasjon</string>
     <string name="my_tools_fragment_title">Mine redskaper</string>
+    <string name="my_active_tools_fragment_title">Aktive redskaper</string>
+    <string name="my_archived_tools_fragment_title">Arkiverte redskaper</string>
     <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
     <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
     <string name="tool_updated">Redskap oppdatert</string>
@@ -458,6 +460,9 @@ limitations under the License.
     <string name="number_of_nets_lost">Antall garn tapt</string>
     <string name="size_of_nets_in_meters">Garnlengde i meter (per garn)</string>
     <string name="size_of_lost_tool">Lengde på redskap (meter)</string>
+    <string name="date_removed">Tatt opp:</string>
+    <string name="update_settings">Brukerinnstillinger</string>
+    <string name="update_settings_explanation">Ett eller flere av feltene du har fylt inn er forskjellig fra verdiene som finner i innstillingene. Ønsker du å oppdatere innstillingene med disse nye verdiene?</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -524,5 +529,8 @@ limitations under the License.
         <item>@string/tool_type_purseine</item>
         <item>@string/tool_type_unknown</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

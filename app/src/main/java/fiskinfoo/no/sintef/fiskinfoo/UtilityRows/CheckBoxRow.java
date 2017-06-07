@@ -87,4 +87,12 @@ public class CheckBoxRow extends BaseTableRow {
     public boolean isChecked() {
         return mCheckBox != null && mCheckBox.isChecked();
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        getView().setEnabled(enabled);
+        mTextView.setDuplicateParentStateEnabled(enabled);
+        mTextView.setEnabled(true);
+        mCheckBox.setEnabled(enabled);
+    }
 }

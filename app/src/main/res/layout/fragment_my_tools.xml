@@ -1,48 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center_horizontal"
     >
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/my_tools_swipe_refresh_layout"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/fragment_my_tools_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabGravity="fill"
         >
 
-        <ScrollView
-            android:id="@+id/register_tool_main_container_middle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            >
+    </android.support.design.widget.TabLayout>
 
-            <LinearLayout
-                android:id="@+id/register_tool_current_tools_table_layout"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@drawable/linear_layout_view_divider"
-                android:showDividers="beginning|middle|end"
-                android:layout_marginStart="@dimen/activity_horizontal_margin_small"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
-                >
-            </LinearLayout>
-        </ScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/register_tool_layout_add_tool_material_button"
-        android:layout_width="wrap_content"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/fragment_my_tools_view_pager"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        app:backgroundTint="@color/toolbar_blue"
-        android:src="@drawable/ic_add_white_36dp"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         />
 
-</RelativeLayout>
+</LinearLayout>

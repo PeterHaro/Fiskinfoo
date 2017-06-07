@@ -116,4 +116,9 @@ public class SpinnerRow extends BaseTableRow {
     public void setOnSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener) {
         spinner.setOnItemSelectedListener(onItemSelectedListener);
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        spinner.setEnabled(enabled);
+    }
 }

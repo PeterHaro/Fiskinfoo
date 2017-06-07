@@ -155,4 +155,9 @@ public class ToolSearchResultRow extends BaseTableRow {
     public void setDateTextViewTextColor(int colorId) {
         dateTextView.setTextColor(colorId);
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+
+    }
 }

@@ -35,6 +35,12 @@ public class SwitchAndButtonRow extends BaseTableRow {
         mSwitch.setText(titleId);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        mSwitch.setEnabled(enabled);
+        mInfoButton.setEnabled(enabled);
+    }
+
     public SwitchAndButtonRow(Context context, String title) {
         super(context, R.layout.utility_row_switch_and_button_row);
 

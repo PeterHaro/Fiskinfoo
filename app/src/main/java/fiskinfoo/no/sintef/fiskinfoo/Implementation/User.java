@@ -57,6 +57,7 @@ public class User implements Parcelable{
     private boolean offlineModeActive = false;
     private UserSettings settings;
     private boolean showToolExplanation = true;
+    private boolean showUpdateUserSettingsDialog = true;
 
     public User() {
         isAuthenticated = false;
@@ -82,6 +83,29 @@ public class User implements Parcelable{
         subscriptionCache = (Map<String, SubscriptionEntry>) bundle.getSerializable("cache");
         offlineModeActive = in.readByte() != 0;
         showToolExplanation = in.readByte() != 0;
+        showUpdateUserSettingsDialog = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(username);
+        dest.writeString(password);
+        dest.writeLong(previousAuthenticationTimeStamp);
+        dest.writeParcelable(authentication, flags);
+        dest.writeString(filePathForExternalStorage);
+        dest.writeStringList(activeLayers);
+        dest.writeStringList(mySubscriptions);
+        dest.writeStringList(availableSubscriptions);
+        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
+        dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
+        dest.writeParcelable(toolLog, flags);
+        dest.writeParcelable(settings, flags);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("cache", (Serializable) subscriptionCache);
+        dest.writeBundle(bundle);
+        dest.writeByte((byte) (offlineModeActive ? 1 : 0));
+        dest.writeByte((byte) (showToolExplanation ? 1 : 0));
+        dest.writeByte((byte) (showUpdateUserSettingsDialog ? 1 : 0));
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -252,29 +276,16 @@ public class User implements Parcelable{
         this.showToolExplanation = showToolExplanation;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public boolean showUpdateUserSettingsDialog() {
+        return showUpdateUserSettingsDialog;
+    }
+
+    public void setShowUpdateUserSettingsDialog(boolean showUpdateUserSettingsDialog) {
+        this.showUpdateUserSettingsDialog = showUpdateUserSettingsDialog;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(username);
-        dest.writeString(password);
-        dest.writeLong(previousAuthenticationTimeStamp);
-        dest.writeParcelable(authentication, flags);
-        dest.writeString(filePathForExternalStorage);
-        dest.writeStringList(activeLayers);
-        dest.writeStringList(mySubscriptions);
-        dest.writeStringList(availableSubscriptions);
-        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
-        dest.writeByte((byte) (isFishingFacilityAuthenticated ? 1 : 0));
-        dest.writeParcelable(toolLog, flags);
-        dest.writeParcelable(settings, flags);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("cache", (Serializable) subscriptionCache);
-        dest.writeBundle(bundle);
-        dest.writeByte((byte) (offlineModeActive ? 1 : 0));
-        dest.writeByte((byte) (showToolExplanation ? 1 : 0));
+    public int describeContents() {
+        return 0;
     }
 }

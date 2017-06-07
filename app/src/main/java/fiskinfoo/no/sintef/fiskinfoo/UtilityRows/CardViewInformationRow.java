@@ -86,4 +86,10 @@ public class CardViewInformationRow extends BaseTableRow {
     public TextView getFieldDataTextView() {
         return fieldDataTextView;
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        fieldNameTextView.setEnabled(enabled);
+        fieldDataTextView.setEnabled(enabled);
+    }
 }

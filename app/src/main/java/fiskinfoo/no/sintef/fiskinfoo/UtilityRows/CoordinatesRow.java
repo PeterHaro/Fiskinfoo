@@ -15,6 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +42,7 @@ public class CoordinatesRow extends BaseTableRow {
     private TextWatcher watcher;
     private CompoundButton.OnCheckedChangeListener cardinalDirectionSwitchOnCheckedChangedListener;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
+    private boolean enabled = true;
 
     public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
         super(activity, R.layout.utility_row_coordinates_row);
@@ -121,6 +124,7 @@ public class CoordinatesRow extends BaseTableRow {
         for(Point position : coordinates) {
             DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
             row.setCoordinates(position);
+            row.setEnabled(enabled);
 
             if(watcher != null) {
                 row.setTextWatcher(watcher);
@@ -153,6 +157,28 @@ public class CoordinatesRow extends BaseTableRow {
 
         for(DegreesMinutesSecondsRow row : coordinateRows) {
             row.setCardinalDirectionSwitchOnCheckedChangedListener(this.cardinalDirectionSwitchOnCheckedChangedListener);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        addCoordinateRowButton.setEnabled(enabled);
+        removeCoordinateRowButton.setEnabled(enabled);
+        latLonViewContainer.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+                removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+                removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setEnabled(enabled);
         }
     }
 }

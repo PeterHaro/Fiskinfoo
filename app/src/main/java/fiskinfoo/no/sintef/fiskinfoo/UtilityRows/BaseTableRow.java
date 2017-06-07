@@ -51,4 +51,6 @@ public abstract class BaseTableRow {
     protected Context getContext() {
         return mTableRow.getContext();
     }
+
+    public abstract void setEnabled(boolean enabled);
 }

@@ -15,6 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextWatcher;
 import android.view.View;
@@ -325,5 +327,26 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
     public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
         latitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
         longitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        latitudeDegreesEditText.setEnabled(enabled);
+        latitudeMinutesEditText.setEnabled(enabled);
+        latitudeSecondsEditText.setEnabled(enabled);
+        longitudeDegreesEditText.setEnabled(enabled);
+        longitudeMinutesEditText.setEnabled(enabled);
+        longitudeSecondsEditText.setEnabled(enabled);
+        latitudeCardinalDirectionSwitch.setEnabled(enabled);
+        longitudeCardinalDirectionSwitch.setEnabled(enabled);
+        setPositionButton.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
     }
 }

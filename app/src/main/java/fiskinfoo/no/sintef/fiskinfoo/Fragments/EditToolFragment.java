@@ -31,6 +31,7 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -59,6 +60,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
@@ -118,7 +120,6 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private WebView toolMapPreviewWebView;
     private RelativeLayout mapPreviewContainer;
     private Button mapPreviewZoomButton;
-
     private EditTextRow numberOfToolsLostRow;
     private EditTextRow lostToolLengthRow;
 
@@ -134,7 +135,6 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
      * @param tool .
      * @return A new instance of fragment EditToolFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static EditToolFragment newInstance(ToolEntry tool) {
         EditToolFragment fragment = new EditToolFragment();
         Bundle args = new Bundle();
@@ -156,7 +156,10 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             locationTracker.showSettingsAlert();
         }
 
-        setHasOptionsMenu(true);
+        if(tool != null && !(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED)) {
+            setHasOptionsMenu(true);
+        }
+
     }
 
     @Override
@@ -439,11 +442,24 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         fieldsContainer.addView(toolRemovedRow.getView(), 4);
 
         if (tool != null) {
-            if (tool.getToolStatus() != ToolEntryStatus.STATUS_UNREPORTED) {
+            if (tool.hasBeenRegistered()) {
                 fieldsContainer.addView(archiveRow.getView());
             }
 
             fieldsContainer.addView(deleteRow.getView());
+
+            // TODO: If archived, set fields as uneditable
+            if(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
+                setEnabled(false);
+
+                if(!tool.getRemovedTime().isEmpty()) {
+                    DatePickerRow dateRemovedRow = new DatePickerRow(getContext(), getString(R.string.date_removed), getFragmentManager());
+                    dateRemovedRow.setEnabled(false);
+                    dateRemovedRow.setIconVisibility(false);
+                    dateRemovedRow.setDate(tool.getRemovedTime().substring(0, 10));
+                    fieldsContainer.addView(dateRemovedRow.getView(), 5);
+                }
+            }
         }
     }
 
@@ -599,7 +615,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             });
         }
 
-        if(tool.hasBeenRegistered()) {
+        if(tool.hasBeenRegistered() || !tool.getRemovedTime().isEmpty()) {
             toolRemovedRow.setVisibility(true);
         }
 
@@ -663,20 +679,19 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         final SimpleDateFormat sdf = new SimpleDateFormat(getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
 
         List<Point> coordinates = coordinatesRow.getCoordinates();
-        ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
-        String vesselName = vesselNameRow.getFieldText().trim();
-        String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
+        final ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
+        final String vesselName = vesselNameRow.getFieldText().trim();
+        final String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
         String toolSetupDate = setupDateRow.getDate().trim();
         String toolSetupTime = setupTimeRow.getTime().trim();
         String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
         String commentString = commentRow.getFieldText().trim();
-        String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
-        String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
-        String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
-        String registrationNumber = vesselRegistrationNumberRow.getFieldText().trim();
-        String contactPersonName = contactPersonNameRow.getFieldText().trim();
-        String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
-        String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        final String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
+        final String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
+        final String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
+        final String contactPersonName = contactPersonNameRow.getFieldText().trim();
+        final String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
+        final String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
         String toolLostReason = toolLostCauseRow.getCurrentSpinnerItem();
         String toolLostWeather = toolLostConditionsRow.getCurrentSpinnerItem();
         int lostToolLength = lostToolLengthRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(lostToolLengthRow.getFieldText());
@@ -689,7 +704,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return;
         }
 
-        registrationNumber = FiskInfoUtility.validateRegistrationNumber(registrationNumber) ? FiskInfoUtility.formatRegistrationNumber(registrationNumber) : "";
+        final String registrationNumber = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) ? FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) : "";
 
         if(tool == null) {
             ToolEntry toolEntry = new ToolEntry(coordinates, vesselName, vesselPhoneNumber, contactPersonEmail,
@@ -824,18 +839,151 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     tool.setToolStatus(toolStatus);
                 }
 
-                userInterface.getUser().writeToSharedPref(getContext());
-                Toast.makeText(getContext(), R.string.tool_updated, Toast.LENGTH_LONG).show();
+                final User user = userInterface.getUser();
+
+                if(!compareSettingsValues() && user.showUpdateUserSettingsDialog()) {
+
+                    View checkBoxView = View.inflate(getActivity(), R.layout.dialog_alert_checkbox, null);
+                    final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.checkbox_dialog_checkbox);
+
+                    checkBox.setText(R.string.do_not_show_message_again);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.update_settings);
+                    builder.setMessage(R.string.update_settings_explanation)
+                            .setView(checkBoxView)
+                            .setCancelable(true)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    user.setShowUpdateUserSettingsDialog(!checkBox.isChecked());
+
+                                    UserSettings settings = new UserSettings();
+
+                                    settings.setToolType(toolType);
+                                    settings.setVesselName(vesselName);
+                                    settings.setVesselPhone(vesselPhoneNumber);
+                                    settings.setIrcs(vesselIrcsNumber);
+                                    settings.setMmsi(vesselMmsiNumber);
+                                    settings.setImo(vesselImoNumber);
+                                    settings.setRegistrationNumber(registrationNumber);
+                                    settings.setContactPersonEmail(contactPersonEmail);
+                                    settings.setContactPersonName(contactPersonName);
+                                    settings.setContactPersonPhone(contactPersonPhone);
+
+                                    user.setSettings(settings);
+                                    user.writeToSharedPref(getContext());
+                                    Toast.makeText(getContext(), R.string.tool_updated, Toast.LENGTH_LONG).show();
+                                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                    fragmentManager.popBackStackImmediate();
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    user.writeToSharedPref(getContext());
+                                    Toast.makeText(getContext(), R.string.tool_updated, Toast.LENGTH_LONG).show();
+                                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                    fragmentManager.popBackStackImmediate();
+                                }
+                            }).show();
+                } else {
+                    user.writeToSharedPref(getContext());
+                    Toast.makeText(getContext(), R.string.tool_updated, Toast.LENGTH_LONG).show();
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.popBackStackImmediate();
+                }
             } else {
                 Toast.makeText(getContext(), R.string.no_changes_made, Toast.LENGTH_LONG).show();
             }
         }
 
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        fragmentManager.popBackStackImmediate();
+        if(!userInterface.getUser().showUpdateUserSettingsDialog() || !edited) {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.popBackStackImmediate();
+        }
     }
 
-    private void updateTool() {
+    /**
+     * Compares the tool values submitted to the values saved in user settings.
+     * @return Returns true if one of the following is true:
+     *      - All values are equal
+     *      - Tool values and settings values are equal or settings values are non-empty and their tool value counterparts are empty
+     */
+    private boolean compareSettingsValues() {
+        UserSettings settings = userInterface.getUser().getSettings();
+        ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
+        String vesselName = vesselNameRow.getFieldText().trim();
+        String vesselPhone = vesselPhoneNumberRow.getFieldText().trim();
+        String ircs = vesselIrcsNumberRow.getFieldText().trim();
+        String mmsi = vesselMmsiNumberRow.getFieldText().trim();
+        String imo = vesselImoNumberRow.getFieldText().trim();
+        String registrationNumber = FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim());
+        String ContactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        String ContactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
+        String ContactPersonName = contactPersonNameRow.getFieldText().trim();
+
+        if(settings == null) {
+            return false;
+        }
+
+        if(!settings.getIrcs().equals(ircs) || ircs.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getMmsi().equals(mmsi) || mmsi.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getImo().equals(imo) || imo.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getRegistrationNumber().equals(registrationNumber) || registrationNumber.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getContactPersonEmail().equals(ContactPersonEmail) || ContactPersonEmail.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getContactPersonPhone().equals(ContactPersonPhone) || ContactPersonPhone.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getVesselPhone().equals(vesselPhone) || vesselPhone.isEmpty()) {
+            return false;
+        }
+
+        if(!settings.getVesselName().equals(vesselName) || vesselName.isEmpty()) {
+            return false;
+        }
+
+        if(settings.getToolType() != toolType) {
+            return false;
+        }
+
+        if(!settings.getContactPersonName().equals(ContactPersonName) || ContactPersonName.isEmpty()) {
+            return false;
+        }
+
+//        return (settings.getToolType() == toolType &&
+//                (settings.getVesselName().equals(vesselName) || vesselName.isEmpty()) &&
+//                (settings.getVesselPhone().equals(vesselPhone) || vesselPhone.isEmpty()) &&
+//                (settings.getIrcs().equals(ircs) || ircs.isEmpty()) &&
+//                (settings.getMmsi().equals(mmsi) || mmsi.isEmpty()) &&
+//                (settings.getImo().equals(imo) || imo.isEmpty()) &&
+//                (settings.getRegistrationNumber().equals(registrationNumber) || registrationNumber.isEmpty()) &&
+//                (settings.getContactPersonEmail().equals(ContactPersonEmail) || ContactPersonEmail.isEmpty()) &&
+//                (settings.getContactPersonPhone().equals(ContactPersonPhone) || ContactPersonPhone.isEmpty()) &&
+//                (settings.getContactPersonName().equals(ContactPersonName) || ContactPersonName.isEmpty())
+//
+//
+//        );
+
+        return true;
     }
 
     private boolean validateFields() {
@@ -1004,6 +1152,32 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         }
 
         return true;
+    }
+
+    private void setEnabled(boolean enabled) {
+        setupDateRow.setEnabled(enabled);
+        setupTimeRow.setEnabled(enabled);
+        coordinatesRow.setEnabled(enabled);
+        toolRow.setEnabled(enabled);
+        toolRemovedRow.setEnabled(enabled);
+        commentRow.setEnabled(enabled);
+        contactPersonNameRow.setEnabled(enabled);
+        contactPersonPhoneRow.setEnabled(enabled);
+        contactPersonEmailRow.setEnabled(enabled);
+        vesselNameRow.setEnabled(enabled);
+        vesselPhoneNumberRow.setEnabled(enabled);
+        vesselIrcsNumberRow.setEnabled(enabled);
+        vesselMmsiNumberRow.setEnabled(enabled);
+        vesselImoNumberRow.setEnabled(enabled);
+        vesselRegistrationNumberRow.setEnabled(enabled);
+        archiveRow.setEnabled(enabled);
+        errorRow.setEnabled(enabled);
+        toolLostRow.setEnabled(enabled);
+        toolLostCauseRow.setEnabled(enabled);
+        toolLostConditionsRow.setEnabled(enabled);
+        toolMapPreviewWebView.setEnabled(enabled);
+        numberOfToolsLostRow.setEnabled(enabled);
+        lostToolLengthRow.setEnabled(enabled);
     }
 
     @Override

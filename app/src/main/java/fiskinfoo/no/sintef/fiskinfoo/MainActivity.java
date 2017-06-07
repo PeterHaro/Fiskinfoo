@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements
     public void refreshTitle(String title) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setTitle(title);
         }
     }

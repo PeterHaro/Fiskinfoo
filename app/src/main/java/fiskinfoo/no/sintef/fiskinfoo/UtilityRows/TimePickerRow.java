@@ -15,8 +15,9 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,14 +25,14 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyToolsFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.ActiveToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class TimePickerRow extends BaseTableRow {
     private TextView header;
     private Button timePickerButton;
     private TextView timeTextView;
-    MyToolsFragment.TimePickerFragment timePickerFragment;
+    ActiveToolsFragment.TimePickerFragment timePickerFragment;
 
     public TimePickerRow(Context context, final FragmentManager fragmentManager, final boolean hasMaxTime) {
         super(context, R.layout.utility_row_time_picker_row);
@@ -39,7 +40,7 @@ public class TimePickerRow extends BaseTableRow {
         header = (TextView) getView().findViewById(R.id.date_picker_row_header);
         timePickerButton = (Button) getView().findViewById(R.id.time_picker_row_time_picker_button);
         timeTextView = (TextView) getView().findViewById(R.id.time_picker_row_time_text_view);
-        timePickerFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+        timePickerFragment = new ActiveToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
 
         Date time = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -67,7 +68,7 @@ public class TimePickerRow extends BaseTableRow {
         header = (TextView) getView().findViewById(R.id.utility_row_header);
         timePickerButton = (Button) getView().findViewById(R.id.time_picker_row_time_picker_button);
         timeTextView = (TextView) getView().findViewById(R.id.time_picker_row_time_text_view);
-        timePickerFragment = new MyToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
+        timePickerFragment = new ActiveToolsFragment.TimePickerFragment(timeTextView, hasMaxTime);
 
         Date time = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -103,5 +104,19 @@ public class TimePickerRow extends BaseTableRow {
 
     public void setDateTextView(TextView dateTextView) {
         timePickerFragment.setDateTextView(dateTextView);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        timeTextView.setEnabled(enabled);
+        timePickerButton.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                timePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                timePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
     }
 }

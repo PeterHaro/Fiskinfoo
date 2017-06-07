@@ -38,6 +38,11 @@ public class SettingsRow extends BaseTableRow {
         getView().setOnClickListener(onClickListener);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+
+    }
+
 //    @Override
 //    boolean validateInput() {
 //        return false;

@@ -114,4 +114,11 @@ public class LatLonRow extends BaseTableRow {
 
         return point;
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        latitudeEditText.setEnabled(enabled);
+        longitudeEditText.setEnabled(enabled);
+        setPositionButton.setEnabled(enabled);
+    }
 }

@@ -58,4 +58,9 @@ public class ToolLegendRow extends BaseTableRow {
     public void setText(String text) {
         mTextView.setText(text);
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+
+    }
 }

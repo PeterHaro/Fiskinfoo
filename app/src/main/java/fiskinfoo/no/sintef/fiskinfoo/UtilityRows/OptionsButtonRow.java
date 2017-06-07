@@ -59,4 +59,8 @@ public class OptionsButtonRow extends BaseTableRow {
         return mButton;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        mButton.setEnabled(enabled);
+    }
 }

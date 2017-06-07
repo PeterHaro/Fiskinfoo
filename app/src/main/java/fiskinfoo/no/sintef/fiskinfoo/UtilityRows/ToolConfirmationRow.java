@@ -239,4 +239,9 @@ public class ToolConfirmationRow extends BaseTableRow{
     public boolean isChecked() {
         return addToolCheckBox.isChecked();
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+
+    }
 }

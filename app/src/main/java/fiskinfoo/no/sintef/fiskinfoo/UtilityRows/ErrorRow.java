@@ -47,6 +47,12 @@ public class ErrorRow extends BaseTableRow {
         getView().setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        textView.setEnabled(enabled);
+        imageView.setEnabled(enabled);
+    }
+
     public void requestFocus() {
         textView.requestFocus();
     }

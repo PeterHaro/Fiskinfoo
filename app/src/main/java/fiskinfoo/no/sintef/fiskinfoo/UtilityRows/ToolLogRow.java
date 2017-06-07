@@ -81,39 +81,44 @@ public class ToolLogRow extends BaseTableRow {
         relativeLayout.setOnClickListener(onClickListener);
         toolTypeTextView.setText(tool.getToolType().toString());
         dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
-
-        if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
-            toolNotificationImageView.setVisibility(View.VISIBLE);
-            toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int errorMessageId = -1;
-                    switch(tool.getToolStatus()) {
-                        case STATUS_REMOVED_UNCONFIRMED:
-                        case STATUS_SENT_UNCONFIRMED:
-                        case STATUS_TOOL_LOST_UNCONFIRMED:
-                            errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
-                            break;
-                        case STATUS_UNREPORTED:
-                        case STATUS_TOOL_LOST_UNREPORTED:
-                            errorMessageId = R.string.notification_tool_not_reported;
-                            break;
-                        case STATUS_UNSENT:
-                            errorMessageId = R.string.notification_tool_unreported_changes;
-                        default:
-                            break;
-                    }
-
-                    if(errorMessageId != -1) {
-                        Toast.makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
-
         highlightOldTool(true);
 
+        if(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
+            editToolImageView.setBackgroundResource(R.drawable.ic_remove_red_eye_black_24dp);
+        } else {
+            if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
+                toolNotificationImageView.setVisibility(View.VISIBLE);
+                toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int errorMessageId = -1;
+                        switch(tool.getToolStatus()) {
+                            case STATUS_REMOVED_UNCONFIRMED:
+                            case STATUS_SENT_UNCONFIRMED:
+                            case STATUS_TOOL_LOST_UNCONFIRMED:
+                                errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
+                                break;
+                            case STATUS_UNREPORTED:
+                            case STATUS_TOOL_LOST_UNREPORTED:
+                                errorMessageId = R.string.notification_tool_not_reported;
+                                break;
+                            case STATUS_UNSENT:
+                                errorMessageId = R.string.notification_tool_unreported_changes;
+                            default:
+                                break;
+                        }
+
+                        if(errorMessageId != -1) {
+                            Toast.makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            editToolImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+
             switch (tool.getToolStatus()) {
                 case STATUS_RECEIVED:
                     getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
@@ -215,5 +220,14 @@ public class ToolLogRow extends BaseTableRow {
             getView().setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
             toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
         }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        dateHeader.setEnabled(enabled);
+        toolTypeTextView.setEnabled(enabled);
+        toolPositionTextView.setEnabled(enabled);
+        editToolImageView.setEnabled(enabled);
+        relativeLayout.setEnabled(enabled);
     }
 }
