@@ -463,6 +463,7 @@ limitations under the License.
     <string name="date_removed">Tatt opp:</string>
     <string name="update_settings">Brukerinnstillinger</string>
     <string name="update_settings_explanation">Ett eller flere av feltene du har fylt inn er forskjellig fra verdiene som finner i innstillingene. Ønsker du å oppdatere innstillingene med disse nye verdiene?</string>
+    <string name="tool_log_row_tool_type_image_view_content_description">Redskapsikon</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>

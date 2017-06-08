@@ -113,6 +113,7 @@ public class SubscriptionDetailsFragment extends Fragment {
         }
 
         utilityOnClickListeners = new UtilityOnClickListeners();
+        setHasOptionsMenu(true);
     }
 
     @Override

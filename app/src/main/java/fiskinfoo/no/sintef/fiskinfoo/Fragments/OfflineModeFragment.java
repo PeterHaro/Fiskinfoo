@@ -68,6 +68,9 @@ public class OfflineModeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
             user = getArguments().getParcelable(ARG_PARAM_USER);
         }

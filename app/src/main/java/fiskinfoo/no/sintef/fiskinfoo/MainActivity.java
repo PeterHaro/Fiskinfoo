@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +34,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -82,16 +85,15 @@ public class MainActivity extends AppCompatActivity implements
     private FiskInfoUtility fiskInfoUtility;
     private User user;
     private ScheduledFuture offlineModeBackGroundThread;
-    private RelativeLayout toolbarOfflineModeView;
     boolean offlineModeLooperPrepared = false;
     private TextView mNetworkErrorTextView;
     private TextView navigationHeaderUserNameTextView;
-
     private NavigationView navigationView;
-    int currentMenuItemID = -1;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
+    private Menu menu;
+    private int currentMenuItemID = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toolbarOfflineModeView = (RelativeLayout) toolbar.findViewById(R.id.toolbar_offline_mode_container);
 
         initializeNavigationView();
 
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializeNavigationView() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer) {
-                @Override
+            @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
             }
@@ -176,28 +177,23 @@ public class MainActivity extends AppCompatActivity implements
             offlineModeLooperPrepared = false;
         }
 
-        toolbarOfflineModeView.setVisibility(View.GONE);
+        MenuItem offlineModeItem = menu.findItem(R.id.action_offline_mode);
+
+        offlineModeItem.setVisible(false);
+        invalidateOptionsMenu();
     }
 
     private void initAndStartOfflineModeBackgroundThread() {
-        toolbarOfflineModeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                OfflineModeFragment fragment = OfflineModeFragment.newInstance(user);
-                Fragment currentFragment = fragmentManager.findFragmentByTag(getString(R.string.offline_mode));
+        if(menu != null) {
+            MenuInflater inflater = getMenuInflater();
 
-                if (currentFragment != null && currentFragment.isVisible()) {
-                    return;
-                }
-
-                fragmentManager.beginTransaction()
-                        .replace(R.id.main_activity_fragment_container, fragment, getString(R.string.offline_mode))
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .addToBackStack(getString(R.string.offline_mode))
-                        .commit();
+            if(user.getOfflineMode()) {
+                inflater.inflate(R.menu.menu_offline_mode, menu);
             }
-        });
+
+            MenuItem offlineModeItem = menu.findItem(R.id.action_offline_mode);
+            offlineModeItem.setVisible(true);
+        }
 
         offlineModeBackGroundThread = new FiskinfoScheduledTaskExecutor(2).scheduleAtFixedRate(new Runnable() {
             @Override
@@ -293,8 +289,6 @@ public class MainActivity extends AppCompatActivity implements
                 System.out.println("BEEP");
             }
         }, getResources().getInteger(R.integer.zero), getResources().getInteger(R.integer.offline_mode_interval_time_seconds), TimeUnit.SECONDS);
-
-        toolbarOfflineModeView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -384,6 +378,43 @@ public class MainActivity extends AppCompatActivity implements
         return true;
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        MenuInflater inflater = getMenuInflater();
+
+        if(user.getOfflineMode()) {
+            inflater.inflate(R.menu.menu_offline_mode, menu);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_offline_mode:
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                OfflineModeFragment fragment = OfflineModeFragment.newInstance(user);
+                Fragment currentFragment = fragmentManager.findFragmentByTag(getString(R.string.offline_mode));
+
+                if (currentFragment != null && currentFragment.isVisible()) {
+                    return true;
+                }
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_fragment_container, fragment, getString(R.string.offline_mode))
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(getString(R.string.offline_mode))
+                        .commit();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     public void deleteToolLogEntry(ToolEntry tool) {

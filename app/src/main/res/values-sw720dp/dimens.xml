@@ -30,9 +30,13 @@ limitations under the License.
     <dimen name="login_network_error_text_size">20sp</dimen>
 
     <!-- ToolBar -->
-    <dimen name="toolbar_offline_mode_image_view_width">18dp</dimen>
-    <dimen name="toolbar_offline_mode_image_view_height">18dp</dimen>
-    <dimen name="toolbar_offline_mode_text_view_margin_left">20dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_width">24dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_height">24dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_margin_start">20dp</dimen>
+    <dimen name="app_bar_icon_padding_start">16dp</dimen>
+    <dimen name="app_bar_icon_padding_end">16dp</dimen>
+    <dimen name="app_bar_icon_padding_top">16dp</dimen>
+    <dimen name="app_bar_icon_padding_bottom">16dp</dimen>
 
     <!-- File dialog -->
     <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
@@ -266,9 +270,14 @@ limitations under the License.
     <dimen name="utility_row_header_margin_left">5dp</dimen>
     <dimen name="utility_row_margin_top">5dp</dimen>
     <dimen name="utility_row_margin_left_15">15dp</dimen>
-    <dimen name="tool_log_notification_view_width">30dp</dimen>
-    <dimen name="tool_log_notification_view_height">30dp</dimen>
+    <dimen name="tool_log_row_notification_image_view_width">48dp</dimen>
+    <dimen name="tool_log_notification_row_image_view_height">48dp</dimen>
     <dimen name="utility_tool_map_preview_web_view_height">200dp</dimen>
+    <dimen name="tool_log_row_edit_image_view_margin_end">16dp</dimen>
+    <dimen name="tool_log_row_text_view_container_margin_start">16dp</dimen>
+    <dimen name="tool_log_row_reported_image_view_margin_end">20dp</dimen>
+    <dimen name="tool_log_row_edit_tool_image_view_width">36dp</dimen>
+    <dimen name="tool_log_row_edit_tool_image_view_height">36dp</dimen>
 
     <!-- Offline mode fragment -->
     <dimen name="offline_mode_fragment_switch_padding_vertical">10dp</dimen>

@@ -38,36 +38,7 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:background="@color/toolbar_blue"
             android:minHeight="?attr/actionBarSize"
-            >
-
-            <RelativeLayout
-                android:id="@+id/toolbar_offline_mode_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                >
-
-                <ImageView
-                    android:id="@+id/toolbar_offline_mode_image_view"
-                    android:layout_width="@dimen/toolbar_offline_mode_image_view_width"
-                    android:layout_height="@dimen/toolbar_offline_mode_image_view_height"
-                    android:background="@drawable/ic_signal_cellular_connected_no_internet_4_bar_white_36dp"
-                    android:duplicateParentState="true"
-                    />
-
-            </RelativeLayout>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:tabGravity="center"
-                app:tabIndicatorColor="@color/bright_foreground_material_dark"
-                app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/bright_foreground_material_dark"
-                app:tabTextColor="@color/passive_orange"
-                />
-        </android.support.v7.widget.Toolbar>
+            />
 
         <TextView
             android:id="@+id/activity_main_network_error_text_view"

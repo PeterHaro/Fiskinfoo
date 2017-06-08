@@ -57,6 +57,10 @@ public class DatePickerRow extends BaseTableRow {
 
         dateTextView.setOnClickListener(onClickListener);
         datePickerButton.setOnClickListener(onClickListener);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            datePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public String getDate() {

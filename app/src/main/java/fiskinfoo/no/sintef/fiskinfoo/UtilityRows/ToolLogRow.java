@@ -20,7 +20,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +42,7 @@ public class ToolLogRow extends BaseTableRow {
     private TextView toolPositionTextView;
     private ImageView toolNotificationImageView;
     private ImageView editToolImageView;
-    private RelativeLayout relativeLayout;
+    private TableRow tableRow;
 
     public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener) {
         super(context, R.layout.utility_row_tool_log_row);
@@ -52,7 +52,7 @@ public class ToolLogRow extends BaseTableRow {
         toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolImageView = (ImageView) getView().findViewById(R.id.tool_log_row_edit_image_view);
-        relativeLayout = (RelativeLayout) getView().findViewById(R.id.tool_log_row_relative_layout);
+        tableRow = (TableRow) getView().findViewById(R.id.tool_log_row_table_row);
         StringBuilder sb = new StringBuilder(tool.getCoordinates().get(0).getLatitude() < 0 ? "S" : "N");
 
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));
@@ -78,7 +78,7 @@ public class ToolLogRow extends BaseTableRow {
 
         toolPositionTextView.setText(coordinateString);
         editToolImageView.setVisibility(View.VISIBLE);
-        relativeLayout.setOnClickListener(onClickListener);
+        tableRow.setOnClickListener(onClickListener);
         toolTypeTextView.setText(tool.getToolType().toString());
         dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
         highlightOldTool(true);
@@ -103,6 +103,7 @@ public class ToolLogRow extends BaseTableRow {
                                 errorMessageId = R.string.notification_tool_not_reported;
                                 break;
                             case STATUS_UNSENT:
+                            case STATUS_TOOL_LOST_UNSENT:
                                 errorMessageId = R.string.notification_tool_unreported_changes;
                             default:
                                 break;
@@ -210,7 +211,7 @@ public class ToolLogRow extends BaseTableRow {
     }
 
     public void setEditToolOnClickListener(View.OnClickListener onClickListener) {
-        relativeLayout.setOnClickListener(onClickListener);
+        tableRow.setOnClickListener(onClickListener);
         editToolImageView.setVisibility(onClickListener == null ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -228,6 +229,6 @@ public class ToolLogRow extends BaseTableRow {
         toolTypeTextView.setEnabled(enabled);
         toolPositionTextView.setEnabled(enabled);
         editToolImageView.setEnabled(enabled);
-        relativeLayout.setEnabled(enabled);
+        tableRow.setEnabled(enabled);
     }
 }

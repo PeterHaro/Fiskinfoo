@@ -95,6 +95,11 @@ public class CoordinatesRow extends BaseTableRow {
                 coordinateRows.remove(coordinateRows.size() - 1);
             }
         });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public void setHeader(String headerText) {

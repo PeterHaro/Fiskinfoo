@@ -60,6 +60,10 @@ public class TimePickerRow extends BaseTableRow {
                 timePickerFragment.show(fragmentManager, "timePicker");
             }
         });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            timePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public TimePickerRow(Context context, String rowTitle, final FragmentManager fragmentManager, final boolean hasMaxTime) {
@@ -88,6 +92,10 @@ public class TimePickerRow extends BaseTableRow {
                 timePickerFragment.show(fragmentManager, "timePicker");
             }
         });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            timePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public String getTime() {

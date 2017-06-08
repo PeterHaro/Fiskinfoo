@@ -112,6 +112,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
         user = userInterface.getUser();
+        setHasOptionsMenu(true);
     }
 
     public static MyPageFragment newInstance() {

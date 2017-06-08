@@ -36,6 +36,10 @@ public class ActionRow extends BaseTableRow {
         header.setText(headerText);
         actionButton.setBackground(ContextCompat.getDrawable(context, actionButtonIconId));
         actionButton.setOnClickListener(onClickListener);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            actionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public String getHeaderText() {

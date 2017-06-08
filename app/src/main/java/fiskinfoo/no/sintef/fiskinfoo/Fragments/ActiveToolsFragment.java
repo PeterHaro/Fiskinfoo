@@ -136,7 +136,14 @@ public class ActiveToolsFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_tool_registration, menu);
+        MenuItem menuItem = menu.findItem(R.id.send_tool_report);
+
+        if(menuItem == null) {
+            inflater.inflate(R.menu.menu_tool_registration, menu);
+        } else if(!menuItem.isVisible()){
+            menuItem.setVisible(true);
+            getActivity().invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -595,7 +602,7 @@ public class ActiveToolsFragment extends Fragment {
         }
     }
 
-    public class CheckToolsStatusAsyncTask extends AsyncTask<List<ArrayList<ToolEntry>>, Void, Boolean> {
+    private class CheckToolsStatusAsyncTask extends AsyncTask<List<ArrayList<ToolEntry>>, Void, Boolean> {
         @Override
         protected void onPreExecute(){
             mSwipeRefreshLayout.setRefreshing(true);
@@ -783,7 +790,7 @@ public class ActiveToolsFragment extends Fragment {
                         }
                     };
 
-                    if(!(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED) || !(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED)) {
+                    if(!(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_RECEIVED) && !(toolEntry.getToolStatus() == ToolEntryStatus.STATUS_REMOVED)) {
                         localChanges = true;
                     }
 

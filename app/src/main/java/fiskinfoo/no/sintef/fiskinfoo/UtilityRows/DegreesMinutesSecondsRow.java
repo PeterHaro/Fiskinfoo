@@ -75,6 +75,10 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
             }
         });
         setPositionButton.setVisibility(gpsLocationTracker == null ? View.GONE : View.VISIBLE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public void setEditable(boolean editable) {
