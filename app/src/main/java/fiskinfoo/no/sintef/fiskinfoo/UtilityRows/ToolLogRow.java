@@ -81,11 +81,12 @@ public class ToolLogRow extends BaseTableRow {
         tableRow.setOnClickListener(onClickListener);
         toolTypeTextView.setText(tool.getToolType().toString());
         dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
-        highlightOldTool(true);
 
         if(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
             editToolImageView.setBackgroundResource(R.drawable.ic_remove_red_eye_black_24dp);
         } else {
+            highlightOldTool(true);
+
             if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
                 toolNotificationImageView.setVisibility(View.VISIBLE);
                 toolNotificationImageView.setOnClickListener(new View.OnClickListener() {

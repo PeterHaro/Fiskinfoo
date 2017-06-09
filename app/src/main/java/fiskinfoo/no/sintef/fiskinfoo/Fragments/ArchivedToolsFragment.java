@@ -90,6 +90,7 @@ public class ArchivedToolsFragment extends Fragment {
 
                 ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
                 row.getView().setTag(toolEntry.getToolId());
+                row.highlightOldTool(false);
                 toolsContainer.addView(row.getView());
             }
         }

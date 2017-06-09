@@ -883,6 +883,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
+                                    user.setShowUpdateUserSettingsDialog(!checkBox.isChecked());
                                     user.writeToSharedPref(getContext());
                                     Toast.makeText(getContext(), R.string.tool_updated, Toast.LENGTH_LONG).show();
                                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
