@@ -175,6 +175,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         } else {
             populateFieldsFromSettings();
         }
+
+        setHasOptionsMenu(true);
         
         return rootView;
     }
