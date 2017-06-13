@@ -161,10 +161,14 @@ public class CardViewFragment extends Fragment {
 
             String description = (propertyDescription.LongDescription == null || propertyDescription.LongDescription.trim().equals("")) ? propertyDescription.Description : propertyDescription.LongDescription;
             String hyperlink = null;
+
+            description = description.replace("<p>", "");
+            description = description.replace("</p>", "");
+
             // TODO: should rewrite in order to handle multiple links.
             if(description.contains("<a href=\"")) {
-                hyperlink = "<a href='" + description.substring(description.indexOf("href=") + 6, description.indexOf(">") - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
-                description = description.substring(0, description.indexOf('<')) + description.substring(description.indexOf('>') + 1, description.indexOf("</a")) +
+                hyperlink = "<a href='" + description.substring(description.indexOf("href=") + 6, description.indexOf(">", description.indexOf("href=")) - 1) + "'>" + "\t\t\t* " + getString(R.string.see_more_info) + "</a>";
+                description = description.substring(0, description.indexOf("<a href")) + description.substring(description.indexOf(">", description.indexOf("<a href")) + 1, description.indexOf("</a")) +
                         "*" +  (description.indexOf("a>") > description.length() - 3 ? "" : description.substring(description.indexOf("a>") + 2, description.length()));
             }
 
