@@ -16,11 +16,13 @@ limitations under the License.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:paddingBottom="@dimen/switch_and_button_row_padding_bottom"
-          android:paddingTop="@dimen/switch_and_button_row_padding_top">
+          android:paddingTop="@dimen/switch_and_button_row_padding_top"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <Switch
             android:id="@+id/switch_and_button_row_switch"
@@ -28,10 +30,11 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/switch_and_button_row_switch_margin_left"
-            android:layout_marginRight="@dimen/switch_and_button_row_switch_margin_right"
-            android:layout_toLeftOf="@+id/switch_and_button_row_button"
-            android:text="Some text"/>
+            android:layout_marginStart="@dimen/switch_and_button_row_switch_margin_left"
+            android:layout_marginEnd="@dimen/switch_and_button_row_switch_margin_right"
+            android:layout_toStartOf="@+id/switch_and_button_row_button"
+            android:text="@string/placeholder_string"
+            />
 
         <Button
             android:id="@+id/switch_and_button_row_button"
@@ -41,7 +44,8 @@ limitations under the License.
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/switch_and_button_row_button_margin_right"
             android:layout_marginStart="@dimen/switch_and_button_row_button_margin_left"
-            android:background="@drawable/ic_error_outline_black_36dp"/>
+            android:background="@drawable/ic_error_outline_black_24dp"
+            />
 
     </RelativeLayout>
 

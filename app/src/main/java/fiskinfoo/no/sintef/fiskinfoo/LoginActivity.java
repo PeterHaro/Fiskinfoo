@@ -219,8 +219,25 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+
+            if((user = User.readFromSharedPref(this)) != null && user.getUsername().equals(email) && user.getPassword().equals(password)) {
+                CheckBox storeUserToDisk = (CheckBox) findViewById(R.id.login_checkbox);
+
+                if(storeUserToDisk.isChecked()) {
+                    User.rememberUser(LoginActivity.this);
+                }
+                if(!user.isTokenValid()) {
+                    LoginAuthenticationUserTask loginTask = new LoginAuthenticationUserTask(user);
+                    loginTask.execute((Void) null);
+                } else {
+                    Log.d(TAG, "Token valid");
+                }
+                changeActivity(MainActivity.class, user);
+            } else {
+                mAuthTask = new UserLoginTask(email, password);
+                mAuthTask.execute((Void) null);
+            }
+
         }
     }
 

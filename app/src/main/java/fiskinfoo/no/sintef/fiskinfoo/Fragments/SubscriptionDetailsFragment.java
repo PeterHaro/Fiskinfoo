@@ -195,7 +195,7 @@ public class SubscriptionDetailsFragment extends Fragment {
                 final Animation animation = getBlinkAnimation();
 
                 notificationImageView.setVisibility(View.VISIBLE);
-                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_36dp));
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
                 row.setTextColor(getResources().getColor(R.color.warning_orange));
 
                 notificationImageView.setOnClickListener(new View.OnClickListener() {
@@ -214,7 +214,7 @@ public class SubscriptionDetailsFragment extends Fragment {
                 final Animation animation = getBlinkAnimation();
 
                 notificationImageView.setVisibility(View.VISIBLE);
-                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_36dp));
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_24dp));
                 row.setTextColor(getResources().getColor(R.color.error_red));
 
                 notificationImageView.setOnClickListener(new View.OnClickListener() {

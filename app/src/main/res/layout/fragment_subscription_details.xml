@@ -82,7 +82,7 @@ limitations under the License.
                     android:layout_width="@dimen/card_view_notification_icon_width"
                     android:layout_height="@dimen/card_view_notification_icon_height"
                     android:layout_marginEnd="@dimen/card_view_download_map_button_margin_right"
-                    android:background="@drawable/ic_file_download_black_36dp"
+                    android:background="@drawable/ic_file_download_black_24dp"
                     />
 
             </LinearLayout>

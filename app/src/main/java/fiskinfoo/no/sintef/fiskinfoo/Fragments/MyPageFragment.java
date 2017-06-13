@@ -340,14 +340,21 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
         final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
 
-        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
+        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG) :
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user), -1));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
             View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
+            currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
+        }
+
+        if(!canSubscribe && subscription.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
+            subscription.ErrorType = ApiErrorType.WARNING.toString();
+            subscription.ErrorText = getString(R.string.fishing_facility_limited_details);
+            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, subscription.ErrorText, -1);
             currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
         }
 

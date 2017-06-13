@@ -1,6 +1,5 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -155,11 +154,11 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
 
         if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.WARNING) {
             childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_warning_black_36dp));
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_error_outline_black_24dp));
             childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
         } else if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.ERROR) {
             childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_error_outline_black_36dp));
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_warning_black_24dp));
             childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
         } else {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)childViewHolder.dataText.getLayoutParams();
@@ -185,26 +184,14 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
 
         if(!(new FiskInfoUtility().isNetworkAvailable(context))) {
             childViewHolder.subscribedCheckBox.setEnabled(false);
-            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
-            childViewHolder.downloadButton.setOnClickListener(new UtilityOnClickListeners().getInformationDialogOnClickListener(((SubscriptionExpandableListChildObject) childObject).getTitleText(), context.getString(R.string.unable_to_download_no_network), -1));
-//            childViewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    byte[] array = new byte[7];
-//
-//                    for(int i = 0; i < array.length; i++) {
-//                        array[i] = (byte)i;
-//                    }
-//
-//                    FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
-//                    User user = User.readFromSharedPref(view.getContext());
-//                    fiskInfoUtility.writeMapLayerToExternalStorage((Activity) view.getContext(), array, "fileName", "JSON", user.getFilePathForExternalStorage(), true);
-//                }
-//            });
+//            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_24dp));
+//            childViewHolder.downloadButton.setOnClickListener(new UtilityOnClickListeners().getInformationDialogOnClickListener(((SubscriptionExpandableListChildObject) childObject).getTitleText(), context.getString(R.string.unable_to_download_no_network), -1));
 
-        } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized()) {
+            childViewHolder.downloadButton.setEnabled(false);
+
+        } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized() && !childViewHolder.dataText.getText().toString().equals(context.getString(R.string.fishing_facility_name))) {
             childViewHolder.subscribedCheckBox.setEnabled(false);
-            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
+            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_24dp));
         }
     }
 

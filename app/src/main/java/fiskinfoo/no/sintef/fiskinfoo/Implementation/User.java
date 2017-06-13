@@ -211,7 +211,11 @@ public class User implements Parcelable{
     }
 
     public static void forgetUser(Context context) {
-        context.getSharedPreferences(PREFS_NAME, 0).edit().clear().commit();
+//        context.getSharedPreferences(PREFS_NAME, 0).edit().clear().commit();
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(EXISTS, false);
+        editor.apply();
     }
 
     public String serialize() {
@@ -235,6 +239,11 @@ public class User implements Parcelable{
     public static User readFromSharedPref(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String serializedDataFromPreference = prefs.getString(PREFS_KEY, null);
+
+        if(serializedDataFromPreference == null) {
+            return null;
+        }
+
         Log.d("User should be: ", serializedDataFromPreference);
         return deSerialize(serializedDataFromPreference);
     }
