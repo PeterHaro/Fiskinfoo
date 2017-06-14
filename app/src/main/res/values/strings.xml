@@ -102,6 +102,8 @@ limitations under the License.
     <string name="subscription_update_failed">Abonnementsendring feilet</string>
     <string name="my_page_fragment_title">Min side</string>
     <string name="fishing_facility_limited_details">Din bruker har ikke tilgang til detaljert redskapsinformasjon som hvem som har satt redskaper. Du kan søke om tilgang på dette via lenken under:\n\thttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
+    <string name="download_title">Nedlasting</string>
+    <string name="error_cannot_download_without_internet_access">Kan ikke laste ned kartlag uten internettilgang.</string>
 
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
