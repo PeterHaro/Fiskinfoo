@@ -351,6 +351,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
         }
 
+        // Need this check because not being authorized for the tools layer does not prevent subscribing or downloading, only the level of details available.
         if(!canSubscribe && subscription.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
             subscription.ErrorType = ApiErrorType.WARNING.toString();
             subscription.ErrorText = getString(R.string.fishing_facility_limited_details);

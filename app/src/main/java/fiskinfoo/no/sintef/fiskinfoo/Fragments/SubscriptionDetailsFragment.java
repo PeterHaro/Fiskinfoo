@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -195,7 +196,7 @@ public class SubscriptionDetailsFragment extends Fragment {
                 final Animation animation = getBlinkAnimation();
 
                 notificationImageView.setVisibility(View.VISIBLE);
-                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_24dp));
                 row.setTextColor(getResources().getColor(R.color.warning_orange));
 
                 notificationImageView.setOnClickListener(new View.OnClickListener() {
@@ -208,13 +209,13 @@ public class SubscriptionDetailsFragment extends Fragment {
 
                 informationContainer.addView(row.getView());
 
-            } else if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.WARNING) {
+            } else if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.ERROR) {
                 row = new CardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
                 final TextView dataField = row.getFieldDataTextView();
                 final Animation animation = getBlinkAnimation();
 
                 notificationImageView.setVisibility(View.VISIBLE);
-                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_error_outline_black_24dp));
+                notificationImageView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.ic_warning_black_24dp));
                 row.setTextColor(getResources().getColor(R.color.error_red));
 
                 notificationImageView.setOnClickListener(new View.OnClickListener() {
@@ -300,6 +301,11 @@ public class SubscriptionDetailsFragment extends Fragment {
 
             downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
 
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                downloadMapImageView.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.material_icon_black_active_tint_color));
+                notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.material_icon_black_active_tint_color));
+
+            }
         }
         if(warning != null) {
             TextView content = generateTextViewWithText(warning, title);

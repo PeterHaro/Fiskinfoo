@@ -171,9 +171,7 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
                 childViewHolder.notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
             }
         } else {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)childViewHolder.dataText.getLayoutParams();
-            params.addRule(RelativeLayout.LEFT_OF, R.id.recycler_child_last_updated_text_view);
-            childViewHolder.dataText.setLayoutParams(params);
+            childViewHolder.notificationImageView.setVisibility(View.GONE);
         }
 
         childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
