@@ -169,6 +169,7 @@ limitations under the License.
     <string name="map_search_view_tag_clear">Fjern</string>
     <string name="error_no_match_for_vessel_search">Ingen treff</string>
     <string name="primary_background_map">Grunnkart</string>
+    <string name="error_cannot_zoom_to_position_without_location_access">Kan ikke gå til posisjon uten posisjonstilgang</string>
 
 
     <!-- Map fragment menu strings -->

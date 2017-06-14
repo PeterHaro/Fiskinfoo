@@ -1081,7 +1081,7 @@ public class MapFragment extends Fragment {
     //
     private void createMapLayerSelectionDialog() {
         if(layersAndVisibility == null) {
-            getLayersAndVisibility();
+            return;
         }
 
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
@@ -1619,6 +1619,19 @@ public class MapFragment extends Fragment {
         });
     }
 
+    private void zoomToUserPosition() {
+        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] { ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+        } else {
+            browser.loadUrl("javascript:zoomToUserPosition()");
+        }
+    }
+
+    private void highlightToolsInMap(String vesselName) {
+        browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
         switch(requestCode) {
@@ -1628,10 +1641,18 @@ public class MapFragment extends Fragment {
                         updateMap();
                     }
                 }
-
+                break;
+            case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
+                for(int i = 0; i < permissions.length; i++) {
+                    if(permissions[i].equals(MY_PERMISSIONS_REQUEST_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_GRANTED && browser != null) {
+                        browser.loadUrl("javascript:zoomToUserPosition()");
+                    } else if(permissions[i].equals(ACCESS_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_DENIED) {
+                        Toast.makeText(getContext(), R.string.error_cannot_zoom_to_position_without_location_access, Toast.LENGTH_LONG).show();
+                    }
+                }
                 break;
             default:
-
+                break;
         }
     }
 
@@ -1642,16 +1663,7 @@ public class MapFragment extends Fragment {
                 updateMap();
                 return true;
             case R.id.zoom_to_user_position:
-                if(FiskInfoUtility.shouldAskPermission()) {
-                    String[] perms = {"android.permission.ACCESS_FINE_LOCATION"};
-                    int permsRequestCode = MY_PERMISSIONS_REQUEST_FINE_LOCATION;
-
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{ACCESS_FINE_LOCATION},
-                            permsRequestCode);
-                }
-
-                browser.loadUrl("javascript:zoomToUserPosition()");
+                zoomToUserPosition();
                 return true;
             case R.id.symbol_explanation:
                 createToolSymbolExplanationDialog();
@@ -1665,10 +1677,5 @@ public class MapFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void highlightToolsInMap(String vesselName) {
-        browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
