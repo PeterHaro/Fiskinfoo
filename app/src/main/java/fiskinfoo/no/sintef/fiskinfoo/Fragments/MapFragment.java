@@ -1644,7 +1644,7 @@ public class MapFragment extends Fragment {
                 break;
             case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
                 for(int i = 0; i < permissions.length; i++) {
-                    if(permissions[i].equals(MY_PERMISSIONS_REQUEST_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_GRANTED && browser != null) {
+                    if(permissions[i].equals(ACCESS_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_GRANTED && browser != null) {
                         browser.loadUrl("javascript:zoomToUserPosition()");
                     } else if(permissions[i].equals(ACCESS_FINE_LOCATION) && results[i] == PackageManager.PERMISSION_DENIED) {
                         Toast.makeText(getContext(), R.string.error_cannot_zoom_to_position_without_location_access, Toast.LENGTH_LONG).show();
