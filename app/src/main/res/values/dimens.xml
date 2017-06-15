@@ -308,9 +308,9 @@ limitations under the License.
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>
     <dimen name="table_row_padding_top">7dp</dimen>
-    <dimen name="utility_row_help_button_height">20dp</dimen>
-    <dimen name="utility_row_help_button_width">20dp</dimen>
-    <dimen name="utility_coordinates_row_add_button_right_margin">20dp</dimen>
+    <dimen name="utility_row_help_button_height">24dp</dimen>
+    <dimen name="utility_row_help_button_width">24dp</dimen>
+    <dimen name="utility_coordinates_row_add_button_end_margin">20dp</dimen>
     <dimen name="utility_row_header_margin_left">5dp</dimen>
     <dimen name="utility_row_margin_top">5dp</dimen>
     <dimen name="utility_row_margin_left_15">15dp</dimen>
@@ -323,6 +323,8 @@ limitations under the License.
     <dimen name="tool_log_row_reported_image_view_margin_end">20dp</dimen>
     <dimen name="tool_log_row_edit_tool_image_view_width">30dp</dimen>
     <dimen name="tool_log_row_edit_tool_image_view_height">30dp</dimen>
+    <dimen name="coordinate_row_add_position_button_height">36dp</dimen>
+    <dimen name="coordinate_row_add_position_button_width">36dp</dimen>
 
     <!-- Offline mode fragment -->
     <dimen name="offline_mode_fragment_switch_padding_vertical">10dp</dimen>
@@ -341,6 +343,10 @@ limitations under the License.
     <dimen name="tool_search_result_row_date_text_view_margin_left">10dp</dimen>
     <dimen name="tool_search_result_row_position_text_view_margin_left">10dp</dimen>
     <integer name="coordinate_input_field_max_length">14</integer>
+
+    <!-- Material -->
+    <dimen name="floating_action_button_width">56dp</dimen>
+    <dimen name="floating_action_button_height">56dp</dimen>
 
     <!-- Material cards -->
     <!-- https://material.google.com/components/cards.html-->

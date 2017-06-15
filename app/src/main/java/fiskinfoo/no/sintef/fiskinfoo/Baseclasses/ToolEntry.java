@@ -311,51 +311,7 @@ public class ToolEntry implements Parcelable {
             RemovedTime = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_removed_time), RemovedTime);
             ToolTypeCode = jsonHandler.getToolType(tool, context.getString(R.string.json_tool_property_tool_type_code), ToolTypeCode);
 
-//            IMO = !tool.getJSONObject("properties").has("imo") ? IMO :
-//                    (tool.getJSONObject("properties").getProperty("imo") == null || "null".equals(tool.getJSONObject("properties").getProperty("imo"))) ?
-//                            IMO : tool.getJSONObject("properties").getProperty("imo");
-//            IRCS = !tool.getJSONObject("properties").has("ircs") ? IRCS :
-//                    (tool.getJSONObject("properties").getProperty("ircs") == null || "null".equals(tool.getJSONObject("properties").getProperty("ircs"))) ?
-//                            IRCS : tool.getJSONObject("properties").getProperty("ircs");
-//            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? MMSI :
-//                    (tool.getJSONObject("properties").getProperty("mmsi") == null || "null".equals(tool.getJSONObject("properties").getProperty("mmsi"))) ?
-//                            MMSI : tool.getJSONObject("properties").getProperty("mmsi");
-//            RegNum = !tool.getJSONObject("properties").has("regnum") ? RegNum :
-//                    (tool.getJSONObject("properties").getProperty("regnum") == null || "null".equals(tool.getJSONObject("properties").getProperty("regnum"))) ?
-//                            RegNum : tool.getJSONObject("properties").getProperty("regnum");
-//            VesselName = !tool.getJSONObject("properties").has("vesselname") ? VesselName :
-//                    (tool.getJSONObject("properties").getProperty("vesselname") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselname"))) ?
-//                            VesselName : tool.getJSONObject("properties").getProperty("vesselname");
-//            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? VesselPhone :
-//                    (tool.getJSONObject("properties").getProperty("vesselphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselphone"))) ?
-//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselphone");
-//            VesselEmail = !tool.getJSONObject("properties").has("vesselemail") ? VesselPhone :
-//                    (tool.getJSONObject("properties").getProperty("vesselemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselemail"))) ?
-//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselemail");
-//            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? ContactPersonEmail :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonemail"))) ?
-//                            ContactPersonEmail : tool.getJSONObject("properties").getProperty("contactpersonemail");
-//            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? ContactPersonPhone :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonphone"))) ?
-//                            ContactPersonPhone : tool.getJSONObject("properties").getProperty("contactpersonphone");
-//            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? ContactPersonName :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonname") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonname"))) ?
-//                            ContactPersonName : tool.getJSONObject("properties").getProperty("contactpersonname");
-//            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? ToolTypeCode :
-//                    (tool.getJSONObject("properties").getProperty("tooltypecode") == null || "null".equals(tool.getJSONObject("properties").getProperty("tooltypecode"))) ?
-//                            ToolTypeCode : ToolType.createFromValue(tool.getJSONObject("properties").getProperty("tooltypecode"));
-//            Source = !tool.getJSONObject("properties").has("source") ? Source :
-//                    (tool.getJSONObject("properties").getProperty("source") == null || "null".equals(tool.getJSONObject("properties").getProperty("source"))) ?
-//                            Source : tool.getJSONObject("properties").getProperty("source");
-//            Comment = !tool.getJSONObject("properties").has("comment") ? Comment :
-//                    (tool.getJSONObject("properties").getProperty("comment") == null || "null".equals(tool.getJSONObject("properties").getProperty("comment"))) ?
-//                            Comment : tool.getJSONObject("properties").getProperty("comment");
-//            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? ShortComment :
-//                    (tool.getJSONObject("properties").getProperty("shortcomment") == null || "null".equals(tool.getJSONObject("properties").getProperty("shortcomment"))) ?
-//                            ShortComment : tool.getJSONObject("properties").getProperty("shortcomment");
-//            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? RemovedTime :
-//                    (tool.getJSONObject("properties").getProperty("removeddatetime") == null || "null".equals(tool.getJSONObject("properties").getProperty("removeddatetime"))) ?
-//                            RemovedTime : tool.getJSONObject("properties").getProperty("removeddatetime");
+            // TODO: add updating of lost tool values if they are added
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
             SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
@@ -398,9 +354,7 @@ public class ToolEntry implements Parcelable {
 
                 LastChangedBySource = sdfMilliSeconds.format(serverUpdatedBySourceDateTime);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
     }

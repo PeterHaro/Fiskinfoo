@@ -208,7 +208,6 @@ public class SubscriptionDetailsFragment extends Fragment {
                 });
 
                 informationContainer.addView(row.getView());
-
             } else if(ApiErrorType.getType(propertyDescription.ErrorType) == ApiErrorType.ERROR) {
                 row = new CardViewInformationRow(getActivity(), getString(R.string.error_text), propertyDescription.ErrorText, true);
                 final TextView dataField = row.getFieldDataTextView();

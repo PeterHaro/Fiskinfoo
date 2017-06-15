@@ -83,7 +83,7 @@ public class ToolLogRow extends BaseTableRow {
         dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
 
         if(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
-            editToolImageView.setBackgroundResource(R.drawable.ic_remove_red_eye_black_24dp);
+            editToolImageView.setBackgroundResource(R.drawable.ic_visibility_black_24dp);
         } else {
             highlightOldTool(true);
 
