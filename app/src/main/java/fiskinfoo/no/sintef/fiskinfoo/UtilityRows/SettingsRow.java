@@ -1,6 +1,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +22,10 @@ public class SettingsRow extends BaseTableRow {
         titleTextView.setText(title);
         iconImageView.setBackgroundResource(iconId);
         getView().setOnClickListener(onClickListener);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            iconImageView.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public void setIcon(int iconId) {

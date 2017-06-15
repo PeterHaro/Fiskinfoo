@@ -44,7 +44,10 @@ limitations under the License.
     <color name="warning_orange">#FF9900</color>
     <color name="error_red">#CC2626</color>
     <color name="card_view_title_black">#222</color>
-    <color name="material_icon_black_active_tint_color">#8A000000</color>
+
+    <!-- Recommended value from Google -->
+    <!--<color name="material_icon_black_active_tint_color">#8A000000</color>-->
+    <color name="material_icon_black_active_tint_color">#AA000000</color>
     <color name="material_icon_black_disabled_tint_color">#61000000</color>
 
     <array name="progress_colors_light">
