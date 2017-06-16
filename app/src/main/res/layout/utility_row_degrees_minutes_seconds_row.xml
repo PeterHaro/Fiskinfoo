@@ -11,7 +11,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -71,6 +70,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_degrees"
+                    android:labelFor="@+id/utility_dms_row_latitude_degrees_edit_text"
                     />
 
                 <EditText
@@ -97,6 +97,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_minutes"
+                    android:labelFor="@+id/utility_dms_row_latitude_minutes_edit_text"
                     />
 
                 <EditText
@@ -123,6 +124,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_seconds"
+                    android:labelFor="@+id/utility_dms_row_latitude_seconds_edit_text"
                     />
 
                 <android.support.v7.widget.SwitchCompat
@@ -175,6 +177,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_degrees"
+                    android:labelFor="@+id/utility_dms_row_longitude_degrees_edit_text"
                     />
 
                 <EditText
@@ -201,6 +204,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_minutes"
+                    android:labelFor="@+id/utility_dms_row_longitude_minutes_edit_text"
                     />
 
                 <EditText
@@ -223,6 +227,7 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_seconds"
+                    android:labelFor="@+id/utility_dms_row_longitude_seconds_edit_text"
                     />
 
                 <android.support.v7.widget.SwitchCompat
@@ -240,7 +245,6 @@ limitations under the License.
             </LinearLayout>
         </LinearLayout>
 
-
         <Button
             android:id="@+id/utility_lat_lon_row_set_position_button"
             android:layout_width="@dimen/utility_row_help_button_width"
@@ -251,7 +255,5 @@ limitations under the License.
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
             android:background="@drawable/ic_my_location_black_24dp"
             />
-
     </RelativeLayout>
-
 </TableRow>

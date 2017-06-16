@@ -11,48 +11,43 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    >
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:id="@+id/proximity_alert_warning_info_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dialog_container_margin_left"
+            android:layout_marginEnd="@dimen/dialog_container_margin_right"
+            android:layout_marginTop="@dimen/dialog_container_margin_top"
+            android:text="@string/proximity_alert_warning_info"
+            />
 
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/proximity_alert_warning_info_text_view"
             android:layout_marginBottom="@dimen/bottom_button_container_margin_bottom"
-            android:layout_marginLeft="@dimen/bottom_button_container_margin_left"
-            android:layout_marginRight="@dimen/bottom_button_container_margin_right"
+            android:layout_marginStart="@dimen/bottom_button_container_margin_left"
+            android:layout_marginEnd="@dimen/bottom_button_container_margin_right"
             android:layout_marginTop="@dimen/bottom_button_container_margin_top"
             android:orientation="horizontal"
             android:paddingBottom="1.0dip"
             android:paddingLeft="4.0dip"
             android:paddingRight="4.0dip"
-            android:paddingTop="5.0dip">
-
-            <Button
-                android:id="@+id/proximity_alert_warning_dismiss_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0.0dip"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1.0"
-                android:text="@string/proximity_alert_warning_dismiss"/>
-
-            <Button
-                android:id="@+id/proximity_alert_warning_show_on_map_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0.0dip"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1.0"
-                android:text="@string/show_position_on_map"/>
+            android:paddingTop="5.0dip"
+            >
 
             <Button
                 android:id="@+id/proximity_alert_warning_ok_button"
@@ -61,9 +56,28 @@ limitations under the License.
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/ok"/>
+                android:text="@string/ok"
+                />
 
+            <Button
+                android:id="@+id/proximity_alert_warning_show_on_map_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0.0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/show_position_on_map"
+                />
+
+            <Button
+                android:id="@+id/proximity_alert_warning_dismiss_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0.0dip"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1.0"
+                android:text="@string/proximity_alert_warning_dismiss"
+                />
         </LinearLayout>
-
     </RelativeLayout>
 </ScrollView>

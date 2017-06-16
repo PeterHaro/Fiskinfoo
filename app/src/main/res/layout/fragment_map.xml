@@ -357,6 +357,7 @@ limitations under the License.
             android:orientation="vertical"
             android:divider="@drawable/material_view_divider_invisible"
             android:showDividers="beginning|middle|end"
+            android:visibility="gone"
             >
 
             <TextView
@@ -389,15 +390,13 @@ limitations under the License.
                 />
 
             <TextView
-                    android:id="@+id/linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view"
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:drawableStart="@drawable/ic_insert_link_black_24dp"
                 android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 />
-
         </LinearLayout>
-
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

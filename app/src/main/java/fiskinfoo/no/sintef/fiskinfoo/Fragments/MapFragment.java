@@ -1030,7 +1030,11 @@ public class MapFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dialogInterface.getAlertDialog(getActivity(), R.string.search_tools_init_error, R.string.search_tools_init_info, -1).show();
+                        new AlertDialog.Builder(getContext())
+                                .setTitle(getString(R.string.search_tools_init_error))
+                                .setMessage(getString(R.string.search_tools_init_info))
+                                .setPositiveButton(getString(R.string.ok), null)
+                                .show();
                     }
                 });
                 Log.e(FRAGMENT_TAG, "JSON parse error");
@@ -1073,8 +1077,11 @@ public class MapFragment extends Fragment {
                     browser.loadUrl("javascript:getToolDataFromAndroid();");
                 }
             } else {
-                Dialog infoDialog = dialogInterface.getAlertDialog(getActivity(), R.string.tools_search_no_data_title, R.string.tools_search_no_data, -1);
-                infoDialog.show();
+                new AlertDialog.Builder(getContext())
+                        .setTitle(getString(R.string.tools_search_no_data_title))
+                        .setMessage(getString(R.string.tools_search_no_data))
+                        .setPositiveButton(getString(R.string.ok), null)
+                        .show();
             }
         }
     }
@@ -1130,7 +1137,12 @@ public class MapFragment extends Fragment {
             }
         });
 
-        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
     }
@@ -1146,7 +1158,12 @@ public class MapFragment extends Fragment {
             tableLayout.addView(toolLegendRow);
         }
 
-        dismissButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+        dismissButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
     }
@@ -1386,7 +1403,12 @@ public class MapFragment extends Fragment {
             });
         }
 
-        cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
 
         dialog.show();
     }

@@ -11,14 +11,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/utility_edit_text_row_header_text_view"
@@ -28,7 +29,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
             android:text="@string/placeholder_string"
             android:textSize="@dimen/card_view_information_row_text_size"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/utility_edit_text_row_help_button"
@@ -39,7 +41,8 @@ limitations under the License.
             android:visibility="gone"
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
             android:background="@android:drawable/ic_menu_help"
-            android:layout_toEndOf="@+id/utility_edit_text_row_header_text_view"/>
+            android:layout_toEndOf="@+id/utility_edit_text_row_header_text_view"
+            />
 
         <TextView
             android:id="@+id/utility_edit_text_row_help_text_view"
@@ -48,7 +51,8 @@ limitations under the License.
             android:layout_below="@+id/utility_edit_text_row_header_text_view"
             android:visibility="gone"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            />
 
         <EditText
             android:id="@+id/utility_edit_text_row_edit_text"
@@ -59,9 +63,7 @@ limitations under the License.
             android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
             android:layout_marginRight="@dimen/activity_horizontal_margin_small"
             android:selectAllOnFocus="true"
-            android:hint="@string/placeholder_string"/>
-
-
+            android:hint="@string/placeholder_string"
+            />
     </RelativeLayout>
-
 </TableRow>

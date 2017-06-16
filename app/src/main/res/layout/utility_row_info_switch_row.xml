@@ -11,16 +11,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:paddingBottom="@dimen/switch_and_button_row_padding_bottom"
-          android:paddingTop="@dimen/switch_and_button_row_padding_top">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/switch_and_button_row_padding_bottom"
+    android:paddingTop="@dimen/switch_and_button_row_padding_top"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/info_switch_row_text_view"
@@ -31,7 +32,7 @@ limitations under the License.
             android:layout_marginEnd="@dimen/switch_info_row_text_view_margin_right"
             android:layout_marginStart="@dimen/switch_info_row_text_view_margin_left"
             android:layout_toStartOf="@+id/info_switch_row_switch"
-            android:text="some other text"/>
+            />
 
         <Switch
             android:id="@+id/info_switch_row_switch"
@@ -39,10 +40,8 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/switch_info_row_switch_margin_left"
-            android:layout_marginRight="@dimen/switch_info_row_switch_margin_right"
-            android:text="Some text"/>
-
+            android:layout_marginStart="@dimen/switch_info_row_switch_margin_left"
+            android:layout_marginEnd="@dimen/switch_info_row_switch_margin_right"
+            />
     </RelativeLayout>
-
 </TableRow>

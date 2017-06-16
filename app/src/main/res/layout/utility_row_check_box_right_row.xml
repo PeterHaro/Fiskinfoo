@@ -11,12 +11,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/check_box_row_padding_bottom"
-    android:paddingTop="@dimen/check_box_row_padding_top">
+    android:paddingTop="@dimen/check_box_row_padding_top"
+    >
 
     <TextView
         android:id="@+id/check_box_row_text_view"
@@ -29,7 +29,8 @@ limitations under the License.
         android:layout_weight="1"
         android:duplicateParentState="true"
         android:textStyle="bold"
-        android:textSize="@dimen/card_view_information_row_text_size"/>
+        android:textSize="@dimen/card_view_information_row_text_size"
+        />
 
     <CheckBox
         android:id="@+id/check_box_row_check_box"
@@ -39,6 +40,6 @@ limitations under the License.
         android:layout_marginEnd="@dimen/check_box_row_check_box_margin_right"
         android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
         android:clickable="false"
-        android:duplicateParentState="true"/>
-
+        android:duplicateParentState="true"
+        />
 </TableRow>

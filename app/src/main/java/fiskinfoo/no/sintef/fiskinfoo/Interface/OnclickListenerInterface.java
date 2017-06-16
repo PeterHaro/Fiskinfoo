@@ -29,10 +29,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 public interface OnclickListenerInterface {
-    View.OnClickListener getDismissDialogListener(Dialog dialog);
-    View.OnClickListener getShowToastListener(Context context, String message);
     View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag);
     View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription);
-    View.OnClickListener getInformationDialogOnClickListener(String title, String message, int iconId);
+    View.OnClickListener getInformationDialogOnClickListener(String title, String message);
     View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
 }

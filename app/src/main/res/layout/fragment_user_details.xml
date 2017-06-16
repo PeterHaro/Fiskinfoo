@@ -22,7 +22,6 @@ limitations under the License.
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         >
 
         <LinearLayout
@@ -35,9 +34,6 @@ limitations under the License.
             android:paddingTop="@dimen/user_settings_fragment_fields_container_padding_vertical"
             android:paddingBottom="@dimen/user_settings_fragment_fields_container_padding_vertical"
             >
-
         </LinearLayout>
-
     </ScrollView>
-
 </FrameLayout>

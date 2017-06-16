@@ -48,7 +48,5 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             />
-
-
     </LinearLayout>
 </ScrollView>

@@ -44,43 +44,11 @@ public interface DialogInterface {
      * Return a dialog with the given layout, title, and icon. The dialog defaults to not being cancelled by outside touch.
      * @param context
      * @param layoutId
-     * @param titleId
-     * @param iconId
-     * @return
-     */
-    Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId);
-
-    /**
-     * Return a dialog with the given layout, title, and icon. The dialog defaults to not being cancelled by outside touch.
-     * @param context
-     * @param layoutId
      * @param title
      * @param iconId
      * @return
      */
     Dialog getDialogWithTitleIcon(Context context, int layoutId, String title, int iconId);
-
-    /**
-     * Return an alert dialog with the given title and info text. The dialog defaults to not being cancelled by outside touch.
-     * To not use an icon, set iconId to -1.
-     * @param context
-     * @param title
-     * @param message
-     * @param iconId
-     * @return
-     */
-    AlertDialog getAlertDialog(Context context, String title, String message, int iconId);
-
-    /**
-     * Return an alert dialog with the given title and info text. The dialog defaults to not being cancelled by outside touch.
-     * To not use an icon, set iconId to -1.
-     * @param context
-     * @param titleId
-     * @param messageId
-     * @param iconId
-     * @return
-     */
-    AlertDialog getAlertDialog(Context context, int titleId, int messageId, int iconId);
 
     /**
      * Return an alert dialog with the given title and info text. The dialog defaults to not being cancelled by outside touch.
@@ -90,53 +58,6 @@ public interface DialogInterface {
      * @return
      */
     AlertDialog getHyperlinkAlertDialog(Context context, String title, String message);
-
-    /**
-     * Return an alert dialog with the given title, info text, and icon. The dialog defaults to not being cancelled by outside touch.
-     * @param context
-     * @param title
-     * @param info
-     * @param iconId
-     * @return
-     */
-    AlertDialog getHyperlinkAlertDialog(Context context, String title, String info, int iconId);
-
-    /**
-     * Return a dialog with the given title and info text. The dialog defaults to not being cancelled by outside touch.
-     * @param context
-     * @param titleId
-     * @param infoId
-     * @return
-     */
-    AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId);
-
-    /**
-     * Return an alert dialog with the given title, info text, and icon. The dialog defaults to not being cancelled by outside touch.
-     * @param context
-     * @param titleId
-     * @param infoId
-     * @param iconId
-     * @return
-     */
-    AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId, int iconId);
-
-    /**
-     *
-     * @param context
-     * @param messageId
-     * @return
-     */
-    Dialog getLoadingDialog(Context context, int messageId);
-
-    /**
-     *
-     * @param context
-     * @param message
-     * @return
-     */
-    Dialog getLoadingDialog(Context context, String message);
-
-    Dialog getConfirmationDialog(Context context, String title, String message, String confirmButtonText);
 
     Dialog getCheckboxInformationDialog(Context context, String title, String message);
 }

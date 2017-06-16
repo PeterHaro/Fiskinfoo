@@ -17,6 +17,7 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/hyperlink_alert_dialog_margin_bottom"
-    android:layout_marginLeft="@dimen/hyperlink_alert_dialog_margin_left"
-    android:layout_marginRight="@dimen/hyperlink_alert_dialog_margin_right"
-    android:layout_marginTop="@dimen/hyperlink_alert_dialog_margin_top"/>
+    android:layout_marginStart="@dimen/hyperlink_alert_dialog_margin_left"
+    android:layout_marginEnd="@dimen/hyperlink_alert_dialog_margin_right"
+    android:layout_marginTop="@dimen/hyperlink_alert_dialog_margin_top"
+    />

@@ -46,7 +46,6 @@ limitations under the License.
             android:lines="1"
             android:maxLines="1"
             android:hint="@string/tool_search_hint"
-            android:tag="@string/map_search_view_tag_search"
             />
     </RelativeLayout>
 
@@ -358,6 +357,7 @@ limitations under the License.
             android:orientation="vertical"
             android:divider="@drawable/material_view_divider_invisible"
             android:showDividers="beginning|middle|end"
+            android:visibility="gone"
             >
 
             <TextView
@@ -397,8 +397,6 @@ limitations under the License.
                 android:drawableStart="@drawable/ic_insert_link_black_24dp"
                 android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 />
-
         </LinearLayout>
-
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

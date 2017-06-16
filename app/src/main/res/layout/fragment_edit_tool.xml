@@ -11,14 +11,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="fiskinfoo.no.sintef.fiskinfoo.Fragments.EditToolFragment"
     >
-
 
     <ScrollView
         android:id="@+id/dialog_user_settings_scroll_view"
@@ -31,9 +29,9 @@ limitations under the License.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center_horizontal"
             android:divider="@drawable/material_view_divider_invisible"
             android:showDividers="beginning|middle|end"
-            android:gravity="center_horizontal"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"

@@ -16,6 +16,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -82,25 +83,6 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class UtilityOnClickListeners implements OnclickListenerInterface {
-    @Override
-    public OnClickListener getDismissDialogListener(final Dialog dialog) {
-        return new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        };
-    }
-
-    @Override
-    public OnClickListener getShowToastListener(final Context context, final String message) {
-        return new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-            }
-        };
-    }
 
     @Override
     public OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag) {
@@ -113,7 +95,6 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     return;
                 }
 
-                OnclickListenerInterface onClickListenerInterface = new UtilityOnClickListeners();
                 final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
                 final Dialog dialog;
 
@@ -133,7 +114,12 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                 Button cancelButton = (Button) dialog.findViewById(R.id.select_download_format_cancel_button);
                 final LinearLayout rowsContainer = (LinearLayout) dialog.findViewById(R.id.download_map_formats_container);
 
-                downloadButton.setOnClickListener(getShowToastListener(v.getContext(), v.getContext().getString(R.string.error_no_format_selected)));
+                downloadButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(v.getContext(), v.getContext().getString(R.string.error_no_format_selected), Toast.LENGTH_LONG).show();
+                    }
+                });
 
                 for (String format : subscription.Formats) {
                     final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);
@@ -182,7 +168,12 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
                     rowsContainer.addView(row.getView());
                 }
 
-                cancelButton.setOnClickListener(onClickListenerInterface.getDismissDialogListener(dialog));
+                cancelButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
 
                 dialog.show();
             }
@@ -191,21 +182,26 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
     }
 
     @Override
-    public OnClickListener getInformationDialogOnClickListener(final String title, final String message, final int iconId) {
+    public OnClickListener getInformationDialogOnClickListener(final String title, final String message) {
         OnClickListener onClickListener;
 
         if(message.contains("href") || message.contains("www.")) {
             onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), title, message, iconId).show();
+                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), title, message).show();
                 }
             };
         } else {
             onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new UtilityDialogs().getAlertDialog(v.getContext(), title, message, iconId).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext())
+                            .setTitle(title)
+                            .setMessage(message)
+                            .setPositiveButton(v.getContext().getString(R.string.ok), null);
+
+                    builder.show();
                 }
             };
         }
@@ -221,14 +217,19 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
             onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
+                    new UtilityDialogs().getHyperlinkAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText).show();
                 }
             };
         } else {
             onClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new UtilityDialogs().getAlertDialog(v.getContext(), ApiErrorType.getType(subscription.ErrorType).toString(), subscription.ErrorText, android.R.drawable.ic_dialog_alert).show();
+                    new AlertDialog.Builder(v.getContext())
+                            .setIcon(R.drawable.ic_dialog_alert_holo_light)
+                            .setTitle(ApiErrorType.getType(subscription.ErrorType).toString())
+                            .setMessage(subscription.ErrorText)
+                            .setPositiveButton(v.getContext().getString(R.string.ok), null)
+                            .show();
                 }
             };
         }

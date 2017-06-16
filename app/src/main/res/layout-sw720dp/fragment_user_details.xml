@@ -11,7 +11,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,7 +21,6 @@ limitations under the License.
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         >
 
         <LinearLayout
@@ -35,9 +33,6 @@ limitations under the License.
             android:paddingTop="@dimen/user_settings_fragment_fields_container_padding_vertical"
             android:paddingBottom="@dimen/user_settings_fragment_fields_container_padding_vertical"
             >
-
         </LinearLayout>
-
     </ScrollView>
-
 </FrameLayout>
