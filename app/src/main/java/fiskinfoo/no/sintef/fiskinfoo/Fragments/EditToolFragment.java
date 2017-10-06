@@ -114,14 +114,15 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private ActionRow archiveRow;
     private ActionRow deleteRow;
     private ErrorRow errorRow;
-    private CheckBoxRow toolLostRow;
-    private SpinnerRow toolLostCauseRow;
-    private SpinnerRow toolLostConditionsRow;
     private WebView toolMapPreviewWebView;
     private RelativeLayout mapPreviewContainer;
     private Button mapPreviewZoomButton;
-    private EditTextRow numberOfToolsLostRow;
-    private EditTextRow lostToolLengthRow;
+    // TODO: Uncomment when supported from Kystvakt side
+//    private CheckBoxRow toolLostRow;
+//    private SpinnerRow toolLostCauseRow;
+//    private SpinnerRow toolLostConditionsRow;
+//    private EditTextRow numberOfToolsLostRow;
+//    private EditTextRow lostToolLengthRow;
 
 
     public EditToolFragment() {
@@ -274,19 +275,21 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
         errorRow = new ErrorRow(getContext(), getString(R.string.error_minimum_identification_factors_not_met), false);
 
-        toolLostRow = new CheckBoxRow(getContext(), getString(R.string.tool_lost_row_text), true);
-        toolLostCauseRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_cause_row_text), getResources().getStringArray(R.array.tool_lost_causes));
-        toolLostConditionsRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_conditions_row_text), getResources().getStringArray(R.array.tool_lost_conditions));
-        toolLostCauseRow.addSpinnerOption(getString(R.string.not_selected), 0);
-        toolLostConditionsRow.addSpinnerOption(getString(R.string.not_selected), 0);
-        toolLostRow.setVisibility(true);
-        toolLostCauseRow.setVisibility(false);
-        toolLostConditionsRow.setVisibility(false);
+        // TODO: Uncomment when supported from Kystvakt side
+//        toolLostRow = new CheckBoxRow(getContext(), getString(R.string.tool_lost_row_text), true);
+//        toolLostCauseRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_cause_row_text), getResources().getStringArray(R.array.tool_lost_causes));
+//        toolLostConditionsRow = new SpinnerRow(getContext(), getString(R.string.tool_lost_conditions_row_text), getResources().getStringArray(R.array.tool_lost_conditions));
+//        toolLostCauseRow.addSpinnerOption(getString(R.string.not_selected), 0);
+//        toolLostConditionsRow.addSpinnerOption(getString(R.string.not_selected), 0);
+//        toolLostRow.setVisibility(true);
+//        toolLostCauseRow.setVisibility(false);
+//        toolLostConditionsRow.setVisibility(false);
 
-        numberOfToolsLostRow = new EditTextRow(getContext(), getString(R.string.number_of_crab_pots_lost), "");
-        lostToolLengthRow = new EditTextRow(getContext(), getString(R.string.number_of_meters_of_line_lost), "");
-        numberOfToolsLostRow.setVisibility(false);
-        lostToolLengthRow.setVisibility(false);
+        // TODO: Uncomment when supported from Kystvakt side
+//        numberOfToolsLostRow = new EditTextRow(getContext(), getString(R.string.number_of_crab_pots_lost), "");
+//        lostToolLengthRow = new EditTextRow(getContext(), getString(R.string.number_of_meters_of_line_lost), "");
+//        numberOfToolsLostRow.setVisibility(false);
+//        lostToolLengthRow.setVisibility(false);
 
         RelativeLayout relativeLayout = new RelativeLayout(getContext());
         mapPreviewContainer = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, relativeLayout, false);
@@ -353,19 +356,21 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         setupTimeRow.setDateTextView(setupDateRow.getDateTextView());
 
-        toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                toggleToolLostRows(checked);
-            }
-        });
+        // TODO: Uncomment when supported from Kystvakt side
+//        toolLostRow.setOnCheckedChangedListener(new CompoundButton.OnCheckedChangeListener(){
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+//                toggleToolLostRows(checked);
+//            }
+//        });
 
         toolRow.setOnSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(toolLostRow.isChecked()) {
-                    toggleToolLostRows(true);
-                }
+                // TODO: Uncomment when supported from Kystvakt side
+//                if(toolLostRow.isChecked()) {
+//                    toggleToolLostRows(true);
+//                }
 
             }
 
@@ -415,8 +420,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         contactPersonNameRow.setHelpText(getString(R.string.contact_person_name_help_description));
         contactPersonPhoneRow.setHelpText(getString(R.string.contact_person_phone_help_description));
         contactPersonEmailRow.setHelpText(getString(R.string.contact_person_email_help_description));
-        numberOfToolsLostRow.setInputType(InputType.TYPE_CLASS_NUMBER);
-        lostToolLengthRow.setInputType(InputType.TYPE_CLASS_NUMBER);
+        // TODO: Uncomment when supported from Kystvakt side
+//        numberOfToolsLostRow.setInputType(InputType.TYPE_CLASS_NUMBER);
+//        lostToolLengthRow.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         toolRemovedRow.setVisibility(false);
 
@@ -425,11 +431,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         fieldsContainer.addView(setupDateRow.getView());
         fieldsContainer.addView(setupTimeRow.getView());
         fieldsContainer.addView(toolRow.getView());
-        fieldsContainer.addView(toolLostRow.getView());
-        fieldsContainer.addView(toolLostCauseRow.getView());
-        fieldsContainer.addView(toolLostConditionsRow.getView());
-        fieldsContainer.addView(lostToolLengthRow.getView());
-        fieldsContainer.addView(numberOfToolsLostRow.getView());
+        // TODO: Uncomment when supported from Kystvakt side
+//        fieldsContainer.addView(toolLostRow.getView());
+//        fieldsContainer.addView(toolLostCauseRow.getView());
+//        fieldsContainer.addView(toolLostConditionsRow.getView());
+//        fieldsContainer.addView(lostToolLengthRow.getView());
+//        fieldsContainer.addView(numberOfToolsLostRow.getView());
         fieldsContainer.addView(commentRow.getView());
         fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
@@ -541,42 +548,43 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         }
     }
 
-    private void toggleToolLostRows(boolean checked) {
-
-        if(checked) {
-            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot))) {
-                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
-                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_crab_pots_lost));
-                lostToolLengthRow.setVisibility(true);
-                numberOfToolsLostRow.setVisibility(true);
-            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
-                lostToolLengthRow.setRowHeader(getString(R.string.size_of_nets_in_meters));
-                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_nets_lost));
-                lostToolLengthRow.setVisibility(true);
-                numberOfToolsLostRow.setVisibility(true);
-            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line))) {
-                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
-                lostToolLengthRow.setVisibility(true);
-                numberOfToolsLostRow.setVisibility(false);
-            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine))){
-                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_net_lost));
-                lostToolLengthRow.setVisibility(true);
-                numberOfToolsLostRow.setVisibility(false);
-            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
-                lostToolLengthRow.setRowHeader(getString(R.string.size_of_lost_tool));
-                lostToolLengthRow.setVisibility(true);
-                numberOfToolsLostRow.setVisibility(false);
-            }
-
-            toolLostCauseRow.setVisibility(true);
-            toolLostConditionsRow.setVisibility(true);
-        } else {
-            numberOfToolsLostRow.setVisibility(false);
-            lostToolLengthRow.setVisibility(false);
-            toolLostCauseRow.setVisibility(false);
-            toolLostConditionsRow.setVisibility(false);
-        }
-    }
+    // TODO: Uncomment when supported from Kystvakt side
+//    private void toggleToolLostRows(boolean checked) {
+//
+//        if(checked) {
+//            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot))) {
+//                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
+//                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_crab_pots_lost));
+//                lostToolLengthRow.setVisibility(true);
+//                numberOfToolsLostRow.setVisibility(true);
+//            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
+//                lostToolLengthRow.setRowHeader(getString(R.string.size_of_nets_in_meters));
+//                numberOfToolsLostRow.setRowHeader(getString(R.string.number_of_nets_lost));
+//                lostToolLengthRow.setVisibility(true);
+//                numberOfToolsLostRow.setVisibility(true);
+//            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line))) {
+//                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_line_lost));
+//                lostToolLengthRow.setVisibility(true);
+//                numberOfToolsLostRow.setVisibility(false);
+//            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine))){
+//                lostToolLengthRow.setRowHeader(getString(R.string.number_of_meters_of_net_lost));
+//                lostToolLengthRow.setVisibility(true);
+//                numberOfToolsLostRow.setVisibility(false);
+//            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
+//                lostToolLengthRow.setRowHeader(getString(R.string.size_of_lost_tool));
+//                lostToolLengthRow.setVisibility(true);
+//                numberOfToolsLostRow.setVisibility(false);
+//            }
+//
+//            toolLostCauseRow.setVisibility(true);
+//            toolLostConditionsRow.setVisibility(true);
+//        } else {
+//            numberOfToolsLostRow.setVisibility(false);
+//            lostToolLengthRow.setVisibility(false);
+//            toolLostCauseRow.setVisibility(false);
+//            toolLostConditionsRow.setVisibility(false);
+//        }
+//    }
 
     private void populateFieldsFromTool() {
 
@@ -635,18 +643,19 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselRegistrationNumberRow.setText(tool.getRegNum().replace(" ", ""));
         toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
 
-        if(tool.isToolLost()) {
-            toolLostRow.setChecked(true);
-            toolLostCauseRow.setVisibility(true);
-            toolLostCauseRow.setSelectedSpinnerItem(tool.getToolLostReason());
-            toolLostConditionsRow.setSelectedSpinnerItem(tool.getToolLostWeather());
-            lostToolLengthRow.setText(String.valueOf(tool.getToolLostLength()));
-
-            if(tool.getToolType() == ToolType.CRAB_POTS ||
-                    tool.getToolType() == ToolType.NETS) {
-                numberOfToolsLostRow.setText(String.valueOf(tool.getNumberOfLostTools()));
-            }
-        }
+        // TODO: Uncomment when supported from Kystvakt side
+//        if(tool.isToolLost()) {
+//            toolLostRow.setChecked(true);
+//            toolLostCauseRow.setVisibility(true);
+//            toolLostCauseRow.setSelectedSpinnerItem(tool.getToolLostReason());
+//            toolLostConditionsRow.setSelectedSpinnerItem(tool.getToolLostWeather());
+//            lostToolLengthRow.setText(String.valueOf(tool.getToolLostLength()));
+//
+//            if(tool.getToolType() == ToolType.CRAB_POTS ||
+//                    tool.getToolType() == ToolType.NETS) {
+//                numberOfToolsLostRow.setText(String.valueOf(tool.getNumberOfLostTools()));
+//            }
+//        }
     }
 
     private void populateFieldsFromSettings() {
@@ -694,11 +703,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         final String contactPersonName = contactPersonNameRow.getFieldText().trim();
         final String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
         final String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
-        String toolLostReason = toolLostCauseRow.getCurrentSpinnerItem();
-        String toolLostWeather = toolLostConditionsRow.getCurrentSpinnerItem();
-        int lostToolLength = lostToolLengthRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(lostToolLengthRow.getFieldText());
-        int numberOfToolsLost = numberOfToolsLostRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(numberOfToolsLostRow.getFieldText());
-        boolean toolLost = toolLostRow.isChecked();
+        // TODO: Uncomment when supported from Kystvakt side
+//        String toolLostReason = toolLostCauseRow.getCurrentSpinnerItem();
+//        String toolLostWeather = toolLostConditionsRow.getCurrentSpinnerItem();
+//        int lostToolLength = lostToolLengthRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(lostToolLengthRow.getFieldText());
+//        int numberOfToolsLost = numberOfToolsLostRow.getFieldText().isEmpty() ? 0 : Integer.valueOf(numberOfToolsLostRow.getFieldText());
+//        boolean toolLost = toolLostRow.isChecked();
         boolean toolRemoved = toolRemovedRow.isChecked();
         boolean edited = false;
 
@@ -716,23 +726,24 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             toolEntry.setMMSI(vesselMmsiNumber);
             toolEntry.setIMO(vesselImoNumber);
             toolEntry.setComment(commentString);
-            toolEntry.setToolLost(toolLost);
+            // TODO: Uncomment when supported from Kystvakt side
+//            toolEntry.setToolLost(toolLost);
 
-            if(toolLost) {
-                toolEntry.setRemovedTime(toolEntry.getSetupDateTime());
-                toolEntry.setToolLost(true);
-                toolEntry.setToolLostReason(toolLostReason);
-                toolEntry.setToolLostWeather(toolLostWeather);
-                toolEntry.setToolStatus(ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED);
-                toolEntry.setToolLostLength(lostToolLength);
-
-                if(toolType == ToolType.CRAB_POTS ||
-                        toolType == ToolType.NETS) {
-                    toolEntry.setNumberOfLostTools(numberOfToolsLost);
-                } else {
-                    toolEntry.setNumberOfLostTools(0);
-                }
-            }
+//            if(toolLost) {
+//                toolEntry.setRemovedTime(toolEntry.getSetupDateTime());
+//                toolEntry.setToolLost(true);
+//                toolEntry.setToolLostReason(toolLostReason);
+//                toolEntry.setToolLostWeather(toolLostWeather);
+//                toolEntry.setToolStatus(ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED);
+//                toolEntry.setToolLostLength(lostToolLength);
+//
+//                if(toolType == ToolType.CRAB_POTS ||
+//                        toolType == ToolType.NETS) {
+//                    toolEntry.setNumberOfLostTools(numberOfToolsLost);
+//                } else {
+//                    toolEntry.setNumberOfLostTools(0);
+//                }
+//            }
 
             mListener.updateTool(toolEntry);
         } else {
@@ -764,10 +775,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                     (!contactPersonName.equals(tool.getContactPersonName())) ||
                     (!contactPersonPhone.equals(tool.getContactPersonPhone())) ||
                     (!contactPersonEmail.equals(tool.getContactPersonEmail())) ||
-                    (!commentString.equals(tool.getComment())) ||
-                    (toolLost != tool.isToolLost()) ||
-                    (numberOfToolsLost != tool.getNumberOfLostTools()) ||
-                    (lostToolLength != tool.getToolLostLength()))
+                    (!commentString.equals(tool.getComment())) //||
+                // TODO: Uncomment when supported from Kystvakt side
+//                    (toolLost != tool.isToolLost()) ||
+//                    (numberOfToolsLost != tool.getNumberOfLostTools()) ||
+//                    (lostToolLength != tool.getToolLostLength())
+                    )
             {
                 edited = true;
             } else {
@@ -819,27 +832,28 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
                 tool.setContactPersonName(contactPersonName);
                 tool.setContactPersonPhone(contactPersonPhone);
                 tool.setContactPersonEmail(contactPersonEmail);
-                tool.setToolLost(toolLost);
+                // TODO: Uncomment when supported from Kystvakt side
+//                tool.setToolLost(toolLost);
 
-                if(toolLost) {
-                    tool.setToolLostReason(toolLostReason);
-                    tool.setToolLostWeather(toolLostWeather);
-                    ToolEntryStatus toolStatus = ((tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED) ?
-                            ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED : ToolEntryStatus.STATUS_TOOL_LOST_UNSENT);
-                    tool.setToolStatus(toolStatus);
-                    tool.setToolLostLength(lostToolLength);
-
-                    if(toolType == ToolType.CRAB_POTS ||
-                            toolType == ToolType.NETS) {
-                        tool.setNumberOfLostTools(numberOfToolsLost);
-                    } else {
-                        tool.setNumberOfLostTools(0);
-                    }
-                } else {
+//                if(toolLost) {
+//                    tool.setToolLostReason(toolLostReason);
+//                    tool.setToolLostWeather(toolLostWeather);
+//                    ToolEntryStatus toolStatus = ((tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED) ?
+//                            ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED : ToolEntryStatus.STATUS_TOOL_LOST_UNSENT);
+//                    tool.setToolStatus(toolStatus);
+//                    tool.setToolLostLength(lostToolLength);
+//
+//                    if(toolType == ToolType.CRAB_POTS ||
+//                            toolType == ToolType.NETS) {
+//                        tool.setNumberOfLostTools(numberOfToolsLost);
+//                    } else {
+//                        tool.setNumberOfLostTools(0);
+//                    }
+//                } else {
                     ToolEntryStatus toolStatus = (toolRemoved ? ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED : ((tool.getToolStatus() == ToolEntryStatus.STATUS_UNREPORTED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED) ?
                             ToolEntryStatus.STATUS_UNREPORTED : ToolEntryStatus.STATUS_UNSENT));
                     tool.setToolStatus(toolStatus);
-                }
+//                }
 
                 final User user = userInterface.getUser();
 
@@ -999,7 +1013,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         String contactPersonName = contactPersonNameRow.getFieldText().trim();
         String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
         String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
-        boolean toolLost = toolLostRow.isChecked();
+        // TODO: Uncomment when supported from Kystvakt side
+//        boolean toolLost = toolLostRow.isChecked();
         boolean toolRemoved = toolRemovedRow.isChecked();
         boolean validated;
         boolean ircsValidated;
@@ -1013,65 +1028,66 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return false;
         }
 
-        validated = toolLost != toolRemoved || (!toolLost);
+        // TODO: Uncomment when supported from Kystvakt side
+//        validated = toolLost != toolRemoved || (!toolLost);
+//
+//        if(!validated) {
+//            highlightInvalidField(toolRemovedRow);
+//            Toast.makeText(getContext(), R.string.error_lost_tool_cannot_be_marked_removed, Toast.LENGTH_LONG).show();
+//
+//            return false;
+//        }
 
-        if(!validated) {
-            highlightInvalidField(toolRemovedRow);
-            Toast.makeText(getContext(), R.string.error_lost_tool_cannot_be_marked_removed, Toast.LENGTH_LONG).show();
-
-            return false;
-        }
-
-        if(toolLost) {
-            validated = toolLostCauseRow.getCurrentSpinnerIndex() > 0;
-            toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
-            if(!validated) {
-                highlightInvalidField(toolLostCauseRow);
-
-                return false;
-            }
-
-            validated = toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
-            toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
-            if(!validated) {
-                highlightInvalidField(toolLostConditionsRow);
-
-                return false;
-            }
-
-            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot)) ||
-                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
-
-                validated = !lostToolLengthRow.getFieldText().isEmpty();
-                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
-                if(!validated) {
-                    highlightInvalidField(lostToolLengthRow);
-
-                    return false;
-                }
-
-                validated = !numberOfToolsLostRow.getFieldText().isEmpty();
-                numberOfToolsLostRow.setError(validated ? null : getString(R.string.error_field_required_short));
-                if(!validated) {
-                    highlightInvalidField(numberOfToolsLostRow);
-
-                    return false;
-                }
-            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line)) ||
-                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine)) ||
-                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
-
-                validated = !lostToolLengthRow.getFieldText().isEmpty();
-                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
-                if(!validated) {
-                    highlightInvalidField(lostToolLengthRow);
-
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
+//        if(toolLost) {
+//            validated = toolLostCauseRow.getCurrentSpinnerIndex() > 0;
+//            toolLostCauseRow.setError(validated ? null : getString(R.string.error_field_required_short));
+//            if(!validated) {
+//                highlightInvalidField(toolLostCauseRow);
+//
+//                return false;
+//            }
+//
+//            validated = toolLostConditionsRow.getCurrentSpinnerIndex() > 0;
+//            toolLostConditionsRow.setError(validated ? null : getString(R.string.error_field_required_short));
+//            if(!validated) {
+//                highlightInvalidField(toolLostConditionsRow);
+//
+//                return false;
+//            }
+//
+//            if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_crab_pot)) ||
+//                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_net))) {
+//
+//                validated = !lostToolLengthRow.getFieldText().isEmpty();
+//                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
+//                if(!validated) {
+//                    highlightInvalidField(lostToolLengthRow);
+//
+//                    return false;
+//                }
+//
+//                validated = !numberOfToolsLostRow.getFieldText().isEmpty();
+//                numberOfToolsLostRow.setError(validated ? null : getString(R.string.error_field_required_short));
+//                if(!validated) {
+//                    highlightInvalidField(numberOfToolsLostRow);
+//
+//                    return false;
+//                }
+//            } else if(toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_line)) ||
+//                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_purseine)) ||
+//                    toolRow.getCurrentSpinnerItem().equals(getString(R.string.tool_type_unknown))) {
+//
+//                validated = !lostToolLengthRow.getFieldText().isEmpty();
+//                lostToolLengthRow.setError(validated ? null : getString(R.string.error_field_required_short));
+//                if(!validated) {
+//                    highlightInvalidField(lostToolLengthRow);
+//
+//                    return false;
+//                }
+//            } else {
+//                return false;
+//            }
+//        }
 
         validated = FiskInfoUtility.validateName(contactPersonName);
         contactPersonNameRow.setError(validated ? null : getString(R.string.error_invalid_name));
@@ -1175,12 +1191,14 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselRegistrationNumberRow.setEnabled(enabled);
         archiveRow.setEnabled(enabled);
         errorRow.setEnabled(enabled);
-        toolLostRow.setEnabled(enabled);
-        toolLostCauseRow.setEnabled(enabled);
-        toolLostConditionsRow.setEnabled(enabled);
+        // TODO: Uncomment when supported from Kystvakt side
+//        toolLostRow.setEnabled(enabled);
+//        toolLostCauseRow.setEnabled(enabled);
+//        toolLostConditionsRow.setEnabled(enabled);
         toolMapPreviewWebView.setEnabled(enabled);
-        numberOfToolsLostRow.setEnabled(enabled);
-        lostToolLengthRow.setEnabled(enabled);
+        // TODO: Uncomment when supported from Kystvakt side
+//        numberOfToolsLostRow.setEnabled(enabled);
+//        lostToolLengthRow.setEnabled(enabled);
     }
 
     @Override
