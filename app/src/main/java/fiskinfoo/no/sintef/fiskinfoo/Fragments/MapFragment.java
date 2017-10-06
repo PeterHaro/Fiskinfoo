@@ -875,12 +875,8 @@ public class MapFragment extends Fragment {
         protected Boolean doInBackground(String... strings) {
             BarentswatchApi barentswatchApi;
             barentswatchApi = new BarentswatchApi();
-
             String format = "JSON";
-
             Response response;
-
-
 
             List<PropertyDescription> subscribables;
             PropertyDescription newestSubscribable = null;
@@ -920,7 +916,7 @@ public class MapFragment extends Fragment {
                     cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
                     newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
 
-                    if(newestSubscribable == null && cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
+                    if(newestSubscribable != null && cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
                         response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
                         try {
                             data = FiskInfoUtility.toByteArray(response.getBody().in());
