@@ -15,8 +15,12 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class CoordinatesRow extends BaseTableRow {
@@ -35,10 +39,12 @@ public class CoordinatesRow extends BaseTableRow {
     private Button removeCoordinateRowButton;
     private TextView helpTextView;
     private LinearLayout latLonViewContainer;
-    private GpsLocationTracker locationTracker;
+    private TextWatcher watcher;
+    private CompoundButton.OnCheckedChangeListener cardinalDirectionSwitchOnCheckedChangedListener;
     private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
+    private boolean enabled = true;
 
-    public CoordinatesRow(final Activity activity, GpsLocationTracker gpsLocationTracker) {
+    public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
         super(activity, R.layout.utility_row_coordinates_row);
 
         header = (TextView) getView().findViewById(R.id.utility_coordinates_row_header_text_view);
@@ -47,9 +53,8 @@ public class CoordinatesRow extends BaseTableRow {
         removeCoordinateRowButton = (Button) getView().findViewById(R.id.utility_coordinates_row_remove_position_button);
         latLonViewContainer = (LinearLayout) getView().findViewById(R.id.utility_coordinates_row_lat_lon_container);
         helpTextView = (TextView) getView().findViewById(R.id.utility_coordinates_row_help_text_view);
-        this.locationTracker = gpsLocationTracker;
 
-        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationTracker);
+        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
 
         coordinateRows.add(coordinatesRow);
         latLonViewContainer.addView(coordinatesRow.getView());
@@ -64,7 +69,14 @@ public class CoordinatesRow extends BaseTableRow {
         addCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
+                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
+
+                if(watcher != null) {
+                    row.setTextWatcher(watcher);
+                }
+                if(cardinalDirectionSwitchOnCheckedChangedListener != null) {
+                    row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
+                }
 
                 coordinateRows.add(row);
                 latLonViewContainer.addView(row.getView());
@@ -83,6 +95,11 @@ public class CoordinatesRow extends BaseTableRow {
                 coordinateRows.remove(coordinateRows.size() - 1);
             }
         });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public void setHeader(String headerText) {
@@ -105,15 +122,68 @@ public class CoordinatesRow extends BaseTableRow {
         return coordinates;
     }
 
-    public void setCoordinates(Activity activity, List<Point> coordinates) {
+    public void setCoordinates(Activity activity, List<Point> coordinates, LocationProviderInterface locationProviderInterface) {
         coordinateRows.clear();
         latLonViewContainer.removeAllViews();
 
         for(Point position : coordinates) {
-            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationTracker);
+            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
             row.setCoordinates(position);
+            row.setEnabled(enabled);
+
+            if(watcher != null) {
+                row.setTextWatcher(watcher);
+            }
+            if(cardinalDirectionSwitchOnCheckedChangedListener != null) {
+                row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
+            }
+
             coordinateRows.add(row);
             latLonViewContainer.addView(row.getView());
+        }
+    }
+
+    public void setPositionButtonOnClickListener(View.OnClickListener onClickListener) {
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.SetPositionButtonOnClickListener(onClickListener);
+        }
+    }
+
+    public void setTextWatcher(TextWatcher watcher) {
+        this.watcher = watcher;
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setTextWatcher(this.watcher);
+        }
+    }
+
+    public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangedListener) {
+        this.cardinalDirectionSwitchOnCheckedChangedListener = onCheckedChangedListener;
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setCardinalDirectionSwitchOnCheckedChangedListener(this.cardinalDirectionSwitchOnCheckedChangedListener);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        addCoordinateRowButton.setEnabled(enabled);
+        removeCoordinateRowButton.setEnabled(enabled);
+        latLonViewContainer.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+                removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                addCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+                removeCoordinateRowButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
+
+        for(DegreesMinutesSecondsRow row : coordinateRows) {
+            row.setEnabled(enabled);
         }
     }
 }

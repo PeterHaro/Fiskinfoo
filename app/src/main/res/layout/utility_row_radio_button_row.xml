@@ -11,37 +11,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="@dimen/radio_button_row_padding_bottom"
-          android:layout_marginLeft="@dimen/radio_button_row_padding_left"
-          android:layout_marginRight="@dimen/radio_button_row_padding_right"
-          android:layout_marginTop="@dimen/radio_button_row_padding_top"
-          android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/radio_button_row_padding_bottom"
+    android:layout_marginStart="@dimen/radio_button_row_padding_left"
+    android:layout_marginEnd="@dimen/radio_button_row_padding_right"
+    android:layout_marginTop="@dimen/radio_button_row_padding_top"
+    android:orientation="horizontal"
+    >
 
     <RadioButton
         android:id="@+id/radio_button_row_radio_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/radio_button_row_radio_button_margin_left"
         android:layout_marginStart="@dimen/radio_button_row_radio_button_margin_left"
         android:layout_marginTop="@dimen/radio_button_row_radio_button_margin_top"
         android:clickable="false"
-        android:duplicateParentState="true"/>
+        android:duplicateParentState="true"
+        />
 
     <TextView
         android:id="@+id/radio_button_row_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dialog_internal_container_margin_bottom"
-        android:layout_marginLeft="@dimen/dialog_container_margin_left"
-        android:layout_marginRight="@dimen/dialog_container_margin_right"
+        android:layout_marginStart="@dimen/dialog_container_margin_left"
+        android:layout_marginEnd="@dimen/dialog_container_margin_right"
         android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
         android:layout_weight="1"
         android:clickable="false"
         android:duplicateParentState="true"
-        android:textSize="@dimen/radio_button_row_text_size"/>
-
+        android:textSize="@dimen/radio_button_row_text_size"
+        />
 </TableRow>

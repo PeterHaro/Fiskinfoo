@@ -16,8 +16,8 @@ package fiskinfoo.no.sintef.fiskinfoo.Interface;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -29,15 +29,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 public interface OnclickListenerInterface {
-    View.OnClickListener getDismissDialogListener(Dialog dialog);
-    View.OnClickListener getShowToastListener(Context context, String message);
     View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag);
     View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription);
-    View.OnClickListener getInformationDialogOnClickListener(String title, String message, int iconId);
-    View.OnClickListener getInformationDialogOnClickListener(int titleId, int messageId, int iconId);
+    View.OnClickListener getInformationDialogOnClickListener(String title, String message);
     View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);
-    View.OnClickListener getOfflineModeInformationIconOnClickListener(User user);
-    View.OnClickListener getUserSettingsDialogOnClickListener(final User user);
-    View.OnClickListener getToolEntryEditDialogOnClickListener(final Activity activity, final FragmentManager fragmentManager, final GpsLocationTracker locationTracker, final ToolEntry toolEntry, final User user);
-    View.OnClickListener getHelpDialogOnClickListener();
 }

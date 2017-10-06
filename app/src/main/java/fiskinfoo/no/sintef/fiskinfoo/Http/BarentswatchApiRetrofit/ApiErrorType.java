@@ -19,7 +19,7 @@ public enum ApiErrorType {
 
     @Override
     public String toString() {
-        String retVal = "";
+        String retVal;
         switch(this) {
             case NONE:
                 retVal = "none";
@@ -37,7 +37,7 @@ public enum ApiErrorType {
     }
 
     public static ApiErrorType getType(String type) {
-        ApiErrorType retVal = null;
+        ApiErrorType retVal;
         switch(type.toLowerCase()) {
             case "none":
                 retVal = NONE;

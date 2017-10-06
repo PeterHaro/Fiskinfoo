@@ -15,7 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 public enum ToolEntryStatus {
-    STATUS_UNREPORTED, STATUS_UNSENT, STATUS_SENT_UNCONFIRMED, STATUS_RECEIVED, STATUS_REMOVED_UNCONFIRMED, STATUS_REMOVED;
+    STATUS_UNREPORTED, STATUS_UNSENT, STATUS_SENT_UNCONFIRMED, STATUS_RECEIVED, STATUS_REMOVED_UNCONFIRMED, STATUS_REMOVED, STATUS_TOOL_LOST_UNREPORTED, STATUS_TOOL_LOST_UNCONFIRMED, STATUS_TOOL_LOST_CONFIRMED, STATUS_TOOL_LOST_UNSENT;
 
     @Override
     public String toString() {
@@ -39,6 +39,18 @@ public enum ToolEntryStatus {
             case STATUS_REMOVED:
                 retVal = "Utrapportert";
                 break;
+            case STATUS_TOOL_LOST_UNREPORTED:
+                retVal = "Tapt, ikke rapportert";
+                break;
+            case STATUS_TOOL_LOST_UNSENT:
+                retVal = "Tapt, urapporterte endringer";
+                break;
+            case STATUS_TOOL_LOST_UNCONFIRMED:
+                retVal = "Tapt, ikke bekreftet registrert";
+                break;
+            case STATUS_TOOL_LOST_CONFIRMED:
+                retVal = "Innmeldt som tapt";
+                break;
             default:
                 throw new UnsupportedOperationException("Tool type does not exist in the system");
         }
@@ -58,6 +70,14 @@ public enum ToolEntryStatus {
             return ToolEntryStatus.STATUS_REMOVED_UNCONFIRMED;
         } else if (value.equalsIgnoreCase("Utrapportert")) {
             return ToolEntryStatus.STATUS_REMOVED;
+        } else if (value.equalsIgnoreCase("Tapt, ikke rapportert")) {
+            return ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED;
+        } else if (value.equalsIgnoreCase("Tapt, urapporterte endringer")) {
+            return ToolEntryStatus.STATUS_TOOL_LOST_UNSENT;
+        } else if (value.equalsIgnoreCase("Tapt, ikke bekreftet registrert")) {
+            return ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED;
+        } else if (value.equalsIgnoreCase("Innmeldt som tapt")) {
+            return ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED;
         }
         return null;
     }

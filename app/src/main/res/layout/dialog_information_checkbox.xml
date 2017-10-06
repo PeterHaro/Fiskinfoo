@@ -1,7 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <ScrollView
         android:id="@+id/checkbox_dialog_scroll_view"
@@ -13,7 +26,8 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        >
 
         <TextView
             android:id="@+id/checkbox_dialog_text_view"
@@ -21,7 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin_small"/>
+            android:layout_marginTop="@dimen/activity_vertical_margin_small"
+            />
     </ScrollView>
 
     <TextView
@@ -34,7 +49,8 @@
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:layout_toStartOf="@+id/checkbox_dialog_checkbox"
         android:layout_below="@id/checkbox_dialog_scroll_view"
-        android:text="@string/do_not_show_message_again"/>
+        android:text="@string/do_not_show_message_again"
+        />
 
     <CheckBox
         android:id="@+id/checkbox_dialog_checkbox"
@@ -43,7 +59,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_alignBaseline="@+id/checkbox_dialog_checkbox_text_view"
-        android:layout_above="@id/dialog_bottom_button_container"/>
+        android:layout_above="@id/dialog_bottom_button_container"
+        />
 
     <LinearLayout
         android:id="@+id/dialog_bottom_button_container"
@@ -55,7 +72,8 @@
         android:paddingBottom="1.0dip"
         android:paddingLeft="4.0dip"
         android:paddingRight="4.0dip"
-        android:paddingTop="5.0dip">
+        android:paddingTop="5.0dip"
+        >
 
         <Button
             android:id="@+id/dialog_bottom_cancel_button"
@@ -66,7 +84,8 @@
             android:enabled="false"
             android:layout_gravity="center_vertical"
             android:layout_weight="1.0"
-            android:text="@string/cancel"/>
+            android:text="@string/cancel"
+            />
 
         <Button
             android:id="@+id/dialog_bottom_ok_button"
@@ -76,8 +95,7 @@
             android:layout_gravity="center_vertical"
             android:textStyle="bold"
             android:layout_weight="0.6"
-            android:text="@string/ok"/>
-
+            android:text="@string/ok"
+            />
     </LinearLayout>
-
 </RelativeLayout>

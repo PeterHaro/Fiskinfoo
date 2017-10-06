@@ -18,6 +18,10 @@ limitations under the License.
     <dimen name="activity_horizontal_margin_small">8dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_vertical_margin_small">8dp</dimen>
+    <dimen name="default_image_view_and_button_width">48dp</dimen>
+    <dimen name="default_image_view_and_button_height">48dp</dimen>
+    <dimen name="small_image_view_and_button_width">32dp</dimen>
+    <dimen name="small_image_view_and_button_height">32dp</dimen>
 
     <!-- login activity -->
     <dimen name="login_logo_width">550dp</dimen>
@@ -26,9 +30,13 @@ limitations under the License.
     <dimen name="login_network_error_text_size">20sp</dimen>
 
     <!-- ToolBar -->
-    <dimen name="toolbar_offline_mode_image_view_width">18dp</dimen>
-    <dimen name="toolbar_offline_mode_image_view_height">18dp</dimen>
-    <dimen name="toolbar_offline_mode_text_view_margin_left">20dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_width">24dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_height">24dp</dimen>
+    <dimen name="toolbar_offline_mode_image_view_margin_start">20dp</dimen>
+    <dimen name="app_bar_icon_padding_start">16dp</dimen>
+    <dimen name="app_bar_icon_padding_end">16dp</dimen>
+    <dimen name="app_bar_icon_padding_top">16dp</dimen>
+    <dimen name="app_bar_icon_padding_bottom">16dp</dimen>
 
     <!-- File dialog -->
     <dimen name="file_dialog_select_folder_layout_padding_bottom">5dp</dimen>
@@ -55,6 +63,17 @@ limitations under the License.
     <dimen name="tool_legend_row_margin_left">10dp</dimen>
     <dimen name="tool_legend_row_margin_right">10dp</dimen>
     <dimen name="tool_legend_row_margin_top">5dp</dimen>
+
+    <!-- Navigation view -->
+    <dimen name="navigation_header_padding_bottom">10dp</dimen>
+    <dimen name="navigation_header_padding_top">40dp</dimen>
+    <dimen name="navigation_header_profile_image_view_width">65dp</dimen>
+    <dimen name="navigation_header_profile_image_view_height">65dp</dimen>
+    <dimen name="navigation_header_profile_image_margin_start">10dp</dimen>
+    <dimen name="navigation_header_name_text_view_margin_bottom">10dp</dimen>
+    <dimen name="navigation_header_name_text_view_margin_start">15dp</dimen>
+    <dimen name="navigation_header_verified_image_view_width">15dp</dimen>
+    <dimen name="navigation_header_verified_image_view_padding_start">5dp</dimen>
 
     <!-- Select map layers dialog margins -->
     <dimen name="select_map_layer_linear_layout_margin_left">10dp</dimen>
@@ -85,6 +104,18 @@ limitations under the License.
     <!-- Settings dialog -->
     <dimen name="settings_row_container_margin_left">30dp</dimen>
     <dimen name="settings_row_container_margin_right">30dp</dimen>
+    <dimen name="settings_row_margin_bottom">1dp</dimen>
+    <dimen name="settings_row_margin_top">1dp</dimen>
+    <dimen name="settings_row_padding_bottom">15dp</dimen>
+    <dimen name="settings_row_padding_top">15dp</dimen>
+    <dimen name="settings_row_icon_image_view_width">30dp</dimen>
+    <dimen name="settings_row_icon_image_view_height">30dp</dimen>
+    <dimen name="settings_row_text_view_margin_start">15dp</dimen>
+    <dimen name="settings_row_image_view_margin_start">25dp</dimen>
+    <dimen name="about_text_view_margin">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_start">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_end">15dp</dimen>
+    <dimen name="user_settings_fragment_fields_container_padding_vertical">15dp</dimen>
 
     <!-- Offline mode information dialog -->
     <dimen name="offline_mode_dialog_text_view_margin_top">15dp</dimen>
@@ -227,7 +258,10 @@ limitations under the License.
     <dimen name="map_search_tools_button_height">40dp</dimen>
     <dimen name="map_search_tools_button_margin_left">10dp</dimen>
     <dimen name="map_search_tools_button_margin_top">150dp</dimen>
-    <dimen name="map_search_tools_clear_highlighting_button_margin_top">10dp</dimen>
+    <dimen name="map_search_tools_clear_highlighting_button_margin_top">150dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_elevation">2dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_container_padding_start">20dp</dimen>
+    <dimen name="map_fragment_bottom_sheet_tool_details_drawable_margin">5dp</dimen>
 
     <!-- Search tools dialog -->
     <dimen name="search_tools_dialog_input_field_margin_left">30dp</dimen>
@@ -274,17 +308,30 @@ limitations under the License.
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>
     <dimen name="table_row_padding_top">7dp</dimen>
-    <dimen name="utility_row_help_button_height">20dp</dimen>
-    <dimen name="utility_row_help_button_width">20dp</dimen>
-    <dimen name="utility_coordinates_row_add_button_right_margin">20dp</dimen>
+    <dimen name="utility_row_help_button_height">24dp</dimen>
+    <dimen name="utility_row_help_button_width">24dp</dimen>
+    <dimen name="utility_coordinates_row_add_button_end_margin">20dp</dimen>
     <dimen name="utility_row_header_margin_left">5dp</dimen>
     <dimen name="utility_row_margin_top">5dp</dimen>
     <dimen name="utility_row_margin_left_15">15dp</dimen>
-    <dimen name="tool_log_notification_view_width">30dp</dimen>
-    <dimen name="tool_log_notification_view_height">30dp</dimen>
+    <dimen name="tool_log_row_notification_image_view_width">48dp</dimen>
+    <dimen name="tool_log_notification_row_image_view_height">48dp</dimen>
+    <dimen name="utility_tool_map_preview_web_view_height">200dp</dimen>
+    <dimen name="utility_dms_row_cardinal_direction_switch_padding_start">4dp</dimen>
+    <dimen name="tool_log_row_edit_image_view_margin_end">8dp</dimen>
+    <dimen name="tool_log_row_text_view_container_margin_start">16dp</dimen>
+    <dimen name="tool_log_row_reported_image_view_margin_end">20dp</dimen>
+    <dimen name="tool_log_row_edit_tool_image_view_width">30dp</dimen>
+    <dimen name="tool_log_row_edit_tool_image_view_height">30dp</dimen>
+    <dimen name="coordinate_row_add_position_button_height">36dp</dimen>
+    <dimen name="coordinate_row_add_position_button_width">36dp</dimen>
+
+    <!-- Offline mode fragment -->
+    <dimen name="offline_mode_fragment_switch_padding_vertical">10dp</dimen>
 
     <!-- Time and Date picker rows -->
-    <dimen name="time_and_date_row_padding_vertical">8dp</dimen>
+    <dimen name="time_and_date_row_padding_vertical">8dp</dimen>3
+    ,,3
 
     <!-- tool search result row -->
     <dimen name="tool_search_result_row_tool_icon_width">45dp</dimen>
@@ -296,5 +343,23 @@ limitations under the License.
     <dimen name="tool_search_result_row_date_text_view_margin_left">10dp</dimen>
     <dimen name="tool_search_result_row_position_text_view_margin_left">10dp</dimen>
     <integer name="coordinate_input_field_max_length">14</integer>
+
+    <!-- Material -->
+    <dimen name="floating_action_button_width">56dp</dimen>
+    <dimen name="floating_action_button_height">56dp</dimen>
+
+    <!-- Material cards -->
+    <!-- https://material.google.com/components/cards.html-->
+    <!-- Default values -->
+    <dimen name="material_card_default_margin_horizontal">8dp</dimen>
+    <dimen name="material_card_default_margin_bottom">8dp</dimen>
+    <dimen name="material_card_default_action_padding">8dp</dimen>
+    <dimen name="material_card_default_margin_top">8dp</dimen>
+    <dimen name="material_card_view_rounded_corners">2dp</dimen>
+
+    <dimen name="card_view_default_rounded_corners">2dp</dimen>
+    <dimen name="card_view_default_elevation">2dp</dimen>
+    <dimen name="card_view_medium_rounded_corners">2dp</dimen>
+    <dimen name="card_view_medium_default_elevation">2dp</dimen>
 
 </resources>

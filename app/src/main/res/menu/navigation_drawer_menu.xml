@@ -1,0 +1,41 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity"
+    >
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/navigation_view_group_1"
+        >
+        <item
+            android:id="@+id/navigation_view_subscriptions"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/my_page"
+            />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/navigation_view_group_2"
+        >
+        <item
+            android:id="@+id/navigation_view_map"
+            android:icon="@drawable/ikon_kart_til_din_kartplotter"
+            android:title="@string/map"
+            />
+        <item
+            android:id="@+id/navigation_view_tools"
+            android:icon="@drawable/kart_til_din_kartplotter"
+            android:title="@string/my_tools"
+            />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/navigation_view_group_3"
+        >
+        <item
+            android:id="@+id/navigation_view_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/action_settings"
+            />
+    </group>
+
+</menu>

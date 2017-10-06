@@ -14,20 +14,22 @@ limitations under the License.
 
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
-
         android:layout_height="wrap_content"
-        android:background="@android:drawable/dialog_holo_light_frame">
+        android:background="@android:drawable/dialog_holo_light_frame"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/utility_lat_lon_row_set_position_button"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <EditText
                 android:id="@+id/utility_lat_lon_row_latitude_edit_text"
@@ -38,7 +40,8 @@ limitations under the License.
                 android:inputType="numberDecimal"
                 android:maxLength="12"
                 android:selectAllOnFocus="true"
-                android:hint="@string/latitude"/>
+                android:hint="@string/latitude"
+                />
 
             <EditText
                 android:id="@+id/utility_lat_lon_row_longitude_edit_text"
@@ -50,9 +53,9 @@ limitations under the License.
                 android:inputType="numberDecimal"
                 android:maxLength="14"
                 android:selectAllOnFocus="true"
-                android:hint="@string/longitude"/>
+                android:hint="@string/longitude"
+                />
         </LinearLayout>
-
 
         <Button
             android:id="@+id/utility_lat_lon_row_set_position_button"
@@ -62,8 +65,7 @@ limitations under the License.
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
-            android:background="@drawable/ic_my_location_black_24dp" />
-
+            android:background="@drawable/ic_my_location_black_24dp"
+            />
     </RelativeLayout>
-
 </TableRow>

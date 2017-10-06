@@ -14,11 +14,14 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,10 +30,15 @@ import android.os.IBinder;
 import android.provider.Settings;
 
 
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_FINE_LOCATION;
 
 /**
  * Gps location tracker class to get users location and other information
@@ -113,27 +121,28 @@ public class GpsLocationTracker extends Service implements LocationListener {
                 this.canGetLocation = true;
 				/* getting location from network provider */
                 if (isNetworkEnabled) {
-                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_FOR_UPDATE, MIN_DISTANCE_CHANGE_FOR_UPDATE, this);
-                    if (mLocationManager != null) {
-                        mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (mLocation != null) {
-                            mLatitude = mLocation.getLatitude();
-                            mLongitude = mLocation.getLongitude();
+                        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_FOR_UPDATE, MIN_DISTANCE_CHANGE_FOR_UPDATE, this);
+                        if (mLocationManager != null) {
+                            mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (mLocation != null) {
+                                mLatitude = mLocation.getLatitude();
+                                mLongitude = mLocation.getLongitude();
+                            }
                         }
-                    }
-					/* if gps is enabled then get location using gps */
-                    if (isGpsEnabled) {
-                        if (mLocation == null) {
-                            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATE, MIN_DISTANCE_CHANGE_FOR_UPDATE, this);
-                            if (mLocationManager != null) {
-                                mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                                if (mLocation != null) {
-                                    mLatitude = mLocation.getLatitude();
-                                    mLongitude = mLocation.getLongitude();
+                    /* if gps is enabled then get location using gps */
+                        if (isGpsEnabled) {
+                            if (mLocation == null) {
+                                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_FOR_UPDATE, MIN_DISTANCE_CHANGE_FOR_UPDATE, this);
+                                if (mLocationManager != null) {
+                                    mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                    if (mLocation != null) {
+                                        mLatitude = mLocation.getLatitude();
+                                        mLongitude = mLocation.getLongitude();
+                                    }
                                 }
                             }
                         }
-                    }
+
                 }
             }
 

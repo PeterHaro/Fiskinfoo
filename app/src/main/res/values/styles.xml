@@ -33,6 +33,7 @@ limitations under the License.
     <color name="nak_red">#f00</color>
     <color name="message_blue">#4C85D3</color>
     <color name="footer_gray">#4C4747</color>
+    <color name="text_white_transparent">#E6FFFFFF</color>
     <color name="unavailable_grey">#B9B9B9</color>
     <color name="helpful_grey">#D5D5D5</color>
     <color name="hyperlink_blue">#0000EE</color>
@@ -43,6 +44,11 @@ limitations under the License.
     <color name="warning_orange">#FF9900</color>
     <color name="error_red">#CC2626</color>
     <color name="card_view_title_black">#222</color>
+
+    <!-- Recommended value from Google -->
+    <!--<color name="material_icon_black_active_tint_color">#8A000000</color>-->
+    <color name="material_icon_black_active_tint_color">#AA000000</color>
+    <color name="material_icon_black_disabled_tint_color">#61000000</color>
 
     <array name="progress_colors_light">
         <item>#FF03A9F4</item>
@@ -83,16 +89,5 @@ limitations under the License.
     <color name="colorControlActivatedHalf">#9003A9F4</color>
     <color name="colorAccentQuarter">#3300E5FF</color>
     <color name="colorAccentHalf">#9000E5FF</color>
-
-    <style name="SimpleDialog" parent="Material.App.Dialog.Simple">
-        <item name="di_inAnimation">@anim/anim_scale_in</item>
-        <item name="di_outAnimation">@anim/anim_scale_out</item>
-    </style>
-
-    <style name="SimpleDialogLight" parent="Material.App.Dialog.Simple.Light">
-        <item name="di_inAnimation">@anim/anim_scale_in</item>
-        <item name="di_outAnimation">@anim/anim_scale_out</item>
-    </style>
-
 
 </resources>

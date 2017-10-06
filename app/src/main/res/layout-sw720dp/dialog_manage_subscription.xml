@@ -11,7 +11,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <ScrollView
     android:id="@+id/manage_subscription_fields_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,17 +20,20 @@ limitations under the License.
     android:layout_alignParentTop="true"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin">
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    >
 
     <RelativeLayout
         android:id="@+id/manage_subscription_main_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <RelativeLayout
             android:id="@+id/manage_subscription_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <Switch
                 android:id="@+id/manage_subscription_switch"
@@ -44,7 +46,8 @@ limitations under the License.
                 android:text="@string/manage_subscription_subscription_inactive"
                 android:textSize="@dimen/radio_button_row_text_size"
                 android:textStyle="normal"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                />
 
             <TextView
                 android:id="@+id/manage_subscription_format_title"
@@ -54,7 +57,8 @@ limitations under the License.
                 android:layout_marginStart="@dimen/manage_subscription_title_margin_left"
                 android:layout_marginTop="@dimen/manage_subscription_title_margin_top"
                 android:text="@string/subscription_format"
-                android:textSize="@dimen/radio_button_row_text_size"/>
+                android:textSize="@dimen/radio_button_row_text_size"
+                />
 
             <LinearLayout
                 android:id="@+id/manage_subscription_formats_container"
@@ -62,7 +66,8 @@ limitations under the License.
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/manage_subscription_format_title"
                 android:layout_marginTop="@dimen/manage_subscription_margin_top"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                />
 
             <TextView
                 android:id="@+id/manage_subscription_interval_title"
@@ -72,7 +77,8 @@ limitations under the License.
                 android:layout_marginStart="@dimen/manage_subscription_title_margin_left"
                 android:layout_marginTop="@dimen/manage_subscription_title_margin_top"
                 android:text="@string/subscription_frequency"
-                android:textSize="@dimen/radio_button_row_text_size"/>
+                android:textSize="@dimen/radio_button_row_text_size"
+                />
 
             <LinearLayout
                 android:id="@+id/manage_subscription_intervals_container"
@@ -80,7 +86,8 @@ limitations under the License.
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/manage_subscription_interval_title"
                 android:layout_marginTop="@dimen/manage_subscription_margin_top"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                />
 
             <TextView
                 android:id="@+id/manage_subscription_email_title"
@@ -90,7 +97,8 @@ limitations under the License.
                 android:layout_marginStart="@dimen/manage_subscription_title_margin_left"
                 android:layout_marginTop="@dimen/manage_subscription_title_margin_top"
                 android:text="@string/subscription_email"
-                android:textSize="@dimen/radio_button_row_text_size"/>
+                android:textSize="@dimen/radio_button_row_text_size"
+                />
 
             <EditText
                 android:id="@+id/manage_subscription_email_edit_text"
@@ -103,9 +111,9 @@ limitations under the License.
                 android:layout_marginTop="@dimen/manage_subscription_margin_top"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:selectAllOnFocus="true"/>
+                android:selectAllOnFocus="true"
+                />
         </RelativeLayout>
-
 
         <LinearLayout
             android:id="@+id/manage_subscription_bottom_button_container"
@@ -118,7 +126,8 @@ limitations under the License.
             android:paddingBottom="1.0dip"
             android:paddingLeft="4.0dip"
             android:paddingRight="4.0dip"
-            android:paddingTop="5.0dip">
+            android:paddingTop="5.0dip"
+            >
 
             <Button
                 android:id="@+id/manage_subscription_cancel_button"
@@ -127,7 +136,8 @@ limitations under the License.
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/cancel"/>
+                android:text="@string/cancel"
+                />
 
             <Button
                 android:id="@+id/manage_subscription_update_button"
@@ -136,10 +146,8 @@ limitations under the License.
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.0"
-                android:text="@string/update"/>
-
+                android:text="@string/update"
+                />
         </LinearLayout>
-
     </RelativeLayout>
-
 </ScrollView>

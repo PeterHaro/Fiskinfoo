@@ -15,10 +15,12 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +42,7 @@ public class ToolLogRow extends BaseTableRow {
     private TextView toolPositionTextView;
     private ImageView toolNotificationImageView;
     private ImageView editToolImageView;
-    private RelativeLayout relativeLayout;
+    private TableRow tableRow;
 
     public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener) {
         super(context, R.layout.utility_row_tool_log_row);
@@ -50,11 +52,12 @@ public class ToolLogRow extends BaseTableRow {
         toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
         toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolImageView = (ImageView) getView().findViewById(R.id.tool_log_row_edit_image_view);
-        relativeLayout = (RelativeLayout) getView().findViewById(R.id.tool_log_row_relative_layout);
-        StringBuilder sb = new StringBuilder();
+        tableRow = (TableRow) getView().findViewById(R.id.tool_log_row_table_row);
+        StringBuilder sb = new StringBuilder(tool.getCoordinates().get(0).getLatitude() < 0 ? "S" : "N");
 
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));
         sb.append(", ");
+        sb.append(tool.getCoordinates().get(0).getLongitude() < 0 ? "W" : "E");
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLongitude())));
 
         String coordinateString = sb.toString();
@@ -75,37 +78,75 @@ public class ToolLogRow extends BaseTableRow {
 
         toolPositionTextView.setText(coordinateString);
         editToolImageView.setVisibility(View.VISIBLE);
-        relativeLayout.setOnClickListener(onClickListener);
+        tableRow.setOnClickListener(onClickListener);
         toolTypeTextView.setText(tool.getToolType().toString());
         dateHeader.setText(setupDateTime.replace("T", " ").substring(0, 16));
 
-        if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
-            toolNotificationImageView.setVisibility(View.VISIBLE);
-            toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int errorMessageId = -1;
-                    switch(tool.getToolStatus()) {
-                        case STATUS_REMOVED_UNCONFIRMED:
-                        case STATUS_SENT_UNCONFIRMED:
-                            errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
-                            break;
-                        case STATUS_UNREPORTED:
-                        case STATUS_UNSENT:
-                            errorMessageId = R.string.notification_tool_not_reported;
-                            break;
-                        default:
-                            break;
-                    }
+        if(tool.getToolStatus() == ToolEntryStatus.STATUS_REMOVED || tool.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_CONFIRMED) {
+            editToolImageView.setBackgroundResource(R.drawable.ic_visibility_black_24dp);
+        } else {
+            highlightOldTool(true);
 
-                    if(errorMessageId != -1) {
-                        new Toast(v.getContext()).makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
+            if(tool.getToolStatus() != ToolEntryStatus.STATUS_RECEIVED && tool.getToolStatus() != ToolEntryStatus.STATUS_REMOVED) {
+                toolNotificationImageView.setVisibility(View.VISIBLE);
+                toolNotificationImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int errorMessageId = -1;
+                        switch(tool.getToolStatus()) {
+                            case STATUS_REMOVED_UNCONFIRMED:
+                            case STATUS_SENT_UNCONFIRMED:
+                            case STATUS_TOOL_LOST_UNCONFIRMED:
+                                errorMessageId = R.string.notification_tool_sent_unconfirmed_changes;
+                                break;
+                            case STATUS_UNREPORTED:
+                            case STATUS_TOOL_LOST_UNREPORTED:
+                                errorMessageId = R.string.notification_tool_not_reported;
+                                break;
+                            case STATUS_UNSENT:
+                            case STATUS_TOOL_LOST_UNSENT:
+                                errorMessageId = R.string.notification_tool_unreported_changes;
+                            default:
+                                break;
+                        }
+
+                        if(errorMessageId != -1) {
+                            Toast.makeText(v.getContext(), errorMessageId, Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
-        highlightOldTool(true);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            editToolImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+
+            switch (tool.getToolStatus()) {
+                case STATUS_RECEIVED:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.ack_green));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.ack_green));
+                    break;
+                case STATUS_UNREPORTED:
+                case STATUS_REMOVED_UNCONFIRMED:
+                case STATUS_TOOL_LOST_UNREPORTED:
+                case STATUS_TOOL_LOST_UNSENT:
+                case STATUS_UNSENT:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.error_red));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.error_red));
+                    break;
+                case STATUS_SENT_UNCONFIRMED:
+                case STATUS_TOOL_LOST_UNCONFIRMED:
+                    getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+                    getView().setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.done_yellow));
+                    toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.done_yellow));
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 
     public String getDate() {
@@ -171,7 +212,24 @@ public class ToolLogRow extends BaseTableRow {
     }
 
     public void setEditToolOnClickListener(View.OnClickListener onClickListener) {
-        relativeLayout.setOnClickListener(onClickListener);
+        tableRow.setOnClickListener(onClickListener);
         editToolImageView.setVisibility(onClickListener == null ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    public void updateBorderColor(int colorId) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getView().setBackgroundTintMode(PorterDuff.Mode.ADD);
+            getView().setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
+            toolNotificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), colorId));
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        dateHeader.setEnabled(enabled);
+        toolTypeTextView.setEnabled(enabled);
+        toolPositionTextView.setEnabled(enabled);
+        editToolImageView.setEnabled(enabled);
+        tableRow.setEnabled(enabled);
     }
 }

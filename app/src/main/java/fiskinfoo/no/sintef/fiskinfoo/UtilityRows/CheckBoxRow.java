@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 import android.content.Context;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -77,7 +78,21 @@ public class CheckBoxRow extends BaseTableRow {
         }
     }
 
+    public void setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangedListener) {
+        if(mCheckBox != null) {
+            mCheckBox.setOnCheckedChangeListener(onCheckedChangedListener);
+        }
+     }
+
     public boolean isChecked() {
         return mCheckBox != null && mCheckBox.isChecked();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        getView().setEnabled(enabled);
+        mTextView.setDuplicateParentStateEnabled(enabled);
+        mTextView.setEnabled(true);
+        mCheckBox.setEnabled(enabled);
     }
 }

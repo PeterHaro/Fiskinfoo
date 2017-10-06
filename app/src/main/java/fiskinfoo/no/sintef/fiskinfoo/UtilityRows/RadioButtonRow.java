@@ -65,4 +65,9 @@ public class RadioButtonRow extends BaseTableRow {
     public void setOnClickListener(View.OnClickListener onClickListener) {
         getView().setOnClickListener(onClickListener);
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        mRadioButton.setEnabled(enabled);
+    }
 }

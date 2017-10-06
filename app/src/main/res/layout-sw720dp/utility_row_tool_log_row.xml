@@ -11,82 +11,83 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tool_log_row_table_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:drawable/picture_frame"
-    android:paddingBottom="@dimen/table_row_padding_bottom"
-    android:paddingTop="@dimen/table_row_padding_top">
+    android:background="@drawable/gradient_border_background"
+    android:gravity="center_vertical"
+    >
 
-    <RelativeLayout
-        android:id="@+id/tool_log_row_relative_layout"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/tool_log_row_tool_type_image_view"
+        android:layout_width="@dimen/tool_search_result_row_tool_icon_width"
+        android:layout_height="@dimen/tool_search_result_row_tool_icon_height"
+        android:layout_marginStart="@dimen/activity_horizontal_margin_small"
+        android:duplicateParentState="true"
+        android:background="@drawable/ikon_kystfiske"
+        android:contentDescription="@string/tool_log_row_tool_type_image_view_content_description"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/table_row_padding_bottom">
-
-        <ImageView
-            android:id="@+id/tool_log_row_tool_type_image_view"
-            android:layout_width="@dimen/tool_search_result_row_tool_icon_width"
-            android:layout_height="@dimen/tool_search_result_row_tool_icon_height"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/activity_horizontal_margin_small"
-            android:duplicateParentState="true"
-            android:background="@drawable/ikon_kystfiske"/>
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/tool_log_row_text_view_container_margin_start"
+        android:gravity="center_vertical"
+        >
 
         <TextView
             android:id="@+id/tool_log_row_latest_date_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/utility_row_margin_left_15"
-            android:layout_toEndOf="@+id/tool_log_row_tool_type_image_view"
             android:text="@string/date_placeholder_string"
             android:duplicateParentState="true"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            />
 
         <TextView
             android:id="@+id/tool_log_row_tool_type_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
-            android:layout_below="@+id/tool_log_row_latest_date_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/tool_type"/>
+            android:text="@string/tool_type"
+            />
 
         <TextView
             android:id="@+id/tool_log_row_tool_position_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/tool_log_row_latest_date_text_view"
-            android:layout_below="@+id/tool_log_row_tool_type_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/position"/>
+            android:text="@string/position"
+            />
+    </LinearLayout>
 
-        <ImageView
-            android:id="@+id/tool_log_row_reported_image_view"
-            android:layout_width="@dimen/tool_log_notification_view_width"
-            android:layout_height="@dimen/tool_log_notification_view_height"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"
-            android:layout_toStartOf="@+id/tool_log_row_edit_image_view"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
-            android:background="@drawable/ic_priority_high_black_36dp"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        android:layout_weight="1"
+        />
 
-        <ImageView
-            android:id="@+id/tool_log_row_edit_image_view"
-            android:layout_width="@dimen/tool_log_notification_view_width"
-            android:layout_height="@dimen/tool_log_notification_view_height"
-            android:layout_centerVertical="true"
-            android:visibility="visible"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:duplicateParentState="true"
-            android:background="@drawable/ic_mode_edit_black_36dp"/>
+    <ImageView
+        android:id="@+id/tool_log_row_reported_image_view"
+        android:layout_width="@dimen/tool_log_row_notification_image_view_width"
+        android:layout_height="@dimen/tool_log_notification_row_image_view_height"
+        android:layout_marginEnd="@dimen/tool_log_row_reported_image_view_margin_end"
+        android:background="@drawable/ic_priority_high_black_36dp"
+        android:visibility="invisible"
+        />
 
-
-    </RelativeLayout>
-
+    <ImageView
+        android:id="@+id/tool_log_row_edit_image_view"
+        android:layout_width="@dimen/tool_log_row_edit_tool_image_view_width"
+        android:layout_height="@dimen/tool_log_row_edit_tool_image_view_height"
+        android:layout_marginEnd="@dimen/tool_log_row_edit_image_view_margin_end"
+        android:duplicateParentState="true"
+        android:background="@drawable/ic_mode_edit_black_36dp"
+        android:visibility="visible"
+        />
 </TableRow>

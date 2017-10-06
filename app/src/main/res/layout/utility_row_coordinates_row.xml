@@ -11,78 +11,82 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
 
-        <TextView
-            android:id="@+id/utility_coordinates_row_header_text_view"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/utility_row_header_margin_left"
-            android:layout_marginTop="@dimen/dialog_internal_container_margin_top"
-            android:text="@string/position"
-            android:textSize="@dimen/card_view_information_row_text_size"
-            android:textStyle="bold"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            >
 
-        <Button
-            android:id="@+id/utility_coordinates_row_help_button"
-            android:layout_width="@dimen/utility_row_help_button_width"
-            android:layout_height="@dimen/utility_row_help_button_height"
-            android:layout_alignBottom="@+id/utility_coordinates_row_header_text_view"
-            android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
-            android:layout_marginStart="@dimen/activity_horizontal_margin_small"
-            android:background="@android:drawable/ic_menu_help"
-            android:layout_toEndOf="@+id/utility_coordinates_row_header_text_view" />
+            <TextView
+                android:id="@+id/utility_coordinates_row_header_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/utility_row_header_margin_left"
+                android:textStyle="bold"
+                android:textSize="@dimen/card_view_information_row_text_size"
+                android:text="@string/position"
+                />
 
-        <Button
-            android:id="@+id/utility_coordinates_row_remove_position_button"
-            android:layout_width="@dimen/utility_row_help_button_width"
-            android:layout_height="@dimen/utility_row_help_button_height"
-            android:layout_alignBottom="@+id/utility_coordinates_row_header_text_view"
-            android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
-            android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_right_margin"
-            android:layout_toStartOf="@+id/utility_coordinates_row_add_position_button"
-            android:background="@drawable/ic_remove_location_black_24dp" />
+            <Button
+                android:id="@+id/utility_coordinates_row_help_button"
+                android:layout_width="@dimen/utility_row_help_button_width"
+                android:layout_height="@dimen/utility_row_help_button_height"
+                android:layout_marginStart="@dimen/activity_horizontal_margin_small"
+                android:background="@android:drawable/ic_menu_help"
+                />
 
-        <Button
-            android:id="@+id/utility_coordinates_row_add_position_button"
-            android:layout_width="@dimen/utility_row_help_button_width"
-            android:layout_height="@dimen/utility_row_help_button_height"
-            android:layout_alignBottom="@+id/utility_coordinates_row_header_text_view"
-            android:layout_alignTop="@+id/utility_coordinates_row_header_text_view"
-            android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_right_margin"
-            android:background="@drawable/ic_add_location_black_24dp"
-            android:layout_alignParentEnd="true" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:id="@+id/utility_coordinates_row_remove_position_button"
+                android:layout_width="@dimen/coordinate_row_add_position_button_width"
+                android:layout_height="@dimen/coordinate_row_add_position_button_height"
+                android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_end_margin"
+                android:background="@drawable/ic_remove_location_black_24dp"
+                />
+
+            <Button
+                android:id="@+id/utility_coordinates_row_add_position_button"
+                android:layout_width="@dimen/coordinate_row_add_position_button_width"
+                android:layout_height="@dimen/coordinate_row_add_position_button_height"
+                android:layout_marginEnd="@dimen/utility_coordinates_row_add_button_end_margin"
+                android:background="@drawable/ic_add_location_black_24dp"
+                />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/utility_coordinates_row_help_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/utility_coordinates_row_header_text_view"
-            android:visibility="gone"
-            android:text="@string/coordinates_help_text"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:text="@string/coordinates_help_text"
+            />
 
         <LinearLayout
             android:id="@+id/utility_coordinates_row_lat_lon_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/utility_coordinates_row_help_text_view"
-            android:orientation="vertical">
-
-
+            android:orientation="vertical"
+            >
         </LinearLayout>
-
-
-
-
-    </RelativeLayout>
-
+    </LinearLayout>
 </TableRow>

@@ -36,7 +36,10 @@ public class UtilityDialogs implements DialogInterface{
         dialog.setContentView(layoutId);
         dialog.setTitle(titleId);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
 
         return dialog;
     }
@@ -47,20 +50,10 @@ public class UtilityDialogs implements DialogInterface{
         dialog.setContentView(layoutId);
         dialog.setTitle(title);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        return dialog;
-    }
-
-    @Override
-    public Dialog getDialogWithTitleIcon(Context context, int layoutId, int titleId, int iconId) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        dialog.setContentView(layoutId);
-        dialog.setTitle(titleId);
-        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ikon_kart_til_din_kartplotter);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
 
         return dialog;
     }
@@ -73,39 +66,12 @@ public class UtilityDialogs implements DialogInterface{
         dialog.setTitle(title);
         dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.ikon_kart_til_din_kartplotter);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
 
         return dialog;
-    }
-
-    @Override
-    public AlertDialog getAlertDialog(Context context, String title, String message, int iconId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(R.string.ok, null);
-        if(iconId != -1) {
-            builder.setIcon(iconId);
-        }
-        return builder.create();
-    }
-
-    @Override
-    public AlertDialog getAlertDialog(Context context, int titleId, int messageId, int iconId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setTitle(titleId)
-                .setMessage(messageId)
-                .setPositiveButton(R.string.ok, null);
-        if(iconId != -1) {
-            builder.setIcon(iconId);
-        }
-        return builder.create();
-    }
-
-    @Override
-    public AlertDialog getHyperlinkAlertDialog(Context context, String title, String info, int iconId) {
-        return HyperlinkAlertDialog.create(context, title, info, iconId);
-
     }
 
     @Override
@@ -115,79 +81,18 @@ public class UtilityDialogs implements DialogInterface{
     }
 
     @Override
-    public AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId) {
-        return HyperlinkAlertDialog.create(context, titleId, infoId);
-    }
-
-    @Override
-    public AlertDialog getHyperlinkAlertDialog(Context context, int titleId, int infoId, int iconId) {
-        return HyperlinkAlertDialog.create(context, titleId, infoId, iconId);
-    }
-
-    @Override
-    public Dialog getLoadingDialog(Context context, int messageId) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_loading);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        TextView messageTextView = (TextView) dialog.findViewById(R.id.loading_dialog_info_text_view);
-        messageTextView.setText(messageId);
-
-        return dialog;
-    }
-
-    @Override
-    public Dialog getLoadingDialog(Context context, String message) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_loading);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        TextView messageTextView = (TextView) dialog.findViewById(R.id.loading_dialog_info_text_view);
-        messageTextView.setText(message);
-
-        return dialog;
-    }
-
-    @Override
-    public Dialog getConfirmationDialog(Context context, String title, String message, String confirmButtonText) {
-        final Dialog dialog = new Dialog(context);
-        dialog.setContentView(R.layout.dialog_confirm);
-        dialog.setTitle(title);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        TextView textView = (TextView) dialog.findViewById(R.id.dialog_confirm_message_text_view);
-        Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-        Button confirmButton = (Button) dialog.findViewById(R.id.dialog_bottom_confirm_bottom);
-
-        textView.setText(message);
-        confirmButton.setText(confirmButtonText);
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        return dialog;
-    }
-
-    @Override
     public Dialog getCheckboxInformationDialog(Context context, String title, String infoText) {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_information_checkbox);
         dialog.setTitle(title);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         TextView textView = (TextView) dialog.findViewById(R.id.checkbox_dialog_text_view);
-
         textView.setText(infoText);
+
+        if(dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
 
         return dialog;
     }

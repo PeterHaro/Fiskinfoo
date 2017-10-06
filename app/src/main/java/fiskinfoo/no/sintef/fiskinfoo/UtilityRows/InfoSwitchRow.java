@@ -35,6 +35,11 @@ public class InfoSwitchRow extends BaseTableRow {
         mTextView.setText(titleId);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        mSwitch.setEnabled(enabled);
+    }
+
     public InfoSwitchRow(Context context, String title) {
         super(context, R.layout.utility_row_info_switch_row);
 

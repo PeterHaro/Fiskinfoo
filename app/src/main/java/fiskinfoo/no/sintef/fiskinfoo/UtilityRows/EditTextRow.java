@@ -65,12 +65,12 @@ public class EditTextRow extends BaseTableRow  {
     }
 
     @SuppressWarnings("unused")
-    public void setFieldName(String fieldName) {
-        header.setText(fieldName);
+    public void setRowHeader(String header) {
+        this.header.setText(header);
     }
 
     @SuppressWarnings("unused")
-    public String getFieldName() {
+    public String getRowHeader() {
         return header.getText().toString();
     }
 

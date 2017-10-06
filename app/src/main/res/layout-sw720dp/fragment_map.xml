@@ -11,39 +11,392 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context=".MapActivity">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Button
-        android:id="@+id/map_search_button"
-        android:layout_width="@dimen/map_search_tools_button_width"
-        android:layout_height="@dimen/map_search_tools_button_height"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/map_search_tools_button_margin_left"
-        android:layout_marginTop="@dimen/map_search_tools_button_margin_top"
-        android:background="@drawable/ic_search_black_36dp"/>
-
-    <Button
-        android:id="@+id/map_clear_highlighting_button"
-        android:layout_width="@dimen/map_search_tools_button_width"
-        android:layout_height="@dimen/map_search_tools_button_height"
-        android:layout_alignParentStart="true"
-        android:visibility="gone"
-        android:layout_below="@+id/map_search_button"
-        android:layout_marginLeft="@dimen/map_search_tools_button_margin_left"
-        android:layout_marginTop="@dimen/map_search_tools_clear_highlighting_button_margin_top"
-        android:background="@drawable/ic_highlight_off_black_36dp"/>
-
-    <WebView
-        android:id="@+id/map_fragment_web_view"
+    <RelativeLayout
+        android:id="@+id/map_fragment_map_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:scrollbars="none"/>
+        >
 
-</RelativeLayout>
+        <WebView
+            android:id="@+id/map_fragment_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scrollbars="none"
+            />
+
+        <android.support.v7.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/map_fragment_tool_search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="10dp"
+            android:visibility="invisible"
+            android:drawableEnd="@drawable/ic_search_black_24dp"
+            android:inputType="textAutoComplete"
+            android:imeOptions="actionSearch"
+            android:selectAllOnFocus="true"
+            android:lines="1"
+            android:maxLines="1"
+            android:hint="@string/tool_search_hint"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/text_white"
+        android:paddingStart="@dimen/map_fragment_bottom_sheet_container_padding_start"
+        android:paddingEnd="0dp"
+        android:elevation="@dimen/map_fragment_bottom_sheet_elevation"
+        app:behavior_hideable="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        >
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_tool_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/material_view_divider_invisible"
+            android:showDividers="beginning|middle|end"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/placeholder_tool_type"
+                />
+
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_setup_date_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_schedule_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/placeholder_date"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_vessel_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_directions_boat_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/placeholder_vessel_name"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_phone_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_phone_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/placeholder_phone_number"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_position_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/placeholder_position"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_tool_marinogram_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/show_marinogram_from_yr"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_seismic_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/material_view_divider_invisible"
+            android:showDividers="beginning|middle|end"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_type_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/placeholder_seismic_type"
+                />
+
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_period_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_schedule_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/seismic_period"
+                />
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_start_date_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_schedule_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/seismic_area_start_date"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_vessel_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_directions_boat_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/vessel_name"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_company_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_location_city_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/responsible_party"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_build_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/seismic_type"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_fact_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/seismic_fact_hyperlink_text"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_map_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/seismic_map_hyperlink_text"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_position_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/download_file_to_view_position"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_seismic_ais_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:textStyle="bold"
+                android:textColor="@color/hyperlink_blue"
+                android:text="@string/view_ais_tracking"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_sea_floor_installation_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/material_view_divider_invisible"
+            android:showDividers="beginning|middle|end"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/sea_floor_installation"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_type_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_build_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/type"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_function_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_build_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/function"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_depth_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_vertical_align_bottom_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/depth"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_field_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_grid_on_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/field"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_start_date_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_schedule_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/sea_floor_installation_area_start_date"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_operator_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_location_city_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/operator"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_position_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/position"
+                />
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_sea_floor_installation_marinogram_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_place_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/show_marinogram_from_yr"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_ice_concentration_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/material_view_divider_invisible"
+            android:showDividers="beginning|middle|end"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/ice_concentration"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_ice_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_ac_unit_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                android:text="@string/ice_type"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_satellite_images_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                />
+
+            <TextView
+                android:id="@+id/linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_insert_link_black_24dp"
+                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -14,9 +14,14 @@ limitations under the License.
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="fiskinfoo.no.sintef.fiskinfoo.MapFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="fiskinfoo.no.sintef.fiskinfoo.Fragments.MapFragment"
+    >
 
     <item
         android:id="@+id/send_tool_report"
-        android:title="@string/send_tool_report"/>
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:title="@string/send_report"
+        />
 </menu>

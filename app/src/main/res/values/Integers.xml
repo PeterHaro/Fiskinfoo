@@ -35,7 +35,7 @@ limitations under the License.
     <integer name="input_length_ircs">6</integer>
     <integer name="input_length_mmsi">9</integer>
     <integer name="input_length_imo">7</integer>
-    <integer name="input_length_registration_number">7</integer>
+    <integer name="input_length_registration_number">8</integer>
     <integer name="valid_latitude_value_min">50</integer>
     <integer name="valid_latitude_value_max">85</integer>
     <integer name="valid_longitude_value_min">-10</integer>
@@ -43,8 +43,11 @@ limitations under the License.
     <integer name="valid_degrees_value_min">0</integer>
     <integer name="valid_degrees_value_max">90</integer>
     <integer name="valid_minutes_value_min">0</integer>
-    <integer name="valid_minutes_value_max">60</integer>
+    <integer name="valid_minutes_value_max">59</integer>
     <integer name="valid_seconds_value_min">0</integer>
-    <integer name="valid_seconds_value_max">60</integer>
+    <integer name="valid_seconds_value_max">59</integer>
+    <integer name="utility_row_registration_number_county_code_max_length">2</integer>
+    <integer name="utility_row_registration_number_vessel_number_max_length">4</integer>
+    <integer name="utility_row_registration_number_municipality_code_max_length">2</integer>
 
 </resources>

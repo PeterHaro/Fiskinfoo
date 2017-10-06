@@ -15,27 +15,32 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 
 public class SpinnerRow extends BaseTableRow {
     private TextView fieldNameTextView;
+    private TextView errorTextView;
     private Spinner spinner;
-    private ArrayAdapter adapter;
 
     public SpinnerRow(Context context, String fieldName, String[] spinnerItems) {
         super(context, R.layout.utility_row_spinner_row);
 
         fieldNameTextView = (TextView) getView().findViewById(R.id.utility_spinner_row_header_text_view);
+        errorTextView = (TextView) getView().findViewById(R.id.utility_spinner_row_error_text_view);
         spinner = (Spinner) getView().findViewById(R.id.utility_spinner_row_spinner);
+        ArrayAdapter adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, spinnerItems);
 
         fieldNameTextView.setText(fieldName);
-
-        adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, spinnerItems);
         spinner.setAdapter(adapter);
     }
 
@@ -44,46 +49,76 @@ public class SpinnerRow extends BaseTableRow {
 
         fieldNameTextView = (TextView) getView().findViewById(R.id.utility_spinner_row_header_text_view);
         spinner = (Spinner) getView().findViewById(R.id.utility_spinner_row_spinner);
-        this.adapter = adapter;
 
         fieldNameTextView.setText(fieldName);
         spinner.setAdapter(adapter);
     }
 
-    @SuppressWarnings("unused")
     public void setFieldName(String fieldName) {
         fieldNameTextView.setText(fieldName);
     }
 
-    @SuppressWarnings("unused")
     public String getFieldName() {
         return fieldNameTextView.getText().toString();
     }
 
-    @SuppressWarnings("unused")
     public ArrayAdapter<String> getAdapter() {
         return spinner != null ? (ArrayAdapter<String>)spinner.getAdapter() : null;
     }
 
-    @SuppressWarnings("unused")
     public void setAdapter(ArrayAdapter adapter) {
         if(spinner != null) {
             spinner.setAdapter(adapter);
         }
     }
 
-    @SuppressWarnings("unused")
     public String getCurrentSpinnerItem () {
         return spinner.getSelectedItem().toString();
     }
 
-    @SuppressWarnings("unused")
     public void setSelectedSpinnerItem (int index) {
+
+        spinner.setSelection(index < spinner.getAdapter().getCount() ? index : 0);
+    }
+
+    public void setSelectedSpinnerItem (String spinnerText) {
+        spinner.setSelection(((ArrayAdapter)spinner.getAdapter()).getPosition(spinnerText));
+    }
+
+    public int getCurrentSpinnerIndex() {
+        return spinner.getSelectedItemPosition();
+    }
+
+    public void setCurrentSpinnerIndex(int index) {
+        if(index < 0 || index >= spinner.getAdapter().getCount()) {
+            throw new IndexOutOfBoundsException();
+        }
+
         spinner.setSelection(index);
     }
 
-    @SuppressWarnings("unused")
-    public void setSelectedSpinnerItem (String spinnerText) {
-        spinner.setSelection(adapter.getPosition(spinnerText));
+    public void addSpinnerOption(Object object, int index) {
+        List<Object> objects = new ArrayList<>();
+        for(int i = 0; i < spinner.getAdapter().getCount(); i++) {
+            objects.add(spinner.getAdapter().getItem(i));
+        }
+
+        objects.add(index, object);
+        spinner.setAdapter(new ArrayAdapter<>(getView().getContext(), android.R.layout.simple_spinner_dropdown_item, objects));
+    }
+
+    public void setError(String error) {
+        errorTextView.setError(error);
+        errorTextView.setText(error);
+        errorTextView.setVisibility(error != null ? View.VISIBLE : View.GONE);
+    }
+
+    public void setOnSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener) {
+        spinner.setOnItemSelectedListener(onItemSelectedListener);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        spinner.setEnabled(enabled);
     }
 }

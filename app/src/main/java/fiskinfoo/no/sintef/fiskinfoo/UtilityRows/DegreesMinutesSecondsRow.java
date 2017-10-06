@@ -15,30 +15,34 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.app.Activity;
-import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class DegreesMinutesSecondsRow extends BaseTableRow {
+public class DegreesMinutesSecondsRow extends BaseTableRow  {
     private EditText latitudeDegreesEditText;
     private EditText latitudeMinutesEditText;
     private EditText latitudeSecondsEditText;
     private EditText longitudeDegreesEditText;
     private EditText longitudeMinutesEditText;
     private EditText longitudeSecondsEditText;
+    private SwitchCompat latitudeCardinalDirectionSwitch;
+    private SwitchCompat longitudeCardinalDirectionSwitch;
     private Button setPositionButton;
-    private GpsLocationTracker locationTracker;
+    private LocationProviderInterface mLocationProvider;
 
-    public DegreesMinutesSecondsRow(Activity activity, GpsLocationTracker gpsLocationTracker) {
+    public DegreesMinutesSecondsRow(final Activity activity, LocationProviderInterface gpsLocationTracker) {
         super(activity, R.layout.utility_row_degrees_minutes_seconds_row);
-
-
 
         latitudeDegreesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_degrees_edit_text);
         latitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_minutes_edit_text);
@@ -46,17 +50,19 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         longitudeDegreesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_degrees_edit_text);
         longitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_minutes_edit_text);
         longitudeSecondsEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_seconds_edit_text);
+        latitudeCardinalDirectionSwitch = (SwitchCompat) super.getView().findViewById(R.id.utility_dms_row_latitude_cardinal_direction_switch);
+        longitudeCardinalDirectionSwitch = (SwitchCompat) super.getView().findViewById(R.id.utility_dms_row_longitude_cardinal_direction_switch);
         setPositionButton = (Button) super.getView().findViewById(R.id.utility_lat_lon_row_set_position_button);
-        locationTracker = gpsLocationTracker;
+        mLocationProvider = gpsLocationTracker;
 
         setPositionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double latitude = locationTracker.getLatitude();
-                double longitude = locationTracker.getLongitude();
+                double latitude = mLocationProvider.getLatitude();
+                double longitude = mLocationProvider.getLongitude();
 
-                double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
-                double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+                int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+                int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
                 latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
                 latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -64,9 +70,15 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
                 longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
                 longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
                 longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+                latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
+                longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
             }
         });
         setPositionButton.setVisibility(gpsLocationTracker == null ? View.GONE : View.VISIBLE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public void setEditable(boolean editable) {
@@ -88,8 +100,8 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         double latitude = position.getLatitude();
         double longitude = position.getLongitude();
 
-        double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
-        double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+        int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+        int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
         latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -97,13 +109,16 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
         longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+        latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
+        longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
     }
 
     public String getLatitude() {
         double latitudeDegrees = Double.NaN;
         double latitudeMinutes = Double.NaN;
         double latitudeSeconds = Double.NaN;
-        double latitude;
+        boolean fieldValid;
+        boolean valid;
 
         try {
             latitudeDegrees = Double.parseDouble(latitudeDegreesEditText.getText().toString().trim());
@@ -113,100 +128,106 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
             int minLatDegree = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
             int maxLatDegree = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
             int minLatMinute = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
-            int maxLatMinute = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
-            int minLatSecond = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
-            int maxLatSecond = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
+            int maxLatMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
+            int minLatSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
+            int maxLatSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
 
-            if(minLatDegree > latitudeDegrees || maxLatDegree < latitudeDegrees) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minLatMinute > latitudeMinutes || maxLatMinute < latitudeMinutes) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minLatSecond > latitudeSeconds || maxLatSecond < latitudeSeconds) {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+            valid = fieldValid = !(minLatDegree > latitudeDegrees || maxLatDegree < latitudeDegrees);
+            latitudeDegreesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minLatMinute > latitudeMinutes || maxLatMinute < latitudeMinutes)) && valid;
+            latitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minLatSecond > latitudeSeconds || maxLatSecond < latitudeSeconds)) && valid;
+            latitudeSecondsEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            if(!valid) {
                 return null;
             }
 
-            latitude = FiskInfoUtility.DMSToDecimal(new double[] { latitudeDegrees, latitudeMinutes, latitudeSeconds });
+            return Double.toString(FiskInfoUtility.DMSToDecimal(new double[] { latitudeDegrees, latitudeMinutes, latitudeSeconds }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1));
         } catch(NumberFormatException e) {
             if(Double.isNaN(latitudeDegrees)) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-            } else if(Double.isNaN(latitudeMinutes)) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            } else {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
+                latitudeDegreesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
+            }
+            if(Double.isNaN(latitudeMinutes)) {
+                latitudeMinutesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
+            }
+            if(Double.isNaN(latitudeSeconds)){
+                latitudeSecondsEditText.setError(super.getContext().getString(R.string.error_invalid_format));
             }
 
             return null;
         }
-
-        return Double.toString(latitude);
     }
 
     public void setLatitude(String latitude) {
-        double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(latitude));
+        int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(latitude));
 
         latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
         latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
+        latitudeCardinalDirectionSwitch.setChecked(Double.valueOf(latitude) < 0);
     }
 
     public String getLongitude() {
         double longitudeDegrees = Double.NaN;
         double longitudeMinutes = Double.NaN;
-        double longitudeSeconds;
-        double longitude;
+        double longitudeSeconds = Double.NaN;
+        boolean fieldValid;
+        boolean valid;
 
         try {
             longitudeDegrees = Double.parseDouble(longitudeDegreesEditText.getText().toString().trim());
             longitudeMinutes = Double.parseDouble(longitudeMinutesEditText.getText().toString().trim());
             longitudeSeconds = Double.parseDouble(longitudeSecondsEditText.getText().toString().trim());
 
-            int minLonDegree = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
-            int maxLonDegree = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
-            int minLonMinute = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
-            int maxLonMinute = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
-            int minLonSecond = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
-            int maxLonSecond = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
+            int minLonDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
+            int maxLonDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
+            int minLonMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
+            int maxLonMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
+            int minLonSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
+            int maxLonSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
 
-            if(minLonDegree > longitudeDegrees || maxLonDegree < longitudeDegrees) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minLonMinute > longitudeMinutes || maxLonMinute < longitudeMinutes) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minLonSecond > longitudeSeconds || maxLonSecond < longitudeSeconds) {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+            valid = fieldValid = !(minLonDegree > longitudeDegrees || maxLonDegree < longitudeDegrees);
+            longitudeDegreesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minLonMinute > longitudeMinutes || maxLonMinute < longitudeMinutes)) && valid;
+            longitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minLonSecond > longitudeSeconds || maxLonSecond < longitudeSeconds)) && valid;
+            longitudeSecondsEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            if(!valid) {
                 return null;
             }
 
-            longitude = FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds });
+            return Double.toString(FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1));
         } catch(NumberFormatException e) {
             if(Double.isNaN(longitudeDegrees)) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-            } else if(Double.isNaN(longitudeMinutes)) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            } else {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
+                longitudeDegreesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
+            }
+            if(Double.isNaN(longitudeMinutes)) {
+                longitudeMinutesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
+            }
+            if(Double.isNaN(longitudeSeconds)) {
+                longitudeSecondsEditText.setError(super.getContext().getString(R.string.error_invalid_format));
             }
 
             return null;
         }
-
-        return Double.toString(longitude);
     }
 
     public void setLongitude(String longitude) {
-        double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(longitude));
+        int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(longitude));
 
         latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         latitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+        longitudeCardinalDirectionSwitch.setChecked(Double.valueOf(longitude) >= 0);
     }
 
     public Point getCoordinates() {
-        Point point;
         double latitude;
         double longitude;
 
@@ -215,65 +236,121 @@ public class DegreesMinutesSecondsRow extends BaseTableRow {
         double latitudeSeconds = Double.NaN;
         double longitudeDegrees = Double.NaN;
         double longitudeMinutes = Double.NaN;
-        double longitudeSeconds;
+        double longitudeSeconds = Double.NaN;
+        boolean fieldValid;
+        boolean valid;
 
         try {
-            latitudeDegrees = Double.parseDouble(latitudeDegreesEditText.getText().toString().trim());
-            latitudeMinutes = Double.parseDouble(latitudeMinutesEditText.getText().toString().trim());
-            latitudeSeconds = Double.parseDouble(latitudeSecondsEditText.getText().toString().trim());
-            longitudeDegrees = Double.parseDouble(longitudeDegreesEditText.getText().toString().trim());
-            longitudeMinutes = Double.parseDouble(longitudeMinutesEditText.getText().toString().trim());
-            longitudeSeconds = Double.parseDouble(longitudeSecondsEditText.getText().toString().trim());
+            latitudeDegrees = !latitudeDegreesEditText.getText().toString().equals("") ? Double.parseDouble(latitudeDegreesEditText.getText().toString().trim()) : 0;
+            latitudeMinutes = !latitudeMinutesEditText.getText().toString().equals("") ? Double.parseDouble(latitudeMinutesEditText.getText().toString().trim()) : 0;
+            latitudeSeconds = !latitudeSecondsEditText.getText().toString().equals("") ? Double.parseDouble(latitudeSecondsEditText.getText().toString().trim()) : 0;
+            longitudeDegrees = !longitudeDegreesEditText.getText().toString().equals("") ? Double.parseDouble(longitudeDegreesEditText.getText().toString().trim()) : 0;
+            longitudeMinutes = !longitudeMinutesEditText.getText().toString().equals("") ? Double.parseDouble(longitudeMinutesEditText.getText().toString().trim()) : 0;
+            longitudeSeconds = !longitudeSecondsEditText.getText().toString().equals("") ? Double.parseDouble(longitudeSecondsEditText.getText().toString().trim()) : 0;
 
-            int minDegree = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
-            int maxDegree = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
-            int minMinute = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
-            int maxMinute = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
-            int minSecond = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
-            int maxSecond = longitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
+            int minDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
+            int maxDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
+            int minMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
+            int maxMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
+            int minSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
+            int maxSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
 
-            if(minDegree > latitudeDegrees || maxDegree < latitudeDegrees) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minMinute > latitudeMinutes || maxMinute < latitudeMinutes) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minSecond > latitudeSeconds || maxSecond < latitudeSeconds) {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minDegree > longitudeDegrees || maxDegree < longitudeDegrees) {
-                longitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minMinute > longitudeMinutes || maxMinute < longitudeMinutes) {
-                longitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-                return null;
-            } else if(minSecond > longitudeSeconds || maxSecond < longitudeSeconds) {
-                longitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
+            valid = fieldValid = !(minDegree > latitudeDegrees || maxDegree < latitudeDegrees);
+            latitudeDegreesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minMinute > latitudeMinutes || maxMinute < latitudeMinutes)) && valid;
+            latitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minSecond > latitudeSeconds || maxSecond < latitudeSeconds)) && valid;
+            latitudeSecondsEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minDegree > longitudeDegrees || maxDegree < longitudeDegrees)) && valid;
+            longitudeDegreesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minMinute > longitudeMinutes || maxMinute < longitudeMinutes)) && valid;
+            longitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            valid = (fieldValid = !(minSecond > longitudeSeconds || maxSecond < longitudeSeconds)) && valid;
+            longitudeSecondsEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
+
+            if(!valid) {
                 return null;
             }
 
-            latitude = FiskInfoUtility.DMSToDecimal(new double[] { latitudeDegrees, latitudeMinutes, latitudeSeconds });
-            longitude = FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds });
+            latitude = FiskInfoUtility.DMSToDecimal(new double[] { latitudeDegrees, latitudeMinutes, latitudeSeconds }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1);
+            longitude = FiskInfoUtility.DMSToDecimal(new double[] { longitudeDegrees, longitudeMinutes, longitudeSeconds }) * (longitudeCardinalDirectionSwitch.isChecked() ? 1 : -1);
+
+            return new Point(latitude, longitude);
         } catch(NumberFormatException e) {
-            if(Double.isNaN(latitudeDegrees)) {
-                latitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-            } else if(Double.isNaN(latitudeMinutes)) {
-                latitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            } else if(Double.isNaN(latitudeSeconds)) {
-                latitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            } else if(Double.isNaN(longitudeDegrees)) {
-                longitudeDegreesEditText.setError(getView().getContext().getString(R.string.error_invalid_latitude));
-            } else if(Double.isNaN(longitudeMinutes)) {
-                longitudeMinutesEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            } else {
-                longitudeSecondsEditText.setError(getView().getContext().getString(R.string.error_invalid_longitude));
-            }
+            latitudeDegreesEditText.setError(Double.isNaN(latitudeDegrees) ? super.getContext().getString(R.string.error_invalid_format) : null);
+            latitudeMinutesEditText.setError(Double.isNaN(latitudeMinutes) ? super.getContext().getString(R.string.error_invalid_format) : null);
+            latitudeSecondsEditText.setError(Double.isNaN(latitudeSeconds) ? super.getContext().getString(R.string.error_invalid_format) : null);
+            longitudeDegreesEditText.setError(Double.isNaN(longitudeDegrees) ? super.getContext().getString(R.string.error_invalid_format) : null);
+            longitudeMinutesEditText.setError(Double.isNaN(longitudeMinutes) ? super.getContext().getString(R.string.error_invalid_format) : null);
+            longitudeSecondsEditText.setError(Double.isNaN(longitudeSeconds) ? super.getContext().getString(R.string.error_invalid_format) : null);
 
             return null;
         }
+    }
 
-        point = new Point(latitude, longitude);
+    public void SetPositionButtonOnClickListener(View.OnClickListener onClickListener) {
+        if(onClickListener != null) {
+            setPositionButton.setOnClickListener(onClickListener);
+        } else {
+            setPositionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    double latitude = mLocationProvider.getLatitude();
+                    double longitude = mLocationProvider.getLongitude();
 
-        return point;
+                    int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+                    int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+
+                    latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+                    latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+                    latitudeSecondsEditText.setText(String.valueOf(latitudeDMS[2]));
+                    longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+                    longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+                    longitudeSecondsEditText.setText(String.valueOf(longitudeDMS[2]));
+                    latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
+                    longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
+                }
+            });
+        }
+    }
+
+    public void setTextWatcher(TextWatcher watcher) {
+        latitudeDegreesEditText.addTextChangedListener(watcher);
+        latitudeMinutesEditText.addTextChangedListener(watcher);
+        latitudeSecondsEditText.addTextChangedListener(watcher);
+        longitudeDegreesEditText.addTextChangedListener(watcher);
+        longitudeMinutesEditText.addTextChangedListener(watcher);
+        longitudeSecondsEditText.addTextChangedListener(watcher);
+    }
+
+    public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
+        latitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
+        longitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        latitudeDegreesEditText.setEnabled(enabled);
+        latitudeMinutesEditText.setEnabled(enabled);
+        latitudeSecondsEditText.setEnabled(enabled);
+        longitudeDegreesEditText.setEnabled(enabled);
+        longitudeMinutesEditText.setEnabled(enabled);
+        longitudeSecondsEditText.setEnabled(enabled);
+        latitudeCardinalDirectionSwitch.setEnabled(enabled);
+        longitudeCardinalDirectionSwitch.setEnabled(enabled);
+        setPositionButton.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                setPositionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
     }
 }

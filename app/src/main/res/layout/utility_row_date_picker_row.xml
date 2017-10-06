@@ -16,45 +16,49 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/time_and_date_row_padding_vertical"
-    android:paddingBottom="@dimen/time_and_date_row_padding_vertical">
+    android:paddingBottom="@dimen/time_and_date_row_padding_vertical"
+    >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        >
 
         <TextView
             android:id="@+id/date_picker_row_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:textSize="@dimen/card_view_information_row_text_size"
-            android:layout_centerVertical="true"
-            android:textStyle="bold"
             android:layout_marginEnd="@dimen/switch_info_row_text_view_margin_right"
             android:layout_marginStart="@dimen/utility_row_header_margin_left"
-            android:text="@string/date_colon"/>
+            android:textStyle="bold"
+            android:textSize="@dimen/card_view_information_row_text_size"
+            android:text="@string/date_colon"
+            />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            android:layout_weight="1"
+            />
 
         <TextView
             android:id="@+id/date_picker_row_date_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:textStyle="bold"
-            android:layout_toEndOf="@+id/date_picker_row_header"
             android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
             android:gravity="end"
-            android:layout_toStartOf="@+id/date_picker_row_date_picker_button"/>
+            />
 
         <Button
             android:id="@+id/date_picker_row_date_picker_button"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_alignParentEnd="true"
             android:background="@drawable/ic_date_range_black_24dp"
-            android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/switch_info_row_switch_margin_left"
-            android:layout_marginEnd="@dimen/switch_info_row_switch_margin_right"/>
-
-    </RelativeLayout>
-
+            android:layout_marginEnd="@dimen/switch_info_row_switch_margin_right"
+            />
+    </LinearLayout>
 </TableRow>

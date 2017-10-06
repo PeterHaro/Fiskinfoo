@@ -58,8 +58,14 @@ public class ToolEntry implements Parcelable {
     private String ToolId;
     private String LastChangedDateTime;
     private String LastChangedBySource;
+    private String toolLostReason;
+    private String toolLostWeather;
     private ToolEntryStatus toolStatus;
     private int toolLogId;
+    private boolean toolLost;
+    private int toolLostLength;
+    private int numberOfLostTools;
+    private boolean hasBeenRegistered;
 
     protected ToolEntry(Parcel in) {
         id = in.readString();
@@ -87,6 +93,46 @@ public class ToolEntry implements Parcelable {
         LastChangedBySource = in.readString();
         toolStatus = ToolEntryStatus.createFromValue(in.readString());
         toolLogId = in.readInt();
+        toolLostReason = in.readString();
+        toolLostWeather = in.readString();
+        toolLost = in.readByte() != 0;
+        toolLostLength = in.readInt();
+        numberOfLostTools = in.readInt();
+        hasBeenRegistered = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeList(coordinates);
+        dest.writeString(geometry.toString());
+        dest.writeString(IMO);
+        dest.writeString(IRCS);
+        dest.writeString(MMSI);
+        dest.writeString(RegNum);
+        dest.writeString(VesselName);
+        dest.writeString(VesselPhone);
+        dest.writeString(VesselEmail);
+        dest.writeString(ContactPersonEmail);
+        dest.writeString(ContactPersonPhone);
+        dest.writeString(ContactPersonName);
+        dest.writeString(ToolTypeCode.toString());
+        dest.writeString(Source);
+        dest.writeString(Comment);
+        dest.writeString(ShortComment);
+        dest.writeString(RemovedTime);
+        dest.writeString(SetupDateTime);
+        dest.writeString(ToolId);
+        dest.writeString(LastChangedDateTime);
+        dest.writeString(LastChangedBySource);
+        dest.writeString(toolStatus.toString());
+        dest.writeInt(toolLogId);
+        dest.writeString(toolLostReason);
+        dest.writeString(toolLostWeather);
+        dest.writeByte((byte) (toolLost ? 1 : 0));
+        dest.writeInt(toolLostLength);
+        dest.writeInt(numberOfLostTools);
+        dest.writeByte((byte) (hasBeenRegistered ? 1 : 0));
     }
 
     public ToolEntry(List<Point> coordinates, String vesselName, String vesselPhone, String vesselEmail, ToolType toolType, String setupDateTime, String regNum, String contactPersonName, String contactPersonPhone, String contactPersonEmail) {
@@ -126,7 +172,7 @@ public class ToolEntry implements Parcelable {
         this.SetupDateTime = setupDateString.substring(0, setupDateString.indexOf('.')).concat("Z");
         this.LastChangedBySource = lastChangedDateString.concat("Z");
         this.LastChangedDateTime = lastChangedDateString.concat("Z");
-
+        this.hasBeenRegistered = false;
     }
 
     /**
@@ -230,6 +276,7 @@ public class ToolEntry implements Parcelable {
             }
 
             toolStatus =  ToolEntryStatus.STATUS_RECEIVED;
+            hasBeenRegistered = true;
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (ParseException e) {
@@ -264,51 +311,7 @@ public class ToolEntry implements Parcelable {
             RemovedTime = jsonHandler.getProperty(tool, context.getString(R.string.json_tool_property_removed_time), RemovedTime);
             ToolTypeCode = jsonHandler.getToolType(tool, context.getString(R.string.json_tool_property_tool_type_code), ToolTypeCode);
 
-//            IMO = !tool.getJSONObject("properties").has("imo") ? IMO :
-//                    (tool.getJSONObject("properties").getProperty("imo") == null || "null".equals(tool.getJSONObject("properties").getProperty("imo"))) ?
-//                            IMO : tool.getJSONObject("properties").getProperty("imo");
-//            IRCS = !tool.getJSONObject("properties").has("ircs") ? IRCS :
-//                    (tool.getJSONObject("properties").getProperty("ircs") == null || "null".equals(tool.getJSONObject("properties").getProperty("ircs"))) ?
-//                            IRCS : tool.getJSONObject("properties").getProperty("ircs");
-//            MMSI =  !tool.getJSONObject("properties").has("mmsi") ? MMSI :
-//                    (tool.getJSONObject("properties").getProperty("mmsi") == null || "null".equals(tool.getJSONObject("properties").getProperty("mmsi"))) ?
-//                            MMSI : tool.getJSONObject("properties").getProperty("mmsi");
-//            RegNum = !tool.getJSONObject("properties").has("regnum") ? RegNum :
-//                    (tool.getJSONObject("properties").getProperty("regnum") == null || "null".equals(tool.getJSONObject("properties").getProperty("regnum"))) ?
-//                            RegNum : tool.getJSONObject("properties").getProperty("regnum");
-//            VesselName = !tool.getJSONObject("properties").has("vesselname") ? VesselName :
-//                    (tool.getJSONObject("properties").getProperty("vesselname") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselname"))) ?
-//                            VesselName : tool.getJSONObject("properties").getProperty("vesselname");
-//            VesselPhone = !tool.getJSONObject("properties").has("vesselphone") ? VesselPhone :
-//                    (tool.getJSONObject("properties").getProperty("vesselphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselphone"))) ?
-//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselphone");
-//            VesselEmail = !tool.getJSONObject("properties").has("vesselemail") ? VesselPhone :
-//                    (tool.getJSONObject("properties").getProperty("vesselemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("vesselemail"))) ?
-//                            VesselPhone : tool.getJSONObject("properties").getProperty("vesselemail");
-//            ContactPersonEmail = !tool.getJSONObject("properties").has("contactpersonemail") ? ContactPersonEmail :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonemail") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonemail"))) ?
-//                            ContactPersonEmail : tool.getJSONObject("properties").getProperty("contactpersonemail");
-//            ContactPersonPhone = !tool.getJSONObject("properties").has("contactpersonphone") ? ContactPersonPhone :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonphone") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonphone"))) ?
-//                            ContactPersonPhone : tool.getJSONObject("properties").getProperty("contactpersonphone");
-//            ContactPersonName = !tool.getJSONObject("properties").has("contactpersonname") ? ContactPersonName :
-//                    (tool.getJSONObject("properties").getProperty("contactpersonname") == null || "null".equals(tool.getJSONObject("properties").getProperty("contactpersonname"))) ?
-//                            ContactPersonName : tool.getJSONObject("properties").getProperty("contactpersonname");
-//            ToolTypeCode = !tool.getJSONObject("properties").has("tooltypecode") ? ToolTypeCode :
-//                    (tool.getJSONObject("properties").getProperty("tooltypecode") == null || "null".equals(tool.getJSONObject("properties").getProperty("tooltypecode"))) ?
-//                            ToolTypeCode : ToolType.createFromValue(tool.getJSONObject("properties").getProperty("tooltypecode"));
-//            Source = !tool.getJSONObject("properties").has("source") ? Source :
-//                    (tool.getJSONObject("properties").getProperty("source") == null || "null".equals(tool.getJSONObject("properties").getProperty("source"))) ?
-//                            Source : tool.getJSONObject("properties").getProperty("source");
-//            Comment = !tool.getJSONObject("properties").has("comment") ? Comment :
-//                    (tool.getJSONObject("properties").getProperty("comment") == null || "null".equals(tool.getJSONObject("properties").getProperty("comment"))) ?
-//                            Comment : tool.getJSONObject("properties").getProperty("comment");
-//            ShortComment = !tool.getJSONObject("properties").has("shortcomment") ? ShortComment :
-//                    (tool.getJSONObject("properties").getProperty("shortcomment") == null || "null".equals(tool.getJSONObject("properties").getProperty("shortcomment"))) ?
-//                            ShortComment : tool.getJSONObject("properties").getProperty("shortcomment");
-//            RemovedTime = !tool.getJSONObject("properties").has("removeddatetime") ? RemovedTime :
-//                    (tool.getJSONObject("properties").getProperty("removeddatetime") == null || "null".equals(tool.getJSONObject("properties").getProperty("removeddatetime"))) ?
-//                            RemovedTime : tool.getJSONObject("properties").getProperty("removeddatetime");
+            // TODO: add updating of lost tool values if they are added
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
             SimpleDateFormat sdfMilliSeconds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
@@ -351,9 +354,7 @@ public class ToolEntry implements Parcelable {
 
                 LastChangedBySource = sdfMilliSeconds.format(serverUpdatedBySourceDateTime);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
     }
@@ -379,7 +380,7 @@ public class ToolEntry implements Parcelable {
             }
 
             geoJsonTool.put("id", this.id == null ? JSONObject.NULL : this.id);
-            geometry.put("coordinates", Toolcoordinates == null ? JSONObject.NULL : Toolcoordinates);
+            geometry.put("coordinates", Toolcoordinates.length() == 0 ? JSONObject.NULL : Toolcoordinates);
             geometry.put("type", this.geometry == null ? JSONObject.NULL : this.geometry.toString());
             geometry.put("crs", JSONObject.NULL);
             geometry.put("bbox", JSONObject.NULL);
@@ -408,8 +409,21 @@ public class ToolEntry implements Parcelable {
             properties.put("ContactPersonPhone", this.ContactPersonPhone == null ? JSONObject.NULL : this.ContactPersonPhone);
             properties.put("ContactPersonEmail", this.ContactPersonEmail == null ? JSONObject.NULL : this.ContactPersonEmail);
 
+            if(this.toolLost) {
+                properties.put("ToolLostCause", this.toolLostReason == null ? JSONObject.NULL : this.toolLostReason);
+                properties.put("ToolLostWeather", this.toolLostWeather == null ? JSONObject.NULL : this.toolLostWeather);
+                properties.put("ToolLost", true);
+                properties.put("ToolLengthLost", this.toolLostLength);
+
+                if(ToolTypeCode == ToolType.CRAB_POTS ||
+                        ToolTypeCode == ToolType.NETS) {
+                    properties.put("NumberOfToolsLost", this.numberOfLostTools);
+                }
+            }
+
             Date toolReportDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             double toolReportingLatitude = gpsLocationTracker.getLatitude();
             double toolReportingLongitude = gpsLocationTracker.getLongitude();
 
@@ -446,34 +460,6 @@ public class ToolEntry implements Parcelable {
             return new ToolEntry[size];
         }
     };
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeList(coordinates);
-        dest.writeString(geometry.toString());
-        dest.writeString(IMO);
-        dest.writeString(IRCS);
-        dest.writeString(MMSI);
-        dest.writeString(RegNum);
-        dest.writeString(VesselName);
-        dest.writeString(VesselPhone);
-        dest.writeString(VesselEmail);
-        dest.writeString(ContactPersonEmail);
-        dest.writeString(ContactPersonPhone);
-        dest.writeString(ContactPersonName);
-        dest.writeString(ToolTypeCode.toString());
-        dest.writeString(Source);
-        dest.writeString(Comment);
-        dest.writeString(ShortComment);
-        dest.writeString(RemovedTime);
-        dest.writeString(SetupDateTime);
-        dest.writeString(ToolId);
-        dest.writeString(LastChangedDateTime);
-        dest.writeString(LastChangedBySource);
-        dest.writeString(toolStatus.toString());
-        dest.writeInt(toolLogId);
-    }
 
     public String getId() {
         return id == null ? "" : id;
@@ -682,6 +668,54 @@ public class ToolEntry implements Parcelable {
 
     public void setToolLogId(int id) {
         toolLogId = id;
+    }
+
+    public String getToolLostReason() {
+        return toolLostReason;
+    }
+
+    public void setToolLostReason(String toolLostReason) {
+        this.toolLostReason = toolLostReason;
+    }
+
+    public String getToolLostWeather() {
+        return toolLostWeather;
+    }
+
+    public void setToolLostWeather(String toolLostWeather) {
+        this.toolLostWeather = toolLostWeather;
+    }
+
+    public boolean isToolLost() {
+        return toolLost;
+    }
+
+    public void setToolLost(boolean toolLost) {
+        this.toolLost = toolLost;
+    }
+
+    public int getToolLostLength() {
+        return toolLostLength;
+    }
+
+    public void setToolLostLength(int toolLostLength) {
+        this.toolLostLength = toolLostLength;
+    }
+
+    public int getNumberOfLostTools() {
+        return numberOfLostTools;
+    }
+
+    public void setNumberOfLostTools(int numberOfLostTools) {
+        this.numberOfLostTools = numberOfLostTools;
+    }
+
+    public boolean hasBeenRegistered() {
+        return hasBeenRegistered;
+    }
+
+    public void setHasBeenRegistered(boolean hasBeenRegistered) {
+        this.hasBeenRegistered = hasBeenRegistered;
     }
 
     @Override

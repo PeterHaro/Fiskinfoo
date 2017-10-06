@@ -14,19 +14,15 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.content.res.Resources;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
@@ -55,10 +51,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
-import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
-import fiskinfoo.no.sintef.fiskinfoo.MapFragment;
-import fiskinfoo.no.sintef.fiskinfoo.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 
 public class FiskInfoUtility {
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
@@ -174,29 +170,11 @@ public class FiskInfoUtility {
      *            the address to check
      * @return true if address is a valid E-mail address, false otherwise.
      */
-    public boolean isEmailValid(String email) {
+    public static boolean isEmailValid(String email) {
         String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
-    }
-
-    public Fragment createFragment(String tag, User user, String currentTag) {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", user);
-        switch(tag) {
-            case MyPageFragment.TAG:
-                MyPageFragment myPageFragment = new MyPageFragment();
-                myPageFragment.setArguments(userBundle);
-                return myPageFragment;
-            case MapFragment.TAG:
-                MapFragment mapFragment = new MapFragment();
-                mapFragment.setArguments(userBundle);
-                return mapFragment;
-            default:
-                Log.d(currentTag, "Trying to create invalid fragment with TAG: " + tag);
-        }
-        return null;
     }
 
     /**
@@ -285,9 +263,7 @@ public class FiskInfoUtility {
             int permsRequestCode = 0x001;
 //            activity.requestPermissions(perms, permsRequestCode);
 
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    permsRequestCode);
+            ActivityCompat.requestPermissions(activity, new String[]{ WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
 
         String filePath;
@@ -318,7 +294,10 @@ public class FiskInfoUtility {
             File file = new File(filePath + writableName + "." + fileEnding);
 
             if(!dir.canWrite()) {
-                Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+                if(showToasts) {
+                    Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+                }
+
                 throw new IOException(activity.getResources().getString(R.string.error_cannot_write_to_directory));
             }
 
@@ -457,18 +436,20 @@ public class FiskInfoUtility {
      *      The given coordinate in DMS format
      */
     public static String decimalToDMS(double coord) {
+        double absCoord = Math.abs(coord);
         String output, degrees, minutes, seconds;
 
-        double mod = coord % 1;
-        int intPart = (int) coord;
-
+        double mod = absCoord % 1;
+        int intPart = (int) absCoord;
         degrees = String.valueOf(intPart);
-        coord = mod * 60;
-        mod = coord % 1;
-        intPart = (int) coord;
+
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
         minutes = String.valueOf(intPart);
-        coord = mod * 60;
-        intPart = (int) coord;
+
+        absCoord = mod * 60;
+        intPart = (int) absCoord;
         seconds = String.valueOf(intPart);
 
         // e.g. output = "87/1,43/1,41/1"
@@ -480,20 +461,21 @@ public class FiskInfoUtility {
         return output;
     }
 
-    public static double[] decimalToDMSArray(double coord) {
-        double[] output = new double[3];
+    public static int[] decimalToDMSArray(double coord) {
+        double absCoord = Math.abs(coord);
+        int[] output = new int[3];
 
-        double mod = coord % 1;
-        int intPart = (int) coord;
+        double mod = absCoord % 1;
+        int intPart = (int) absCoord;
         output[0] = intPart;
 
-        coord = mod * 60;
-        mod = coord % 1;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
         output[1] = intPart;
 
-        coord = mod * 60;
-        intPart = (int) coord;
+        absCoord = mod * 60;
+        intPart = (int) Math.round(absCoord);
         output[2] = intPart;
 
         return output;
@@ -669,15 +651,15 @@ public class FiskInfoUtility {
             return myView.getLeft() + getRelativeLeft((View) myView.getParent());
     }
 
-    public boolean validateName(String name) {
+    public static boolean validateName(String name) {
         return name != null && name.length() >= 2;// TODO: Add regex matching
     }
 
-    public boolean validatePhoneNumber(String phoneNumber) {
+    public static boolean validatePhoneNumber(String phoneNumber) {
         return phoneNumber != null && phoneNumber.length() >= 8; //TODO: Add regex matching
     }
 
-    public boolean validateIRCS(String ircs) {
+    public static boolean validateIRCS(String ircs) {
         boolean success = false;
 
         if(ircs != null && (ircs.length() >= 4))
@@ -691,7 +673,7 @@ public class FiskInfoUtility {
     /*
      *  A valid MMSI is a 9 digit code.
      */
-    public boolean validateMMSI(String mmsi) {
+    public static boolean validateMMSI(String mmsi) {
         boolean success = false;
 
         if(mmsi != null && (mmsi.length() == 9 &&
@@ -704,7 +686,7 @@ public class FiskInfoUtility {
         return success;
     }
 
-    public boolean validateIMO(String imo) {
+    public static boolean validateIMO(String imo) {
         boolean success = false;
 
         if(imo != null && ((imo.length() == 7 &&
@@ -727,10 +709,49 @@ public class FiskInfoUtility {
         return success;
     }
 
-    public boolean validateRegistrationNumber(String regnum) {
-        // TODO: Relax validation, invalidates correct values.
-        return regnum != null && regnum.length() >= 3;
-//        return regnum != null && regnum.matches("^[a-zA-Z]{3}\\s?\\d{3}$");
+    /**
+     * Matches the given string against the following pattern:
+     *      County: Either two alpha characters or one alpha character followed by a space
+     *      numbers: four numbers
+     *      Municipality: one or two alpha characters
+     * @param regnum
+     * @return
+     */
+    public static boolean validateRegistrationNumber(String regnum) {
+        return regnum != null && regnum.matches("^[a-zA-Z]{1,2}\\d{1,4}[a-zA-Z]{1,2}$");
+    }
+
+    public static boolean isValidCountyCode(String countyCode) {
+        return countyCode != null && countyCode.matches("^[a-zA-Z]{1,2}$");
+    }
+
+    public static boolean isValidVesselNumber(String vesselNumber) {
+        return vesselNumber != null && vesselNumber.matches("^\\d{1,4}$");
+    }
+
+    public static boolean isValidMunicipalityCode(String municipalityCode) {
+        return municipalityCode != null && municipalityCode.matches("^[a-zA-Z]{1,2}$");
+    }
+
+    public static String formatRegistrationNumber(String regnum) {
+        if(regnum == null || !validateRegistrationNumber(regnum)) {
+            return null;
+        }
+
+        StringBuilder registrationNumber = new StringBuilder();
+        String countyCode = regnum.substring(0, Character.isDigit(regnum.charAt(1)) ? 1 : 2);
+        String vesselNumber = regnum.substring(Character.isDigit(regnum.charAt(1)) ? 1 : 2, Character.isDigit(regnum.charAt(regnum.length() - 2)) ? regnum.length() - 1 : regnum.length() - 2);
+        String municipalityCode = regnum.substring(Character.isDigit(regnum.charAt(regnum.length() - 2)) ? regnum.length() - 1 : regnum.length() - 2, regnum.length());
+
+        while(vesselNumber.length() < 4) {
+            vesselNumber = "0" + vesselNumber;
+        }
+
+        registrationNumber.append(countyCode.length() == 2 ? countyCode : countyCode + " ");
+        registrationNumber.append(vesselNumber);
+        registrationNumber.append(municipalityCode);
+
+        return registrationNumber.toString();
     }
 
     /**
@@ -748,6 +769,10 @@ public class FiskInfoUtility {
         retval = retval.replace("Å", "AA");
 
         return retval;
+    }
+
+    public static String getHyperLinkString(String url, String link) {
+        return "<a href=" + url + ">" + link + "</a>";
     }
 
     public static boolean shouldAskPermission(){

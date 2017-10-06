@@ -17,7 +17,7 @@ limitations under the License.
 
     <!-- General strings -->
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Innstillinger</string>
     <string name="ok">OK</string>
     <string name="save">Lagre</string>
     <string name="cancel">Avbryt</string>
@@ -25,13 +25,11 @@ limitations under the License.
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
     <string name="update">Oppdater</string>
-    <string name="placeholder_string">Placeholder</string>
-    <string name="placeholder_empty_string"></string>
-    <string name="date_placeholder_string">Dato</string>
     <string name="no_internet_access">Ingen internett-tilgang</string>
     <string name="map_to_plotter">Kart til din kartplotter</string>
     <string name="abbreviation_na">n.a.</string>
     <string name="unable_to_download_no_network">Siden du ikke har internett-tilgang er det ikke mulig å laste ned kart.</string>
+    <string name="datetime_format_yyyy_mm_dd_no_separator">yyyyMMdd</string>
     <string name="datetime_format_yyyy_mm_dd">yyyy-MM-dd</string>
     <string name="datetime_format_yyyy_mm_dd_hh_mm">yyyy-MM-dd HH:mm</string>
     <string name="datetime_format_yyyy_mm_dd_t_hh_mm_ss">yyyy-MM-dd\'T\'HH:mm:ss</string>
@@ -44,6 +42,26 @@ limitations under the License.
     <string name="archive">Arkiver</string>
     <string name="null_string_lowercase">null</string>
     <string name="do_not_show_message_again">Ikke vis denne meldingen igjen</string>
+    <string name="not_available">Ikke tilgjengelig</string>
+    <string name="on">På</string>
+    <string name="off">Av</string>
+    <string name="error_field_required">Dette feltet er påkrevd</string>
+    <string name="error_field_required_short">Påkrevd</string>
+    <string name="error_lost_tool_cannot_be_marked_removed">Redskap må enten merkes som tatt opp eller tapt, ikke begge.</string>
+
+    <!-- Placeholder strings -->
+    <string name="placeholder_string">Placeholder</string>
+    <string name="placeholder_empty_string"></string>
+    <string name="date_placeholder_string">Dato</string>
+    <string name="placeholder_name">Navn</string>
+    <string name="placeholder_setting_name">Setting</string>
+    <string name="placeholder_phone_number">Phone number</string>
+    <string name="placeholder_date">Date</string>
+    <string name="placeholder_tool_type">Tool type</string>
+    <string name="placeholder_position">Position</string>
+    <string name="placeholder_vessel_name">Vessel</string>
+    <string name="placeholder_seismic_type">Seismikkområde</string>
+
 
     <!-- Set file download storage path -->
     <string name="nnew">Ny</string>
@@ -61,6 +79,18 @@ limitations under the License.
     <string name="register_tool">Redskapsregistrering</string>
     <string name="my_tools">Mine redskaper</string>
 
+    <!-- Navigation drawer -->
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+    <string name="navigation_header_profile_image_view_description">Profile picture</string>
+
+    <!-- Settings fragment -->
+    <string name="settings_fragment_title">Innstillinger</string>
+    <string name="about_detailed">Info om appen.\nHvorfor kreves de forskjellige tilgangene?\nNevne open source libs brukt.\n</string>
+    <string name="about_fragment_title">Om appen</string>
+    <string name="user_information">Brukerinformasjon</string>
+    <string name="request_write_access_offline_mode_rationale">Offlinemodus trenger skrivetillatelse til å laste ned og lagre kart for å fungere. Ønsker du å tillate dette?</string>
+
     <!-- MyPage fragment strings -->
     <string name="my_page_all_available_subscriptions">Tilgjengelige abonnementer</string>
     <string name="my_page_all_warnings">Mine varsler</string>
@@ -70,6 +100,10 @@ limitations under the License.
     <string name="fishing_facility_name">Redskap</string>
     <string name="subscription_update_successful">Abonnement oppdatert</string>
     <string name="subscription_update_failed">Abonnementsendring feilet</string>
+    <string name="my_page_fragment_title">Min side</string>
+    <string name="fishing_facility_limited_details">Din bruker har ikke tilgang til detaljert redskapsinformasjon som hvem som har satt redskaper. Du kan søke om tilgang på dette via lenken under:\n\thttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
+    <string name="download_title">Nedlasting</string>
+    <string name="error_cannot_download_without_internet_access">Kan ikke laste ned kartlag uten internettilgang.</string>
 
     <!-- Map fragment strings -->
     <string name="polar_low">Polart lavtrykk</string>
@@ -98,6 +132,46 @@ limitations under the License.
     <string name="jump_to_bottom">Hopp til slutten</string>
     <string name="tool_set_date_placeholder">Dato</string>
     <string name="tool">Redskap</string>
+    <string name="map_fragment_title">Kart</string>
+    <string name="seismic_survey_ongoing">Pågående seismikkområde</string>
+    <string name="seismic_survey_planned">Planlagt seismikkområde</string>
+    <string name="planned_from">Planlagt fra:</string>
+    <string name="planned_to">Planlagt til:</string>
+    <string name="survey_type">Type</string>
+    <string name="view_ais_tracking">Vis AIS-sporing</string>
+    <string name="company">Selskap</string>
+    <string name="responsible_party">Ansvarlig</string>
+    <string name="seismic_type">Type</string>
+    <string name="seismic_period">Periode</string>
+    <string name="seismic_fact_hyperlink_text">Faktaside</string>
+    <string name="seismic_map_hyperlink_text">Kartoversikt</string>
+    <string name="download_file_to_view_position">Last ned fil for å se posisjon</string>
+    <string name="ais_tracking">AIS-sporing</string>
+    <string name="seismic_ais_tracking_not_implemented_yet">Denne funksjonen vil bli tilgjengelig ved en senere oppdatering.</string>
+    <string name="seismic_area_start_date">Startdato</string>
+    <string name="show_marinogram_from_yr">Se marinogram fra yr.no</string>
+    <string name="request_write_access_dialog_title">Filtilgang</string>
+    <string name="request_write_access_map_rationale">Fiskinfo kan lagre redskapsdata på enheten så du ikke laster ned data gjentatte ganger, men dette krever skrivetillatelse på telefonen. Ønsker du å tillate dette?</string>
+    <string name="sea_floor_installation">Havbunnsinstallasjon</string>
+    <string name="type">Type</string>
+    <string name="function">Funksjon</string>
+    <string name="depth">Dybde</string>
+    <string name="field">Felt</string>
+    <string name="sea_floor_installation_area_start_date">Oppstartsdato</string>
+    <string name="operator">Operatør</string>
+    <string name="startup_date">Oppstart</string>
+    <string name="ice_concentration">Iskonsentrasjon</string>
+    <string name="ice_type">Istype</string>
+    <string name="satellite_images_of_sea_ice">Satellittbilder av havis</string>
+    <string name="satellite_images_of_sea_ice_url">http://www.polarview.aq/arctic</string>
+    <string name="met_ice_information_url">http://polarview.met.no/</string>
+    <string name="met_ice_information">Meterologisk institutts isinformasjon</string>
+    <string name="unknown_ice_concentration">Ukjent iskonsentrasjonstype</string>
+    <string name="map_search_view_tag_search">Søk</string>
+    <string name="map_search_view_tag_clear">Fjern</string>
+    <string name="error_no_match_for_vessel_search">Ingen treff</string>
+    <string name="primary_background_map">Grunnkart</string>
+    <string name="error_cannot_zoom_to_position_without_location_access">Kan ikke gå til posisjon uten posisjonstilgang</string>
 
 
     <!-- Map fragment menu strings -->
@@ -118,6 +192,7 @@ limitations under the License.
     <string name="range_format_info">Bruk bryteren under for å velge mellom meter og nautiske mil.</string>
     <string name="range_format_meters">Distansetype: Meter</string>
     <string name="range_format_nautical_miles">Distansetype: Nautiske mil</string>
+    <string name="tool_search_hint">Søk etter fartøy..</string>
 
 
     <string name="error_no_format_selected">Ingen format valgt</string>
@@ -169,11 +244,12 @@ limitations under the License.
     <string name="create_proximity_alert">Sett opp kollisjonsvarsling</string>
     <string name="offline_mode">Offline-modus</string>
     <string name="offline_mode_info">Når offline-modus er aktivert vil appen regelmessig se etter nye versjoner av dine tilgjengelige kartlag så lenge appen kjører. Dersom du senere mister internett-tilgang vil appen bruke nyeste nedlastede kart i kartklienten.\n\nUnder kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
-    <string name="offline_mode_info_downloads">Under kan du bestemme hvilke kartlag som skal bli lasted ned, samt når nyeste lokale versjon ble oppdatert:</string>
+    <string name="offline_mode_info_downloads">Under kan du bestemme hvilke kartlag som skal bli lasted ned, samt se når nyeste lokale versjon ble oppdatert:</string>
     <string name="offline_mode_activated">Offline-modus aktivert</string>
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
     <string name="user_settings">Brukerinnstillinger</string>
+    <string name="user_settings_fragment_title">Brukerinnstillinger</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Epostadresse</string>
@@ -185,7 +261,6 @@ limitations under the License.
     <string name="error_incorrect_password">Feil passord</string>
     <string name="error_account_creation_failed">Oppretting av ny bruker feilet</string>
     <string name="error_password_reset_failed">Gjenoppretting av passordet feilet</string>
-    <string name="error_field_required">Dette feltet er påkrevd</string>
     <string name="action_forgot_password">Glemt passord</string>
     <string name="action_sign_up">Registrer bruker</string>
     <string name="title_activity_my_page">MyPageActivity</string>
@@ -203,12 +278,11 @@ limitations under the License.
     shadows and rounded corners.
     \n\nTo create a card with a shadow, use the <font fgcolor="#FFFFFFFF">android:elevation</font>
     attribute.
-    \n\nTo set the corner radius in your layouts, use the <font
-            fgcolor="#FFFFFFFF">card_view:cardCornerRadius</font> attribute.
+    \n\nTo set the corner radius in your layouts, use the <font fgcolor="#FFFFFFFF">card_view:cardCornerRadius</font> attribute.
     </string>
     <string name="cardview_radius_seekbar_text">Radius</string>
     <string name="cardview_elevation_seekbar_text">Elevation</string>
-    <string name="card_view_base_title"> Noe gikk feil: </string>
+    <string name="card_view_base_title">Noe gikk feil: </string>
     <string name="update_frequency">Oppdateringsfrekvens:</string>
     <string name="manage_subscription_subscription_active">Du abonnerer på dette kartet</string>
     <string name="manage_subscription_subscription_inactive">Abonnementet er ikke aktivt</string>
@@ -267,6 +341,7 @@ limitations under the License.
     <!-- TODO: Using the following string until the above is sorted -->
     <string name="report_tools">Rapporter redskaper</string>
     <string name="tool_type">Redskapstype</string>
+    <string name="tool_type_colon">Redskapstype:</string>
     <string name="enter_tool_type">Oppgi redskapstype</string>
     <string name="start_new_tool_dialog_title">Skyt redskap</string>
     <string name="vessel_name">Fartøynavn</string>
@@ -297,7 +372,7 @@ limitations under the License.
     <string name="ircs_help_description">Internasjonalt radiokallesignal (IRCS) har normalt en lengde på 6 tegn, hvor de to første er bokstaver, og de fire resterende tegnene er tall. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="mmsi_help_description">Maritime Mobile Service Identity (MMSI) koden er en tallkode på ni siffer. Dette feltet kan ikke endres etter innrapportering.</string>
     <string name="imo_help_description">International Maritime Organization (IMO) nummeret er en identifikasjonskode for skip og består av de tre bokstavene IMO etterfulgt av syv tall. Du trenger bare å skrive inn tallene i feltet under. Dette feltet kan ikke endres etter innrapportering.</string>
-    <string name="registration_number_help_description">Fartøyets registreringsnummer skrives inn uten mellomrom. Dette feltet kan ikke endres etter innrapportering.</string>
+    <string name="registration_number_help_description">Registreringsnummer skrives inn uten mellomrom, bindestrek, eller andre tegn. Registreringsnummeret skal bestå av tre deler: fylkeskode, fartøynummer, og kommunekode. Fylke- og kommunekode består av en eller to bokstaver, mens fartøynummer er ett tall med opp til fire siffer.\nDette feltet kan ikke endres etter innrapportering.</string>
     <string name="error_invalid_registration_number">Ugyldig registreringsnr.</string>
     <string name="add_tool">Legg til</string>
     <string name="tool_registration">Redskapsregistrering</string>
@@ -316,6 +391,7 @@ limitations under the License.
     <string name="edit_tool">Redskapsredigering</string>
     <string name="error_invalid_latitude">Ugyldig breddegrad</string>
     <string name="error_invalid_longitude">Ugyldig lengdegrad</string>
+    <string name="error_invalid_format">Ugyldig format</string>
     <string name="tool_report_file_name">Redskapsrapport</string>
     <string name="format_geojson">geojson</string>
     <string name="comment_field_header">Kommentar</string>
@@ -344,6 +420,7 @@ limitations under the License.
     <string name="tool_deleted">Redskap slettet</string>
     <string name="tool_archived">Redskap arkivert</string>
     <string name="send_tool_report">Send redskapsrapport</string>
+    <string name="send_report">Send rapport</string>
     <string name="tool_report_recipient_email">fiskinfo@kystvakten.no</string>
     <string name="tool_report_email_header">Redskapsrapportering</string>
     <string name="send_tool_report_intent_header">Send redskapsrapport</string>
@@ -353,11 +430,44 @@ limitations under the License.
     <string name="send_tool_report_not_authorized_error_message">For å rapportere inn redskaper gjennom Fiskinfo må brukeren din ha tilgang til bruksdata. Du kan søke om tilgang til bruksdata ved å følge lenken under.\nhttps://www.barentswatch.no/s/Tilgang-til-bruksdata/</string>
     <string name="send_tool_report_not_authorized_error_title">Redskapsrapportering</string>
     <string name="removed_tools_information_text">Følgende redskaper har blitt utrapportert og vil nå bli arkivert.</string>
-    <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
+    <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen, eller at redskapet ble utrapportert før appen fikk registrert redskapet som innrapportert. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
     <string name="reported_tools_removed_title">Utrapporterte redskaper</string>
     <string name="tool_fragement_explanation_title">Mine redskaper</string>
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
     <string name="contact_information">Kontaktinformasjon</string>
+    <string name="my_tools_fragment_title">Mine redskaper</string>
+    <string name="my_active_tools_fragment_title">Aktive redskaper</string>
+    <string name="my_archived_tools_fragment_title">Arkiverte redskaper</string>
+    <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
+    <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
+    <string name="tool_updated">Redskap oppdatert</string>
+    <string name="error_could_not_validate_tool_status">Nettverksfeil, kunne ikke kontrollere redskapsstatus</string>
+    <string name="tool_lost_row_text">Tap av redskap</string>
+    <string name="tool_lost_cause_row_text">Tapsårsak</string>
+    <string name="tool_lost_conditions_row_text">Værforhold</string>
+    <string name="not_selected">Ikke valgt</string>
+    <string name="error_no_option_selected">Ikke valgt</string>
+    <string name="county_code">Fylkeskode</string>
+    <string name="vessel_number">fartøynr</string>
+    <string name="municipality_code">Kommunekode</string>
+    <string name="error_invalid_county_code">Ugyldig fylkeskode</string>
+    <string name="error_invalid_vessel_number">Ugyldig fartøynr</string>
+    <string name="error_invalid_municipality_code">Ugyldig kommunekode</string>
+    <string name="cardinal_direction_symbol_north">N</string>
+    <string name="cardinal_direction_symbol_south">S</string>
+    <string name="cardinal_direction_symbol_west">W</string>
+    <string name="cardinal_direction_symbol_east">E</string>
+    <string name="registration_number_allowed_characters">ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ0123456789</string>
+    <string name="number_of_crab_pots_lost">Antall teiner tapt</string>
+    <string name="number_of_meters_of_line_lost">Antall meter line tapt</string>
+    <string name="number_of_meters_of_net_lost">Antall meter garn tapt</string>
+    <string name="number_of_nets_lost">Antall garn tapt</string>
+    <string name="size_of_nets_in_meters">Garnlengde i meter (per garn)</string>
+    <string name="size_of_lost_tool">Lengde på redskap (meter)</string>
+    <string name="date_removed">Tatt opp:</string>
+    <string name="update_settings">Brukerinnstillinger</string>
+    <string name="update_settings_explanation">Ett eller flere av feltene du har fylt inn er forskjellig fra verdiene som finner i innstillingene. Ønsker du å oppdatere innstillingene med disse nye verdiene?</string>
+    <string name="tool_log_row_tool_type_image_view_content_description">Redskapsikon</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -395,9 +505,37 @@ limitations under the License.
     <string name="json_tool_property_coordinates">coordinates</string>
     <string name="json_tool_property_null_string_value">null</string>
 
+    <!-- Tool types -->
+    <string name="tool_type_line">Line</string>
+    <string name="tool_type_net">Garn</string>
+    <string name="tool_type_crab_pot">Teine</string>
+    <string name="tool_type_purseine">Snurpenot</string>
+    <string name="tool_type_unknown">Ukjent redskap</string>
+
+    <!-- Subscription details fragment -->
+    <string name="subscription_details_fragment_title">Kart</string>
+
+    <string-array name="tool_lost_causes">
+        <item>Slitt</item>
+        <item>Revnet</item>
+        <item>Annet</item>
+    </string-array>
+
+    <string-array name="tool_lost_conditions">
+        <item>Stille</item>
+        <item>Sterk vind</item>
+        <item>Annet</item>
+    </string-array>
+
+    <string-array name="tool_types_array">
+        <item>@string/tool_type_line</item>
+        <item>@string/tool_type_net</item>
+        <item>@string/tool_type_crab_pot</item>
+        <item>@string/tool_type_purseine</item>
+        <item>@string/tool_type_unknown</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
 </resources>

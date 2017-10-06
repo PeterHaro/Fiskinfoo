@@ -11,20 +11,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:drawable/picture_frame"
     android:paddingBottom="@dimen/table_row_padding_bottom"
-    android:paddingTop="@dimen/table_row_padding_top">
+    android:paddingTop="@dimen/table_row_padding_top"
+    >
 
     <RelativeLayout
         android:id="@+id/tool_confirmation_row_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:duplicateParentState="true"
-        android:layout_marginBottom="@dimen/table_row_padding_bottom">
+        android:layout_marginBottom="@dimen/table_row_padding_bottom"
+        >
 
         <TextView
             android:id="@+id/tool_row_setup_time_text_view"
@@ -33,7 +34,8 @@ limitations under the License.
             android:layout_marginStart="@dimen/activity_horizontal_margin_small"
             android:text="@string/date_placeholder_string"
             android:duplicateParentState="true"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            />
 
         <TextView
             android:id="@+id/tool_row_tool_type_text_view"
@@ -43,7 +45,8 @@ limitations under the License.
             android:layout_below="@+id/tool_row_setup_time_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/tool_type"/>
+            android:text="@string/tool_type"
+            />
 
         <TextView
             android:id="@+id/tool_row_tool_position_text_view"
@@ -53,7 +56,8 @@ limitations under the License.
             android:layout_below="@+id/tool_row_tool_type_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
-            android:text="@string/position"/>
+            android:text="@string/position"
+            />
 
         <TextView
             android:id="@+id/tool_row_ircs_text_view"
@@ -64,7 +68,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/ircs"/>
+            android:text="@string/ircs"
+            />
 
         <TextView
             android:id="@+id/tool_row_mmsi_text_view"
@@ -75,7 +80,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/mmsi_number"/>
+            android:text="@string/mmsi_number"
+            />
 
         <TextView
             android:id="@+id/tool_row_imo_text_view"
@@ -86,7 +92,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:duplicateParentState="true"
             android:visibility="gone"
-            android:text="@string/imo_number"/>
+            android:text="@string/imo_number"
+            />
 
         <TextView
             android:id="@+id/tool_row_vessel_name_text_view"
@@ -95,7 +102,8 @@ limitations under the License.
             android:layout_alignStart="@+id/tool_row_setup_time_text_view"
             android:layout_below="@+id/tool_row_imo_text_view"
             android:layout_marginTop="@dimen/utility_row_margin_top"
-            android:text="@string/vessel_name"/>
+            android:text="@string/vessel_name"
+            />
 
         <TextView
             android:id="@+id/tool_row_vessel_phone_text_view"
@@ -106,7 +114,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/vessel_phone_number"/>
+            android:text="@string/vessel_phone_number"
+            />
 
         <TextView
             android:id="@+id/tool_row_comment_text_view"
@@ -117,7 +126,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/comment_field_header"/>
+            android:text="@string/comment_field_header"
+            />
 
         <TextView
             android:id="@+id/tool_row_last_changed_text_view"
@@ -128,7 +138,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/last_updated"/>
+            android:text="@string/last_updated"
+            />
 
         <TextView
             android:id="@+id/tool_row_last_changed_by_source_text_view"
@@ -139,7 +150,8 @@ limitations under the License.
             android:layout_marginTop="@dimen/utility_row_margin_top"
             android:visibility="gone"
             android:duplicateParentState="true"
-            android:text="@string/last_updated_by_source"/>
+            android:text="@string/last_updated_by_source"
+            />
 
         <View
             android:id="@+id/middle_anchor_view"
@@ -148,7 +160,8 @@ limitations under the License.
             android:visibility="invisible"
             android:focusable="false"
             android:clickable="false"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            />
 
         <CheckBox
             android:id="@+id/tool_row_check_box"
@@ -157,7 +170,8 @@ limitations under the License.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/tool_row_expand_view_image_view"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin_small" />
+            android:layout_marginEnd="@dimen/activity_horizontal_margin_small"
+            />
 
         <ImageView
             android:id="@+id/tool_row_expand_view_image_view"
@@ -168,8 +182,7 @@ limitations under the License.
             android:duplicateParentState="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/ic_expand_more_black_24dp" />
-
+            android:background="@drawable/ic_expand_more_black_36dp"
+            />
     </RelativeLayout>
-
 </TableRow>

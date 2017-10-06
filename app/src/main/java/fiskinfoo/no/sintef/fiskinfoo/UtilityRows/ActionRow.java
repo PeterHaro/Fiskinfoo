@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +36,10 @@ public class ActionRow extends BaseTableRow {
         header.setText(headerText);
         actionButton.setBackground(ContextCompat.getDrawable(context, actionButtonIconId));
         actionButton.setOnClickListener(onClickListener);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            actionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public String getHeaderText() {
@@ -51,5 +56,18 @@ public class ActionRow extends BaseTableRow {
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
         actionButton.setOnClickListener(onClickListener);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        actionButton.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                actionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                actionButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
     }
 }

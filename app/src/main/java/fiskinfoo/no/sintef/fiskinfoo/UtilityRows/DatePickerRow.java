@@ -14,9 +14,11 @@
 
 package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.os.Build;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,8 +26,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.ActiveToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.MyToolsFragment;
 
 public class DatePickerRow extends BaseTableRow {
     private TextView header;
@@ -48,13 +50,17 @@ public class DatePickerRow extends BaseTableRow {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment dateFragment = new MyToolsFragment.DatePickerFragment(dateTextView);
+                DialogFragment dateFragment = new ActiveToolsFragment.DatePickerFragment(dateTextView);
                 dateFragment.show(fragmentManager, "datePicker");
             }
         };
 
         dateTextView.setOnClickListener(onClickListener);
         datePickerButton.setOnClickListener(onClickListener);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            datePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+        }
     }
 
     public String getDate() {
@@ -69,9 +75,25 @@ public class DatePickerRow extends BaseTableRow {
         header.setText(headerText);
     }
 
+    public void setIconVisibility(boolean isVisible) {
+        this.datePickerButton.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
     // TODO: Should be abstract in base class so different rows can implement differently.
     public void setEnabled(boolean enabled) {
         dateTextView.setEnabled(enabled);
         datePickerButton.setEnabled(enabled);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(enabled) {
+                datePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_active_tint_color));
+            } else {
+                datePickerButton.setBackgroundTintList(ContextCompat.getColorStateList(getView().getContext(), R.color.material_icon_black_disabled_tint_color));
+            }
+        }
+    }
+
+    public TextView getDateTextView() {
+        return this.dateTextView;
     }
 }

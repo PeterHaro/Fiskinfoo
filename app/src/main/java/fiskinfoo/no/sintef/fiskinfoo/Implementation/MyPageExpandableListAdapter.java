@@ -1,7 +1,8 @@
 package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -155,16 +156,22 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
 
         if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.WARNING) {
             childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_warning_black_36dp));
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_error_outline_black_24dp));
             childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                childViewHolder.notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+            }
         } else if(((SubscriptionExpandableListChildObject) childObject).getErrorType() == ApiErrorType.ERROR) {
             childViewHolder.notificationImageView.setVisibility(View.VISIBLE);
-            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_error_outline_black_36dp));
+            childViewHolder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_warning_black_24dp));
             childViewHolder.notificationImageView.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getErrorNotificationOnClickListener());
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                childViewHolder.notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+            }
         } else {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)childViewHolder.dataText.getLayoutParams();
-            params.addRule(RelativeLayout.LEFT_OF, R.id.recycler_child_last_updated_text_view);
-            childViewHolder.dataText.setLayoutParams(params);
+            childViewHolder.notificationImageView.setVisibility(View.GONE);
         }
 
         childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
@@ -179,32 +186,38 @@ public class MyPageExpandableListAdapter extends ExpandableRecyclerAdapter<Expan
         childViewHolder.dataText.setText(((SubscriptionExpandableListChildObject) childObject).getTitleText());
 
         childViewHolder.downloadButton.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getDownloadButtonOnClickListener());
-
         childViewHolder.subscribedCheckBox.setOnClickListener(((SubscriptionExpandableListChildObject) childObject).getSubscribeSwitchOnClickListener());
         childViewHolder.subscribedCheckBox.setChecked(((SubscriptionExpandableListChildObject) childObject).getIsSubscribed());
 
         if(!(new FiskInfoUtility().isNetworkAvailable(context))) {
             childViewHolder.subscribedCheckBox.setEnabled(false);
-            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
-            childViewHolder.downloadButton.setOnClickListener(new UtilityOnClickListeners().getInformationDialogOnClickListener(((SubscriptionExpandableListChildObject) childObject).getTitleText(), context.getString(R.string.unable_to_download_no_network), -1));
-//            childViewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    byte[] array = new byte[7];
-//
-//                    for(int i = 0; i < array.length; i++) {
-//                        array[i] = (byte)i;
-//                    }
-//
-//                    FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
-//                    User user = User.readFromSharedPref(view.getContext());
-//                    fiskInfoUtility.writeMapLayerToExternalStorage((Activity) view.getContext(), array, "fileName", "JSON", user.getFilePathForExternalStorage(), true);
-//                }
-//            });
+            childViewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AlertDialog.Builder(view.getContext())
+                            .setIcon(R.drawable.ic_info_outline_black_24dp)
+                            .setTitle(view.getContext().getString(R.string.download_title))
+                            .setMessage(view.getContext().getString(R.string.error_cannot_download_without_internet_access))
+                            .setPositiveButton(view.getContext().getString(R.string.ok), null)
+                            .show();
+                }
+            });
 
-        } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized()) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                childViewHolder.downloadButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+            }
+        } else if(!((SubscriptionExpandableListChildObject) childObject).getAuthorized() && !childViewHolder.dataText.getText().toString().equals(context.getString(R.string.fishing_facility_name))) {
             childViewHolder.subscribedCheckBox.setEnabled(false);
-            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_36dp));
+            childViewHolder.downloadButton.setEnabled(false);
+//            childViewHolder.downloadButton.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_info_outline_black_24dp));
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                childViewHolder.downloadButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_disabled_tint_color));
+            }
+        } else {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                childViewHolder.downloadButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
+            }
         }
     }
 
