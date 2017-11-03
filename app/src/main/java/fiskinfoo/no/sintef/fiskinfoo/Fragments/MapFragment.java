@@ -34,9 +34,9 @@ import android.os.Looper;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -137,6 +137,7 @@ public class MapFragment extends Fragment {
     private LinearLayout bottomSheetSeismicLayout;
     private LinearLayout bottomSheetSeaFloorInstallationLayout;
     private LinearLayout bottomSheetIceConcentrationLayout;
+    private LinearLayout bottomSheetJMessageLayout;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView bottomSheetToolTypeTextView;
     private TextView bottomSheetToolSetupDateTextView;
@@ -165,6 +166,22 @@ public class MapFragment extends Fragment {
     private TextView bottomSheetIceConcentrationTypeTextView;
     private TextView bottomSheetIceConcentrationSatelliteImagesLinkTextView;
     private TextView bottomSheetIceConcentrationMetIceInformationTextView;
+    private TextView bottomSheetJMessageTitleTextView;
+    private TextView bottomSheetJMessageDescriptionTextView;
+    private TextView bottomSheetJMessageStartDateTextView;
+    private TextView bottomSheetJMessageClosedForTextView;
+    private TextView bottomSheetJMessageFishGroupTextView;
+    private TextView bottomSheetJMessageAreaTextView;
+    private TextView bottomSheetJMessageFisheryMessagesLinkTextView;
+    private TextView bottomSheetJMessageJMessagesLinkTextView;
+    private TextView bottomSheetJMessageVersionTextView;
+    private TextView bottomSheetJMessageDataSourceTextView;
+    private TextView bottomSheetJMessageFjordLinesDetailsTextView;
+    private TextView bottomSheetJMessageLastUpdatedTextView;
+    private TextView bottomSheetJMessageLinksTitleTextView;
+    private LinearLayout bottomSheetJMessageLinksLinearLayout;
+    private LinearLayout bottomSheetJMessageDataSourcesLinearLayout;
+    private NestedScrollView bottomSheetJMessageFjordLinesDetailsScrollView;
 
     private WebView browser;
     private BarentswatchApi barentswatchApi;
@@ -263,7 +280,7 @@ public class MapFragment extends Fragment {
         bottomSheetSeismicLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_seismic_information_container);
         bottomSheetSeaFloorInstallationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_sea_floor_installation_information_container);
         bottomSheetIceConcentrationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_information_container);
-
+        bottomSheetJMessageLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_j_melding_information_container);
 
         bottomSheetToolTypeTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
         bottomSheetToolSetupDateTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_setup_date_text_view);
@@ -294,6 +311,26 @@ public class MapFragment extends Fragment {
         bottomSheetIceConcentrationTypeTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_ice_type_text_view);
         bottomSheetIceConcentrationSatelliteImagesLinkTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_satellite_images_link_text_view);
         bottomSheetIceConcentrationMetIceInformationTextView = (TextView) bottomSheetIceConcentrationLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_met_ice_information_link_text_view);
+
+        bottomSheetJMessageTitleTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_message_title_text_view);
+        bottomSheetJMessageDescriptionTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_description_text_view);
+        bottomSheetJMessageStartDateTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_start_date_text_view);
+        bottomSheetJMessageClosedForTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_closed_for_text_view);
+        bottomSheetJMessageFishGroupTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fish_group_text_view);
+        bottomSheetJMessageAreaTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_area_text_view);
+        bottomSheetJMessageVersionTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_version_text_view);
+        bottomSheetJMessageFisheryMessagesLinkTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fishing_messages_info_text_view);
+        bottomSheetJMessageJMessagesLinkTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_j_messages_info_text_view);
+        bottomSheetJMessageDataSourceTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_data_source_text_view);
+        bottomSheetJMessageLastUpdatedTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_last_updated_text_view);
+        bottomSheetJMessageLinksTitleTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_links_title_text_view);
+        bottomSheetJMessageLinksLinearLayout = (LinearLayout) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_links_linear_layout);
+        bottomSheetJMessageDataSourcesLinearLayout = (LinearLayout) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_data_source_linear_layout);
+        bottomSheetJMessageFjordLinesDetailsScrollView = (NestedScrollView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fjord_lines_details_scroll_view);
+        bottomSheetJMessageFjordLinesDetailsTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fjord_lines_details_text_view);
+
+
+
 
         // TODO: Disable search if user is not authenticated
 
@@ -479,10 +516,11 @@ public class MapFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    bottomSheetToolLayout.setVisibility(View.VISIBLE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetToolLayout.setVisibility(View.VISIBLE);
 
                     try {
                         final String vesselName = tool.getJSONObject("properties").getString("vesselname");
@@ -529,7 +567,7 @@ public class MapFragment extends Fragment {
                             String dmsPosition = FiskInfoUtility.decimalToDMS(toolJsonCoordinates.getJSONArray(0).getDouble(1));
                             dmsPosition += " " + toolJsonCoordinates.getJSONArray(0).getDouble(0);
                             marinogramUrl = "http://www.yr.no/sted/hav/" + String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getJSONArray(0).getDouble(1)) + "_" +
-                                    String.format(Locale.ENGLISH , "%.2f", toolJsonCoordinates.getJSONArray(0).getDouble(1));
+                                    String.format(Locale.ENGLISH , "%.8f", toolJsonCoordinates.getJSONArray(0).getDouble(0));
 
                             bottomSheetToolPositionTextView.setText(dmsPosition);
                         } else {
@@ -564,6 +602,220 @@ public class MapFragment extends Fragment {
 
         @SuppressWarnings("unused")
         @JavascriptInterface
+        public void updateJMeldingBottomSheet(final String jsonString) {
+
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if(jsonObject == null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+
+            final JSONObject finalJsonObject = jsonObject;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
+                    bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.VISIBLE);
+
+                    for(int i = 0; i < bottomSheetJMessageLayout.getChildCount(); i++) {
+                        bottomSheetJMessageLayout.getChildAt(i).setVisibility(View.GONE);
+                    }
+
+                    try {
+                        if(finalJsonObject.getJSONObject("properties").has("jmelding_name")) {
+                            String name = finalJsonObject.getJSONObject("properties").getString("name");
+                            String description = finalJsonObject.getJSONObject("properties").getString("description");
+                            String closedFrom = finalJsonObject.getJSONObject("properties").getString("closed_date");
+                            String closedTo = finalJsonObject.getJSONObject("properties").getString("opened_date");
+                            String closedFor = getString(R.string.closed_for, finalJsonObject.getJSONObject("properties").getString("type_name"));
+                            String fishGroup = getString(R.string.fish_group, finalJsonObject.getJSONObject("properties").getString("speciestype_name"));
+                            String area = getString(R.string.area, finalJsonObject.getJSONObject("properties").getString("area_name"));
+                            String version = getString(R.string.j_message_version, finalJsonObject.getJSONObject("properties").getString("jmelding_name"), finalJsonObject.getJSONObject("properties").getString("jmelding_paragraph_count"));
+                            String jMessagesUrl = getString(R.string.active_j_message_base_url, finalJsonObject.getJSONObject("properties").getString("jmelding_name"), finalJsonObject.getJSONObject("properties").getString("jmelding_paragraph_count"));
+                            Date date;
+
+//                        closedFrom = (closedFrom != null && closedFrom.length() > 10) ? closedFrom.substring(0, 10) : closedFrom;
+                            closedTo = (closedTo != null && closedTo.length() > 10) ? closedTo.substring(0, 10) : closedTo;
+
+                            SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
+
+                            sdf.setTimeZone(TimeZone.getDefault());
+
+                            try {
+                                date = sdf.parse(closedFrom);
+                                closedFrom = sdf.format(date);
+                                closedFrom = getString(R.string.closed_from_date, closedFrom.replace('T', ' ').substring(0, closedFrom.length() - 3));
+                                date = sdf.parse(closedTo);
+                                closedTo = sdf.format(date);
+                                closedTo = getString(R.string.closed_to_date, closedTo.replace('T', ' ').substring(0, closedTo.length() - 3));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            bottomSheetJMessageTitleTextView.setText(name);
+                            bottomSheetJMessageDescriptionTextView.setText(description);
+                            bottomSheetJMessageStartDateTextView.setText(closedFrom);
+
+                            bottomSheetJMessageClosedForTextView.setVisibility(closedFor != null ? View.VISIBLE : View.GONE);
+                            bottomSheetJMessageClosedForTextView.setText(closedFor);
+                            bottomSheetJMessageFishGroupTextView.setText(fishGroup);
+                            bottomSheetJMessageAreaTextView.setText(area);
+                            bottomSheetJMessageAreaTextView.setTypeface(null, Typeface.NORMAL);
+                            bottomSheetJMessageLinksTitleTextView.setText(R.string.links);
+//                        bottomSheetJMessageLastUpdatedTextView.setText(closedFor);
+                            bottomSheetJMessageLastUpdatedTextView.setVisibility(View.GONE);
+                            bottomSheetJMessageFisheryMessagesLinkTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_insert_link_black_24dp, 0 ,0 ,0);
+
+                            String DataSourceUrl = "https://www.barentswatch.no/om/Partnere/ff/Fiskeridirektoratet/";
+                            String fisheryMessagesUrl = "https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger";
+                            String jMessagesInformationUrl = "https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/";
+
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                bottomSheetJMessageVersionTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(jMessagesUrl, version), Html.FROM_HTML_MODE_LEGACY));
+                                bottomSheetJMessageFisheryMessagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(fisheryMessagesUrl, getString(R.string.fishery_messages_fishery_directorate)), Html.FROM_HTML_MODE_LEGACY));
+                                bottomSheetJMessageJMessagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(jMessagesInformationUrl, getString(R.string.j_messages_fishery_directorate)), Html.FROM_HTML_MODE_LEGACY));
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate)), Html.FROM_HTML_MODE_LEGACY));
+                            } else {
+                                bottomSheetJMessageVersionTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(jMessagesUrl, version)));
+                                bottomSheetJMessageFisheryMessagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(fisheryMessagesUrl, getString(R.string.fishery_messages_fishery_directorate))));
+                                bottomSheetJMessageJMessagesLinkTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(jMessagesInformationUrl, getString(R.string.j_messages_fishery_directorate))));
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate))));
+                            }
+
+                            bottomSheetJMessageVersionTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                            bottomSheetJMessageFisheryMessagesLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                            bottomSheetJMessageJMessagesLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                            bottomSheetJMessageDataSourceTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+                            bottomSheetJMessageLinksLinearLayout.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDataSourcesLinearLayout.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageTitleTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDescriptionTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageStartDateTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageClosedForTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageFishGroupTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageAreaTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageVersionTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageFisheryMessagesLinkTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageJMessagesLinkTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDataSourceTextView.setVisibility(View.VISIBLE);
+                        } else if(finalJsonObject.getJSONObject("properties").has("start_point_description")) {
+                            String name = getString(R.string.fjord_lines_coast_cod);
+                            String startPoint = finalJsonObject.getJSONObject("properties").getString("start_point_description");
+                            String endPoint = finalJsonObject.getJSONObject("properties").getString("end_point_description");
+                            String description = startPoint + " til " + endPoint;
+
+                            bottomSheetJMessageTitleTextView.setText(name);
+                            bottomSheetJMessageDescriptionTextView.setText(description);
+                            bottomSheetJMessageAreaTextView.setText(R.string.click_to_read_more);
+                            bottomSheetJMessageAreaTextView.setTypeface(null, Typeface.BOLD);
+                            bottomSheetJMessageFjordLinesDetailsTextView.setText(R.string.coast_cod_regulation_details);
+                            bottomSheetJMessageFisheryMessagesLinkTextView.setText(R.string.fjord_lines_important_information);
+                            bottomSheetJMessageFisheryMessagesLinkTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                            bottomSheetJMessageLinksTitleTextView.setText(R.string.important);
+
+                            bottomSheetJMessageAreaTextView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if(bottomSheetJMessageAreaTextView.getText().equals(getString(R.string.click_to_read_more))) {
+                                        bottomSheetJMessageAreaTextView.setText(R.string.click_to_hide);
+                                        bottomSheetJMessageFjordLinesDetailsScrollView.setVisibility(View.VISIBLE);
+                                        bottomSheetJMessageVersionTextView.setVisibility(View.VISIBLE);
+                                        bottomSheetJMessageTitleTextView.setVisibility(View.GONE);
+                                        bottomSheetJMessageDescriptionTextView.setVisibility(View.GONE);
+                                    } else {
+                                        bottomSheetJMessageAreaTextView.setText(R.string.click_to_read_more);
+                                        bottomSheetJMessageAreaTextView.setTypeface(null, Typeface.BOLD);
+                                        bottomSheetJMessageFjordLinesDetailsScrollView.setVisibility(View.GONE);
+                                        bottomSheetJMessageTitleTextView.setVisibility(View.VISIBLE);
+                                        bottomSheetJMessageDescriptionTextView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+
+                            bottomSheetJMessageFjordLinesDetailsScrollView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                        bottomSheetJMessageAreaTextView.setText(R.string.click_to_read_more);
+                                        bottomSheetJMessageAreaTextView.setTypeface(null, Typeface.BOLD);
+                                        bottomSheetJMessageFjordLinesDetailsScrollView.setVisibility(View.GONE);
+                                        bottomSheetJMessageTitleTextView.setVisibility(View.GONE);
+                                        bottomSheetJMessageDescriptionTextView.setVisibility(View.GONE);
+                                }
+                            });
+
+//                            bottomSheetJMessageFisheryMessagesLinkTextView.setVisibility(View.GONE);
+                            bottomSheetJMessageLinksLinearLayout.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageTitleTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDescriptionTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDataSourceTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDataSourcesLinearLayout.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageAreaTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageVersionTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageLastUpdatedTextView.setVisibility(View.GONE);
+                            bottomSheetJMessageJMessagesLinkTextView.setVisibility(View.GONE);
+
+                            String regulationDetailsLink = "http://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/J-125-2016";
+                            String DataSourceUrl = "https://www.barentswatch.no/om/Partnere/ff/Fiskeridirektoratet/";
+
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate)), Html.FROM_HTML_MODE_LEGACY));
+                                bottomSheetJMessageVersionTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(regulationDetailsLink, getString(R.string.fishery_directory_url)), Html.FROM_HTML_MODE_LEGACY));
+                            } else {
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate))));
+                                bottomSheetJMessageVersionTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(regulationDetailsLink, getString(R.string.fishery_directory_url))));
+                            }
+
+                            bottomSheetJMessageDataSourceTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+                        } else if(finalJsonObject.getJSONObject("properties").has("type_vern")) {
+                            String name = finalJsonObject.getJSONObject("properties").getString("navn");
+                            String species = finalJsonObject.getJSONObject("properties").getString("art");
+                            String protectionType = finalJsonObject.getJSONObject("properties").getString("type_vern");
+                            String law = finalJsonObject.getJSONObject("properties").getString("lov");
+                            String description = protectionType + " - " + species + "\n\n§ - " + law;
+
+                            bottomSheetJMessageTitleTextView.setText(name);
+                            bottomSheetJMessageDescriptionTextView.setText(description);
+
+                            bottomSheetJMessageTitleTextView.setVisibility(View.VISIBLE);
+                            bottomSheetJMessageDescriptionTextView.setVisibility(View.VISIBLE);
+
+                            String DataSourceUrl = "https://www.barentswatch.no/om/Partnere/ff/Fiskeridirektoratet/";
+
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate)), Html.FROM_HTML_MODE_LEGACY));
+                            } else {
+                                bottomSheetJMessageDataSourceTextView.setText(Html.fromHtml(FiskInfoUtility.getHyperLinkString(DataSourceUrl, getString(R.string.data_source_fishery_directorate))));
+                            }
+
+                            bottomSheetJMessageDataSourceTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            });
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
         public void updateSeismicBottomSheet(final String jsonString) {
 
             JSONObject jsonObject = null;
@@ -585,6 +837,7 @@ public class MapFragment extends Fragment {
                     bottomSheetToolLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -687,6 +940,7 @@ public class MapFragment extends Fragment {
                     bottomSheetToolLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -760,6 +1014,7 @@ public class MapFragment extends Fragment {
                     bottomSheetToolLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.VISIBLE);
 
                     String iceConcentrationType = iceType != null ? iceType : getString(R.string.unknown_ice_concentration);

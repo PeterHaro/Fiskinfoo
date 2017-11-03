@@ -61,6 +61,7 @@ limitations under the License.
     <string name="placeholder_position">Position</string>
     <string name="placeholder_vessel_name">Vessel</string>
     <string name="placeholder_seismic_type">Seismikkområde</string>
+    <string name="placeholder_j_message">J-melding</string>
 
 
     <!-- Set file download storage path -->
@@ -172,6 +173,29 @@ limitations under the License.
     <string name="error_no_match_for_vessel_search">Ingen treff</string>
     <string name="primary_background_map">Grunnkart</string>
     <string name="error_cannot_zoom_to_position_without_location_access">Kan ikke gå til posisjon uten posisjonstilgang</string>
+    <string name="closed_from_date">Stengt fra dato: %1$s</string>
+    <string name="closed_to_date">Stengt til dato: %1$s</string>
+    <string name="closed_for">Stengt for: %1$s</string>
+    <string name="fish_group">Fiskegruppe: %1$s</string>
+    <string name="area">Område: %1$s</string>
+    <string name="j_message_version">J-melding: %1$s §%2$s</string>
+    <string name="date_source">Datakilde</string>
+    <string name="data_source_fishery_directorate">Datakilde: Fiskeridirektoratet</string>
+    <string name="j_message_fishery_directorate">J-meldinger (Fiskeridirektoratet)</string>
+    <string name="fishery_messages_fishery_directorate">Fiskerimeldinger (Fiskeridirektoratet)</string>
+    <string name="j_messages_fishery_directorate">J-meldinger (Fiskeridirektoratet)</string>
+    <string name="active_j_message_base_url">https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/%1$s#sec_%2$s</string>
+    <string name="links">Lenker</string>
+    <string name="data_sources">Datakilder</string>
+    <string name="last_update">Siste oppdatering: %1$s</string>
+    <string name="important">Viktig</string>
+    <string name="about_the_map">Om kartet</string>
+    <string name="fjord_lines_coast_cod">Fjordlinjer - kysttorsk</string>
+    <string name="coast_cod_regulation_details">Fra og med Varangerfjorden til N 62°.\nDet er forbudt for fartøy på 15 meter største lengde eller mer å fiske etter torsk med konvensjonelle redskap innenfor fjordlinjene. Alt fiske med snurrevad er forbudt innenfor fjordlinjene, også etter andre arter enn torsk, hyse og sei. Fartøy med største lengde under 11 meter kan likevel fiske etter flyndre og lysing fra og med 1. juni til og med 31. desember. Ved et direktefiske etter andre arter kan bifangst av torsk maksimum utgjøre 5 % dersom ikke annet er angitt for fisket som utøves. All fangst av torsk avregnes fartøyets kvote, eller den til enhver tid gjeldende bifangstordning.\n\nLofoten, Henningsværområdet \nStengt første halvår for alt fiske med fartøy over 11 meter største lengde. Adgang til fiske med håndsnøre og fiskestang. Forbudet i dette området gjelder ikke for fartøy under 15 meter som fisker med andre konvensjonelle redskap enn snurrevad i perioden Lofotoppsynet er satt. Fiskeridirektoratet kan gjøre unntak fra forbudet. Områdets ytre grenser er fjordlinjer i andre halvår.\n\nLes mer i lenken under</string>
+    <string name="fishery_directory_url">fiskeridir.no</string>
+    <string name="click_to_read_more">Trykk for å lese mer ></string>
+    <string name="click_to_hide">Trykk for å skjule ></string>
+    <string name="fjord_lines_important_information">Fiskeridirektoratet vil gjøre oppmerksom på at noen linjer i karttema har mindre avvik fra oppgitte stedsnavn i forskrift. Disse vil i løpet av kort tid bli rettet opp. Dersom det oppstår tvil er det stedsnavn i forskrift som definerer fjordlinjenes knekkpunkter. Se eget vedlegg til utøvelsesforskriften.</string>
 
 
     <!-- Map fragment menu strings -->

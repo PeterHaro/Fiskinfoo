@@ -59,6 +59,9 @@
             corsRequest("https://www.barentswatch.no/api/v1/geodata/download/npdsurveyongoing?format=JSON", "GET", "", parseActiveSeismicGeoJsonResponse, corsErrBack);
             corsRequest("https://www.barentswatch.no/api/v1/geodata/download/npdsurveyplanned?format=JSON", "GET", "", parsePlannedSeismicGeoJsonResponse, corsErrBack);
             corsRequest("https://www.barentswatch.no/api/v1/geodata/download/npdfacility?format=JSON", "GET", "", parseNpdFacilityGeoJsonResponse, corsErrBack);
+            corsRequest("https://www.barentswatch.no/api/v1/geodata/download/jmelding?format=JSON", "GET", "", parseJMeldingGeoJsonResponse, corsErrBack);
+            corsRequest("https://www.barentswatch.no/api/v1/geodata/download/coastalcodregulations?format=JSON", "GET", "", parseFjordLinesGeoJsonResponse, corsErrBack);
+            corsRequest("https://www.barentswatch.no/api/v1/geodata/download/coralreef?format=JSON", "GET", "", parseCostalReefGeoJsonResponse, corsErrBack);
             toggleAllLayersInvisible();
 
             OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
@@ -533,6 +536,110 @@
             iceChartLayer.addFeatures(geoJsonFormat.read(geoJson));
         }
 
+        function parseJMeldingGeoJsonResponse(data) {
+            geoJson = data;
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            var jMeldingStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+
+            jMeldingStyle.strokeWidth = 2;
+            jMeldingStyle.strokeColor = "#ed8080";
+            jMeldingStyle.fillColor = "#ee9695";
+            jMeldingStyle.fill = true;
+            jMeldingStyle.fillOpacity = 0.8;
+
+            var jMeldingStyleLayer = new OpenLayers.Style(jMeldingStyle);
+
+            var jMeldingStyleMap = new OpenLayers.StyleMap({
+                "default": jMeldingStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 1,
+                    fillColor: "#66ccff",
+                    strokeColor: "#4eb77b",
+                    graphicZIndex: 2
+                })
+            });
+
+            var jMeldingLayer = map.getLayersByName("Midlertidig stengte felter")[0];
+            jMeldingLayer.styleMap = jMeldingStyleMap;
+            jMeldingLayer.addFeatures(geoJsonFormat.read(geoJson));
+        }
+
+        function parseCostalReefGeoJsonResponse(data) {
+            geoJson = data;
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+
+            style.strokeWidth = 2;
+            style.strokeColor = "#ed8080";
+            style.fillColor = "#ee9695";
+            style.fill = true;
+            style.fillOpacity = 0.8;
+
+            var styleLayer = new OpenLayers.Style(style);
+
+            var styleMap = new OpenLayers.StyleMap({
+                "default": styleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 1,
+                    fillColor: "#66ccff",
+                    strokeColor: "#4eb77b",
+                    graphicZIndex: 2
+                })
+            });
+
+            var layer = map.getLayersByName("Forbudsområde - Korallrev")[0];
+            layer.styleMap = styleMap;
+            layer.addFeatures(geoJsonFormat.read(geoJson));
+        }
+
+        function parseFjordLinesGeoJsonResponse(data) {
+            geoJson = data;
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            var style = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+
+            style.strokeWidth = 6;
+            style.strokeColor = "#d9cf38";
+            style.fillColor = "#d9cf38";
+            style.fill = true;
+            style.fillOpacity = 0.8;
+
+            var styleLayer = new OpenLayers.Style(style);
+
+            var styleMap = new OpenLayers.StyleMap({
+                "default": styleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 1,
+                    fillColor: "#66ccff",
+                    strokeColor: "#4eb77b",
+                    graphicZIndex: 2
+                })
+            });
+
+            var layer = map.getLayersByName("Fjordlinjer - kysttorsk")[0];
+            layer.styleMap = styleMap;
+            layer.addFeatures(geoJsonFormat.read(geoJson));
+        }
+
+
+
         function highlightTools(vesselName) {
             highlightVesselName = vesselName;
             var toolLayer = map.getLayersByName("Redskap")[0];
@@ -670,6 +777,9 @@
                 new OpenLayers.Layer.Vector("Iskonsentrasjon"),
                 new OpenLayers.Layer.Vector("Seismikk, pågående"),
                 new OpenLayers.Layer.Vector("Seismikk, planlagt"),
+                new OpenLayers.Layer.Vector("Midlertidig stengte felter"),
+                new OpenLayers.Layer.Vector("Forbudsområde - Korallrev"),
+                new OpenLayers.Layer.Vector("Fjordlinjer - kysttorsk"),
                 new OpenLayers.Layer.Vector("Havbunnsinstallasjoner", {
                     strategies: [new OpenLayers.Strategy.Cluster({
                         distance: map.getZoom() > 7 ? 5 : 15,
@@ -700,6 +810,12 @@
                 npdFacilityClickNotice(feature);
             } else if(feature.attributes.hasOwnProperty("icetype")) {
                 iceChartClickNotice(feature);
+            } else if(feature.attributes.hasOwnProperty("jmelding_name")) {
+                jMeldingClickNotice(feature);
+            } else if(feature.attributes.hasOwnProperty("start_point_description")) {
+                fjordLineClickNotice(feature);
+            } else if(feature.attributes.hasOwnProperty("type_vern")) {
+                coralReefClickNotice(feature);
             } else {
                 unknownFeatureClickNotice(feature);
             }
@@ -719,6 +835,78 @@
 
                 Android.updateToolBottomSheet(null);
             }
+        }
+
+        function fjordLineClickNotice(feature) {
+            var wgs84 = feature.geometry.clone();
+            var jsonObject = {
+                type: "Feature",
+                id: feature.id,
+                fid: feature.fid,
+                geometry: {
+                    id: feature.geometry.id,
+                    coordinates: []
+                },
+                geometry_name: "geom",
+                properties: feature.attributes
+            }
+
+            wgs84.transform("EPSG:900913", "EPSG:4326");
+
+            wgs84.components.forEach(function(obj) {
+                jsonObject.geometry.coordinates.push([obj.x, obj.y]);
+            });
+
+            Android.updateJMeldingBottomSheet(JSON.stringify(jsonObject));
+            return;
+        }
+
+        function coralReefClickNotice(feature) {
+            var wgs84 = feature.geometry.clone();
+            var jsonObject = {
+                type: "Feature",
+                id: feature.id,
+                fid: feature.fid,
+                geometry: {
+                    id: feature.geometry.id,
+                    coordinates: []
+                },
+                geometry_name: "geom",
+                properties: feature.attributes
+            }
+
+            wgs84.transform("EPSG:900913", "EPSG:4326");
+
+            wgs84.components[0].components.forEach(function(obj) {
+                jsonObject.geometry.coordinates.push([obj.x, obj.y]);
+            });
+
+            Android.updateJMeldingBottomSheet(JSON.stringify(jsonObject));
+            return;
+        }
+
+        function jMeldingClickNotice(feature) {
+            var wgs84 = feature.geometry.clone();
+            var jsonObject = {
+                type: "Feature",
+                id: feature.id,
+                fid: feature.fid,
+                geometry: {
+                    id: feature.geometry.id,
+                    coordinates: []
+                },
+                geometry_name: "geom",
+                properties: feature.attributes
+            }
+
+            wgs84.transform("EPSG:900913", "EPSG:4326");
+
+            wgs84.components[0].components.forEach(function(obj) {
+                jsonObject.geometry.coordinates.push([obj.x, obj.y]);
+            });
+
+            Android.updateJMeldingBottomSheet(JSON.stringify(jsonObject));
+            return;
         }
 
         function seismicClickNotice(feature) {
