@@ -14,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SelectionMode;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -38,6 +42,7 @@ public class SettingsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private UserInterface userInterface;
     private LinearLayout linearLayout;
+    private Tracker tracker;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -53,6 +58,10 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         setHasOptionsMenu(true);
     }
 
@@ -205,6 +214,12 @@ public class SettingsFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

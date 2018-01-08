@@ -10,13 +10,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
+import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLogRow;
 
@@ -31,6 +36,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.ToolLogRow;
 public class ArchivedToolsFragment extends Fragment {
     private UserInterface userInterface;
     private LinearLayout toolsContainer;
+    private Tracker tracker;
 
     public ArchivedToolsFragment() {
         // Required empty public constructor
@@ -53,6 +59,10 @@ public class ArchivedToolsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         setHasOptionsMenu(true);
     }
 
@@ -107,6 +117,25 @@ public class ArchivedToolsFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() != null) {
+            getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+
+        MainActivity activity = (MainActivity) getActivity();
+        String title = getResources().getString(R.string.my_archived_tools_fragment_title);
+        activity.refreshTitle(title);
     }
 
     @Override

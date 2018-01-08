@@ -42,6 +42,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,6 +60,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.ActiveToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -85,7 +89,7 @@ import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_
 public class UtilityOnClickListeners implements OnclickListenerInterface {
 
     @Override
-    public OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag) {
+    public OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag, final Tracker tracker, final String screenName) {
         return new OnClickListener() {
 
             @Override
@@ -141,6 +145,18 @@ public class UtilityOnClickListeners implements OnclickListenerInterface {
 
                                     Response response;
                                     String downloadFormat = row.getText();
+
+                                    String typeName = subscription.Name+ " " + downloadFormat;
+
+                                    if(tracker != null) {
+                                        tracker.send(new HitBuilders.EventBuilder().setCategory("Download file").setAction(typeName).build());
+                                        if (tracker != null) {
+                                            tracker.setScreenName(screenName + ActiveToolsFragment.class.getSimpleName());
+                                            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+                                        } else {
+                                            Log.wtf("DOWNLOAD_FILE", "TRACKER IS NULL IN ON RESUME");
+                                        }
+                                    }
 
                                     try {
                                         response = api.geoDataDownload(subscription.ApiName, downloadFormat);

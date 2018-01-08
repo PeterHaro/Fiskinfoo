@@ -16,7 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
@@ -44,6 +48,7 @@ public class OfflineModeFragment extends Fragment {
 
     private LinearLayout mapLayerSwitchesLayout;
     private Switch toggleOfflineModeSwitch;
+    private Tracker tracker;
 
     public OfflineModeFragment() {
         // Required empty public constructor
@@ -68,6 +73,9 @@ public class OfflineModeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         setHasOptionsMenu(true);
 
@@ -206,6 +214,12 @@ public class OfflineModeFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

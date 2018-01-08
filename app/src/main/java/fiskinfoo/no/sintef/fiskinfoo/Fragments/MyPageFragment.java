@@ -30,6 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,6 +45,7 @@ import java.util.Map;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
@@ -60,6 +63,7 @@ import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
 public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     public static final String FRAGMENT_TAG = "MyPageFragment";
+    private static final String SCREEN_NAME = "MyPage";
 
     private MyPageExpandableListAdapter myPageExpandableListAdapter;
     private ExpandableListAdapterChildOnClickListener childOnClickListener;
@@ -71,6 +75,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     private UserInterface userInterface;
     private FragmentActivity listener;
     private User user;
+    private Tracker tracker;
 
     @Override
     public void onAttach(Context context) {
@@ -100,6 +105,12 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
             getView().refreshDrawableState();
         }
 
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+
         MainActivity activity = (MainActivity) getActivity();
         String title = getResources().getString(R.string.my_page_fragment_title);
         activity.refreshTitle(title);
@@ -108,6 +119,10 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         childOnClickListener = new ExpandableListAdapterChildOnClickListener();
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
@@ -343,7 +358,7 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
                 null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG) :
+        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG, tracker, SCREEN_NAME) :
                 onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user)));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
