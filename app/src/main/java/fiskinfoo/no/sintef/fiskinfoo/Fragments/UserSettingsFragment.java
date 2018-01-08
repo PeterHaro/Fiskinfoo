@@ -17,8 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
@@ -53,6 +57,7 @@ public class UserSettingsFragment extends Fragment {
     private EditTextRow vesselMmsiNumberRow;
     private EditTextRow vesselImoNumberRow;
     private EditTextRow vesselRegistrationNumberRow;
+    private Tracker tracker;
 
     public UserSettingsFragment() {
         // Required empty public constructor
@@ -76,6 +81,10 @@ public class UserSettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         if (getArguments() != null) {
             userSettings = getArguments().getParcelable(ARG_PARAM_USER);
         }
@@ -301,6 +310,12 @@ public class UserSettingsFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

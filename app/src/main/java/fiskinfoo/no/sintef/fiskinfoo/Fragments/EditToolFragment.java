@@ -38,6 +38,9 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +61,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -124,6 +128,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 //    private EditTextRow numberOfToolsLostRow;
 //    private EditTextRow lostToolLengthRow;
 
+    private Tracker tracker;
 
     public EditToolFragment() {
         // Required empty public constructor
@@ -147,6 +152,10 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         if (getArguments() != null) {
             tool = getArguments().getParcelable(TOOL_PARAM);
         }
@@ -1247,6 +1256,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

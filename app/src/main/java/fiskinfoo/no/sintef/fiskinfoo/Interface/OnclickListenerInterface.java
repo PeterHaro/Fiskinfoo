@@ -20,6 +20,8 @@ import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
@@ -29,7 +31,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 public interface OnclickListenerInterface {
-    View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag);
+    View.OnClickListener getSubscriptionDownloadButtonOnClickListener(final Activity activity, final PropertyDescription subscription, final User user, final String tag, final Tracker tracker, String screenName);
     View.OnClickListener getSubscriptionErrorNotificationOnClickListener(final PropertyDescription subscription);
     View.OnClickListener getInformationDialogOnClickListener(String title, String message);
     View.OnClickListener getSubscriptionCheckBoxOnClickListener(final PropertyDescription subscription, final Subscription activeSubscription, final User user);

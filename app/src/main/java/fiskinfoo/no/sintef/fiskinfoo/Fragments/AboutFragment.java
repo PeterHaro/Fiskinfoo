@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -17,8 +21,8 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
  * create an instance of this fragment.
  */
 public class AboutFragment extends Fragment {
-
     WebView webView;
+    private Tracker tracker;
 
     public AboutFragment() {
         // Required empty public constructor
@@ -40,6 +44,10 @@ public class AboutFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+
         setHasOptionsMenu(true);
     }
 
@@ -71,6 +79,12 @@ public class AboutFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

@@ -37,6 +37,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +63,7 @@ import java.util.TimeZone;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
@@ -87,6 +91,8 @@ import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_
  */
 public class ActiveToolsFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MyActiveToolsFragment";
+    private final static String SCREEN_NAME = "ActiveToolsFragment";
+    private final static String LOG_TAG = "ActiveToolsFragmentLogTag";
 
     private final DialogInterface dialogInterface = new UtilityDialogs();
     private final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
@@ -103,6 +109,7 @@ public class ActiveToolsFragment extends Fragment {
     private JSONArray matchedTools;
 
     private UserInterface userInterface;
+    private Tracker tracker;
 
     /**
      * Use this factory method to create a new instance of
@@ -124,6 +131,9 @@ public class ActiveToolsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         mGpsLocationTracker = new GpsLocationTracker(getActivity());
         barentswatchApi = new BarentswatchApi();
@@ -421,6 +431,12 @@ public class ActiveToolsFragment extends Fragment {
             getView().refreshDrawableState();
         }
 
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
+
         MainActivity activity = (MainActivity) getActivity();
         String title = getResources().getString(R.string.my_tools_fragment_title);
         activity.refreshTitle(title);
@@ -431,6 +447,16 @@ public class ActiveToolsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.send_tool_report:
                 if(user.getIsFishingFacilityAuthenticated()) {
+                    if(tracker != null) {
+                        tracker.send(new HitBuilders.EventBuilder().setCategory("Send tool report").build());
+                        if (tracker != null) {
+                            tracker.setScreenName(SCREEN_NAME + ActiveToolsFragment.class.getSimpleName());
+                            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        } else {
+                            Log.wtf(LOG_TAG, "TRACKER IS NULL IN ON RESUME");
+                        }
+                    }
+
                     generateAndSendGeoJsonToolReport();
                 } else {
                     Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.send_tool_report_not_authorized_error_message));

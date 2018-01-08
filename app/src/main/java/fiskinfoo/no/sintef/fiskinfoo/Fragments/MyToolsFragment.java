@@ -21,15 +21,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -41,6 +46,7 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
  */
 public class MyToolsFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MyToolsFragment";
+    private Tracker tracker;
 
     /**
      * Use this factory method to create a new instance of
@@ -62,6 +68,9 @@ public class MyToolsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
     }
 
     @Override
@@ -141,6 +150,12 @@ public class MyToolsFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();

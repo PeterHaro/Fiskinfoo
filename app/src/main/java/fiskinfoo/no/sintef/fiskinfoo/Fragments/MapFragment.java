@@ -70,6 +70,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -106,6 +108,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Polygon;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
@@ -205,6 +208,7 @@ public class MapFragment extends Fragment {
     private JSONObject toolsFeatureCollection;
     private Map<String, List<Integer>> vesselToolIdsMap =  new HashMap<>();
     private boolean pageLoaded = false;
+    private Tracker tracker;
 
 
     public static MapFragment newInstance() {
@@ -217,6 +221,9 @@ public class MapFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         user = userInterface.getUser();
         if (user == null) {
@@ -255,6 +262,12 @@ public class MapFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
         String title = getResources().getString(R.string.map_fragment_title);
         activity.refreshTitle(title);
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
+        }
     }
 
     @Override

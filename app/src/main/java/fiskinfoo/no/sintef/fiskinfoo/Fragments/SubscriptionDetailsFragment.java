@@ -40,12 +40,15 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
@@ -60,6 +63,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CardViewInformationRow;
 
 public class SubscriptionDetailsFragment extends Fragment {
     public static final String TAG = SubscriptionDetailsFragment.class.getSimpleName();
+    private static final String SCREEN_NAME = "SubscriptionDetails";
 
     private UserInterface userInterface;
     // Must be a better way (HINT: IT IS)
@@ -68,6 +72,8 @@ public class SubscriptionDetailsFragment extends Fragment {
     private PropertyDescription propertyDescription = null;
     private UtilityOnClickListeners utilityOnClickListeners;
     List<Integer> takenIds;
+
+    private Tracker tracker;
     //END HINT
 
     /**
@@ -88,9 +94,12 @@ public class SubscriptionDetailsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        FiskInfo application = (FiskInfo) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
 
         String type;
-        super.onCreate(savedInstanceState);
         type = getArguments().getString("type");
         Log.d(TAG, type);
         Gson gson = new Gson();
@@ -298,7 +307,7 @@ public class SubscriptionDetailsFragment extends Fragment {
 
             bottomButtonContainer.addView(showOnMapButton);
 
-            downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG));
+            downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG, tracker, SCREEN_NAME));
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 downloadMapImageView.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.material_icon_black_active_tint_color));
@@ -345,6 +354,12 @@ public class SubscriptionDetailsFragment extends Fragment {
 
         if(getView() != null) {
             getView().refreshDrawableState();
+        }
+
+        if(tracker != null){
+
+            tracker.setScreenName(getClass().getSimpleName());
+            tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
         MainActivity activity = (MainActivity) getActivity();
