@@ -88,8 +88,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_schedule_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/placeholder_date"
                 />
 
@@ -98,8 +96,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_directions_boat_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/placeholder_vessel_name"
                 />
 
@@ -108,8 +104,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_phone_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/placeholder_phone_number"
                 />
 
@@ -118,8 +112,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_place_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/placeholder_position"
                 />
 
@@ -128,8 +120,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_place_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/show_marinogram_from_yr"
                 />
 
@@ -161,8 +151,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_schedule_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/seismic_period"
                 />
             <TextView
@@ -170,8 +158,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_schedule_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/seismic_area_start_date"
                 />
 
@@ -180,9 +166,7 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_directions_boat_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
-                android:text="@string/vessel_name"
+                android:text="@string/vessel"
                 />
 
             <TextView
@@ -190,8 +174,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_location_city_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/responsible_party"
                 />
 
@@ -200,8 +182,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_build_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/seismic_type"
                 />
 
@@ -230,8 +210,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_place_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/download_file_to_view_position"
                 />
 
@@ -240,8 +218,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_place_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:textStyle="bold"
                 android:textColor="@color/hyperlink_blue"
                 android:text="@string/view_ais_tracking"
@@ -255,6 +231,7 @@ limitations under the License.
             android:orientation="vertical"
             android:divider="@drawable/material_view_divider_invisible"
             android:showDividers="beginning|middle|end"
+            android:visibility="gone"
             >
 
             <TextView
@@ -279,8 +256,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_schedule_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/closed_from_date"
                 />
 
@@ -289,8 +264,6 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:drawableStart="@drawable/ic_directions_boat_black_24dp"
-                android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 android:text="@string/closed_for"
                 />
 
@@ -406,8 +379,6 @@ limitations under the License.
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:drawableStart="@drawable/ic_schedule_black_24dp"
-                    android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                     android:text="@string/last_update"
                     />
             </LinearLayout>
@@ -562,6 +533,27 @@ limitations under the License.
                 android:drawableStart="@drawable/ic_insert_link_black_24dp"
                 android:drawablePadding="@dimen/map_fragment_bottom_sheet_tool_details_drawable_margin"
                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_bottom_sheet_information_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/material_view_divider_invisible"
+            android:showDividers="beginning|middle|end"
+            >
+
+            <TextView
+                android:id="@+id/map_fragment_bottom_sheet_header_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="@string/placeholder_string"
+                />
+
         </LinearLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

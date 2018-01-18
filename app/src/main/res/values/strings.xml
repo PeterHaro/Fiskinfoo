@@ -179,6 +179,15 @@ limitations under the License.
     <string name="fish_group">Fiskegruppe: %1$s</string>
     <string name="area">Område: %1$s</string>
     <string name="j_message_version">J-melding: %1$s §%2$s</string>
+    <string name="vessel_speed">Fart: %1$s knop</string>
+    <string name="vessel_course">Kurs: %1$s°</string>
+    <string name="vessel_destination">Destinasjon: %1$s</string>
+    <string name="vessel_position">Posisjon: %1$s° %2$sN %3$s° %4$sE</string>
+    <string name="vessel_signal_datetime">Signal mottatt: %1$s</string>
+    <string name="vessel_flag">Flagg: %1$s</string>
+    <string name="vessel_ircs">Kallesignal (IRCS): %1$s</string>
+    <string name="vessel_imo">IMO: %1$s</string>
+    <string name="vessel_mmsi">MMSI: %1$s</string>
     <string name="date_source">Datakilde</string>
     <string name="data_source_fishery_directorate">Datakilde: Fiskeridirektoratet</string>
     <string name="j_message_fishery_directorate">J-meldinger (Fiskeridirektoratet)</string>
@@ -196,6 +205,8 @@ limitations under the License.
     <string name="click_to_read_more">Trykk for å lese mer ></string>
     <string name="click_to_hide">Trykk for å skjule ></string>
     <string name="fjord_lines_important_information">Fiskeridirektoratet vil gjøre oppmerksom på at noen linjer i karttema har mindre avvik fra oppgitte stedsnavn i forskrift. Disse vil i løpet av kort tid bli rettet opp. Dersom det oppstår tvil er det stedsnavn i forskrift som definerer fjordlinjenes knekkpunkter. Se eget vedlegg til utøvelsesforskriften.</string>
+    <string name="focus_tools">Fremhev redskaper</string>
+    <string name="toast_no_ais_data_found">Fartøy-AIS ikke tilgjengelig</string>
 
 
     <!-- Map fragment menu strings -->

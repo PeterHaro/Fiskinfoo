@@ -59,41 +59,45 @@ public enum ToolType {
     public static ToolType createFromValue(String value) {
         ToolType retval = null;
 
-        switch(value) {
-            case "LONGLINE":
-            case "Line":
+        switch(value.toLowerCase()) {
+            case "longline":
+            case "long line":
+            case "line":
                 retval = ToolType.LONG_LINE;
                 break;
-            case "NETS":
-            case "Garn":
+            case "nets":
+            case "garn":
                 retval = ToolType.NETS;
                 break;
-            case "CRABPOT":
-            case "Teine":
+            case "crabpot":
+            case "teine":
+            case "crab pot":
                 retval = ToolType.CRAB_POTS;
                 break;
-            case "SEISMIC":
-            case "Sensorkabel":
+            case "seismic":
+            case "sensorkabel":
                 retval = ToolType.SEISMIC;
                 break;
-            case "DANPURSEINE":
-            case "Snurpenot":
+            case "danpurseine":
+            case "snurpenot":
+            case "danish- / purse- seine":
                 retval = ToolType.DANISH_PURSE_SEINE;
                 break;
-            case "SENSORCABLE":
-            case "Sensor / kabel":
+            case "sensorcable":
+            case "sensor / kabel":
                 retval = ToolType.SENSOR_CABLE;
                 break;
-            case "MOORING":
-            case "Fortøyningssystem":
+            case "mooring":
+            case "fortøyningssystem":
                 retval = ToolType.MOORING_SYSTEM;
                 break;
-            case "UNK":
-            case "Ukjent redskap":
+            case "unk":
+            case "ukjent redskap":
+            case "unknown":
                 retval = ToolType.UNKNOWN;
                 break;
             default:
-                throw new UnsupportedOperationException("Tool type does not exist in the system");
+                throw new UnsupportedOperationException("Tool type does not exist in the system: " + value);
         }
         return retval;
     }
