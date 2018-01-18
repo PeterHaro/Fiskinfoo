@@ -141,6 +141,7 @@ public class MapFragment extends Fragment {
     private LinearLayout bottomSheetSeaFloorInstallationLayout;
     private LinearLayout bottomSheetIceConcentrationLayout;
     private LinearLayout bottomSheetJMessageLayout;
+    private LinearLayout bottomSheetInformationContainer;
     private BottomSheetBehavior bottomSheetBehavior;
     private TextView bottomSheetToolTypeTextView;
     private TextView bottomSheetToolSetupDateTextView;
@@ -182,6 +183,7 @@ public class MapFragment extends Fragment {
     private TextView bottomSheetJMessageFjordLinesDetailsTextView;
     private TextView bottomSheetJMessageLastUpdatedTextView;
     private TextView bottomSheetJMessageLinksTitleTextView;
+    private TextView bottomSheetInformationContainerHeaderTextView;
     private LinearLayout bottomSheetJMessageLinksLinearLayout;
     private LinearLayout bottomSheetJMessageDataSourcesLinearLayout;
     private NestedScrollView bottomSheetJMessageFjordLinesDetailsScrollView;
@@ -294,6 +296,7 @@ public class MapFragment extends Fragment {
         bottomSheetSeaFloorInstallationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_sea_floor_installation_information_container);
         bottomSheetIceConcentrationLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_ice_concentration_information_container);
         bottomSheetJMessageLayout = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_j_melding_information_container);
+        bottomSheetInformationContainer = (LinearLayout) bottomSheetLayout.findViewById(R.id.linear_layout_bottom_sheet_information_container);
 
         bottomSheetToolTypeTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_type_text_view);
         bottomSheetToolSetupDateTextView = (TextView) bottomSheetToolLayout.findViewById(R.id.map_fragment_bottom_sheet_tool_setup_date_text_view);
@@ -342,7 +345,7 @@ public class MapFragment extends Fragment {
         bottomSheetJMessageFjordLinesDetailsScrollView = (NestedScrollView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fjord_lines_details_scroll_view);
         bottomSheetJMessageFjordLinesDetailsTextView = (TextView) bottomSheetJMessageLayout.findViewById(R.id.map_fragment_bottom_sheet_j_melding_fjord_lines_details_text_view);
 
-
+        bottomSheetInformationContainerHeaderTextView = (TextView) bottomSheetLayout.findViewById(R.id.map_fragment_bottom_sheet_header_text_view);
 
 
         // TODO: Disable search if user is not authenticated
@@ -354,7 +357,8 @@ public class MapFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 switch(i) {
                     case EditorInfo.IME_ACTION_SEARCH:
-                        highlightToolsInMap(textView.getText().toString());
+                        List<Integer> vesselTools = vesselToolIdsMap.get(textView.getText().toString());
+                        highlightVesselInMap(textView.getText().toString());
                         searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
                         searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
                         InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -382,7 +386,7 @@ public class MapFragment extends Fragment {
                                 searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
                                 searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
 
-                                highlightToolsInMap(searchEditText.getText().toString().toUpperCase());
+                                highlightVesselInMap(searchEditText.getText().toString().toUpperCase());
                                 InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                                 inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
                             } else{
@@ -393,7 +397,7 @@ public class MapFragment extends Fragment {
                             searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search_black_24dp, 0);
 
                             String nullString = null;
-                            browser.loadUrl("javascript:highlightTools(" + nullString + ")");
+                            highlightVesselInMap(null);
                             searchEditText.setText("");
                             InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
@@ -517,6 +521,12 @@ public class MapFragment extends Fragment {
 
         @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
+        public void hideBottomSheet() {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
         public void updateToolBottomSheet(String toolId) {
             final JSONObject tool = toolMap.get(toolId);
 
@@ -533,6 +543,7 @@ public class MapFragment extends Fragment {
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetJMessageLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.GONE);
                     bottomSheetToolLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -540,17 +551,19 @@ public class MapFragment extends Fragment {
                         String setupDateString = tool.getJSONObject("properties").getString("setupdatetime");
                         Date setupDate;
                         String marinogramUrl;
+                        String vesselPhone = tool.getJSONObject("properties").getString("vesselphone");
+                        vesselPhone = vesselPhone != null && !"null".equals(vesselPhone) ? vesselPhone : null;
 
                         setupDateString = (setupDateString != null && setupDateString.length() > 19) ? setupDateString.substring(0, 19) : setupDateString;
 
                         SimpleDateFormat sdf = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());
-                        SimpleDateFormat sdfDate = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd), Locale.getDefault());
+                        SimpleDateFormat sdfSetDate = new SimpleDateFormat(getContext().getString(R.string.datetime_format_yyyy_mm_dd_hh_mm), Locale.getDefault());
 
                         sdf.setTimeZone(TimeZone.getDefault());
 
                         try {
                             setupDate = sdf.parse(setupDateString);
-                            setupDateString = sdfDate.format(setupDate);
+                            setupDateString = sdfSetDate.format(setupDate);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -558,20 +571,19 @@ public class MapFragment extends Fragment {
                         bottomSheetToolTypeTextView.setText(ToolType.createFromValue(tool.getJSONObject("properties").getString("tooltypecode")).toString());
                         bottomSheetToolSetupDateTextView.setText(setupDateString);
                         bottomSheetToolVesselTextView.setText(vesselName);
-                        bottomSheetToolVesselTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_directions_boat_black_24dp, 0, 0, 0);
-                        bottomSheetToolPhoneNumberTextView.setText(tool.getJSONObject("properties").getString("vesselphone") != null ? tool.getJSONObject("properties").getString("vesselphone") : getString(R.string.not_available));
+                        bottomSheetToolPhoneNumberTextView.setText(vesselPhone);
+                        bottomSheetToolPhoneNumberTextView.setVisibility(vesselPhone != null ? View.VISIBLE : View.GONE);
 
                         bottomSheetToolVesselTextView.setTextColor(ContextCompat.getColor(getActivity(), R.color.hyperlink_blue));
                         bottomSheetToolVesselTextView.setTypeface(Typeface.DEFAULT_BOLD);
                         bottomSheetToolVesselTextView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                highlightToolsInMap(((TextView)view).getText().toString());
                                 searchEditText.setError(null);
                                 searchEditText.setText(((TextView)view).getText().toString());
                                 searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
                                 searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
-                                highlightToolsInMap(vesselName);
+                                highlightVesselInMap(vesselName);
                             }
                         });
 
@@ -615,6 +627,130 @@ public class MapFragment extends Fragment {
 
         @SuppressWarnings("unused")
         @JavascriptInterface
+        public void updateAISBottomSheet(final String jsonString) {
+            if(jsonString == null) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                Toast.makeText(getContext(), R.string.toast_no_ais_data_found, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            final JSONObject finalJsonObject = jsonObject;
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    bottomSheetToolLayout.setVisibility(View.GONE);
+                    bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
+                    bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
+                    bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetJMessageLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.VISIBLE);
+
+                    bottomSheetInformationContainer.removeViews(1, bottomSheetInformationContainer.getChildCount() - 1);
+
+                    try {
+                        String vesselHeader = finalJsonObject.getJSONObject("properties").getString("Name");
+                        bottomSheetInformationContainerHeaderTextView.setText(vesselHeader);
+
+                        TextView vesselSpeedTextView = new TextView(getContext());
+                        TextView vesselCourseTextView = new TextView(getContext());
+                        TextView vesselDestinationTextView = new TextView(getContext());
+                        TextView vesselToolsTextView = new TextView(getContext());
+                        TextView vesselFlagTextView = new TextView(getContext());
+                        TextView vesselIRCSTextView = new TextView(getContext());
+                        TextView vesselIMOTextView = new TextView(getContext());
+                        TextView vesselMMSITextView = new TextView(getContext());
+                        LinearLayout vesselToolsContainer = new LinearLayout(getContext());
+                        vesselToolsContainer.setOrientation(LinearLayout.VERTICAL);
+
+                        vesselSpeedTextView.setText(getString(R.string.vessel_speed, finalJsonObject.getJSONObject("properties").getString("Sog")));
+                        vesselCourseTextView.setText(getString(R.string.vessel_course, finalJsonObject.getJSONObject("properties").getString("Cog")));
+                        vesselDestinationTextView.setText(getString(R.string.vessel_destination, finalJsonObject.getJSONObject("properties").getString("Destination")));
+                        vesselFlagTextView.setText(getString(R.string.vessel_flag, finalJsonObject.getJSONObject("properties").getString("Country")));
+                        vesselIRCSTextView.setText(getString(R.string.vessel_ircs, finalJsonObject.getJSONObject("properties").getString("Callsign")));
+                        vesselIMOTextView.setText(getString(R.string.vessel_imo, finalJsonObject.getJSONObject("properties").getString("Imo")));
+                        vesselMMSITextView.setText(getString(R.string.vessel_mmsi, finalJsonObject.getJSONObject("properties").getString("Mmsi")));
+                        vesselToolsTextView.setText(R.string.tool);
+
+                        vesselSpeedTextView.setTypeface(null, Typeface.BOLD);
+                        vesselCourseTextView.setTypeface(null, Typeface.BOLD);
+                        vesselToolsTextView.setTypeface(null, Typeface.BOLD);
+
+                        // TODO: Add tools associated with vessel to tool list if applicable
+
+                        if(vesselToolIdsMap.get(finalJsonObject.getJSONObject("properties").getString("Name")) != null) {
+                            for(int toolId : vesselToolIdsMap.get(finalJsonObject.getJSONObject("properties").getString("Name"))) {
+                                JSONObject tool = ((JSONObject)toolsFeatureCollection.getJSONArray("features").get(toolId));
+                                String toolType = ToolType.createFromValue( tool.getJSONObject("properties").getString("tooltypename")).toString();
+                                String toolSetupDate = tool.getJSONObject("properties").getString("setupdatetime");
+                                toolSetupDate = toolSetupDate.replace("T" , " ");
+                                toolSetupDate = "\t" + toolType + " satt " + toolSetupDate.substring(0, 19);
+
+                                TextView toolTextView = new TextView(getContext());
+                                toolTextView.setText(toolSetupDate);
+                                vesselToolsContainer.addView(toolTextView);
+                            }
+                        }
+
+                        bottomSheetInformationContainer.addView(vesselSpeedTextView);
+                        bottomSheetInformationContainer.addView(vesselCourseTextView);
+
+                        if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Destination"))) {
+                            bottomSheetInformationContainer.addView(vesselDestinationTextView);
+                        }
+                        if(vesselToolsContainer.getChildCount() > 0) {
+                            bottomSheetInformationContainer.addView(vesselToolsTextView);
+                            bottomSheetInformationContainer.addView(vesselToolsContainer);
+
+                            Button highlightToolsButton = new Button(getContext());
+                            highlightToolsButton.setText(getString(R.string.focus_tools));
+                            highlightToolsButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        highlightToolsInMap(finalJsonObject.getJSONObject("properties").getString("Name"));
+                                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                        bottomSheetBehavior.setPeekHeight(200);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            bottomSheetInformationContainer.addView(highlightToolsButton);
+                        }
+                        if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Country"))) {
+                            bottomSheetInformationContainer.addView(vesselFlagTextView);
+                        }
+                        if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Callsign"))) {
+                            bottomSheetInformationContainer.addView(vesselIRCSTextView);
+                        }
+                        if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Mmsi"))) {
+                            bottomSheetInformationContainer.addView(vesselMMSITextView);
+                        }
+                        if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Imo"))) {
+                            bottomSheetInformationContainer.addView(vesselIMOTextView);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    bottomSheetBehavior.setPeekHeight(200);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            });
+        }
+
+        @SuppressWarnings("unused")
+        @JavascriptInterface
         public void updateJMeldingBottomSheet(final String jsonString) {
 
             JSONObject jsonObject = null;
@@ -637,6 +773,7 @@ public class MapFragment extends Fragment {
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.GONE);
                     bottomSheetJMessageLayout.setVisibility(View.VISIBLE);
 
                     for(int i = 0; i < bottomSheetJMessageLayout.getChildCount(); i++) {
@@ -851,6 +988,7 @@ public class MapFragment extends Fragment {
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetJMessageLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.GONE);
                     bottomSheetSeismicLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -954,6 +1092,7 @@ public class MapFragment extends Fragment {
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.GONE);
                     bottomSheetJMessageLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.VISIBLE);
 
                     try {
@@ -1028,6 +1167,7 @@ public class MapFragment extends Fragment {
                     bottomSheetSeismicLayout.setVisibility(View.GONE);
                     bottomSheetSeaFloorInstallationLayout.setVisibility(View.GONE);
                     bottomSheetJMessageLayout.setVisibility(View.GONE);
+                    bottomSheetInformationContainer.setVisibility(View.GONE);
                     bottomSheetIceConcentrationLayout.setVisibility(View.VISIBLE);
 
                     String iceConcentrationType = iceType != null ? iceType : getString(R.string.unknown_ice_concentration);
@@ -1318,7 +1458,7 @@ public class MapFragment extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             String vesselName = ((TextView) view).getText().toString();
-                            highlightToolsInMap(vesselName);
+                            highlightVesselInMap(vesselName);
 
                             searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
                             searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
@@ -1894,10 +2034,11 @@ public class MapFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String vesselName = ((TextView) view).getText().toString();
-                highlightToolsInMap(vesselName);
+                highlightVesselInMap(vesselName);
 
                 searchEditText.setTag(getString(R.string.map_search_view_tag_clear));
                 searchEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clear_black_24dp, 0);
+                searchEditText.setThreshold(1);
 
                 InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), 0);
@@ -1914,8 +2055,31 @@ public class MapFragment extends Fragment {
     }
 
     private void highlightToolsInMap(String vesselName) {
-        browser.loadUrl("javascript:highlightTools(\"" + vesselName + "\")");
+        String mmsi = getMMSIFromVesselName(vesselName);
+        browser.loadUrl("javascript:highlightTools(\"" + mmsi + "\")");
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private void highlightVesselInMap(String vesselName) {
+        String mmsi = vesselName != null ? getMMSIFromVesselName(vesselName) : null;
+        browser.loadUrl("javascript:highlightVessel(\"" + mmsi + "\")");
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    private String getMMSIFromVesselName(String vesselName) {
+        List<Integer> vesselTools = vesselToolIdsMap.get(vesselName);
+        String mmsi = null;
+        for(int toolId : vesselTools) {
+            JSONObject tool = null;
+            try {
+                tool = ((JSONObject)toolsFeatureCollection.getJSONArray("features").get(toolId));
+                mmsi = tool.getJSONObject("properties").getString("mmsi");
+                break;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return mmsi;
     }
 
     @Override
