@@ -207,6 +207,7 @@ limitations under the License.
     <string name="fjord_lines_important_information">Fiskeridirektoratet vil gjøre oppmerksom på at noen linjer i karttema har mindre avvik fra oppgitte stedsnavn i forskrift. Disse vil i løpet av kort tid bli rettet opp. Dersom det oppstår tvil er det stedsnavn i forskrift som definerer fjordlinjenes knekkpunkter. Se eget vedlegg til utøvelsesforskriften.</string>
     <string name="focus_tools">Fremhev redskaper</string>
     <string name="toast_no_ais_data_found">Fartøy-AIS ikke tilgjengelig</string>
+    <string name="center_vessel">Sentrer fartøy</string>
 
 
     <!-- Map fragment menu strings -->

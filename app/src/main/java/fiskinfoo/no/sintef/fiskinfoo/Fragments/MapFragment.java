@@ -188,6 +188,7 @@ public class MapFragment extends Fragment {
     private LinearLayout bottomSheetJMessageDataSourcesLinearLayout;
     private NestedScrollView bottomSheetJMessageFjordLinesDetailsScrollView;
 
+    private AsynchApiCallTask asynchApiCallTask;
     private WebView browser;
     private BarentswatchApi barentswatchApi;
     private User user;
@@ -251,6 +252,9 @@ public class MapFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         userInterface = null;
+        if(asynchApiCallTask != null && asynchApiCallTask.getStatus() != AsyncTask.Status.RUNNING) {
+            asynchApiCallTask.cancel(true);
+        }
     }
 
     @Override
@@ -709,8 +713,14 @@ public class MapFragment extends Fragment {
                             bottomSheetInformationContainer.addView(vesselToolsTextView);
                             bottomSheetInformationContainer.addView(vesselToolsContainer);
 
+                            LinearLayout buttonContainer = new LinearLayout(getContext());
                             Button highlightToolsButton = new Button(getContext());
+                            Button centerVesselButton = new Button(getContext());
+
+                            buttonContainer.setOrientation(LinearLayout.HORIZONTAL);
                             highlightToolsButton.setText(getString(R.string.focus_tools));
+                            centerVesselButton.setText(getString(R.string.center_vessel));
+
                             highlightToolsButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -723,7 +733,21 @@ public class MapFragment extends Fragment {
                                     }
                                 }
                             });
-                            bottomSheetInformationContainer.addView(highlightToolsButton);
+                            centerVesselButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    try {
+                                        centerVesselInMap(finalJsonObject.getJSONObject("properties").getString("Name"));
+                                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                        bottomSheetBehavior.setPeekHeight(200);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            buttonContainer.addView(highlightToolsButton);
+                            buttonContainer.addView(centerVesselButton);
+                            bottomSheetInformationContainer.addView(buttonContainer);
                         }
                         if(!"null".equals(finalJsonObject.getJSONObject("properties").getString("Country"))) {
                             bottomSheetInformationContainer.addView(vesselFlagTextView);
@@ -1258,7 +1282,7 @@ public class MapFragment extends Fragment {
             view.loadUrl("javascript:populateMap();");
             view.loadUrl("javascript:toggleLayers(" + json + ");");
 
-            if(toolsFeatureCollection != null && ((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
+            if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
                 view.loadUrl("javascript:getToolDataFromAndroid();");
             }
 
@@ -1319,6 +1343,10 @@ public class MapFragment extends Fragment {
                 file = new File(directoryFilePath + cachedEntry.mSubscribable.Name + ".JSON");
             }
 
+            if(isCancelled()) {
+                cancel(true);
+            }
+
             if(cachedEntry != null && file.exists() && ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 try {
                     cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
@@ -1332,6 +1360,9 @@ public class MapFragment extends Fragment {
                             e.printStackTrace();
                         }
 
+                        if(getContext() == null) {
+                            cancel(true);
+                        }
                         if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                             if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
                                 SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
@@ -1472,6 +1503,11 @@ public class MapFragment extends Fragment {
 
 
             return true;
+        }
+
+        @Override
+        protected void onCancelled(Boolean result) {
+            Log.d("MapAsync", "Map async cancelled");
         }
 
         @Override
@@ -1953,7 +1989,7 @@ public class MapFragment extends Fragment {
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
 
-            AsynchApiCallTask asynchApiCallTask = new AsynchApiCallTask();
+            asynchApiCallTask = new AsynchApiCallTask();
             asynchApiCallTask.execute();
             ((MainActivity)getActivity()).toggleNetworkErrorTextView(true);
         } else {
@@ -2052,6 +2088,12 @@ public class MapFragment extends Fragment {
         } else {
             browser.loadUrl("javascript:zoomToUserPosition()");
         }
+    }
+
+    private void centerVesselInMap(String vesselName) {
+        String mmsi = getMMSIFromVesselName(vesselName);
+        browser.loadUrl("javascript:centerVessel(\"" + mmsi + "\")");
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private void highlightToolsInMap(String vesselName) {

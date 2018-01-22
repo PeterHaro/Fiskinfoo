@@ -535,25 +535,32 @@ limitations under the License.
                 />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linear_layout_bottom_sheet_information_container"
+
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:divider="@drawable/material_view_divider_invisible"
-            android:showDividers="beginning|middle|end"
+            android:layout_height="match_parent"
             >
-
-            <TextView
-                android:id="@+id/map_fragment_bottom_sheet_header_text_view"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/linear_layout_bottom_sheet_information_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:textStyle="bold"
-                android:text="@string/placeholder_string"
-                />
+                android:orientation="vertical"
+                android:divider="@drawable/material_view_divider_invisible"
+                android:showDividers="beginning|middle|end"
+                >
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/map_fragment_bottom_sheet_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:text="@string/placeholder_string"
+                    />
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

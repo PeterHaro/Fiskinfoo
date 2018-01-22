@@ -793,7 +793,12 @@
                         map.zoomTo(12);
                     }
                 }
-                toolLayer.redraw();
+
+                if(!toolLayer.visibility) {
+                    toolLayer.setVisibility(true);
+                } else {
+                    toolLayer.redraw();
+                }
             }
         }
 
@@ -867,6 +872,10 @@
                 wgs84.transform("EPSG:900913", "EPSG:4326");
                 jsonObject.geometry.coordinates.push(wgs84.x, wgs84.y);
 
+                if(!layer.visibility) {
+                    layer.setVisibility(true);
+                }
+
                 // This calls clicknotice, which in turn calls updateAISBottom
                 selectFeatureControl.select(feature);
 
@@ -877,6 +886,42 @@
 
                 highlightVesselFeatureId = null;
                 Android.updateAISBottomSheet(null);
+            }
+
+            layer.redraw();
+        }
+
+        function centerVessel(mmsi) {
+            var layer = map.getLayersByName("Fartøy (AIS)")[0];
+            var highlightedBounds = null;
+            var feature = null;
+            var selectFeatureControl = map.getControlsByClass("OpenLayers.Control.SelectFeature")[0];
+
+            for(i = 0; i < layer.features.length; i++) {
+                if(layer.features[i].attributes.Mmsi == highlightMMSI && highlightMMSI !== null) {
+                    feature = layer.features[i];
+                    break;
+                } else if(layer.features[i].hasOwnProperty("cluster")) {
+                    for(j = 0; j < layer.features[i].cluster.length; j++) {
+                        if(layer.features[i].cluster[j].attributes.Mmsi == highlightMMSI) {
+                            feature = layer.features[i].cluster[j];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(feature !== null) {
+                highlightedBounds = new OpenLayers.Bounds();
+                highlightedBounds.extend(feature.geometry.getBounds());
+
+                map.zoomToExtent(highlightedBounds);
+
+                if(!map.getExtent().containsBounds(highlightedBounds)) {
+                    if(map.getZoom() > 12) {
+                        map.zoomTo(12);
+                    }
+                }
             }
 
             layer.redraw();
