@@ -75,7 +75,8 @@ limitations under the License.
     <string name="cant_read_folder">Kan ikke lese mappen.</string>
 
     <!-- Tab strings -->
-    <string name="my_page">Min side</string>
+    <string name="summary">Oversikt</string>
+    <string name="my_page">Nedlasting</string>
     <string name="map">Kart</string>
     <string name="register_tool">Redskapsregistrering</string>
     <string name="my_tools">Mine redskaper</string>
@@ -570,6 +571,12 @@ limitations under the License.
         <item>@string/tool_type_purseine</item>
         <item>@string/tool_type_unknown</item>
     </string-array>
+
+
+    <!-- Summary fragment -->
+    <string name="summary_fragment_title">FiskInfo oversikt</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -362,4 +362,19 @@ limitations under the License.
     <dimen name="card_view_medium_rounded_corners">2dp</dimen>
     <dimen name="card_view_medium_default_elevation">2dp</dimen>
 
+    <!-- Medium cards -->
+    <dimen name="medium_card_no_rich_media_title">24sp</dimen>
+    <dimen name="medium_card_no_rich_media_subtitle">14sp</dimen>
+    <dimen name="medium_card_no_rich_media_title_tight_top_padding">10dp</dimen>
+    <dimen name="medium_card_no_rich_media_title_top_padding">12dp</dimen>
+    <dimen name="medium_card_no_rich_media_title_bottom_padding">8dp</dimen>
+    <dimen name="medium_card_no_rich_media_title_left_and_right_padding">16dp</dimen>
+    <dimen name="medium_card_no_rich_media_content_text_size">14sp</dimen>
+    <dimen name="medium_card_no_rich_media_content_bottom_top_padding">4dp</dimen>
+    <dimen name="card_no_rich_media_subtext_right_and_left_padding">16dp</dimen>
+    <dimen name="card_view_rounded_corners">2dp</dimen>
+    <dimen name="card_action_padding">8dp</dimen>
+    <dimen name="material_button_height">48dp</dimen>
+
+
 </resources>

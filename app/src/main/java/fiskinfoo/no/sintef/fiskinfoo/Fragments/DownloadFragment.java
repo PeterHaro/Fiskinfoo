@@ -61,8 +61,8 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
-public class MyPageFragment extends Fragment implements ExpandCollapseListener {
-    public static final String FRAGMENT_TAG = "MyPageFragment";
+public class DownloadFragment extends Fragment implements ExpandCollapseListener {
+    public static final String FRAGMENT_TAG = "DownloadFragment";
     private static final String SCREEN_NAME = "MyPage";
 
     private MyPageExpandableListAdapter myPageExpandableListAdapter;
@@ -130,8 +130,8 @@ public class MyPageFragment extends Fragment implements ExpandCollapseListener {
         setHasOptionsMenu(true);
     }
 
-    public static MyPageFragment newInstance() {
-        MyPageFragment fragment = new MyPageFragment();
+    public static DownloadFragment newInstance() {
+        DownloadFragment fragment = new DownloadFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

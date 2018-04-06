@@ -15,8 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -38,7 +38,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,14 +50,15 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.DownloadFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.EditToolFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.MapFragment;
-import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyPageFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.MyToolsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.OfflineModeFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.SummaryFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
         SettingsFragment.OnFragmentInteractionListener,
         EditToolFragment.OnFragmentInteractionListener,
         OfflineModeFragment.OnFragmentInteractionListener,
+        SummaryFragment.OnFragmentInteractionListener,
         UserInterface
         {
 
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.inflateMenu(R.menu.navigation_drawer_menu);
         navigationView.setNavigationItemSelectedListener(this);
 
-        navigationView.getMenu().performIdentifierAction(R.id.navigation_view_subscriptions, 0);
+        navigationView.getMenu().performIdentifierAction(R.id.navigation_view_summary, 0);
         navigationHeaderUserNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
 
         if(user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
@@ -334,9 +335,13 @@ public class MainActivity extends AppCompatActivity implements
         android.support.v4.app.Fragment fragment;
         String tag;
         switch (item.getItemId()) {
+            case R.id.navigation_view_summary:
+                fragment = SummaryFragment.newInstance();
+                tag = SummaryFragment.FRAGMENT_TAG;
+                break;
             case R.id.navigation_view_subscriptions:
-                fragment = MyPageFragment.newInstance();
-                tag = MyPageFragment.FRAGMENT_TAG;
+                fragment = DownloadFragment.newInstance();
+                tag = DownloadFragment.FRAGMENT_TAG;
                 break;
             case R.id.navigation_view_map:
                 fragment = MapFragment.newInstance();
@@ -425,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(MyPageFragment.FRAGMENT_TAG);
+        android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(SummaryFragment.FRAGMENT_TAG);
 
         if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -434,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements
             super.onBackPressed();
         }
         else {
-            navigate(R.id.navigation_view_subscriptions);
+            navigate(R.id.navigation_view_summary);
         }
     }
 
@@ -472,4 +477,10 @@ public class MainActivity extends AppCompatActivity implements
             stopOfflineModeBackgroundThread();
         }
     }
+
+    @Override
+    public void onSummaryInteraction(int menuItemID) {
+        navigationView.getMenu().performIdentifierAction(menuItemID, 0);
+    }
+
 }
