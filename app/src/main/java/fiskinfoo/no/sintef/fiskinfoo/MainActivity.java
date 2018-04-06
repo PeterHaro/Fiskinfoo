@@ -483,4 +483,17 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.getMenu().performIdentifierAction(menuItemID, 0);
     }
 
+
+    @Override
+    public void onNewTool() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        EditToolFragment fragment = EditToolFragment.newInstance(null);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_activity_fragment_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(getString(R.string.edit_tool_fragment_new_tool_title))
+                .commit();
+    }
+
 }

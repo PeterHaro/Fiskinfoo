@@ -159,8 +159,8 @@ public class SummaryFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onSummaryInteraction(int menuItemID);
+        void onNewTool();
     }
 
 
@@ -169,7 +169,6 @@ public class SummaryFragment extends Fragment {
     private List<DefaultCardViewViewHolder> getSummaryItems() {
         List<DefaultCardViewViewHolder> list = new ArrayList<>();
 
-        // TODO: Add cards to list
         addProfileSummary(list);
         addToolsSummary(list);
         addSubscriptionsSummary(list);
@@ -179,28 +178,30 @@ public class SummaryFragment extends Fragment {
     }
 
     private void addProfileSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Profil", "", "Husk å oppdatere", "");
-        item.setPositiveActionButtonText("Edit profile");
+        SummaryViewItem item = new SummaryViewItem("Profil", "", "Din brukerprovil trenger oppdatering før redskap kan registreres", "");
+        item.setPositiveActionButtonText("Endre profil");
         item.setPositiveButtonOnClickListener(getProfilePositiveButtonOnClickListener());
         list.add(item);
     }
 
     private void addToolsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Mine redskap", "", "Husk å oppdatere", "");
+        SummaryViewItem item = new SummaryViewItem("Redskap", "", "Dine nye, aktive og arkiverte redskap", "");
         item.setPositiveActionButtonText("Se mine redskap");
         item.setPositiveButtonOnClickListener(getToolsPositiveButtonOnClickListener());
+        item.setNegativeActionButtonText("Nytt redskap");
+        item.setNegativeActionButtonOnClickListener(getToolsNegativeButtonOnClickListener());
         list.add(item);
     }
 
     private void addSubscriptionsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Abbonement", "", "Husk å oppdatere", "");
+        SummaryViewItem item = new SummaryViewItem("Abbonement", "", "Det er mulig å abbonere på kartlag", "");
         item.setPositiveActionButtonText("Se abbonement");
         item.setPositiveButtonOnClickListener(getSubscriptionsPositiveButtonOnClickListener());
         list.add(item);
     }
 
     private void addMapSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Kart", "", "Husk å oppdatere", "");
+        SummaryViewItem item = new SummaryViewItem("Kart", "", "Kart er tilgjengelig i online og offline mode", "");
         item.setPositiveActionButtonText("Se kart");
         item.setPositiveButtonOnClickListener(getMapPositiveButtonOnClickListener());
         list.add(item);
@@ -222,6 +223,16 @@ public class SummaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mListener.onSummaryInteraction(R.id.navigation_view_tools);
+            }
+        };
+    }
+
+    @NonNull
+    private View.OnClickListener getToolsNegativeButtonOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onNewTool();
             }
         };
     }
