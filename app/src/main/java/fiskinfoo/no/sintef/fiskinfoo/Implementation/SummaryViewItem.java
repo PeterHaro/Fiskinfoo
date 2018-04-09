@@ -10,6 +10,7 @@ public class SummaryViewItem extends DefaultCardViewViewHolder{
     private String description;
     private String positiveActionButtonText;
     private String negativeActionButtonText;
+    private int imageResource;
 
     private View.OnClickListener positiveButtonOnClickListener;
     private View.OnClickListener negativeButtonOnClickListener;
@@ -19,6 +20,14 @@ public class SummaryViewItem extends DefaultCardViewViewHolder{
         this.subtitle = subtitle;
         this.descriptionText = descriptionText;
         this.description = description;
+    }
+
+    public SummaryViewItem(String title, String subtitle, String descriptionText, String description, int imageResource ) {
+        this.title = title;
+        this.subtitle = subtitle;
+        this.descriptionText = descriptionText;
+        this.description = description;
+        this.imageResource = imageResource;
     }
 
     public String getTitle() {
@@ -52,6 +61,10 @@ public class SummaryViewItem extends DefaultCardViewViewHolder{
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public int getImageResource() {return imageResource;}
+
+    public void setImageResource(int imageResource) {this.imageResource = imageResource;}
 
     public String getPositiveActionButtonText() {
         return positiveActionButtonText;

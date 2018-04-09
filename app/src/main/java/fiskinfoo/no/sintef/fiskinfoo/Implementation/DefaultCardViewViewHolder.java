@@ -19,6 +19,8 @@ public abstract class DefaultCardViewViewHolder {
         return "";
     }
 
+    public int getImageResource() { return 0;}
+
     public String getPositiveActionButtonText() {
         return "";
     }

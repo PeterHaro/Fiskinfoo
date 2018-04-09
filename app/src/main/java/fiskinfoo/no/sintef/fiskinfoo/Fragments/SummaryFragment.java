@@ -18,9 +18,13 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DefaultCardViewViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerCardViewAdapter;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerIconCardViewAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SummaryViewItem;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
@@ -61,6 +65,10 @@ public class SummaryFragment extends Fragment {
     }
 
 
+    int unsentTools = 0;
+    int activeTools = 0;
+    int archivedTools = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +77,36 @@ public class SummaryFragment extends Fragment {
         tracker = application.getDefaultTracker();
 
         user = userInterface.getUser();
+        unsentTools = 0;
+        activeTools = 0;
+        archivedTools = 0;
+        final List<ArrayList<ToolEntry>> tools = new ArrayList(user.getToolLog().myLog.values());
+        for (ArrayList<ToolEntry> entryList : tools) {
+            for (ToolEntry tool : entryList) {
+                switch (tool.getToolStatus()) {
+                    case STATUS_UNSENT:
+                        unsentTools++;
+                        break;
+                    case STATUS_RECEIVED:
+                    case STATUS_UNREPORTED:
+                    case STATUS_SENT_UNCONFIRMED:
+                    case STATUS_TOOL_LOST_UNSENT:
+                        activeTools++;
+                        break;
+                    case STATUS_REMOVED:
+                    case STATUS_REMOVED_UNCONFIRMED:
+                    case STATUS_TOOL_LOST_CONFIRMED:
+                    case STATUS_TOOL_LOST_UNREPORTED:
+                    case STATUS_TOOL_LOST_UNCONFIRMED:
+                        archivedTools++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
         //setHasOptionsMenu(true);
 /*
         if (getArguments() != null) {
@@ -134,8 +172,8 @@ public class SummaryFragment extends Fragment {
         String title = getResources().getString(R.string.summary_fragment_title);
         activity.refreshTitle(title);
 
-        final MediumRecyclerCardViewAdapter adapter = new MediumRecyclerCardViewAdapter(getSummaryItems(), false);
-        adapter.setOnItemClickListener(new MediumRecyclerCardViewAdapter
+        final MediumRecyclerIconCardViewAdapter adapter = new MediumRecyclerIconCardViewAdapter(getSummaryItems(), false);
+        adapter.setOnItemClickListener(new MediumRecyclerIconCardViewAdapter
                 .MyClickListener() {
             @Override
             public void onItemClick(int position, View v) {
@@ -171,21 +209,21 @@ public class SummaryFragment extends Fragment {
 
         addProfileSummary(list);
         addToolsSummary(list);
-        addSubscriptionsSummary(list);
+        //addSubscriptionsSummary(list);
         addMapSummary(list);
 
         return list;
     }
 
     private void addProfileSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Profil", "", "Din brukerprovil trenger oppdatering før redskap kan registreres", "");
+        SummaryViewItem item = new SummaryViewItem("Profil", "Informasjon om deg og ditt fartøy", "Din brukerprofil trenger oppdatering før redskap kan registreres!", "", R.drawable.ic_person_black_24dp);
         item.setPositiveActionButtonText("Endre profil");
         item.setPositiveButtonOnClickListener(getProfilePositiveButtonOnClickListener());
         list.add(item);
     }
 
     private void addToolsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Redskap", "", "Dine nye, aktive og arkiverte redskap", "");
+        SummaryViewItem item = new SummaryViewItem("Redskap", "Nye: " + unsentTools + "  " + "Aktive: " + activeTools + "  " + "Arkiverte: " + archivedTools, "", "", R.drawable.ic_directions_boat_black_48dp);
         item.setPositiveActionButtonText("Se mine redskap");
         item.setPositiveButtonOnClickListener(getToolsPositiveButtonOnClickListener());
         item.setNegativeActionButtonText("Nytt redskap");
@@ -193,17 +231,20 @@ public class SummaryFragment extends Fragment {
         list.add(item);
     }
 
+    /*
     private void addSubscriptionsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Abbonement", "", "Det er mulig å abbonere på kartlag", "");
-        item.setPositiveActionButtonText("Se abbonement");
+        SummaryViewItem item = new SummaryViewItem("Abonnement", "", "Det er mulig å abonnere på kartlag", "");
+        item.setPositiveActionButtonText("Se abonnement");
         item.setPositiveButtonOnClickListener(getSubscriptionsPositiveButtonOnClickListener());
         list.add(item);
     }
-
+*/
     private void addMapSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Kart", "", "Kart er tilgjengelig i online og offline mode", "");
+        SummaryViewItem item = new SummaryViewItem("Kart", "Kart er tilgjengelig i online og offline mode", "", "", R.drawable.ikon_kart_til_din_kartplotter);
         item.setPositiveActionButtonText("Se kart");
         item.setPositiveButtonOnClickListener(getMapPositiveButtonOnClickListener());
+        item.setNegativeActionButtonText("Last ned kart");
+        item.setNegativeActionButtonOnClickListener(getSubscriptionsPositiveButtonOnClickListener());
         list.add(item);
     }
 

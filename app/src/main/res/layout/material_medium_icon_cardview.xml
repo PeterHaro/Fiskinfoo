@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_height="wrap_content"
+    app:cardElevation="@dimen/card_view_default_elevation"
+    app:cardCornerRadius="@dimen/card_view_rounded_corners"
+    >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/colorPrimaryLight"
+        >
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/medium_card_no_rich_media_title_top_padding"
+            android:paddingLeft="@dimen/medium_card_no_rich_media_title_left_and_right_padding"
+            android:paddingRight="@dimen/medium_card_no_rich_media_title_left_and_right_padding"
+            >
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/medium_material_default_cardview_icon"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                />
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_toStartOf="@+id/medium_material_default_cardview_icon"
+                android:textSize="@dimen/medium_card_no_rich_media_title"
+                android:paddingTop="4dp"
+                android:id="@+id/material_medium_cardview_no_rich_media_title"/>
+
+            <TextView
+                android:id="@+id/material_default_cardview_no_rich_media_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/material_medium_cardview_no_rich_media_title"
+                android:layout_toStartOf="@+id/medium_material_default_cardview_icon"
+                android:paddingTop="4dp"
+                android:text="This is rather long subtitle text in an attempt to get wrapping"
+                android:textSize="@dimen/medium_card_no_rich_media_subtitle" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:id="@+id/default_cardview_underline"
+            android:layout_height="1.5dp"
+            android:background="@color/colorAccent" />
+
+        <TextView
+            android:text=" reallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDagger reallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDagger"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/medium_card_no_rich_media_content_text_size"
+            android:paddingTop="@dimen/medium_card_no_rich_media_title_tight_top_padding"
+            android:paddingLeft="@dimen/card_no_rich_media_subtext_right_and_left_padding"
+            android:paddingRight="@dimen/card_no_rich_media_subtext_right_and_left_padding"
+            android:layout_height="wrap_content"
+            android:id="@+id/material_medium_cardview_no_rich_media_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:padding="@dimen/card_action_padding"
+                android:layout_height="@dimen/material_button_height"
+                android:id="@+id/material_medium_cardview_no_rich_media_delete_button"
+                android:background="@null"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/placeholder_string" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:padding="@dimen/card_action_padding"
+                android:layout_height="@dimen/material_button_height"
+                android:id="@+id/material_medium_cardview_no_rich_media_negative_button"
+                android:background="@null"
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone"
+                android:text="@string/placeholder_string" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
