@@ -192,6 +192,7 @@ public class SummaryFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onSummaryInteraction(int menuItemID);
         void onNewTool();
+        void onUserProfileSettings();
     }
 
 
@@ -215,7 +216,7 @@ public class SummaryFragment extends Fragment {
     }
 
     private void addToolsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem(getString(R.string.summart_tools_title), getString(R.string.summary_tools_subtitle),getString(R.string.summary_tools_status_new) + unsentTools + "  " + getString(R.string.summary_tools_status_active) + activeTools + "  " + getString(R.string.summary_tools_status_archived) + archivedTools,  "", R.drawable.ic_directions_boat_black_48dp);
+        SummaryViewItem item = new SummaryViewItem(getString(R.string.summart_tools_title), getString(R.string.summary_tools_subtitle),getString(R.string.summary_tools_status_new) + " " + unsentTools + "  " + getString(R.string.summary_tools_status_active) + " " + activeTools + "  " + getString(R.string.summary_tools_status_archived) + " " + archivedTools,  "", R.drawable.ic_hook);
         item.setPositiveActionButtonText(getString(R.string.summary_button_view_tools));
         item.setPositiveButtonOnClickListener(getViewToolsOnClickListener());
         item.setNegativeActionButtonText(getString(R.string.summary_button_new_tool));
@@ -237,7 +238,7 @@ public class SummaryFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onSummaryInteraction(R.id.navigation_view_settings);
+                mListener.onUserProfileSettings();
             }
         };
     }

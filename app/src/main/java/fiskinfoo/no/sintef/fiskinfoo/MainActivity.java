@@ -59,6 +59,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.SummaryFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.UserSettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
@@ -495,5 +496,17 @@ public class MainActivity extends AppCompatActivity implements
                 .addToBackStack(getString(R.string.edit_tool_fragment_new_tool_title))
                 .commit();
     }
+
+    public void onUserProfileSettings() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        UserSettingsFragment fragment = UserSettingsFragment.newInstance(getUser().getSettings());
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_activity_fragment_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(getString(R.string.user_settings_fragment_title))
+                .commit();
+    }
+
 
 }

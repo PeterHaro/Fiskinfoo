@@ -33,7 +33,7 @@
             />
         <item
             android:id="@+id/navigation_view_tools"
-            android:icon="@drawable/kart_til_din_kartplotter"
+            android:icon="@drawable/ic_hook"
             android:title="@string/my_tools"
             />
     </group>
