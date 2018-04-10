@@ -1,13 +1,11 @@
 package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +16,9 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.ArrayList;
 import java.util.List;
 
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DefaultCardViewViewHolder;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerCardViewAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerIconCardViewAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.SummaryViewItem;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -184,8 +179,6 @@ public class SummaryFragment extends Fragment {
 
     }
 
-
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -202,8 +195,6 @@ public class SummaryFragment extends Fragment {
     }
 
 
-
-
     private List<DefaultCardViewViewHolder> getSummaryItems() {
         List<DefaultCardViewViewHolder> list = new ArrayList<>();
 
@@ -216,40 +207,33 @@ public class SummaryFragment extends Fragment {
     }
 
     private void addProfileSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Profil", "Informasjon om deg og ditt fartøy", "Din brukerprofil trenger oppdatering før redskap kan registreres!", "", R.drawable.ic_person_black_24dp);
-        item.setPositiveActionButtonText("Endre profil");
-        item.setPositiveButtonOnClickListener(getProfilePositiveButtonOnClickListener());
+        SummaryViewItem item = new SummaryViewItem(getString(R.string.summary_user_profile), getString(R.string.summary_user_profile_subtitle), getString(R.string.summary_user_profile_incomplete), "", R.drawable.ic_account_circle_black_24dp);
+        // TODO: Add check on whether profile needs update
+        item.setPositiveActionButtonText(getString(R.string.summary_button_change_profile));
+        item.setPositiveButtonOnClickListener(getChangeProfileOnClickListener());
         list.add(item);
     }
 
     private void addToolsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Redskap", "Nye: " + unsentTools + "  " + "Aktive: " + activeTools + "  " + "Arkiverte: " + archivedTools, "", "", R.drawable.ic_directions_boat_black_48dp);
-        item.setPositiveActionButtonText("Se mine redskap");
-        item.setPositiveButtonOnClickListener(getToolsPositiveButtonOnClickListener());
-        item.setNegativeActionButtonText("Nytt redskap");
-        item.setNegativeActionButtonOnClickListener(getToolsNegativeButtonOnClickListener());
+        SummaryViewItem item = new SummaryViewItem(getString(R.string.summart_tools_title), getString(R.string.summary_tools_subtitle),getString(R.string.summary_tools_status_new) + unsentTools + "  " + getString(R.string.summary_tools_status_active) + activeTools + "  " + getString(R.string.summary_tools_status_archived) + archivedTools,  "", R.drawable.ic_directions_boat_black_48dp);
+        item.setPositiveActionButtonText(getString(R.string.summary_button_view_tools));
+        item.setPositiveButtonOnClickListener(getViewToolsOnClickListener());
+        item.setNegativeActionButtonText(getString(R.string.summary_button_new_tool));
+        item.setNegativeActionButtonOnClickListener(getNewToolsOnClickListener());
         list.add(item);
     }
 
-    /*
-    private void addSubscriptionsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Abonnement", "", "Det er mulig å abonnere på kartlag", "");
-        item.setPositiveActionButtonText("Se abonnement");
-        item.setPositiveButtonOnClickListener(getSubscriptionsPositiveButtonOnClickListener());
-        list.add(item);
-    }
-*/
     private void addMapSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem("Kart", "Kart er tilgjengelig i online og offline mode", "", "", R.drawable.ikon_kart_til_din_kartplotter);
-        item.setPositiveActionButtonText("Se kart");
-        item.setPositiveButtonOnClickListener(getMapPositiveButtonOnClickListener());
-        item.setNegativeActionButtonText("Last ned kart");
-        item.setNegativeActionButtonOnClickListener(getSubscriptionsPositiveButtonOnClickListener());
+        SummaryViewItem item = new SummaryViewItem(getString(R.string.summary_map_title), getString(R.string.summary_map_subtitle), "", "", R.drawable.ic_map_black_24dp);
+        item.setPositiveActionButtonText(getString(R.string.summary_button_view_map));
+        item.setPositiveButtonOnClickListener(getViewMapOnClickListener());
+        item.setNegativeActionButtonText(getString(R.string.summary_button_download_map));
+        item.setNegativeActionButtonOnClickListener(getViewSubscriptionsOnClickListener());
         list.add(item);
     }
 
     @NonNull
-    private View.OnClickListener getProfilePositiveButtonOnClickListener() {
+    private View.OnClickListener getChangeProfileOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -259,7 +243,7 @@ public class SummaryFragment extends Fragment {
     }
 
     @NonNull
-    private View.OnClickListener getToolsPositiveButtonOnClickListener() {
+    private View.OnClickListener getViewToolsOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,7 +253,7 @@ public class SummaryFragment extends Fragment {
     }
 
     @NonNull
-    private View.OnClickListener getToolsNegativeButtonOnClickListener() {
+    private View.OnClickListener getNewToolsOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -279,7 +263,7 @@ public class SummaryFragment extends Fragment {
     }
 
     @NonNull
-    private View.OnClickListener getSubscriptionsPositiveButtonOnClickListener() {
+    private View.OnClickListener getViewSubscriptionsOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -289,7 +273,7 @@ public class SummaryFragment extends Fragment {
     }
 
     @NonNull
-    private View.OnClickListener getMapPositiveButtonOnClickListener() {
+    private View.OnClickListener getViewMapOnClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,46 +281,5 @@ public class SummaryFragment extends Fragment {
             }
         };
     }
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    //private static final String ARG_PARAM1 = "param1";
-    //private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    //private String mParam1;
-    //private String mParam2;
-
-
-    /*
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SummaryFragment.
-     *
-    // TODO: Rename and change types and number of parameters
-    public static SummaryFragment newInstance(String param1, String param2) {
-        SummaryFragment fragment = new SummaryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-*/
-/*
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-*/
-
 
 }

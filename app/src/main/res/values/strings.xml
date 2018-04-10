@@ -575,8 +575,21 @@ limitations under the License.
 
     <!-- Summary fragment -->
     <string name="summary_fragment_title">FiskInfo oversikt</string>
-
-
+    <string name="summary_user_profile">Brukerprofil</string>
+    <string name="summary_user_profile_subtitle">Informasjon om deg og ditt fartøy</string>
+    <string name="summary_user_profile_incomplete">Din profil må oppdateres før redskap kan registreres!</string>
+    <string name="summart_tools_title">Redskap</string>
+    <string name="summary_tools_subtitle">Registrering og oversikt over dine redskap</string>
+    <string name="summary_tools_status_new">Nye: </string>
+    <string name="summary_tools_status_active">Aktive: </string>
+    <string name="summary_tools_status_archived">Arkiverte: </string>
+    <string name="summary_map_title">Kart</string>
+    <string name="summary_map_subtitle">Kart er tilgjengelig i online og offline mode</string>
+    <string name="summary_button_change_profile">Endre profil</string>
+    <string name="summary_button_view_tools">Se mine redskap</string>
+    <string name="summary_button_new_tool">Nytt redskap</string>
+    <string name="summary_button_view_map">Se kart</string>
+    <string name="summary_button_download_map">Last ned kart</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
