@@ -106,7 +106,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private SpinnerRow toolRow;
     private CheckBoxRow toolRemovedRow;
     private EditTextRow commentRow;
-    private EditTextRow contactPersonNameRow;
+/*    private EditTextRow contactPersonNameRow;
     private EditTextRow contactPersonPhoneRow;
     private EditTextRow contactPersonEmailRow;
     private EditTextRow vesselNameRow;
@@ -115,6 +115,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private EditTextRow vesselMmsiNumberRow;
     private EditTextRow vesselImoNumberRow;
     private EditTextRow vesselRegistrationNumberRow;
+    */
     private ActionRow archiveRow;
     private ActionRow deleteRow;
     private ErrorRow errorRow;
@@ -273,7 +274,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type_colon), ToolType.getValues());
         toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
         commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
-        contactPersonNameRow = new EditTextRow(getContext(), getString(R.string.contact_person_name), getString(R.string.contact_person_name));
+ /*       contactPersonNameRow = new EditTextRow(getContext(), getString(R.string.contact_person_name), getString(R.string.contact_person_name));
         contactPersonPhoneRow = new EditTextRow(getContext(), getString(R.string.contact_person_phone), getString(R.string.contact_person_phone));
         contactPersonEmailRow = new EditTextRow(getContext(), getString(R.string.contact_person_email), getString(R.string.contact_person_email));
         vesselNameRow = new EditTextRow(getContext(), getString(R.string.vessel_name), getString(R.string.vessel_name));
@@ -281,7 +282,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselIrcsNumberRow = new EditTextRow(getContext(), getString(R.string.ircs_number), getString(R.string.ircs_number));
         vesselMmsiNumberRow = new EditTextRow(getContext(), getString(R.string.mmsi_number), getString(R.string.mmsi_number));
         vesselImoNumberRow = new EditTextRow(getContext(), getString(R.string.imo_number), getString(R.string.imo_number));
-        vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
+        vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));*/
         errorRow = new ErrorRow(getContext(), getString(R.string.error_minimum_identification_factors_not_met), false);
 
         // TODO: Uncomment when supported from Kystvakt side
@@ -394,7 +395,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         commentRow.setInputType(InputType.TYPE_CLASS_TEXT);
         commentRow.setHelpText(getString(R.string.comment_help_description));
-        vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
+/*        vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
         vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
         vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
         vesselIrcsNumberRow.setInputFilters(new InputFilter[]{new InputFilter.LengthFilter(getResources().getInteger(R.integer.input_length_ircs)), new InputFilter.AllCaps()});
@@ -428,7 +429,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         contactPersonEmailRow.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         contactPersonNameRow.setHelpText(getString(R.string.contact_person_name_help_description));
         contactPersonPhoneRow.setHelpText(getString(R.string.contact_person_phone_help_description));
-        contactPersonEmailRow.setHelpText(getString(R.string.contact_person_email_help_description));
+        contactPersonEmailRow.setHelpText(getString(R.string.contact_person_email_help_description));*/
         // TODO: Uncomment when supported from Kystvakt side
 //        numberOfToolsLostRow.setInputType(InputType.TYPE_CLASS_NUMBER);
 //        lostToolLengthRow.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -447,7 +448,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 //        fieldsContainer.addView(lostToolLengthRow.getView());
 //        fieldsContainer.addView(numberOfToolsLostRow.getView());
         fieldsContainer.addView(commentRow.getView());
-        fieldsContainer.addView(contactPersonNameRow.getView());
+/*        fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
         fieldsContainer.addView(contactPersonEmailRow.getView());
         fieldsContainer.addView(vesselNameRow.getView());
@@ -455,7 +456,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         fieldsContainer.addView(vesselIrcsNumberRow.getView());
         fieldsContainer.addView(vesselMmsiNumberRow.getView());
         fieldsContainer.addView(vesselImoNumberRow.getView());
-        fieldsContainer.addView(vesselRegistrationNumberRow.getView());
+        fieldsContainer.addView(vesselRegistrationNumberRow.getView());*/
         fieldsContainer.addView(errorRow.getView());
         fieldsContainer.addView(toolRemovedRow.getView(), 4);
 
@@ -641,6 +642,10 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
         toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(tool.getToolType() != null ? tool.getToolType().toString() : Tool.BUNNTRÅL.toString()));
         toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
+
+        //TODO: Add to contact summary view here
+
+        /*
         contactPersonNameRow.setText(tool.getContactPersonName());
         contactPersonPhoneRow.setText(tool.getContactPersonPhone());
         contactPersonEmailRow.setText(tool.getContactPersonEmail());
@@ -649,7 +654,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselIrcsNumberRow.setText(tool.getIRCS());
         vesselMmsiNumberRow.setText(tool.getMMSI());
         vesselImoNumberRow.setText(tool.getIMO());
-        vesselRegistrationNumberRow.setText(tool.getRegNum().replace(" ", ""));
+        vesselRegistrationNumberRow.setText(tool.getRegNum().replace(" ", ""));*/
         toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
 
         // TODO: Uncomment when supported from Kystvakt side
@@ -682,6 +687,9 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         if (settings != null) {
             ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
             toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(settings.getToolType() != null ? settings.getToolType().toString() : Tool.BUNNTRÅL.toString()));
+
+            // TODO: Add info to summary row here?
+            /*
             contactPersonNameRow.setText(settings.getContactPersonName());
             contactPersonPhoneRow.setText(settings.getContactPersonPhone());
             contactPersonEmailRow.setText(settings.getContactPersonEmail());
@@ -690,7 +698,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             vesselIrcsNumberRow.setText(settings.getIrcs());
             vesselMmsiNumberRow.setText(settings.getMmsi());
             vesselImoNumberRow.setText(settings.getImo());
-            vesselRegistrationNumberRow.setText(settings.getRegistrationNumber().replace(" ", ""));
+            vesselRegistrationNumberRow.setText(settings.getRegistrationNumber().replace(" ", ""));*/
         }
     }
 
@@ -700,18 +708,23 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         List<Point> coordinates = coordinatesRow.getCoordinates();
         final ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
-        final String vesselName = vesselNameRow.getFieldText().trim();
-        final String vesselPhoneNumber = vesselPhoneNumberRow.getFieldText().trim();
+
+        // Updated to use settings values instead of rows for information contained in user profile
+
+        UserSettings settings = userInterface.getUser().getSettings();
+
+        final String vesselName = settings.getVesselName(); //vesselNameRow.getFieldText().trim();
+        final String vesselPhoneNumber = settings.getVesselPhone(); //vesselPhoneNumberRow.getFieldText().trim();
         String toolSetupDate = setupDateRow.getDate().trim();
         String toolSetupTime = setupTimeRow.getTime().trim();
         String toolSetupDateTime = toolSetupDate + "T" + toolSetupTime + ":00.000";
         String commentString = commentRow.getFieldText().trim();
-        final String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
-        final String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
-        final String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
-        final String contactPersonName = contactPersonNameRow.getFieldText().trim();
-        final String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
-        final String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        final String vesselIrcsNumber = settings.getIrcs(); // vesselIrcsNumberRow.getFieldText().trim();
+        final String vesselMmsiNumber = settings.getMmsi(); // vesselMmsiNumberRow.getFieldText().trim();
+        final String vesselImoNumber = settings.getImo(); // vesselImoNumberRow.getFieldText().trim();
+        final String contactPersonName = settings.getContactPersonName(); // contactPersonNameRow.getFieldText().trim();
+        final String contactPersonPhone = settings.getContactPersonPhone(); // contactPersonPhoneRow.getFieldText().trim();
+        final String contactPersonEmail = settings.getContactPersonEmail(); // contactPersonEmailRow.getFieldText().trim();
         // TODO: Uncomment when supported from Kystvakt side
 //        String toolLostReason = toolLostCauseRow.getCurrentSpinnerItem();
 //        String toolLostWeather = toolLostConditionsRow.getCurrentSpinnerItem();
@@ -725,7 +738,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             return;
         }
 
-        final String registrationNumber = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) ? FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) : "";
+        //        final String registrationNumber = FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) ? FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) : "";
+        final String registrationNumber = settings.getRegistrationNumber(); //FiskInfoUtility.validateRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) ? FiskInfoUtility.formatRegistrationNumber(vesselRegistrationNumberRow.getFieldText().trim()) : "";
 
         if(tool == null) {
             ToolEntry toolEntry = new ToolEntry(coordinates, vesselName, vesselPhoneNumber, contactPersonEmail,
@@ -939,7 +953,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
      *      - Tool values and settings values are equal or settings values are non-empty and their tool value counterparts are empty
      */
     private boolean compareSettingsValues() {
-        UserSettings settings = userInterface.getUser().getSettings();
+/*        UserSettings settings = userInterface.getUser().getSettings();
         ToolType toolType = ToolType.createFromValue(toolRow.getCurrentSpinnerItem());
         String vesselName = vesselNameRow.getFieldText().trim();
         String vesselPhone = vesselPhoneNumberRow.getFieldText().trim();
@@ -1008,20 +1022,20 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 //
 //
 //        );
-
+*/
         return true;
     }
 
     private boolean validateFields() {
         List<Point> coordinates = coordinatesRow.getCoordinates();
-        String vesselName = vesselNameRow.getFieldText().trim();
+ /*       String vesselName = vesselNameRow.getFieldText().trim();
         String vesselIrcsNumber = vesselIrcsNumberRow.getFieldText().trim();
         String vesselMmsiNumber = vesselMmsiNumberRow.getFieldText().trim();
         String vesselImoNumber = vesselImoNumberRow.getFieldText().trim();
         String registrationNumber = vesselRegistrationNumberRow.getFieldText().trim();
         String contactPersonName = contactPersonNameRow.getFieldText().trim();
         String contactPersonPhone = contactPersonPhoneRow.getFieldText().trim();
-        String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();
+        String contactPersonEmail = contactPersonEmailRow.getFieldText().trim();*/
         // TODO: Uncomment when supported from Kystvakt side
 //        boolean toolLost = toolLostRow.isChecked();
         boolean toolRemoved = toolRemovedRow.isChecked();
@@ -1097,7 +1111,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 //                return false;
 //            }
 //        }
-
+/*
         validated = FiskInfoUtility.validateName(contactPersonName);
         contactPersonNameRow.setError(validated ? null : getString(R.string.error_invalid_name));
         if(!validated) {
@@ -1178,7 +1192,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
             return false;
         }
-
+*/
         return true;
     }
 
@@ -1189,7 +1203,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRow.setEnabled(enabled);
         toolRemovedRow.setEnabled(enabled);
         commentRow.setEnabled(enabled);
-        contactPersonNameRow.setEnabled(enabled);
+/*        contactPersonNameRow.setEnabled(enabled);
         contactPersonPhoneRow.setEnabled(enabled);
         contactPersonEmailRow.setEnabled(enabled);
         vesselNameRow.setEnabled(enabled);
@@ -1197,7 +1211,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         vesselIrcsNumberRow.setEnabled(enabled);
         vesselMmsiNumberRow.setEnabled(enabled);
         vesselImoNumberRow.setEnabled(enabled);
-        vesselRegistrationNumberRow.setEnabled(enabled);
+        vesselRegistrationNumberRow.setEnabled(enabled);*/
         archiveRow.setEnabled(enabled);
         errorRow.setEnabled(enabled);
         // TODO: Uncomment when supported from Kystvakt side

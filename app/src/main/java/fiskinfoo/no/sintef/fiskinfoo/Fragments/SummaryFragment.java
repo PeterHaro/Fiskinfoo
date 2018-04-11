@@ -18,9 +18,9 @@ import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.DefaultCardViewViewHolder;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.DefaultCardViewViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerIconCardViewAdapter;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.SummaryViewItem;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SummaryViewItem;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
@@ -167,7 +167,7 @@ public class SummaryFragment extends Fragment {
         String title = getResources().getString(R.string.summary_fragment_title);
         activity.refreshTitle(title);
 
-        final MediumRecyclerIconCardViewAdapter adapter = new MediumRecyclerIconCardViewAdapter(getSummaryItems(), false);
+        final MediumRecyclerIconCardViewAdapter adapter = new MediumRecyclerIconCardViewAdapter(getSummaryItems());
         adapter.setOnItemClickListener(new MediumRecyclerIconCardViewAdapter
                 .MyClickListener() {
             @Override

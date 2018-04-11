@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.DefaultCardViewViewHolder;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 public class MediumRecyclerIconCardViewAdapter extends RecyclerView.Adapter<MediumRecyclerIconCardViewAdapter.DataObjectHolder> {
     private static String LOG_TAG = "SmallRecycleCard";
-    private boolean isColorful = false;
     private List<DefaultCardViewViewHolder> cardViewEntries;
     private static MyClickListener myClickListener;
 
@@ -54,19 +54,14 @@ public class MediumRecyclerIconCardViewAdapter extends RecyclerView.Adapter<Medi
         this.myClickListener = myClickListener;
     }
 
-    public MediumRecyclerIconCardViewAdapter(List<DefaultCardViewViewHolder> myDataset, boolean isColorful) {
+    public MediumRecyclerIconCardViewAdapter(List<DefaultCardViewViewHolder> myDataset) {
         cardViewEntries = myDataset;
-        this.isColorful = isColorful;
     }
 
     @Override
     public DataObjectHolder onCreateViewHolder(ViewGroup parent,
                                                int viewType) {
-        if(isColorful) {
-            return new DataObjectHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.material_cardview_medium_color, parent, false));
-        } else {
-            return new DataObjectHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.material_medium_icon_cardview, parent, false));
-        }
+        return new DataObjectHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.material_medium_icon_cardview, parent, false));
     }
 
     @Override

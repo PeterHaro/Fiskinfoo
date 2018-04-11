@@ -1,4 +1,4 @@
-package fiskinfoo.no.sintef.fiskinfoo.Implementation;
+package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 
 import android.view.View;

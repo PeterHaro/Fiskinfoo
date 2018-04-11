@@ -585,8 +585,8 @@ limitations under the License.
     <string name="summary_tools_status_archived">Arkiverte: </string>
     <string name="summary_map_title">Kart</string>
     <string name="summary_map_subtitle">Kart er tilgjengelig i online og offline mode</string>
-    <string name="summary_button_change_profile">Endre profil</string>
-    <string name="summary_button_view_tools">Se mine redskap</string>
+    <string name="summary_button_change_profile">Se profil</string>
+    <string name="summary_button_view_tools">Se redskap</string>
     <string name="summary_button_new_tool">Nytt redskap</string>
     <string name="summary_button_view_map">Se kart</string>
     <string name="summary_button_download_map">Last ned kart</string>
