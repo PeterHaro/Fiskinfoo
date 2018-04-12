@@ -117,7 +117,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Implementation.GeometryType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityDialogs;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -194,7 +193,6 @@ public class MapFragment extends Fragment {
     private User user;
     private FiskInfoUtility fiskInfoUtility;
     private UtilityDialogs dialogInterface;
-    private UtilityOnClickListeners onClickListenerInterface;
     private ScheduledFuture proximityAlertWatcher;
     private GpsLocationTracker mGpsLocationTracker;
     private UserInterface userInterface;
@@ -451,7 +449,6 @@ public class MapFragment extends Fragment {
         fiskInfoUtility = new FiskInfoUtility();
         barentswatchApi = new BarentswatchApi();
         dialogInterface = new UtilityDialogs();
-        onClickListenerInterface = new UtilityOnClickListeners();
         configureWebParametersAndLoadDefaultMapApplication();
     }
 

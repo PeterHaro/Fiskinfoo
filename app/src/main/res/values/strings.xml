@@ -550,7 +550,7 @@ limitations under the License.
     <string name="tool_type_unknown">Ukjent redskap</string>
 
     <!-- Subscription details fragment -->
-    <string name="subscription_details_fragment_title">Kart</string>
+    <string name="subscription_details_fragment_title">Informasjon om kartlag</string>
 
     <string-array name="tool_lost_causes">
         <item>Slitt</item>

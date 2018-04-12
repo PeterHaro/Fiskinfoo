@@ -17,7 +17,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.AvailableSubscriptionItem;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
@@ -64,7 +63,7 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
     public interface DownloadSelectionListener {
         void onTitleClicked(AvailableSubscriptionItem item);
         void onDownloadButton(AvailableSubscriptionItem item);
-        void onSubscribed(CheckBox checkBox, AvailableSubscriptionItem item);
+        void onSubscribeClicked(CheckBox checkBox, AvailableSubscriptionItem item);
         void onErrorNotificationClicked(AvailableSubscriptionItem item);
     }
 
@@ -131,7 +130,7 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
         holder.subscribedCheckBox.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            mListener.onSubscribed((CheckBox)v, entry);
+                                                            mListener.onSubscribeClicked((CheckBox)v, entry);
                                                         }
                                                     });
 

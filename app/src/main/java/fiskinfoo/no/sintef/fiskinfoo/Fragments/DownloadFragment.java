@@ -44,9 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.AvailableSubscriptionItem;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ExpandableListParentObject;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
-import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionExpandableListChildObject;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
@@ -56,13 +54,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscri
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DownloadDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DownloadListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.MyPageExpandableListAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
-import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ExpandCollapseListener;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
 public class DownloadFragment extends Fragment implements DownloadListAdapter.DownloadSelectionListener {
@@ -72,9 +67,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     private DownloadListAdapter myPageExpandableListAdapter;
     private RecyclerView mCRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private UtilityOnClickListeners onClickListenerInterface;
     private FiskInfoUtility fiskInfoUtility;
-   // private ExpandCollapseListener expandCollapseListener;
     private UserInterface userInterface;
     private FragmentActivity listener;
     private User user;
@@ -126,7 +119,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         FiskInfo application = (FiskInfo) getActivity().getApplication();
         tracker = application.getDefaultTracker();
 
-        onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
         user = userInterface.getUser();
         setHasOptionsMenu(true);
@@ -222,7 +214,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         }
 
         if(mCRecyclerView != null && mCRecyclerView.getAdapter() != null) {
-            ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
+            //TODO: Fix on save instance ((MyPageExpandableListAdapter) mCRecyclerView.getAdapter()).onSaveInstanceState(outState);
             Parcelable layoutState = mCRecyclerView.getLayoutManager().onSaveInstanceState();
             if(outState != null) {
                 outState.putParcelable("recycleLayout", layoutState);
@@ -255,7 +247,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
             SparseBooleanArray authMap = new SparseBooleanArray();
             Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
-            ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
 
             for(Authorization auth : authorizations) {
                 authMap.put(auth.Id, auth.HasAccess);
@@ -290,23 +281,9 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
                 boolean isAuthed = authMap.get(propertyDescription.Id);
-
-                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
-
-                availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
-
                 AvailableSubscriptionItem currentItem = setupAvailableSubscriptionItem(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
                 availableSubscriptionItemList.add(currentItem);
             }
-
-            ExpandableListParentObject propertyDescriptionParent = new ExpandableListParentObject();
-
-            propertyDescriptionParent.setChildObjectList(availableSubscriptionObjectsList);
-            propertyDescriptionParent.setParentNumber(1);
-            propertyDescriptionParent.setParentText(getString(R.string.my_page_all_available_subscriptions));
-            propertyDescriptionParent.setResourcePathToImageResource(R.drawable.ikon_kart_til_din_kartplotter);
-
-            parentObjectList.add(propertyDescriptionParent);
 
         } catch (Exception e) {
             Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
@@ -318,12 +295,10 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     public ArrayList<AvailableSubscriptionItem> fetchMyPageCached() {
         ArrayList<AvailableSubscriptionItem> availableSubscriptionItemList = new ArrayList<>();
-        ArrayList<ParentObject> parentObjectList = new ArrayList<>();
         try {
             Collection<SubscriptionEntry> subscriptionEntries = user.getSubscriptionCacheEntries();
 
             Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
-            ArrayList<Object> availableSubscriptionObjectsList = new ArrayList<>();
             List<PropertyDescription> availableSubscriptions = new ArrayList<>();
             SparseBooleanArray authMap = new SparseBooleanArray();
 
@@ -337,20 +312,9 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
             for (final PropertyDescription propertyDescription : availableSubscriptions) {
                 boolean isAuthed = authMap.get(propertyDescription.Id);
-                SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = setupAvailableSubscriptionChildView(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
                 AvailableSubscriptionItem currentItem = setupAvailableSubscriptionItem(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
                 availableSubscriptionItemList.add(currentItem);
-                availableSubscriptionObjectsList.add(currentPropertyDescriptionChildObject);
             }
-
-            ExpandableListParentObject propertyDescriptionParent = new ExpandableListParentObject();
-
-            propertyDescriptionParent.setChildObjectList(availableSubscriptionObjectsList);
-            propertyDescriptionParent.setParentNumber(1);
-            propertyDescriptionParent.setParentText(getString(R.string.my_page_all_available_subscriptions));
-            propertyDescriptionParent.setResourcePathToImageResource(R.drawable.ikon_kart_til_din_kartplotter);
-
-            parentObjectList.add(propertyDescriptionParent);
 
         } catch (Exception e) {
             Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
@@ -358,42 +322,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
         //return parentObjectList;
         return availableSubscriptionItemList;
-    }
-
-    private SubscriptionExpandableListChildObject setupAvailableSubscriptionChildView(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
-        final SubscriptionExpandableListChildObject currentPropertyDescriptionChildObject = new SubscriptionExpandableListChildObject();
-
-        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
-                null);
-
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG, tracker, SCREEN_NAME) :
-                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user)));
-
-        if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
-            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
-            currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
-        }
-
-        // Need this check because not being authorized for the tools layer does not prevent subscribing or downloading, only the level of details available.
-        if(!canSubscribe && subscription.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
-            subscription.ErrorType = ApiErrorType.WARNING.toString();
-            subscription.ErrorText = getString(R.string.fishing_facility_limited_details);
-            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, subscription.ErrorText);
-            currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
-        }
-
-        String tmpUpdatedTime = subscription.LastUpdated == null ? (subscription.Created == null ? getString(R.string.abbreviation_na) : subscription.Created) : subscription.LastUpdated;
-
-        currentPropertyDescriptionChildObject.setTitleText(subscription.Name);
-        currentPropertyDescriptionChildObject.setLastUpdatedText(tmpUpdatedTime.replace("T", "\n"));
-        currentPropertyDescriptionChildObject.setIsSubscribed(activeSubscription != null);
-        currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
-        currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
-        currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
-
-        currentPropertyDescriptionChildObject.setErrorType(ApiErrorType.getType(subscription.ErrorType));
-
-        return currentPropertyDescriptionChildObject;
     }
 
     private AvailableSubscriptionItem setupAvailableSubscriptionItem(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
@@ -442,7 +370,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     }
 
     @Override
-    public void onSubscribed(CheckBox checkBox, AvailableSubscriptionItem item) {
+    public void onSubscribeClicked(CheckBox checkBox, AvailableSubscriptionItem item) {
         if (item.isAuthorized() || item.getPropertyDescription().ApiName.equals(getString(R.string.fishing_facility_api_name))) {
             DownloadDialogs.doSubscriptionCheckBoxAction(checkBox, getContext(), item.getPropertyDescription(), item.getSubscription(), user);
         }

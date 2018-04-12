@@ -53,8 +53,8 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.SubscriptionInterval;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.DownloadDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.UtilityOnClickListeners;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.UserInterface;
 import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -70,7 +70,6 @@ public class SubscriptionDetailsFragment extends Fragment {
     private Subscription subscription = null;
     private String warning = null;
     private PropertyDescription propertyDescription = null;
-    private UtilityOnClickListeners utilityOnClickListeners;
     List<Integer> takenIds;
 
     private Tracker tracker;
@@ -122,7 +121,6 @@ public class SubscriptionDetailsFragment extends Fragment {
                 Log.d(TAG, "INVALID type of object sent to cardview");
         }
 
-        utilityOnClickListeners = new UtilityOnClickListeners();
         setHasOptionsMenu(true);
     }
 
@@ -307,7 +305,16 @@ public class SubscriptionDetailsFragment extends Fragment {
 
             bottomButtonContainer.addView(showOnMapButton);
 
-            downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG, tracker, SCREEN_NAME));
+
+            downloadMapImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DownloadDialogs.showSubscriptionDownloadDialog(getContext(), getActivity(), propertyDescription, user, TAG, tracker, SCREEN_NAME);
+                }
+            });
+
+
+            //downloadMapImageView.setOnClickListener(utilityOnClickListeners.getSubscriptionDownloadButtonOnClickListener(getActivity(), propertyDescription, user, TAG, tracker, SCREEN_NAME));
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 downloadMapImageView.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.material_icon_black_active_tint_color));
