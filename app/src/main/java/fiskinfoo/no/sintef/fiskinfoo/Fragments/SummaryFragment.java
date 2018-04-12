@@ -80,19 +80,19 @@ public class SummaryFragment extends Fragment {
         for (ArrayList<ToolEntry> entryList : tools) {
             for (ToolEntry tool : entryList) {
                 switch (tool.getToolStatus()) {
-                    case STATUS_UNSENT:
+                    case STATUS_UNREPORTED:
                         unsentTools++;
                         break;
-                    case STATUS_RECEIVED:
-                    case STATUS_UNREPORTED:
+                    case STATUS_UNSENT:
                     case STATUS_SENT_UNCONFIRMED:
-                    case STATUS_TOOL_LOST_UNSENT:
+                    case STATUS_RECEIVED:
+                    case STATUS_TOOL_LOST_UNREPORTED:
                         activeTools++;
                         break;
+                    case STATUS_TOOL_LOST_UNSENT:
                     case STATUS_REMOVED:
                     case STATUS_REMOVED_UNCONFIRMED:
                     case STATUS_TOOL_LOST_CONFIRMED:
-                    case STATUS_TOOL_LOST_UNREPORTED:
                     case STATUS_TOOL_LOST_UNCONFIRMED:
                         archivedTools++;
                         break;
@@ -121,6 +121,7 @@ public class SummaryFragment extends Fragment {
         mRecyclerView = (RecyclerView) v.findViewById(R.id.summary_recycler_view);
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        setHasOptionsMenu(false);
 
         return v;
     }
@@ -164,6 +165,7 @@ public class SummaryFragment extends Fragment {
             tracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
 
+        getActivity().invalidateOptionsMenu();
         MainActivity activity = (MainActivity) getActivity();
         String title = getResources().getString(R.string.summary_fragment_title);
         activity.refreshTitle(title);

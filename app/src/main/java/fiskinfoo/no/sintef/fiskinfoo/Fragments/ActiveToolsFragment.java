@@ -142,10 +142,14 @@ public class ActiveToolsFragment extends Fragment {
         if (!mGpsLocationTracker.canGetLocation()) {
             mGpsLocationTracker.showSettingsAlert();
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_tool_registration, menu);
+
+        /*
         MenuItem menuItem = menu.findItem(R.id.send_tool_report);
 
         if(menuItem == null) {
@@ -153,6 +157,28 @@ public class ActiveToolsFragment extends Fragment {
         } else if(!menuItem.isVisible()){
             menuItem.setVisible(true);
             getActivity().invalidateOptionsMenu();
+        }*/
+    }
+
+    private boolean canSendReportOption = false;
+
+    private void setCanSendReportOption(boolean canSendReportOption) {
+        this.canSendReportOption = canSendReportOption;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    private boolean canShowSendReportOption() {
+        return canSendReportOption;
+    }
+
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem menuItem = menu.findItem(R.id.send_tool_report);
+        if(menuItem != null) {
+            menuItem.setVisible(canShowSendReportOption());
+            //getActivity().invalidateOptionsMenu();
         }
     }
 
@@ -742,7 +768,8 @@ public class ActiveToolsFragment extends Fragment {
                         }
 
                         if(toolContainer.getChildCount() == 0) {
-                            setHasOptionsMenu(false);
+                            //setHasOptionsMenu(false);
+                            setCanSendReportOption(false);
                         }
 
                         user.writeToSharedPref(v.getContext());
@@ -826,7 +853,8 @@ public class ActiveToolsFragment extends Fragment {
                 }
             }
 
-            setHasOptionsMenu(localChanges);
+            //setHasOptionsMenu(localChanges);
+            setCanSendReportOption(localChanges);
         }
 
         @Override
