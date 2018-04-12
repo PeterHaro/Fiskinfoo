@@ -19,6 +19,7 @@ import java.util.List;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.DefaultCardViewViewHolder;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.MediumRecyclerIconCardViewAdapter;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SummaryViewItem;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -208,20 +209,24 @@ public class SummaryFragment extends Fragment {
     }
 
     private void addProfileSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem(getString(R.string.summary_user_profile), getString(R.string.summary_user_profile_subtitle), getString(R.string.summary_user_profile_incomplete), "", R.drawable.ic_account_circle_black_24dp);
-        // TODO: Add check on whether profile needs update
-        item.setPositiveActionButtonText(getString(R.string.summary_button_change_profile));
-        item.setPositiveButtonOnClickListener(getChangeProfileOnClickListener());
-        list.add(item);
+        if (user.getIsFishingFacilityAuthenticated() && (!FiskInfoUtility.validateUserSettings(user.getSettings()))) {
+            SummaryViewItem item = new SummaryViewItem(getString(R.string.summary_user_profile), getString(R.string.summary_user_profile_subtitle), getString(R.string.summary_user_profile_incomplete), "", R.drawable.ic_account_circle_black_24dp);
+            item.setPositiveActionButtonText(getString(R.string.summary_button_change_profile));
+            item.setPositiveButtonOnClickListener(getChangeProfileOnClickListener());
+            list.add(item);
+        }
     }
 
     private void addToolsSummary(List<DefaultCardViewViewHolder> list) {
-        SummaryViewItem item = new SummaryViewItem(getString(R.string.summart_tools_title), getString(R.string.summary_tools_subtitle),getString(R.string.summary_tools_status_new) + " " + unsentTools + "  " + getString(R.string.summary_tools_status_active) + " " + activeTools + "  " + getString(R.string.summary_tools_status_archived) + " " + archivedTools,  "", R.drawable.ic_hook);
-        item.setPositiveActionButtonText(getString(R.string.summary_button_view_tools));
-        item.setPositiveButtonOnClickListener(getViewToolsOnClickListener());
-        item.setNegativeActionButtonText(getString(R.string.summary_button_new_tool));
-        item.setNegativeActionButtonOnClickListener(getNewToolsOnClickListener());
-        list.add(item);
+        // Only show tools if the user is authenticated for fishing facility
+        if (user.getIsFishingFacilityAuthenticated()) {
+            SummaryViewItem item = new SummaryViewItem(getString(R.string.summart_tools_title), getString(R.string.summary_tools_subtitle), getString(R.string.summary_tools_status_new) + " " + unsentTools + "  " + getString(R.string.summary_tools_status_active) + " " + activeTools + "  " + getString(R.string.summary_tools_status_archived) + " " + archivedTools, "", R.drawable.ic_hook);
+            item.setPositiveActionButtonText(getString(R.string.summary_button_view_tools));
+            item.setPositiveButtonOnClickListener(getViewToolsOnClickListener());
+            item.setNegativeActionButtonText(getString(R.string.summary_button_new_tool));
+            item.setNegativeActionButtonOnClickListener(getNewToolsOnClickListener());
+            list.add(item);
+        }
     }
 
     private void addMapSummary(List<DefaultCardViewViewHolder> list) {

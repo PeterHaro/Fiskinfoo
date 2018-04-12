@@ -721,6 +721,25 @@ public class FiskInfoUtility {
         return regnum != null && regnum.matches("^[a-zA-Z]{1,2}\\d{1,4}[a-zA-Z]{1,2}$");
     }
 
+
+    /**
+     * Validates required fields of the user settings
+     * @param userSettings
+     * @return true if all required settings are valid, false otherwise
+     */
+    public static boolean validateUserSettings(UserSettings userSettings) {
+        return  (userSettings != null) &&
+                validateIMO(userSettings.getImo()) &&
+                        validateIRCS(userSettings.getIrcs()) &&
+                        validateMMSI(userSettings.getMmsi()) &&
+                        validateName(userSettings.getContactPersonName()) &&
+                        validatePhoneNumber(userSettings.getContactPersonPhone()) &&
+                        isEmailValid(userSettings.getContactPersonEmail()) &&
+                        validateRegistrationNumber(userSettings.getRegistrationNumber());
+    }
+
+
+
     public static boolean isValidCountyCode(String countyCode) {
         return countyCode != null && countyCode.matches("^[a-zA-Z]{1,2}$");
     }
