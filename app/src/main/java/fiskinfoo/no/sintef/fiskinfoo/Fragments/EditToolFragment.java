@@ -106,6 +106,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private SpinnerRow toolRow;
     private CheckBoxRow toolRemovedRow;
     private EditTextRow commentRow;
+    private EditTextRow profileSummaryRow;
 /*    private EditTextRow contactPersonNameRow;
     private EditTextRow contactPersonPhoneRow;
     private EditTextRow contactPersonEmailRow;
@@ -274,6 +275,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type_colon), ToolType.getValues());
         toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
         commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
+        profileSummaryRow = new EditTextRow(getContext(), "Profil", "Profil info");
+
  /*       contactPersonNameRow = new EditTextRow(getContext(), getString(R.string.contact_person_name), getString(R.string.contact_person_name));
         contactPersonPhoneRow = new EditTextRow(getContext(), getString(R.string.contact_person_phone), getString(R.string.contact_person_phone));
         contactPersonEmailRow = new EditTextRow(getContext(), getString(R.string.contact_person_email), getString(R.string.contact_person_email));
@@ -395,6 +398,12 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         commentRow.setInputType(InputType.TYPE_CLASS_TEXT);
         commentRow.setHelpText(getString(R.string.comment_help_description));
+
+        //profileSummaryRow.setEnabled(false);
+        profileSummaryRow.setSingleLine(false);
+        profileSummaryRow.setInputType(InputType.TYPE_NULL);
+        profileSummaryRow.setHelpText("Informasjon om deg ditt fartøy er hentet fra brukerprofilen din og endres fra denne");
+
 /*        vesselNameRow.setInputType(InputType.TYPE_CLASS_TEXT);
         vesselPhoneNumberRow.setInputType(InputType.TYPE_CLASS_PHONE);
         vesselIrcsNumberRow.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -448,6 +457,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 //        fieldsContainer.addView(lostToolLengthRow.getView());
 //        fieldsContainer.addView(numberOfToolsLostRow.getView());
         fieldsContainer.addView(commentRow.getView());
+        fieldsContainer.addView(profileSummaryRow.getView());
 /*        fieldsContainer.addView(contactPersonNameRow.getView());
         fieldsContainer.addView(contactPersonPhoneRow.getView());
         fieldsContainer.addView(contactPersonEmailRow.getView());
@@ -643,6 +653,18 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(tool.getToolType() != null ? tool.getToolType().toString() : Tool.BUNNTRÅL.toString()));
         toolRemovedRow.setChecked(!tool.getRemovedTime().isEmpty());
 
+        commentRow.setText(tool.getComment());
+
+        // TODO: Check if vessel email should be used
+        profileSummaryRow.setSingleLine(false);
+        profileSummaryRow.setText(
+                tool.getContactPersonName() + ", " + tool.getContactPersonPhone() + ", " + tool.getContactPersonEmail() + "\n" +
+                        tool.getVesselName() + ", " + tool.getVesselPhone() + ", " + "\n" + //+ tool.getVesselEmail() + "\n" +
+                        tool.getIRCS() + ", " + tool.getMMSI() + ", " + tool.getIMO() + "\n" +
+                        tool.getRegNum()
+
+        );
+
         //TODO: Add to contact summary view here
 
         /*
@@ -688,7 +710,16 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
             ArrayAdapter<String> currentAdapter = toolRow.getAdapter();
             toolRow.setSelectedSpinnerItem(currentAdapter.getPosition(settings.getToolType() != null ? settings.getToolType().toString() : Tool.BUNNTRÅL.toString()));
 
-            // TODO: Add info to summary row here?
+
+            profileSummaryRow.setSingleLine(false);
+            profileSummaryRow.setText(
+                    settings.getContactPersonName() + ", " + settings.getContactPersonPhone() + ", " + settings.getContactPersonEmail() + "\n" +
+                            settings.getVesselName() + ", " + settings.getVesselPhone() + "\n" +
+                            settings.getIrcs() + ", " + settings.getMmsi() + ", " + settings.getImo() + "\n" +
+                            settings.getRegistrationNumber()
+
+            );
+
             /*
             contactPersonNameRow.setText(settings.getContactPersonName());
             contactPersonPhoneRow.setText(settings.getContactPersonPhone());
@@ -1203,6 +1234,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolRow.setEnabled(enabled);
         toolRemovedRow.setEnabled(enabled);
         commentRow.setEnabled(enabled);
+        //profileSummaryRow.setEnabled(false);
 /*        contactPersonNameRow.setEnabled(enabled);
         contactPersonPhoneRow.setEnabled(enabled);
         contactPersonEmailRow.setEnabled(enabled);

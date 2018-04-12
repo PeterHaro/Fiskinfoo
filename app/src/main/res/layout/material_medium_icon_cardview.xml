@@ -35,7 +35,7 @@
                 android:id="@+id/medium_material_default_cardview_icon"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:tint="@color/colorPrimaryDark"
+                android:tint="@color/colorBarentsDarkBlue"
                 />
 
             <TextView
@@ -45,6 +45,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_toStartOf="@+id/medium_material_default_cardview_icon"
                 android:textSize="@dimen/medium_card_no_rich_media_title"
+                android:textColor="@color/colorBarentsDarkBlue"
                 android:id="@+id/material_medium_cardview_no_rich_media_title"/>
 
             <TextView
@@ -55,6 +56,7 @@
                 android:layout_below="@id/material_medium_cardview_no_rich_media_title"
                 android:layout_toStartOf="@+id/medium_material_default_cardview_icon"
                 android:paddingTop="2dp"
+                android:textColor="@color/colorBarentsDarkBlue"
                 android:text="This is rather long subtitle text in an attempt to get wrapping"
                 android:textSize="@dimen/medium_card_no_rich_media_subtitle" />
 
@@ -64,7 +66,8 @@
             android:layout_width="fill_parent"
             android:id="@+id/default_cardview_underline"
             android:layout_height="1.5dp"
-            android:background="@color/colorAccent" />
+            android:layout_marginTop="4dp"
+            android:background="@color/colorBarentsLightBlue" />
 
         <TextView
             android:text=" reallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDagger reallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDaggerreallylongyoloswaggerTextMcDagger"
@@ -74,6 +77,7 @@
             android:paddingLeft="@dimen/card_no_rich_media_subtext_right_and_left_padding"
             android:paddingRight="@dimen/card_no_rich_media_subtext_right_and_left_padding"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorBarentsDarkBlue"
             android:id="@+id/material_medium_cardview_no_rich_media_content" />
 
         <LinearLayout
@@ -86,7 +90,7 @@
                 android:layout_height="@dimen/material_button_height"
                 android:id="@+id/material_medium_cardview_no_rich_media_delete_button"
                 android:background="@null"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorBarentsBlueGreen"
                 android:text="@string/placeholder_string" />
 
             <Button
@@ -95,7 +99,7 @@
                 android:layout_height="@dimen/material_button_height"
                 android:id="@+id/material_medium_cardview_no_rich_media_negative_button"
                 android:background="@null"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorBarentsBlueGreen"
                 android:visibility="gone"
                 android:text="@string/placeholder_string" />
         </LinearLayout>

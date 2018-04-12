@@ -35,8 +35,9 @@ limitations under the License.
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/toolbar_blue"
+            android:background="@color/colorBarentsDarkBlue"
             android:minHeight="?attr/actionBarSize"
+            app:theme="@style/ToolBarStyle"
             />
 
         <TextView

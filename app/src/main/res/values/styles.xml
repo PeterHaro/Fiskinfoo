@@ -24,6 +24,20 @@ limitations under the License.
         <item name="android:textSize">30sp</item>
     </style>
 
+
+    <!-- ToolBar -->
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <!--
+        <item name="actionOverflowButtonStyle">@style/ActionButtonOverflowStyle</item>
+        <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowStyle</item>
+        -->
+    </style>
+
+
+
     <!-- Colours -->
     <color name="border_black">#000000</color>
     <color name="text_white">#FFFFFF</color>
@@ -76,8 +90,8 @@ limitations under the License.
         <item>#1900E5FF</item>
     </array>
 
-    <color name="colorPrimary">#FF03A9F4</color>
-    <color name="colorPrimaryDark">#ff0171c9</color>
+    <color name="colorPrimary">#FF03A9F4</color> <!-- #FF03A9F4 -->
+    <color name="colorPrimaryDark">@color/colorBarentsDarkBlue</color><!-- #ff0171c9 -->
     <color name="colorAccent">#FF00E5FF</color>
     <color name="colorControlNormal">#FF78909C</color>
     <color name="colorControlActivated">#FF03A9F4</color>
@@ -91,5 +105,14 @@ limitations under the License.
     <color name="colorControlActivatedHalf">#9003A9F4</color>
     <color name="colorAccentQuarter">#3300E5FF</color>
     <color name="colorAccentHalf">#9000E5FF</color>
+
+    <!-- Barentswatch colour palette -->
+    <color name="colorBarentsDarkBlue">#FF085382</color>
+    <color name="colorBarentsLightBlue">#FF76C2D2</color>
+    <color name="colorBarentsBlueGreen">#FF0C9E9E</color>
+    <color name="colorBarentsOrange">#FFF05A28</color>
+    <color name="colorBarentsDarkGray">#FF4C4C4E</color>
+
+
 
 </resources>

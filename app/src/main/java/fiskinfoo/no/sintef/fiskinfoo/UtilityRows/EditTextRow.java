@@ -121,4 +121,6 @@ public class EditTextRow extends BaseTableRow  {
     public void setEnabled(boolean enabled) {
         editText.setEnabled(enabled);
     }
+
+    public void setSingleLine(boolean singleLine) { editText.setSingleLine(false);}
 }
