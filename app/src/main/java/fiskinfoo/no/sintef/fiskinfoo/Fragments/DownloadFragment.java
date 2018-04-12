@@ -70,7 +70,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     private static final String SCREEN_NAME = "MyPage";
 
     private DownloadListAdapter myPageExpandableListAdapter;
-    private ExpandableListAdapterChildOnClickListener childOnClickListener;
     private RecyclerView mCRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UtilityOnClickListeners onClickListenerInterface;
@@ -127,7 +126,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         FiskInfo application = (FiskInfo) getActivity().getApplication();
         tracker = application.getDefaultTracker();
 
-        childOnClickListener = new ExpandableListAdapterChildOnClickListener();
         onClickListenerInterface = new UtilityOnClickListeners();
         fiskInfoUtility = new FiskInfoUtility();
         user = userInterface.getUser();
@@ -310,7 +308,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
             parentObjectList.add(propertyDescriptionParent);
 
-            childOnClickListener.setPropertyDescriptions(availableSubscriptions);
         } catch (Exception e) {
             Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
         }
@@ -355,7 +352,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
             parentObjectList.add(propertyDescriptionParent);
 
-            childOnClickListener.setPropertyDescriptions(availableSubscriptions);
         } catch (Exception e) {
             Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
         }
@@ -402,23 +398,10 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     private AvailableSubscriptionItem setupAvailableSubscriptionItem(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
 
-//        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
-//                null);
-
-//        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG, tracker, SCREEN_NAME) :
-//                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user)));
-
-        if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
-            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
-            //ES currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
-        }
-
         // Need this check because not being authorized for the tools layer does not prevent subscribing or downloading, only the level of details available.
         if(!canSubscribe && subscription.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
             subscription.ErrorType = ApiErrorType.WARNING.toString();
             subscription.ErrorText = getString(R.string.fishing_facility_limited_details);
-            View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, subscription.ErrorText);
-            //ES currentPropertyDescriptionChildObject.setErrorNotificationOnClickListener(errorNotificationOnClickListener);
         }
 
         String tmpUpdatedTime = subscription.LastUpdated == null ? (subscription.Created == null ? getString(R.string.abbreviation_na) : subscription.Created) : subscription.LastUpdated;
@@ -430,34 +413,11 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         item.setAuthorized(canSubscribe);
         item.setPropertyDescription(subscription);
         item.setSubscription(activeSubscription);
-        //ES currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
-        //ES currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
         item.setErrorType(ApiErrorType.getType(subscription.ErrorType));
 
         return item;
     }
-
-
-//    private SubscriptionExpandableListChildObject setupWarningChildView(final String subscription) {
-//        SubscriptionExpandableListChildObject currentWarningObject = new SubscriptionExpandableListChildObject();
-//        currentWarningObject.setTitleText(subscription);
-//        currentWarningObject.setLastUpdatedText("");
-//        currentWarningObject.setIsSubscribed(true);
-//
-//        return currentWarningObject;
-//    }
-
-    // INFO: we just treat active subscriptions in the same way as we treat available subscriptions, don't see a reason not to.
-//    private SubscriptionExpandableListChildObject setupActiveSubscriptionChildView(final Subscription activeSubscription, PropertyDescription subscribable, boolean canSubscribe) {
-//        if(subscribable == null) {
-//            Log.e(FRAGMENT_TAG, "subscribable is null");
-//            return null;
-//        }
-//
-//        return setupAvailableSubscriptionChildView(subscribable, activeSubscription, canSubscribe);
-//    }
-
 
     @Override
     public void onTitleClicked(AvailableSubscriptionItem item) {
@@ -488,72 +448,16 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         }
     }
 
+    @Override
+    public void onErrorNotificationClicked(AvailableSubscriptionItem item) {
+        PropertyDescription prop = item.getPropertyDescription();
 
-    private class ExpandableListAdapterChildOnClickListener implements View.OnClickListener {
-        List<PropertyDescription> propertyDescriptions;
-        List<String> warnings;
-        List<Subscription> subscriptions;
-
-        ExpandableListAdapterChildOnClickListener() {
-
-        }
-
-        void setPropertyDescriptions(List<PropertyDescription> propertyDescriptions) {
-            this.propertyDescriptions = propertyDescriptions;
-        }
-
-//        public void setWarnings(List<String> warnings) {
-//            this.warnings = warnings;
-//        }
-//
-//        public void setSubscriptions(List<Subscription> subscriptions) {
-//            this.subscriptions = subscriptions;
-//        }
-
-        @Override
-        public void onClick(View v) {
-            String identifier = ((ViewGroup) v.getParent()).getTag().toString();
-            boolean found = false;
-            JsonObject object = null;
-            Gson gson = new Gson();
-            String type = "";
-            for (PropertyDescription pd : propertyDescriptions) {
-                if (pd.Name.equals(identifier)) {
-                    found = true;
-                    object = (new JsonParser()).parse(gson.toJson(pd)).getAsJsonObject();
-                    type += "pd";
-                    break;
-                }
+        if (prop != null) {
+            if (item.getErrorType().equals(ApiErrorType.WARNING.toString())) {
+                DownloadDialogs.showInformationDialog(getContext(), prop.Name, prop.ErrorText);
+            } else {
+                DownloadDialogs.showSubscriptionErrorNotification(getContext(), prop);
             }
-
-            if (!found) {
-                for (String warning : warnings) {
-                    if (warning.equals(identifier)) {
-                        found = true;
-                        //TODO: Generate object proper
-                        object = new JsonObject();
-                        type += "warning";
-                        break;
-                    }
-                }
-            }
-            if (!found) {
-                for (Subscription subscription : subscriptions) {
-                    if (subscription.GeoDataServiceName.equals(identifier)) {
-                        object = (new JsonParser()).parse(gson.toJson(subscription)).getAsJsonObject();
-                        type += "sub";
-                        break;
-                    }
-                }
-            }
-
-            if (object == null) {
-                Log.d(FRAGMENT_TAG, "We failed at retrieving the object: ");
-            }
-
-            getFragmentManager().beginTransaction().
-                    replace(R.id.main_activity_fragment_container, createFragment(object, type), SubscriptionDetailsFragment.TAG).addToBackStack(null).
-                    commit();
         }
     }
 

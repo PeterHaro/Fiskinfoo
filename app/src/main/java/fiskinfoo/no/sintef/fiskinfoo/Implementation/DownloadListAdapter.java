@@ -65,6 +65,7 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
         void onTitleClicked(AvailableSubscriptionItem item);
         void onDownloadButton(AvailableSubscriptionItem item);
         void onSubscribed(CheckBox checkBox, AvailableSubscriptionItem item);
+        void onErrorNotificationClicked(AvailableSubscriptionItem item);
     }
 
 
@@ -81,7 +82,12 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
         if(entry.getErrorType() == ApiErrorType.WARNING) {
             holder.notificationImageView.setVisibility(View.VISIBLE);
             holder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_error_outline_black_24dp));
-            //holder.notificationImageView.setOnClickListener(entry.getErrorNotificationOnClickListener());
+            holder.notificationImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onErrorNotificationClicked(entry);
+                }
+            });
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
@@ -89,7 +95,12 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
         } else if(entry.getErrorType() == ApiErrorType.ERROR) {
             holder.notificationImageView.setVisibility(View.VISIBLE);
             holder.notificationImageView.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_warning_black_24dp));
-            //holder.notificationImageView.setOnClickListener(entry.getErrorNotificationOnClickListener());
+            holder.notificationImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onErrorNotificationClicked(entry);
+                }
+            });
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.notificationImageView.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.material_icon_black_active_tint_color));
