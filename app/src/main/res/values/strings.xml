@@ -577,7 +577,7 @@ limitations under the License.
     <string name="summary_fragment_title">FiskInfo oversikt</string>
     <string name="summary_user_profile">Brukerprofil</string>
     <string name="summary_user_profile_subtitle">Informasjon om deg og ditt fartøy</string>
-    <string name="summary_user_profile_incomplete">Din profil må oppdateres før redskap kan registreres!</string>
+    <string name="summary_user_profile_incomplete">Din brukerprofil må oppdateres før redskaprapport kan sendes inn!</string>
     <string name="summart_tools_title">Redskap</string>
     <string name="summary_tools_subtitle">Registrering og oversikt over dine redskap</string>
     <string name="summary_tools_status_new">Nye: </string>

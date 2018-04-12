@@ -72,6 +72,16 @@ public class SummaryFragment extends Fragment {
         FiskInfo application = (FiskInfo) getActivity().getApplication();
         tracker = application.getDefaultTracker();
 
+        //setHasOptionsMenu(true);
+/*
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }*/
+    }
+
+
+    private void refreshUserAndToolsInfo() {
         user = userInterface.getUser();
         unsentTools = 0;
         activeTools = 0;
@@ -101,15 +111,8 @@ public class SummaryFragment extends Fragment {
                 }
             }
         }
-
-
-        //setHasOptionsMenu(true);
-/*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }*/
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -155,6 +158,8 @@ public class SummaryFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        refreshUserAndToolsInfo();
+
         if(getView() != null) {
             getView().refreshDrawableState();
         }
@@ -179,6 +184,7 @@ public class SummaryFragment extends Fragment {
             }
         });
         mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
 
     }
 
