@@ -402,11 +402,11 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     private AvailableSubscriptionItem setupAvailableSubscriptionItem(final PropertyDescription subscription, final Subscription activeSubscription, boolean canSubscribe) {
 
-        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
-                null);
+//        View.OnClickListener subscriptionSwitchClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionCheckBoxOnClickListener(subscription, activeSubscription, user) :
+//                null);
 
-        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG, tracker, SCREEN_NAME) :
-                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user)));
+//        View.OnClickListener downloadButtonOnClickListener = (canSubscribe || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)) ? onClickListenerInterface.getSubscriptionDownloadButtonOnClickListener(getActivity(), subscription, user, FRAGMENT_TAG, tracker, SCREEN_NAME) :
+//                onClickListenerInterface.getInformationDialogOnClickListener(subscription.Name, getString(R.string.unauthorized_user)));
 
         if(!subscription.ErrorType.equals(ApiErrorType.NONE.toString())) {
             View.OnClickListener errorNotificationOnClickListener = onClickListenerInterface.getSubscriptionErrorNotificationOnClickListener(subscription);
@@ -423,19 +423,19 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
         String tmpUpdatedTime = subscription.LastUpdated == null ? (subscription.Created == null ? getString(R.string.abbreviation_na) : subscription.Created) : subscription.LastUpdated;
 
-        final AvailableSubscriptionItem currentPropertyDescriptionChildObject = new AvailableSubscriptionItem();
-        currentPropertyDescriptionChildObject.setTitle(subscription.Name);
-        currentPropertyDescriptionChildObject.setLastUpdated(tmpUpdatedTime.replace("T", "\n"));
-        currentPropertyDescriptionChildObject.setSubscribed(activeSubscription != null);
-        currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
-        currentPropertyDescriptionChildObject.setPropertyDescription(subscription);
-        currentPropertyDescriptionChildObject.setSubscription(activeSubscription);
+        final AvailableSubscriptionItem item = new AvailableSubscriptionItem();
+        item.setTitle(subscription.Name);
+        item.setLastUpdated(tmpUpdatedTime.replace("T", "\n"));
+        item.setSubscribed(activeSubscription != null);
+        item.setAuthorized(canSubscribe);
+        item.setPropertyDescription(subscription);
+        item.setSubscription(activeSubscription);
         //ES currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
         //ES currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
-        currentPropertyDescriptionChildObject.setErrorType(ApiErrorType.getType(subscription.ErrorType));
+        item.setErrorType(ApiErrorType.getType(subscription.ErrorType));
 
-        return currentPropertyDescriptionChildObject;
+        return item;
     }
 
 
@@ -461,7 +461,15 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     @Override
     public void onTitleClicked(AvailableSubscriptionItem item) {
-
+        JsonObject object = null;
+        Gson gson = new Gson();
+        String type = "pd";
+        if ((item != null) && (item.getPropertyDescription() != null)) {
+            object = (new JsonParser()).parse(gson.toJson(item.getPropertyDescription())).getAsJsonObject();
+            getFragmentManager().beginTransaction().
+                    replace(R.id.main_activity_fragment_container, createFragment(object, type), SubscriptionDetailsFragment.TAG).addToBackStack(null).
+                    commit();
+        }
     }
 
     @Override

@@ -99,7 +99,12 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
         }
 
         holder.dataText.setText(entry.getTitle());
-        //holder.dataText.setOnClickListener(childrenOnClickListener);
+        holder.dataText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onTitleClicked(entry);
+            }
+        });
 
         holder.lastUpdatedTextView.setText(entry.getLastUpdated());
         holder.lastUpdatedTextView.setGravity(Gravity.CENTER);
