@@ -64,7 +64,7 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
     public interface DownloadSelectionListener {
         void onTitleClicked(AvailableSubscriptionItem item);
         void onDownloadButton(AvailableSubscriptionItem item);
-        void onSubscribed(AvailableSubscriptionItem item);
+        void onSubscribed(CheckBox checkBox, AvailableSubscriptionItem item);
     }
 
 
@@ -112,7 +112,12 @@ public class DownloadListAdapter extends RecyclerView.Adapter<DownloadListAdapte
                                                           mListener.onDownloadButton(entry);
                                                       }
                                                   });
-       //holder.subscribedCheckBox.setOnClickListener(entry.getSubscribeSwitchOnClickListener());
+        holder.subscribedCheckBox.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            mListener.onSubscribed((CheckBox)v, entry);
+                                                        }
+                                                    });
 
         if(!(new FiskInfoUtility().isNetworkAvailable(context))) {
             holder.subscribedCheckBox.setEnabled(false);

@@ -16,6 +16,7 @@ public class AvailableSubscriptionItem {
     private boolean isAuthorized;
     private ApiErrorType errorType;
     private PropertyDescription propertyDescription;
+    private Subscription subscription;
 
     public AvailableSubscriptionItem() {
     }
@@ -76,4 +77,11 @@ public class AvailableSubscriptionItem {
         this.propertyDescription = propertyDescription;
     }
 
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+    }
 }

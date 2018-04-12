@@ -28,6 +28,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -428,6 +429,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         currentPropertyDescriptionChildObject.setSubscribed(activeSubscription != null);
         currentPropertyDescriptionChildObject.setAuthorized(canSubscribe);
         currentPropertyDescriptionChildObject.setPropertyDescription(subscription);
+        currentPropertyDescriptionChildObject.setSubscription(activeSubscription);
         //ES currentPropertyDescriptionChildObject.setDownloadButtonOnClickListener(downloadButtonOnClickListener);
         //ES currentPropertyDescriptionChildObject.setSubscribedCheckBoxOnClickListener(subscriptionSwitchClickListener);
 
@@ -464,17 +466,18 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     @Override
     public void onDownloadButton(AvailableSubscriptionItem item) {
-        if (item.isAuthorized()) { // || subscription.ApiName.equals(getString(R.string.fishing_facility_api_name)
+        if (item.isAuthorized() || item.getPropertyDescription().ApiName.equals(getString(R.string.fishing_facility_api_name))) {
             DownloadDialogs.showSubscriptionDownloadDialog(getContext(), getActivity(), item.getPropertyDescription(), user, FRAGMENT_TAG, tracker, SCREEN_NAME);
-
         } else {
             DownloadDialogs.showInformationDialog(getContext(), item.getPropertyDescription().Name, getString(R.string.unauthorized_user));
         }
     }
 
     @Override
-    public void onSubscribed(AvailableSubscriptionItem item) {
-
+    public void onSubscribed(CheckBox checkBox, AvailableSubscriptionItem item) {
+        if (item.isAuthorized() || item.getPropertyDescription().ApiName.equals(getString(R.string.fishing_facility_api_name))) {
+            DownloadDialogs.doSubscriptionCheckBoxAction(checkBox, getContext(), item.getPropertyDescription(), item.getSubscription(), user);
+        }
     }
 
 
