@@ -64,6 +64,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchA
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
@@ -127,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements
         mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
 
         if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+            toggleNetworkErrorTextView(false);
+        }
+        if(!FiskinfoConnectivityManager.isConnectedValidWifi(getBaseContext())) {
             toggleNetworkErrorTextView(false);
         }
 
