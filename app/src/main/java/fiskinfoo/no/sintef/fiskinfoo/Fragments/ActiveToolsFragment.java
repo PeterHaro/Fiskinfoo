@@ -507,6 +507,7 @@ public class ActiveToolsFragment extends Fragment {
                 for(int i = 0; i < permissions.length; i++) {
                     if(permissions[i].equals(WRITE_EXTERNAL_STORAGE) && results[i] == PackageManager.PERMISSION_GRANTED) {
                         generateAndSendGeoJsonToolReport();
+                        break; // Should not need to continue once we have found a match
                     }
                 }
                 break;
@@ -540,6 +541,24 @@ public class ActiveToolsFragment extends Fragment {
                             ((toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNREPORTED || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNSENT || toolEntry.getToolStatus() == ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED) ?
                                     ToolEntryStatus.STATUS_TOOL_LOST_UNCONFIRMED : ToolEntryStatus.STATUS_SENT_UNCONFIRMED));
                     JSONObject gjsonTool = toolEntry.toGeoJson(mGpsLocationTracker);
+
+                    // Copy user profile info into the tool
+                    UserSettings settings = user.getSettings();
+
+                    toolEntry.setContactPersonEmail(settings.getContactPersonEmail());
+                    toolEntry.setContactPersonName(settings.getContactPersonName());
+                    toolEntry.setContactPersonPhone(settings.getContactPersonPhone());
+
+                    toolEntry.setVesselName(settings.getVesselName());
+                    toolEntry.setVesselEmail(settings.getContactPersonEmail());
+                    toolEntry.setVesselPhone(settings.getVesselPhone());
+
+                    toolEntry.setRegNum(settings.getRegistrationNumber());
+
+                    toolEntry.setIRCS(settings.getIrcs());
+                    toolEntry.setMMSI(settings.getMmsi());
+                    toolEntry.setIMO(settings.getImo());
+
                     featureList.put(gjsonTool);
                 }
             }

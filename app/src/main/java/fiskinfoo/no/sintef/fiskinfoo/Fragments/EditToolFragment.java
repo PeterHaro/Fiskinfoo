@@ -744,6 +744,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         UserSettings settings = userInterface.getUser().getSettings();
 
+        if (settings == null)
+            settings = new UserSettings(); // Set the settings temporary to a blank value
         final String vesselName = settings.getVesselName(); //vesselNameRow.getFieldText().trim();
         final String vesselPhoneNumber = settings.getVesselPhone(); //vesselPhoneNumberRow.getFieldText().trim();
         String toolSetupDate = setupDateRow.getDate().trim();

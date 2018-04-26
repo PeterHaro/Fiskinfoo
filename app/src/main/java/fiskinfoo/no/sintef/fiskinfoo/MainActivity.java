@@ -15,6 +15,8 @@
 package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,6 +52,7 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.AboutFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.DownloadFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.EditToolFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.MapFragment;
@@ -356,6 +359,16 @@ public class MainActivity extends AppCompatActivity implements
                 fragment = SettingsFragment.newInstance();
                 tag = SettingsFragment.FRAGMENT_TAG;
                 break;
+
+            case R.id.navigation_view_about_app:
+                fragment = AboutFragment.newInstance();
+                tag = AboutFragment.FRAGMENT_TAG;
+                break;
+
+            case R.id.navigation_view_log_out:
+                showLogoutDialog();
+                return true;
+
             default:
                 return false;
         }
@@ -384,6 +397,30 @@ public class MainActivity extends AppCompatActivity implements
         return true;
 
     }
+
+    public void logoutUser() {
+        User.forgetUser(this);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+    protected void showLogoutDialog() {
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_warning_black_24dp)
+                .setTitle(getString(R.string.log_out))
+                .setMessage(getString(R.string.confirm_log_out))
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        logoutUser();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .show();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

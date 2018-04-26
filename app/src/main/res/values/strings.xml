@@ -76,7 +76,7 @@ limitations under the License.
 
     <!-- Tab strings -->
     <string name="summary">Oversikt</string>
-    <string name="my_page">Nedlasting</string>
+    <string name="my_page">Last ned kart</string>
     <string name="map">Kart</string>
     <string name="register_tool">Redskapsregistrering</string>
     <string name="my_tools">Mine redskaper</string>

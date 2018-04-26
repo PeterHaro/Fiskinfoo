@@ -76,8 +76,8 @@ public class SettingsFragment extends Fragment {
         initUserDetailsRow();
         initSetDownLoadPathRow();
         initOfflineModeRow();
-        initAboutRow();
-        initLogoutRow();
+        //initAboutRow();
+        //initLogoutRow();
 
         return rootView;
     }

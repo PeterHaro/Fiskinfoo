@@ -20,7 +20,8 @@ public class SettingsRow extends BaseTableRow {
         titleTextView = (TextView) getView().findViewById(R.id.settings_row_setting_title_text_view);
 
         titleTextView.setText(title);
-        iconImageView.setBackgroundResource(iconId);
+
+        iconImageView.setImageResource(iconId); //Changed from setBackgroundResource() to support vectors in app compatibility mode
         getView().setOnClickListener(onClickListener);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

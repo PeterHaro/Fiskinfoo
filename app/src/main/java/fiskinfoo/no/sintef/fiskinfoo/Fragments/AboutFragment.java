@@ -21,6 +21,7 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
  * create an instance of this fragment.
  */
 public class AboutFragment extends Fragment {
+    public static final String FRAGMENT_TAG = "AboutAppFragment";
     WebView webView;
     private Tracker tracker;
 
