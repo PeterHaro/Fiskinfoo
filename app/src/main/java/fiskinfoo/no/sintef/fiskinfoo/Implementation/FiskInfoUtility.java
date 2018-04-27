@@ -51,6 +51,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.FiskInfoPolygon2D;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -721,6 +723,9 @@ public class FiskInfoUtility {
         return regnum != null && regnum.matches("^[a-zA-Z]{1,2}\\d{1,4}[a-zA-Z]{1,2}$");
     }
 
+    public static boolean validateVesselName(String name) {
+        return name != null && name.length() > 0;// TODO: Add regex matching
+    }
 
     /**
      * Validates required fields of the user settings
@@ -735,9 +740,32 @@ public class FiskInfoUtility {
                         validateName(userSettings.getContactPersonName()) &&
                         validatePhoneNumber(userSettings.getContactPersonPhone()) &&
                         isEmailValid(userSettings.getContactPersonEmail()) &&
-                        validateRegistrationNumber(userSettings.getRegistrationNumber());
+                        validateRegistrationNumber(userSettings.getRegistrationNumber()) &&
+                        validateVesselName(userSettings.getVesselName());
     }
 
+    public static boolean match(String str1, String str2) {
+        if (((str1 == null) || (str1.isEmpty())) && ((str2 == null) || (str2.isEmpty())))
+            return true;
+        else
+            return str1.equals(str2);
+    }
+
+    public static boolean toolProfileMatchUserSettings(ToolEntry entry, UserSettings settings) {
+        if ((entry == null) || (settings == null))
+            return false;
+
+        return
+                match(entry.getContactPersonName(), settings.getContactPersonName()) &&
+                        match(entry.getContactPersonPhone(), settings.getContactPersonPhone()) &&
+                        match(entry.getContactPersonEmail(), settings.getContactPersonEmail()) &&
+                        match(entry.getVesselName(), settings.getVesselName()) &&
+                        match(entry.getVesselPhone(), settings.getVesselPhone()) &&
+                        match(entry.getIRCS(), settings.getIrcs()) &&
+                        match(entry.getMMSI(), settings.getMmsi()) &&
+                        match(entry.getIMO(), settings.getImo()) &&
+                        match(entry.getRegNum(), settings.getRegistrationNumber());
+    }
 
 
     public static boolean isValidCountyCode(String countyCode) {

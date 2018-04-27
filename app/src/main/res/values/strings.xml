@@ -505,6 +505,9 @@ limitations under the License.
     <string name="update_settings">Brukerinnstillinger</string>
     <string name="update_settings_explanation">Ett eller flere av feltene du har fylt inn er forskjellig fra verdiene som finner i innstillingene. Ønsker du å oppdatere innstillingene med disse nye verdiene?</string>
     <string name="tool_log_row_tool_type_image_view_content_description">Redskapsikon</string>
+    <string name="user_profile_summary">Brukerprofil</string>
+    <string name="user_profile_summary_hint">Profilinformasjon</string>
+    <string name="user_profile_summary_help">Informasjon om deg og ditt fartøy hentes fra brukerprofilen din og legges ved rapporten ved innsending. Informasjonen endres ved å editere brukerinformasjon under menyvalget Innstillinger.</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
