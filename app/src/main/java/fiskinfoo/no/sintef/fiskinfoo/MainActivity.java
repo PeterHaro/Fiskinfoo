@@ -135,9 +135,10 @@ public class MainActivity extends AppCompatActivity implements
         if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
             toggleNetworkErrorTextView(false);
         }
-        if(!FiskinfoConnectivityManager.isConnectedValidWifi(getBaseContext())) {
+/* TODO: Consider to add this, but then in another threadm and combined with a check on mobile connection
+       if(!FiskinfoConnectivityManager.isConnectedValidWifi(getBaseContext())) {
             toggleNetworkErrorTextView(false);
-        }
+        }*/
 
         if(user.getOfflineMode()) {
             initAndStartOfflineModeBackgroundThread();

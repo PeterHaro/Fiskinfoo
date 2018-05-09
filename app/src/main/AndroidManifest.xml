@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fiskinfoo.no.sintef.fiskinfoo" >
+    package="fiskinfoo.no.sintef.fiskinfoo">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,19 +16,20 @@
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="INTERACT_ACROSS_USERS_FULL"/>
-    <uses-permission android:name="MANAGE_USERS"/>
+    <uses-permission android:name="INTERACT_ACROSS_USERS_FULL" />
+    <uses-permission android:name="MANAGE_USERS" />
+
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
+        android:name=".FiskInfo"
         android:allowBackup="true"
         android:icon="@drawable/fhf_logo"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="fiskinfoo.no.sintef.fiskinfoo.FiskInfo">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,14 +39,14 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main"
-
-            >
-        </activity>
+            android:label="@string/title_activity_main"></activity>
         <activity
             android:name=".Implementation.FileDialog"
-            android:label="@string/title_activity_file_dialog" >
-        </activity>
+            android:label="@string/title_activity_file_dialog"></activity>
+
+        <service
+            android:name=".Implementation.FetchDownloadsService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

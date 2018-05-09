@@ -66,6 +66,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
@@ -256,7 +257,7 @@ public class ActiveToolsFragment extends Fragment {
                 @Override
                 public void onRefresh() {
                     // TODO: Will not work if token has expired, should look into fixing this in general
-                    if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                    if(fiskInfoUtility.isNetworkAvailable(getActivity()) ) {
                         List<ArrayList<ToolEntry>> localTools = new ArrayList(user.getToolLog().myLog.values());
 
                         ((MainActivity) getActivity()).toggleNetworkErrorTextView(true);
@@ -292,7 +293,7 @@ public class ActiveToolsFragment extends Fragment {
     }
 
     private boolean updateToolList(List<ArrayList<ToolEntry>> tools) {
-        if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+        if (FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity())) { //(fiskInfoUtility.isNetworkAvailable(getActivity())) {
             List<ToolEntry> localTools = new ArrayList<>();
             unconfirmedRemovedTools = new ArrayList<>();
             synchedTools = new ArrayList<>();
@@ -313,12 +314,20 @@ public class ActiveToolsFragment extends Fragment {
                 }
             }
 
-            barentswatchApi.setAccesToken(user.getToken());
+            Response response;
+            try {
+                barentswatchApi.setAccesToken(user.getToken());
 
-            Response response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
+                response = barentswatchApi.getApi().geoDataDownload("fishingfacility", "JSON");
+            }
+            catch (Exception ex) {
+                // Added catch of network error. Should we notify the user somehow?
+                response = null;
+            }
 
             if (response == null) {
                 Log.d(FRAGMENT_TAG, "RESPONSE == NULL");
+                return false;
             }
 
             byte[] toolData;
@@ -693,6 +702,8 @@ public class ActiveToolsFragment extends Fragment {
         @Override
         protected void onPostExecute(final Boolean success) {
             mSwipeRefreshLayout.setRefreshing(false);
+
+            ((MainActivity) getActivity()).toggleNetworkErrorTextView(success);
 
             if(!success) {
                 Toast.makeText(getContext(), R.string.error_could_not_validate_tool_status, Toast.LENGTH_LONG).show();

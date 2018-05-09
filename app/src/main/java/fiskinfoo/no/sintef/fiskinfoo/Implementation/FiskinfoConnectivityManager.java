@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -79,6 +80,52 @@ public class FiskinfoConnectivityManager {
         }
         return false;
     }
+
+    public static boolean isConnectedValidWifi2(Context context) {
+        if (FiskinfoConnectivityManager.isConnectedWifi(context)) {
+            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiInfo wifiInfo = wm.getConnectionInfo();
+            SupplicantState wifiState = wifiInfo.getSupplicantState();
+            if (wifiState == SupplicantState.COMPLETED) {
+                try {
+                    //parse url. if url is not parsed properly then return
+                    URL url;
+                    try {
+                        url = new URL("http://clients3.google.com/generate_204");
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+
+                    //open connection. If fails return false
+                    HttpURLConnection urlConnection;
+                    try {
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+
+                    urlConnection.setRequestProperty("User-Agent", "Android");
+                    urlConnection.setRequestProperty("Connection", "close");
+                    urlConnection.setConnectTimeout(1500);
+                    urlConnection.connect();
+                    return urlConnection.getResponseCode() == 204 && urlConnection.getContentLength() == 0;
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+    public static boolean hasValidNetworkConnection(Context context) {
+        return isConnectedMobile(context) || isConnectedValidWifi2(context);
+    }
+
+
 
     /**
      * Check if there is any connectivity to a mobile network

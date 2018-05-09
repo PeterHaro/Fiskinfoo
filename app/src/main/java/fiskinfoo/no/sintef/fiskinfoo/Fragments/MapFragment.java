@@ -112,6 +112,7 @@ import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GeometryType;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
@@ -1323,13 +1324,19 @@ public class MapFragment extends Fragment {
 
             cachedEntry = user.getSubscriptionCacheEntry(getString(R.string.fishing_facility_api_name));
 
-            if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
-                subscribables = barentswatchApi.getApi().getSubscribable();
-                for(PropertyDescription subscribable : subscribables) {
-                    if(subscribable.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
-                        newestSubscribable = subscribable;
-                        break;
+            if (FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity())) { //(fiskInfoUtility.isNetworkAvailable(getActivity())) {
+                try {
+                    subscribables = barentswatchApi.getApi().getSubscribable();
+                    for (PropertyDescription subscribable : subscribables) {
+                        if (subscribable.ApiName.equals(getString(R.string.fishing_facility_api_name))) {
+                            newestSubscribable = subscribable;
+                            break;
+                        }
                     }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    return false;
                 }
             } else if(cachedEntry == null){
                 return false;
@@ -1400,12 +1407,13 @@ public class MapFragment extends Fragment {
                     e.printStackTrace();
                     Log.e(FRAGMENT_TAG, "Invalid datetime provided");
                 }
-            } else if(fiskInfoUtility.isNetworkAvailable(getActivity())) {
-                response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
+            } else if (FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity())) {//(fiskInfoUtility.isNetworkAvailable(getActivity())) {
                 try {
+                    response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
                     data = FiskInfoUtility.toByteArray(response.getBody().in());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return false;
                 }
 
                 if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
