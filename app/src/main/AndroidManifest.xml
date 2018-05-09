@@ -45,7 +45,7 @@
             android:label="@string/title_activity_file_dialog"></activity>
 
         <service
-            android:name=".Implementation.FetchDownloadsService"
+            android:name=".Implementation.BarentswatchApiService"
             android:exported="false"></service>
     </application>
 

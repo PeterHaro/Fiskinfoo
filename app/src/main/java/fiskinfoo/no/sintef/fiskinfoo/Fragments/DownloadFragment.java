@@ -15,7 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -54,9 +54,10 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchAp
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchResultReceiver;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DownloadDialogs;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.DownloadListAdapter;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.FetchDownloadsService;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchApiService;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
@@ -65,7 +66,7 @@ import fiskinfoo.no.sintef.fiskinfoo.MainActivity;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 import fiskinfoo.no.sintef.fiskinfoo.View.MaterialExpandableList.ParentObject;
 
-public class DownloadFragment extends Fragment implements DownloadListAdapter.DownloadSelectionListener {
+public class DownloadFragment extends Fragment implements DownloadListAdapter.DownloadSelectionListener, BarentswatchResultReceiver.Receiver {
     public static final String FRAGMENT_TAG = "DownloadFragment";
     private static final String SCREEN_NAME = "MyPage";
 
@@ -78,7 +79,8 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     private User user;
     private Tracker tracker;
 
-    public FetchDownloadsResultReceiver mReceiver;
+    public BarentswatchResultReceiver mReceiver;
+
 
 
     @Override
@@ -104,6 +106,9 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     @Override
     public void onResume() {
         super.onResume();
+
+        if (mReceiver != null)
+            mReceiver.setReceiver(this);
 
         if(getView() != null) {
             getView().refreshDrawableState();
@@ -148,7 +153,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.my_page_swipe_refresh_layout);
 
 
-        mReceiver = new FetchDownloadsResultReceiver(new Handler());
+        mReceiver = new BarentswatchResultReceiver(new Handler());
         mReceiver.setReceiver(this);
 
         data = new ArrayList<>();
@@ -173,7 +178,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         mCRecyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
         mCRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-        fetchAndRefreshDownloadList();
+        new FetchAndRefreshDownloadListTask().execute("");
 
         return v;
     }
@@ -220,18 +225,35 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
                     ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
                     mSwipeRefreshLayout.setRefreshing(false);
                 }*/
-                fetchAndRefreshDownloadList();
+                new FetchAndRefreshDownloadListTask().execute("");
+                //fetchAndRefreshDownloadList();
             }
         });
 
         ((MainActivity)getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
     }
 
-    protected void fetchAndRefreshDownloadList() {
-        boolean hasNetwork = fiskInfoUtility.isNetworkAvailable(getContext());
+
+    private class FetchAndRefreshDownloadListTask extends AsyncTask<String, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            return FiskinfoConnectivityManager.hasValidNetworkConnection(getContext());
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            fetchAndRefreshDownloadList(result);
+        }
+    }
+
+
+
+    protected void fetchAndRefreshDownloadList(boolean hasNetwork) {
+        //boolean hasNetwork = fiskInfoUtility.isNetworkAvailable(getContext());
         //boolean hasNetwork = FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity());
         if (hasNetwork) {
-            FetchDownloadsService.startActionFetchDownloads(getContext(), mReceiver, "test", user);
+            BarentswatchApiService.startActionFetchDownloads(getContext(), mReceiver, user);
         } else {
 //            ArrayList<AvailableSubscriptionItem> data = new ArrayList<>();
             ArrayList<AvailableSubscriptionItem> data = fetchMyPageCached();
@@ -240,6 +262,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
             mCRecyclerView.setAdapter(myPageExpandableListAdapter);
             ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
         }
+        mSwipeRefreshLayout.setRefreshing(false);
 
         /*
         boolean hasNetwork = FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity());
@@ -248,6 +271,13 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCRecyclerView.setAdapter(myPageExpandableListAdapter);
         ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);*/
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mReceiver.setReceiver(null);
     }
 
     @Override
@@ -501,35 +531,15 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         return fragment;
     }
 
-    public class FetchDownloadsResultReceiver extends ResultReceiver {
+    @Override
+    public void onBarentswatchResultReceived(int resultCode, Bundle resultData) {
+        if (resultCode != 0) {
+            List<PropertyDescription> availableSubscriptions = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_SUBSCRIPTION);
+            List<Subscription> currentSubscriptions = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_CURRENTSUBSCRIPTION);
+            List<Authorization> authorizations = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_AUTHORIZATION);
 
-        DownloadFragment fragment;
-
-        public FetchDownloadsResultReceiver(Handler handler) {
-            super(handler);
+            refreshDownloadList(availableSubscriptions, currentSubscriptions, authorizations);
         }
-
-        public void setReceiver(DownloadFragment fragment) {
-            this.fragment = fragment;
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            if (fragment != null) {
-                List<PropertyDescription> availableSubscriptions = resultData.getParcelableArrayList(FetchDownloadsService.RESULT_PARAM_SUBSCRIPTION);
-                List<Subscription> currentSubscriptions = resultData.getParcelableArrayList(FetchDownloadsService.RESULT_PARAM_CURRENTSUBSCRIPTION);
-                List<Authorization> authorizations = resultData.getParcelableArrayList(FetchDownloadsService.RESULT_PARAM_AUTHORIZATION);
-
-                refreshDownloadList(availableSubscriptions, currentSubscriptions, authorizations);
-                super.onReceiveResult(resultCode, resultData);
-            }
-        }
-
-        public void test() {
-            fetchAndRefreshDownloadList();
-        }
-
     }
-
 
 }
