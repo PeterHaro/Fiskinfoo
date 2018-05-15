@@ -47,6 +47,7 @@
         <service
             android:name=".Implementation.BarentswatchApiService"
             android:exported="false"></service>
+        <service android:name=".Implementation.BarentswatchMapDownloadService" />
     </application>
 
 </manifest>

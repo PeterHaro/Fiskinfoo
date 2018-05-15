@@ -16,8 +16,11 @@ package fiskinfoo.no.sintef.fiskinfoo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -66,6 +69,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Fragments.UserSettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchMapDownloadService;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
@@ -550,5 +554,35 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
+            @Override
+            protected void onResume() {
+                super.onResume();
+                registerReceiver(broadcastReceiver, new IntentFilter(BarentswatchMapDownloadService.MAP_DOWNLOAD_RESULT));
+            }
 
+
+            @Override
+            protected void onPause() {
+                super.onPause();
+                unregisterReceiver(broadcastReceiver);
+            }
+
+            private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Bundle bundle = intent.getExtras();
+                    if (bundle != null) {
+                        String resultText = bundle.getString(BarentswatchMapDownloadService.RESULT_TEXT);
+                        int resultCode = bundle.getInt(BarentswatchMapDownloadService.RESULT_CODE);
+                        if (resultCode == RESULT_OK) {
+                            Toast.makeText(MainActivity.this, resultText,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, resultText,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+    };
 }

@@ -260,14 +260,17 @@ public class FiskInfoUtility {
 
     public boolean writeMapLayerToExternalStorage(Activity activity, byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
 
-        if(FiskInfoUtility.shouldAskPermission()) {
-            String[] perms = { "android.permission.WRITE_EXTERNAL_STORAGE" };
+        if (FiskInfoUtility.shouldAskPermission()) {
+            String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
             int permsRequestCode = 0x001;
 //            activity.requestPermissions(perms, permsRequestCode);
 
-            ActivityCompat.requestPermissions(activity, new String[]{ WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
+        return writeMapLayerToExternalStorage(data, writableName, format, downloadSavePath, showToasts);
+    }
 
+    public boolean writeMapLayerToExternalStorage(byte[] data, String writableName, String format, String downloadSavePath, boolean showToasts) {
         String filePath;
         OutputStream outputStream = null;
         filePath = downloadSavePath;
@@ -287,7 +290,7 @@ public class FiskInfoUtility {
             new File(filePath).mkdirs();
         }
 
-        if(fileEnding != null && fileEnding.equals(activity.getBaseContext().getString(R.string.olex))) {
+        if(fileEnding != null && fileEnding.equals("olex")) { //TODO activity.getBaseContext().getString(R.string.olex))) {
             fileEnding = "olx.gz";
         }
 
@@ -297,10 +300,10 @@ public class FiskInfoUtility {
 
             if(!dir.canWrite()) {
                 if(showToasts) {
-                    Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
+//TODO                    Toast.makeText(activity.getBaseContext(), R.string.error_cannot_write_to_directory, Toast.LENGTH_LONG);
                 }
 
-                throw new IOException(activity.getResources().getString(R.string.error_cannot_write_to_directory));
+                throw new IOException("Kan ikke lagre i gitt mappe"); //TODO activity.getResources().getString(R.string.error_cannot_write_to_directory));
             }
 
             // index 1 is leef when plugged in. Dirs[1].getAbsoluteFile() is writable
@@ -310,13 +313,13 @@ public class FiskInfoUtility {
             outputStream.write(data);
 
             if(showToasts) {
-                Toast.makeText(activity.getBaseContext(), "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
+//TODO                Toast.makeText(activity.getBaseContext(), "Fil lagret til " + filePath, Toast.LENGTH_LONG).show();
             }
 
             success = true;
         } catch (IOException e) {
             if(showToasts) {
-                Toast.makeText(activity.getBaseContext(), R.string.disk_write_failed, Toast.LENGTH_LONG).show();
+//TODO                Toast.makeText(activity.getBaseContext(), R.string.disk_write_failed, Toast.LENGTH_LONG).show();
             }
             e.printStackTrace();
         } finally {

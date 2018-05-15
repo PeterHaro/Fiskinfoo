@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -105,14 +106,38 @@ public class DownloadDialogs  {
                     downloadButton.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
+                            if (ContextCompat.checkSelfPermission(activity, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                            if (FiskInfoUtility.shouldAskPermission()) {
+//                                String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
+//                                int permsRequestCode = 0x001;
+//            activity.requestPermissions(perms, permsRequestCode);
+
+                                ActivityCompat.requestPermissions(activity, new String[]{WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                                return; //TODO: Add something to continue download when permission has been granted
+                            }
+                            String downloadFormat = row.getText();
+                            String typeName = subscription.Name + " " + downloadFormat;
+
+                            BarentswatchMapDownloadService.startMapDownload(activity, subscription.ApiName, subscription.Name, user, downloadFormat);
+                            if (tracker != null) {
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("Download file").setAction(typeName).build());
+                                if (tracker != null) {
+                                    tracker.setScreenName(screenName + ActiveToolsFragment.class.getSimpleName());
+                                    tracker.send(new HitBuilders.ScreenViewBuilder().build());
+                                } else {
+                                    Log.wtf("DOWNLOAD_FILE", "TRACKER IS NULL IN ON RESUME");
+                                }
+                            }
+                            dialog.dismiss();
+
+/*
                             BarentswatchApi barentswatchApi = new BarentswatchApi();
                             barentswatchApi.setAccesToken(user.getToken());
                             IBarentswatchApi api = barentswatchApi.getApi();
 
                             Response response;
-                            String downloadFormat = row.getText();
 
-                            String typeName = subscription.Name + " " + downloadFormat;
 
                             if (tracker != null) {
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("Download file").setAction(typeName).build());
@@ -142,7 +167,7 @@ public class DownloadDialogs  {
                             }
 
                             dialog.dismiss();
-                        }
+*/                        }
                     });
                 }
             });
