@@ -97,8 +97,6 @@ public class BarentswatchMapDownloadService extends IntentService {
      */
     private void handleMapDownload(User user, String apiName, String subscriptionName, String downloadFormat) {
 
-        // TODO: Add parameters to callers
-        // TODO: Handle issue with permissions in writeMap()
         BarentswatchApi barentswatchApi = new BarentswatchApi();
         barentswatchApi.setAccesToken(user.getToken());
 
@@ -187,14 +185,5 @@ public class BarentswatchMapDownloadService extends IntentService {
             }
         }
     }
-/*
-
-    private void broadcastResult(String resultText, int resultCode) {
-        Intent intent = new Intent(MAP_DOWNLOAD_RESULT);
-        intent.putExtra(RESULT_CODE, resultCode);
-        intent.putExtra(RESULT_TEXT, resultText)
-        this.sendBroadcast(intent);
-    }
-*/
 
 }

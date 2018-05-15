@@ -587,7 +587,7 @@ public class ActiveToolsFragment extends Fragment {
             String toolString = featureCollection.toString(4);
 
             if (fiskInfoUtility.isExternalStorageWritable()) {
-                fiskInfoUtility.writeMapLayerToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
+                fiskInfoUtility.writeDataToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
                 String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
                 String fileName = directoryPath + "/FiskInfo/api_setting.json";
                 File apiSettingsFile = new File(fileName);

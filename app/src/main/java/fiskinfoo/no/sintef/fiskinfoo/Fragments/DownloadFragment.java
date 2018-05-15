@@ -19,8 +19,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.os.ResultReceiver;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -32,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -50,7 +47,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.AvailableSubscriptionItem;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.ApiErrorType;
-import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.PropertyDescription;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Subscription;
@@ -158,7 +154,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
         data = new ArrayList<>();
 
-        //data = fetchMyPageCached();
+        //data = fetchCachedDownloads();
         myPageExpandableListAdapter = new DownloadListAdapter(data, this); //(this.getActivity(), data, childOnClickListener);
 
 
@@ -169,7 +165,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
             //ES myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
             //ES myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
         } else {
-            data = fetchMyPageCached();
+            data = fetchCachedDownloads();
             myPageExpandableListAdapter = new DownloadListAdapter(data, this); //(this.getActivity(), data, childOnClickListener);
             //ES myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
             //ES myPageExpandableListAdapter.onRestoreInstanceState(savedInstanceState);
@@ -201,32 +197,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // TODO: Will not work if token has expired, should look into fixing this in general
-/*                boolean networkAvailable = fiskInfoUtility.isNetworkAvailable(getActivity());
-
-                if (networkAvailable) {
-                    ArrayList<AvailableSubscriptionItem> data = fetchMyPage();
-
-                    myPageExpandableListAdapter = new DownloadListAdapter(data, DownloadFragment.this); //new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
-                    //ES myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
-                    mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-
-                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(fiskInfoUtility.isNetworkAvailable(getActivity()));
-                    mSwipeRefreshLayout.setRefreshing(false);
-                } else {
-                    ArrayList<AvailableSubscriptionItem> data = fetchMyPageCached();
-
-                    myPageExpandableListAdapter = new DownloadListAdapter(data, DownloadFragment.this); // new MyPageExpandableListAdapter(getActivity(), data, childOnClickListener);
-                    //ES myPageExpandableListAdapter.addExpandCollapseListener(expandCollapseListener);
-                    mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-
-                    ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }*/
                 new FetchAndRefreshDownloadListTask().execute("");
-                //fetchAndRefreshDownloadList();
             }
         });
 
@@ -250,13 +221,10 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
 
     protected void fetchAndRefreshDownloadList(boolean hasNetwork) {
-        //boolean hasNetwork = fiskInfoUtility.isNetworkAvailable(getContext());
-        //boolean hasNetwork = FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity());
         if (hasNetwork) {
             BarentswatchApiService.startActionFetchDownloads(getContext(), mReceiver, user);
         } else {
-//            ArrayList<AvailableSubscriptionItem> data = new ArrayList<>();
-            ArrayList<AvailableSubscriptionItem> data = fetchMyPageCached();
+            ArrayList<AvailableSubscriptionItem> data = fetchCachedDownloads();
             myPageExpandableListAdapter = new DownloadListAdapter(data, DownloadFragment.this);
             mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mCRecyclerView.setAdapter(myPageExpandableListAdapter);
@@ -264,13 +232,6 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
         }
         mSwipeRefreshLayout.setRefreshing(false);
 
-        /*
-        boolean hasNetwork = FiskinfoConnectivityManager.hasValidNetworkConnection(getActivity());
-        ArrayList<AvailableSubscriptionItem> data = hasNetwork ? fetchMyPage() : fetchMyPageCached();
-        myPageExpandableListAdapter = new DownloadListAdapter(data, DownloadFragment.this);
-        mCRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mCRecyclerView.setAdapter(myPageExpandableListAdapter);
-        ((MainActivity) getActivity()).toggleNetworkErrorTextView(false);*/
     }
 
 
@@ -355,77 +316,8 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     }
 
-    public ArrayList<AvailableSubscriptionItem> fetchMyPage() {
-        /*
-         * TODO:    Add downloadables when available
-         *      /api/v1/geodata/service/downloadable/ offers layers that are rarely updates, and as such do not make much sense to subscribe to.
-          *     Does not seem to offer any data as of now though.
-         */
-        BarentswatchApi barentswatchApi = new BarentswatchApi();
-        barentswatchApi.setAccesToken(user.getToken());
 
-        if(!barentswatchApi.isTargetProd()) {
-            Toast.makeText(getActivity(), "Targeting pilot environment", Toast.LENGTH_LONG).show();
-        }
-
-        ArrayList<AvailableSubscriptionItem> availableSubscriptionItemList = new ArrayList<>();
-        ArrayList<ParentObject> parentObjectList = new ArrayList<>();
-        try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            List<PropertyDescription> availableSubscriptions = barentswatchApi.getApi().getSubscribable();
-            List<Subscription> currentSubscriptions = barentswatchApi.getApi().getSubscriptions();
-            List<Authorization> authorizations = barentswatchApi.getApi().getAuthorization();
-            SparseBooleanArray authMap = new SparseBooleanArray();
-            Map<String, PropertyDescription> availableSubscriptionsMap = new HashMap<>();
-            Map<String, Subscription> activeSubscriptionsMap = new HashMap<>();
-
-            for(Authorization auth : authorizations) {
-                authMap.put(auth.Id, auth.HasAccess);
-            }
-
-            for(Subscription subscription : currentSubscriptions) {
-                activeSubscriptionsMap.put(subscription.GeoDataServiceName, subscription);
-            }
-
-            for(PropertyDescription subscribable : availableSubscriptions) {
-                availableSubscriptionsMap.put(subscribable.ApiName, subscribable);
-                SubscriptionEntry currentEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
-
-                if(currentEntry == null) {
-                    SubscriptionEntry entry = activeSubscriptionsMap.get(subscribable.ApiName) == null ? new SubscriptionEntry(subscribable, authMap.get(subscribable.Id)) :
-                            new SubscriptionEntry(subscribable, activeSubscriptionsMap.get(subscribable.ApiName), authMap.get(subscribable.Id));
-                    entry.mIsAuthorized = authMap.get(subscribable.Id);
-                    user.setSubscriptionCacheEntry(subscribable.ApiName, entry);
-                } else {
-                    currentEntry.mSubscribable = subscribable;
-                    currentEntry.mSubscription = activeSubscriptionsMap.get(subscribable.ApiName);
-                    currentEntry.mIsAuthorized = authMap.get(subscribable.Id);
-
-                    user.setSubscriptionCacheEntry(subscribable.ApiName, currentEntry);
-                }
-            }
-
-            // Check and set access to fishingfacility data so we know this when loading the map later.
-            user.setIsFishingFacilityAuthenticated(authMap.get(availableSubscriptionsMap.containsKey(getString(R.string.fishing_facility_api_name)) ? availableSubscriptionsMap.get(getString(R.string.fishing_facility_api_name)).Id : -1));
-            user.writeToSharedPref(getActivity());
-
-
-            for (final PropertyDescription propertyDescription : availableSubscriptions) {
-                boolean isAuthed = authMap.get(propertyDescription.Id);
-                AvailableSubscriptionItem currentItem = setupAvailableSubscriptionItem(propertyDescription, activeSubscriptionsMap.get(propertyDescription.ApiName), isAuthed);
-                availableSubscriptionItemList.add(currentItem);
-            }
-
-        } catch (Exception e) {
-            Log.d(FRAGMENT_TAG, "Exception occured: " + e.toString());
-        }
-
-        return availableSubscriptionItemList;
-//        return parentObjectList;
-    }
-
-    public ArrayList<AvailableSubscriptionItem> fetchMyPageCached() {
+    public ArrayList<AvailableSubscriptionItem> fetchCachedDownloads() {
         ArrayList<AvailableSubscriptionItem> availableSubscriptionItemList = new ArrayList<>();
         try {
             Collection<SubscriptionEntry> subscriptionEntries = user.getSubscriptionCacheEntries();

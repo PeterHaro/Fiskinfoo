@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -72,7 +71,6 @@ import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Propert
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchMapDownloadService;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FileDialog;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
-import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoConnectivityManager;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskinfoScheduledTaskExecutor;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
@@ -85,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements
         EditToolFragment.OnFragmentInteractionListener,
         OfflineModeFragment.OnFragmentInteractionListener,
         SummaryFragment.OnFragmentInteractionListener,
-        UserInterface
-        {
+        UserInterface {
 
     public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
     public final static int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0x002;
@@ -130,13 +127,13 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.getMenu().performIdentifierAction(R.id.navigation_view_summary, 0);
         navigationHeaderUserNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
 
-        if(user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
+        if (user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
             navigationHeaderUserNameTextView.setText(user.getSettings().getContactPersonName());
         }
 
         mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
 
-        if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+        if (!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
             toggleNetworkErrorTextView(false);
         }
 /* TODO: Consider to add this, but then in another threadm and combined with a check on mobile connection
@@ -144,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
             toggleNetworkErrorTextView(false);
         }*/
 
-        if(user.getOfflineMode()) {
+        if (user.getOfflineMode()) {
             initAndStartOfflineModeBackgroundThread();
         }
     }
@@ -198,10 +195,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void initAndStartOfflineModeBackgroundThread() {
-        if(menu != null) {
+        if (menu != null) {
             MenuInflater inflater = getMenuInflater();
 
-            if(user.getOfflineMode()) {
+            if (user.getOfflineMode()) {
                 inflater.inflate(R.menu.menu_offline_mode, menu);
             }
 
@@ -214,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements
             public void run() {
                 Handler handler = new Handler(getMainLooper());
 
-                if(!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
+                if (!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
                     Log.i(TAG, "Offline mode update skipped");
                     handler.postDelayed(new Runnable() {
                         public void run() {
@@ -245,16 +242,16 @@ public class MainActivity extends AppCompatActivity implements
                 subscribables = api.getSubscribable();
                 downloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/FiskInfo/Offline/";
 
-                if(!offlineModeLooperPrepared) {
+                if (!offlineModeLooperPrepared) {
                     Looper.prepare();
                     offlineModeLooperPrepared = true;
                 }
 
-                for(PropertyDescription subscribable : subscribables) {
+                for (PropertyDescription subscribable : subscribables) {
                     SubscriptionEntry cacheEntry = user.getSubscriptionCacheEntry(subscribable.ApiName);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
 
-                    if(cacheEntry == null || !cacheEntry.mOfflineActive) {
+                    if (cacheEntry == null || !cacheEntry.mOfflineActive) {
                         continue;
                     }
 
@@ -267,13 +264,13 @@ public class MainActivity extends AppCompatActivity implements
                         continue;
                     }
 
-                    if(lastUpdatedDateTime.getTime() <= lastUpdatedCacheDateTime.getTime()){
+                    if (lastUpdatedDateTime.getTime() <= lastUpdatedCacheDateTime.getTime()) {
                         continue;
                     }
 
                     response = api.geoDataDownload(subscribable.ApiName, format);
 
-                    if(response.getStatus() != 200) {
+                    if (response.getStatus() != 200) {
                         Log.i(TAG, "Download failed");
                         continue;
                     }
@@ -284,14 +281,14 @@ public class MainActivity extends AppCompatActivity implements
                         e.printStackTrace();
                     }
 
-                    success = new FiskInfoUtility().writeMapLayerToExternalStorage(MainActivity.this,
+                    success = new FiskInfoUtility().writeDataToExternalStorage(MainActivity.this,
                             data,
                             subscribable.Name
                                     .replace(",", "")
                                     .replace(" ", "_"),
                             format, downloadPath, false);
 
-                    if(success) {
+                    if (success) {
                         cacheEntry.mLastUpdated = subscribable.LastUpdated;
                         cacheEntry.mSubscribable = subscribable;
                         user.setSubscriptionCacheEntry(subscribable.ApiName, cacheEntry);
@@ -306,11 +303,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int permsRequestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+    public void onRequestPermissionsResult(int permsRequestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(permsRequestCode, permissions, grantResults);
 
         // Most requests are made from fragments, so results are handled there. Request codes used are also different when received in activity as compared to the original value used and returned to fragment on result, see http://stackoverflow.com/a/30334435
-        switch(permsRequestCode){
+        switch (permsRequestCode) {
             case 200:
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
             case MY_PERMISSIONS_REQUEST_FINE_LOCATION:
@@ -333,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void toggleNetworkErrorTextView(boolean networkAvailable) {
-        if(!networkAvailable) {
+        if (!networkAvailable) {
             mNetworkErrorTextView.setText(R.string.no_internet_access);
             mNetworkErrorTextView.setTextColor(ContextCompat.getColor(this, R.color.error_red));
             mNetworkErrorTextView.setVisibility(View.VISIBLE);
@@ -436,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
 
-        if(user.getOfflineMode()) {
+        if (user.getOfflineMode()) {
             inflater.inflate(R.menu.menu_offline_mode, menu);
         }
 
@@ -479,13 +476,12 @@ public class MainActivity extends AppCompatActivity implements
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(SummaryFragment.FRAGMENT_TAG);
 
-        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else if ((getSupportFragmentManager().getBackStackEntryCount() > 0) ||
                 (fragment != null && fragment.isVisible())) {
             super.onBackPressed();
-        }
-        else {
+        } else {
             navigate(R.id.navigation_view_summary);
         }
     }
@@ -509,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void updateTool(ToolEntry tool) {
-        if(tool != null && !tool.getSetupDate().isEmpty()) {
+        if (tool != null && !tool.getSetupDate().isEmpty()) {
             user.getToolLog().addTool(tool, tool.getSetupDate());
             user.writeToSharedPref(this);
             Toast.makeText(this, R.string.tool_updated, Toast.LENGTH_LONG).show();
@@ -518,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void toggleOfflineMode(boolean offline) {
-        if(offline) {
+        if (offline) {
             initAndStartOfflineModeBackgroundThread();
         } else {
             stopOfflineModeBackgroundThread();
@@ -554,35 +550,35 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-            @Override
-            protected void onResume() {
-                super.onResume();
-                registerReceiver(broadcastReceiver, new IntentFilter(BarentswatchMapDownloadService.MAP_DOWNLOAD_RESULT));
-            }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(BarentswatchMapDownloadService.MAP_DOWNLOAD_RESULT));
+    }
 
 
-            @Override
-            protected void onPause() {
-                super.onPause();
-                unregisterReceiver(broadcastReceiver);
-            }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
 
-            private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    Bundle bundle = intent.getExtras();
-                    if (bundle != null) {
-                        String resultText = bundle.getString(BarentswatchMapDownloadService.RESULT_TEXT);
-                        int resultCode = bundle.getInt(BarentswatchMapDownloadService.RESULT_CODE);
-                        if (resultCode == RESULT_OK) {
-                            Toast.makeText(MainActivity.this, resultText,
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, resultText,
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String resultText = bundle.getString(BarentswatchMapDownloadService.RESULT_TEXT);
+                int resultCode = bundle.getInt(BarentswatchMapDownloadService.RESULT_CODE);
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(MainActivity.this, resultText,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, resultText,
+                            Toast.LENGTH_LONG).show();
                 }
+            }
+        }
     };
 }

@@ -20,6 +20,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -130,44 +131,7 @@ public class DownloadDialogs  {
                                 }
                             }
                             dialog.dismiss();
-
-/*
-                            BarentswatchApi barentswatchApi = new BarentswatchApi();
-                            barentswatchApi.setAccesToken(user.getToken());
-                            IBarentswatchApi api = barentswatchApi.getApi();
-
-                            Response response;
-
-
-                            if (tracker != null) {
-                                tracker.send(new HitBuilders.EventBuilder().setCategory("Download file").setAction(typeName).build());
-                                if (tracker != null) {
-                                    tracker.setScreenName(screenName + ActiveToolsFragment.class.getSimpleName());
-                                    tracker.send(new HitBuilders.ScreenViewBuilder().build());
-                                } else {
-                                    Log.wtf("DOWNLOAD_FILE", "TRACKER IS NULL IN ON RESUME");
-                                }
-                            }
-
-                            try {
-                                response = api.geoDataDownload(subscription.ApiName, downloadFormat);
-                                if (response == null) {
-                                    Log.d(tag, "RESPONSE == NULL");
-                                    throw new NullPointerException();
-                                }
-
-                                byte[] fileData = FiskInfoUtility.toByteArray(response.getBody().in());
-                                if (fiskInfoUtility.isExternalStorageWritable()) {
-                                    fiskInfoUtility.writeMapLayerToExternalStorage(activity, fileData, subscription.Name, downloadFormat, user.getFilePathForExternalStorage(), true);
-                                } else {
-                                    Toast.makeText(v.getContext(), R.string.download_failed, Toast.LENGTH_LONG).show();
-                                }
-                            } catch (Exception e) {
-                                Log.d(tag, "Could not download with ApiName: " + subscription.ApiName + "  and format: " + downloadFormat);
-                            }
-
-                            dialog.dismiss();
-*/                        }
+                        }
                     });
                 }
             });
@@ -328,36 +292,59 @@ public class DownloadDialogs  {
                             if(subscribedSwitch.isChecked()) {
                                 if(!(subscriptionFormat.equals(activeSubscription.FileFormatType) && activeSubscription.SubscriptionIntervalName.equals(subscriptionFrequencies.get(subscriptionInterval)) &&
                                         user.getUsername().equals(subscriptionEmail))) {
-                                    SubscriptionSubmitObject updatedSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
-                                    Subscription newSubscriptionObject = api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+                                    final SubscriptionSubmitObject updatedSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
+                                    new AsyncTask<String, Void, Subscription>() {
+                                        @Override
+                                        protected Subscription doInBackground(String... strings) {
+                                            return api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+                                        }
 
-                                    if(newSubscriptionObject != null) {
-                                        ((CheckBox) v).setChecked(true);
-                                    }
+                                        @Override
+                                        protected void onPostExecute(Subscription subscription) {
+                                            if(subscription != null) {
+                                                ((CheckBox) v).setChecked(true);
+                                            }
+                                        }
+                                    }.execute("");
                                 }
                             } else {
-                                Response response = api.deleteSubscription(String.valueOf(activeSubscription.Id));
+                                new AsyncTask<String, Void, Response>() {
+                                    @Override
+                                    protected Response doInBackground(String... strings) {
+                                        return api.deleteSubscription(String.valueOf(activeSubscription.Id));
+                                    }
 
-
-                                if(response.getStatus() == 204) {
-                                    ((CheckBox) v).setChecked(false);
-                                    Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
-                                }
+                                    @Override
+                                    protected void onPostExecute(Response response) {
+                                        if(response.getStatus() == 204) {
+                                            ((CheckBox) v).setChecked(false);
+                                            Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }.execute(String.valueOf(activeSubscription.Id));
                             }
                         } else {
-                            SubscriptionSubmitObject newSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
+                            final SubscriptionSubmitObject newSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
 
-                            Subscription response = api.setSubscription(newSubscription);
+                            new AsyncTask<String, Void, Subscription>() {
+                                @Override
+                                protected Subscription doInBackground(String... strings) {
+                                    return api.setSubscription(newSubscription);
+                                }
 
-                            if(response != null) {
-                                ((CheckBox) v).setChecked(true);
-                                // TODO: add to "Mine abonnementer"
-                                Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
-                            }
+                                @Override
+                                protected void onPostExecute(Subscription subscription) {
+                                    if( subscription != null) {
+                                        ((CheckBox) v).setChecked(true);
+                                        // TODO: add to "Mine abonnementer"
+                                        Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }.execute("");
                         }
 
                         dialog.dismiss();

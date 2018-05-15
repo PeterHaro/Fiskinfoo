@@ -1368,7 +1368,7 @@ public class MapFragment extends Fragment {
                             cancel(true);
                         }
                         if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                            if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                            if(new FiskInfoUtility().writeDataToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
                                 SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
                                 entry.mLastUpdated = newestSubscribable.LastUpdated;
                                 user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
@@ -1417,7 +1417,7 @@ public class MapFragment extends Fragment {
                 }
 
                 if (ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    if(new FiskInfoUtility().writeMapLayerToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
+                    if(new FiskInfoUtility().writeDataToExternalStorage(getActivity(), data, newestSubscribable.Name.replace(",", "").replace(" ", "_"), format, downloadPath, false)) {
                         SubscriptionEntry entry = new SubscriptionEntry(newestSubscribable, true);
                         entry.mLastUpdated = newestSubscribable.LastUpdated;
                         user.setSubscriptionCacheEntry(newestSubscribable.ApiName, entry);
