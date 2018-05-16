@@ -177,7 +177,7 @@ public class DownloadDialogs  {
         }
     }
 
-    public static void doSubscriptionCheckBoxAction(final CheckBox v, final Context context, final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
+    public static void doSubscriptionCheckBoxAction(final CheckBox v, final BarentswatchResultReceiver receiver, final Context context, final PropertyDescription subscription, final Subscription activeSubscription, final User user) {
                 final FiskInfoUtility fiskInfoUtility = new FiskInfoUtility();
 
                 final Dialog dialog;
@@ -185,9 +185,9 @@ public class DownloadDialogs  {
                 int iconId = fiskInfoUtility.subscriptionApiNameToIconId(subscription.ApiName);
 
                 if(iconId != -1) {
-                    dialog = new UtilityDialogs().getDialogWithTitleIcon(v.getContext(), R.layout.dialog_manage_subscription, subscription.Name, iconId);
+                    dialog = new UtilityDialogs().getDialogWithTitleIcon(context, R.layout.dialog_manage_subscription, subscription.Name, iconId);
                 } else {
-                    dialog = new UtilityDialogs().getDialog(v.getContext(), R.layout.dialog_manage_subscription, subscription.Name);
+                    dialog = new UtilityDialogs().getDialog(context, R.layout.dialog_manage_subscription, subscription.Name);
                 }
 
                 final Switch subscribedSwitch = (Switch) dialog.findViewById(R.id.manage_subscription_switch);
@@ -223,7 +223,7 @@ public class DownloadDialogs  {
                 }
 
                 for (String format : subscription.Formats) {
-                    final RadioButtonRow row = new RadioButtonRow(v.getContext(), format);
+                    final RadioButtonRow row = new RadioButtonRow(context, format);
                     if(isSubscribed && activeSubscription.FileFormatType.equals(format)) {
                         row.setSelected(true);
                     }
@@ -232,7 +232,7 @@ public class DownloadDialogs  {
                 }
 
                 for(String interval : subscription.SubscriptionInterval) {
-                    final RadioButtonRow row = new RadioButtonRow(v.getContext(), SubscriptionInterval.getType(interval).toString());
+                    final RadioButtonRow row = new RadioButtonRow(context, SubscriptionInterval.getType(interval).toString());
 
                     if(activeSubscription != null) {
                         row.setSelected(activeSubscription.SubscriptionIntervalName.equals(interval));
@@ -284,7 +284,7 @@ public class DownloadDialogs  {
                         subscriptionEmail = subscriptionEmailEditText.getText().toString();
 
                         if(!(new FiskInfoUtility().isEmailValid(subscriptionEmail))) {
-                            Toast.makeText(context, v.getContext().getString(R.string.error_invalid_email), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getString(R.string.error_invalid_email), Toast.LENGTH_LONG).show();
                             return;
                         }
 
@@ -293,73 +293,17 @@ public class DownloadDialogs  {
                                 if(!(subscriptionFormat.equals(activeSubscription.FileFormatType) && activeSubscription.SubscriptionIntervalName.equals(subscriptionFrequencies.get(subscriptionInterval)) &&
                                         user.getUsername().equals(subscriptionEmail))) {
                                     final SubscriptionSubmitObject updatedSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
-                                    new AsyncTask<String, Void, Subscription>() {
-                                        @Override
-                                        protected Subscription doInBackground(String... strings) {
-                                            try {
-                                                return api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                            return null;
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute(Subscription subscription) {
-                                            if(subscription != null) {
-                                                ((CheckBox) v).setChecked(true);
-                                            }
-                                        }
-                                    }.execute("");
+                                    BarentswatchApiService.startActionUpdateSubscription(context, receiver, user, updatedSubscription, String.valueOf(activeSubscription.Id));
+                                }
+                                else {
+                                    ((CheckBox) v).setChecked(isSubscribed);
                                 }
                             } else {
-                                new AsyncTask<String, Void, Response>() {
-                                    @Override
-                                    protected Response doInBackground(String... strings) {
-                                        try {
-                                            return api.deleteSubscription(strings[0]);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        return null;
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Response response) {
-                                        if((response != null) && (response.getStatus() == 204)) {
-                                            ((CheckBox) v).setChecked(false);
-                                            Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-                                }.execute(String.valueOf(activeSubscription.Id));
+                                BarentswatchApiService.startDeleteSubscription(context, receiver, user,String.valueOf(activeSubscription.Id));
                             }
                         } else {
                             final SubscriptionSubmitObject newSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
-
-                            new AsyncTask<SubscriptionSubmitObject, Void, Subscription>() {
-                                @Override
-                                protected Subscription doInBackground(SubscriptionSubmitObject... newSubscriptions) {
-                                    try {
-                                        return api.setSubscription(newSubscriptions[0]);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    return null;
-                                }
-
-                                @Override
-                                protected void onPostExecute(Subscription subscription) {
-                                    if( subscription != null) {
-                                        ((CheckBox) v).setChecked(true);
-                                        // TODO: add to "Mine abonnementer"
-                                        Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            }.execute(newSubscription);
+                            BarentswatchApiService.startActionSetSubscription(context, receiver, user, newSubscription);
                         }
 
                         dialog.dismiss();

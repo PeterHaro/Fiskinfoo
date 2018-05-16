@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -396,7 +397,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
     @Override
     public void onSubscribeClicked(CheckBox checkBox, AvailableSubscriptionItem item) {
         if (item.isAuthorized() || item.getPropertyDescription().ApiName.equals(getString(R.string.fishing_facility_api_name))) {
-            DownloadDialogs.doSubscriptionCheckBoxAction(checkBox, getContext(), item.getPropertyDescription(), item.getSubscription(), user);
+            DownloadDialogs.doSubscriptionCheckBoxAction(checkBox, mReceiver, getContext(), item.getPropertyDescription(), item.getSubscription(), user);
         }
     }
 
@@ -425,13 +426,23 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
     @Override
     public void onBarentswatchResultReceived(int resultCode, Bundle resultData) {
-        if (resultCode != 0) {
+        if (resultCode == BarentswatchApiService.RESULT_CODE_FETCH_DOWNLOADS_SUCCESS) {
             List<PropertyDescription> availableSubscriptions = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_SUBSCRIPTION);
             List<Subscription> currentSubscriptions = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_CURRENTSUBSCRIPTION);
             List<Authorization> authorizations = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_AUTHORIZATION);
 
             refreshDownloadList(availableSubscriptions, currentSubscriptions, authorizations);
+        } else if ((resultCode == BarentswatchApiService.RESULT_CODE_SUBSCRIPTION_UPDATE_SUCCESS) ||
+                (resultCode == BarentswatchApiService.RESULT_CODE_SUBSCRIPTION_DELETE_SUCCESS)) {
+            Toast.makeText(getContext(), R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
+            new FetchAndRefreshDownloadListTask().execute("");
+
+        } else if ((resultCode == BarentswatchApiService.RESULT_CODE_SUBSCRIPTION_UPDATE_FAILED) ||
+                (resultCode == BarentswatchApiService.RESULT_CODE_SUBSCRIPTION_DELETE_FAILED)) {
+            Toast.makeText(getContext(), R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
+            new FetchAndRefreshDownloadListTask().execute("");
         }
+
     }
 
 }
