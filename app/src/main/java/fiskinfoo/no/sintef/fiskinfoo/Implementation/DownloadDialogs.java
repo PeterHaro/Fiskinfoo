@@ -296,7 +296,12 @@ public class DownloadDialogs  {
                                     new AsyncTask<String, Void, Subscription>() {
                                         @Override
                                         protected Subscription doInBackground(String... strings) {
-                                            return api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+                                            try {
+                                                return api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            return null;
                                         }
 
                                         @Override
@@ -311,12 +316,17 @@ public class DownloadDialogs  {
                                 new AsyncTask<String, Void, Response>() {
                                     @Override
                                     protected Response doInBackground(String... strings) {
-                                        return api.deleteSubscription(String.valueOf(activeSubscription.Id));
+                                        try {
+                                            return api.deleteSubscription(strings[0]);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        return null;
                                     }
 
                                     @Override
                                     protected void onPostExecute(Response response) {
-                                        if(response.getStatus() == 204) {
+                                        if((response != null) && (response.getStatus() == 204)) {
                                             ((CheckBox) v).setChecked(false);
                                             Toast.makeText(context, R.string.subscription_update_successful, Toast.LENGTH_LONG).show();
                                         } else {
@@ -328,10 +338,15 @@ public class DownloadDialogs  {
                         } else {
                             final SubscriptionSubmitObject newSubscription = new SubscriptionSubmitObject(subscription.ApiName, subscriptionFormat, user.getUsername(), user.getUsername(), subscriptionFrequencies.get(subscriptionInterval));
 
-                            new AsyncTask<String, Void, Subscription>() {
+                            new AsyncTask<SubscriptionSubmitObject, Void, Subscription>() {
                                 @Override
-                                protected Subscription doInBackground(String... strings) {
-                                    return api.setSubscription(newSubscription);
+                                protected Subscription doInBackground(SubscriptionSubmitObject... newSubscriptions) {
+                                    try {
+                                        return api.setSubscription(newSubscriptions[0]);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    return null;
                                 }
 
                                 @Override
@@ -344,7 +359,7 @@ public class DownloadDialogs  {
                                         Toast.makeText(context, R.string.subscription_update_failed, Toast.LENGTH_LONG).show();
                                     }
                                 }
-                            }.execute("");
+                            }.execute(newSubscription);
                         }
 
                         dialog.dismiss();
@@ -363,4 +378,25 @@ public class DownloadDialogs  {
                 dialog.show();
 
     }
+
+    /*
+    private static class UpdateSubscriptionTask  extends AsyncTask<String, Void, Subscription> {
+        @Override
+        protected Subscription doInBackground(String... strings) {
+            try {
+                return api.updateSubscription(String.valueOf(activeSubscription.Id), updatedSubscription);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Subscription subscription) {
+            if(subscription != null) {
+                ((CheckBox) v).setChecked(true);
+            }
+        }
+    }.execute("");
+*/
 }
