@@ -1263,6 +1263,7 @@ public class MapFragment extends Fragment {
     }
 
     private void getLayersAndVisibility() {
+        //browser.loadUrl("javascript:getLayersByNameAndVisibilityState()");
         browser.loadUrl("javascript:getLayersAndState()");
     }
 
