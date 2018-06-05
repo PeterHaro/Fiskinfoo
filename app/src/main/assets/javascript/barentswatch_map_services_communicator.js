@@ -108,7 +108,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
 
 BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer = function (data) {
     //SORRY!!!
-    let _createClusteredVectorToolLayer = function (_features, _title, _style) {
+    var _createClusteredVectorToolLayer = function (_features, _title, _style) {
         return new ol.layer.Vector({
             source: new ol.source.Cluster({
                 distance: 35,
@@ -124,17 +124,17 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         });
     };
 
-    let featureData = new ol.format.GeoJSON().readFeatures(data, {
+    var featureData = new ol.format.GeoJSON().readFeatures(data, {
         featureProjection: "EPSG:3857"
     });
 
-    let netsData = [];
-    let crabPotData = [];
-    let mooringSystemData = [];
-    let longLineData = [];
-    let danishPurseSeineData = [];
-    let sensorCableData = [];
-    let unknownData = [];
+    var netsData = [];
+    var crabPotData = [];
+    var mooringSystemData = [];
+    var longLineData = [];
+    var danishPurseSeineData = [];
+    var sensorCableData = [];
+    var unknownData = [];
 
     featureData.forEach(function (feature) {
         switch (feature.values_.tooltypecode) {
@@ -162,13 +162,13 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         }
     });
 
-    let netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
-    let crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
-    let mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
-    let longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
-    let danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
-    let sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCableToolStyle);
-    let unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
+    var netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
+    var crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
+    var mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
+    var longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
+    var danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
+    var sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCabvaroolStyle);
+    var unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
     if (this.map != null) {
         BarentswatchStylesRepository.BarentswatchSetNetsVectorReference(netsLayer);
         BarentswatchStylesRepository.BarentswatchSetCrabpotVectorReference(crabpotLayer);
@@ -285,7 +285,7 @@ BarentswatchMapServicesCommunicator.prototype.createWaveWarningSingleTileWMS = f
     return this.createSingleTileWMS("bw:waveforecast_area_iso_latest");
 };
 
-BarentswatchMapServicesCommunicator.prototype.createIceEdgeSingleTileWMS = function () {
+BarentswatchMapServicesCommunicator.prototype.createIceEdgeSingvarileWMS = function () {
     return this.createSingleTileWMS("bw:icechart_latest");
 };
 

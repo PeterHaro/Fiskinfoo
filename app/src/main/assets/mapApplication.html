@@ -90,6 +90,7 @@
 <script src="javascript/ComputerBackend.js"></script>
 <script src="javascript/Backend.js"></script>
 <script src="javascript/BackendFactory.js"></script>
+<script src="javascript/AndroidBackend.js"></script>
 <script src="javascript/Geolocator.js"></script>
 <script src="javascript/SimpleHtmlBuilder.js"></script>
 <script src="javascript/BarentswatchApiBaseObjects/BarentswatchApiObjectTypes.js"></script>
@@ -110,10 +111,6 @@
     });
 </script>
 <script>
-        function getToolDataFromAndroid() {
-            var jsonTools = Android.getToolFeatureCollection();
-            parseGeoJsonResponse(JSON.parse(jsonTools));
-        }
 </script>
 </body>
 </html>

@@ -4,11 +4,11 @@ function SimpleHtmlBuilder() {
 
 SimpleHtmlBuilder.prototype.createModalIconLine = function (iconName, fieldName, fieldValue) {
     this.beginRow();
-    this.beginColumn("6");
+    this.beginColumn("4");
     this.addMaterialIcon(iconName);
     this.addStrongText(fieldName);
     this.closeDiv();
-    this.beginColumnAlignedToIcon("6");
+    this.beginColumnAlignedToIcon("8");
     this.addText(fieldValue);
     this.closeDiv();
     this.endRow();
@@ -19,9 +19,11 @@ SimpleHtmlBuilder.prototype.createModalIconLine = function (iconName, fieldName,
 
 SimpleHtmlBuilder.prototype.createTitleLineWithStrongText = function (title, field) {
     this.beginRow();
-    this.beginColumn("12");
+    this.mobileStrongTextColumn();
     this.addStrongText(title);
-    this.addLeftPaddedText(title.length, 20, field);
+    this.closeDiv();
+    this.textFieldMobileSupported();
+    this.addText(field);
     this.closeDiv();
     this.endRow();
     var retval = this.getString();
@@ -51,12 +53,21 @@ SimpleHtmlBuilder.prototype.addLeftPaddedText = function (fieldLength, length, t
     this._retval += text;
 };
 
-SimpleHtmlBuilder.prototype.beginColumn = function (size) {
-    this._retval += "<div class='col " + size + "'>";
+SimpleHtmlBuilder.prototype.mobileStrongTextColumn = function () {
+    this._retval += "<div class='col m6 s4" + "'>";
 };
 
-SimpleHtmlBuilder.prototype.beginColumnAlignedToIcon = function(size) {
-    this._retval += "<div class='col " + size + " align-material-text-to-icon' style='padding-top:11.5px'>";
+SimpleHtmlBuilder.prototype.textFieldMobileSupported = function () {
+    this._retval += "<div class='col m6 s8" + "'>";
+};
+
+
+SimpleHtmlBuilder.prototype.beginColumn = function (size) {
+    this._retval += "<div class='col m4 s" + size + "'>";
+};
+
+SimpleHtmlBuilder.prototype.beginColumnAlignedToIcon = function (size) {
+    this._retval += "<div class='col s" + size + " align-material-text-to-icon' style='padding-top:11.5px; white-space: pre;'>";
 };
 
 SimpleHtmlBuilder.prototype.addMaterialIcon = function (icon) {
@@ -64,7 +75,14 @@ SimpleHtmlBuilder.prototype.addMaterialIcon = function (icon) {
 };
 
 SimpleHtmlBuilder.prototype.addStrongText = function (text) {
-    this._retval += "<strong style='vertical-align: text-bottom'>" + text + "</strong>";
+    this._retval += "<strong style='vertical-align: text-bottom; white-space: pre;'>" + text + "</strong>";
+};
+
+SimpleHtmlBuilder.prototype.justifyText = function (text, length) {
+    while (text.length < length) {
+        text += " ";
+    }
+    return text
 };
 
 SimpleHtmlBuilder.prototype.clear = function () {

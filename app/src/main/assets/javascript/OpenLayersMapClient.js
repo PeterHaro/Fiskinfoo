@@ -1,4 +1,4 @@
-var applicationType = Backend.Type.COMPUTER;
+var applicationType = Backend.Type.ANDROID;
 
 var map;
 var statensKartverkCommunicator = new StatensKartverkCommunicator();

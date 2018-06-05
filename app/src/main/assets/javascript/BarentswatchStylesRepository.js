@@ -4,13 +4,13 @@ var BarentswatchStylesRepository = function () {
     var maxFeatureCount = 0;
     var aisVectorReference = null;
     var toolsVectorReference = null;
-    let netsVectorReference = null;
-    let crabpotVectorReference = null;
-    let mooringVectorReference = null;
-    let longlineeVectorReference = null;
-    let danishPurSeineVectorReference = null;
-    let sensorCableVectorReference = null;
-    let unknownVectorReference = null;
+    var netsVectorReference = null;
+    var crabpotVectorReference = null;
+    var mooringVectorReference = null;
+    var longlineeVectorReference = null;
+    var danishPurSeineVectorReference = null;
+    var sensorCableVectorReference = null;
+    var unknownVectorReference = null;
 
     var textFill = new ol.style.Fill({
         color: '#fff'
@@ -519,6 +519,7 @@ var BarentswatchStylesRepository = function () {
                 features = BarentswatchStylesRepository.GetAisVectorReference().getSource().getFeatures();
                 break;
             default:
+                console.log(clusterType);
                 console.log("Invalid typetype. What do we do now?");
         }
         var feature, radius;
@@ -542,10 +543,10 @@ var BarentswatchStylesRepository = function () {
     var netsClusterStyleResolution;
     var crabPotClusterStyleResolution;
     var mooringSystemStyleResolution;
-    let longLineClusterStyleResolution;
-    let danishPurseSeineClusterStyleResolution;
-    let sensorCableClusterStyleResolution;
-    let unknownClusterStyleResolution;
+    var longLineClusterStyleResolution;
+    var danishPurseSeineClusterStyleResolution;
+    var sensorCableClusterStyleResolution;
+    var unknownClusterStyleResolution;
 
     var aisClusterStyleFunction = function (feature, resolution) {
         if (resolution != oldAISClusterStyleResolution) {
@@ -555,7 +556,7 @@ var BarentswatchStylesRepository = function () {
         var style;
         var size = feature.get('features').length;
         if (size > 1) {
-            let radiusSize = 15;
+            var radiusSize = 15;
             if ((feature.get("radius") * 0.6) > radiusSize) {
                 radiusSize = (feature.get("radius") * 0.6);
             }
@@ -652,78 +653,78 @@ var BarentswatchStylesRepository = function () {
 
     //<editor-fold desc="Tool style functions">
     var toolsStyleCache = {};
-    let netsClusterStyleFunction = function (feature, resolution) {
+    var netsClusterStyleFunction = function (feature, resolution) {
         if (resolution !== netsClusterStyleResolution) {
             calculateClusterInfo(resolution, "NETS");
             netsClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createNetStyle(size);
     };
-    let crabpotClusterStyleFunction = function (feature, resolution) {
+    var crabpotClusterStyleFunction = function (feature, resolution) {
         if (resolution !== crabPotClusterStyleResolution) {
             calculateClusterInfo(resolution, "CRABPOT");
             crabPotClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createCrabPotStyle(size);
     };
-    let mooringClusterStyleFunction = function (feature, resolution) {
+    var mooringClusterStyleFunction = function (feature, resolution) {
         if (resolution !== mooringSystemStyleResolution) {
             calculateClusterInfo(resolution, "MOORING");
             mooringSystemStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createMooringSystemStyle(size);
     };
-    let longLineClusterStyleFunction = function (feature, resolution) {
+    var longLineClusterStyleFunction = function (feature, resolution) {
         if (resolution !== longLineClusterStyleResolution) {
             calculateClusterInfo(resolution, "LONGLINE");
             longLineClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createLongLineStyle(size);
     };
-    let danPurSeineClusterStyleFunction = function (feature, resolution) {
+    var danPurSeineClusterStyleFunction = function (feature, resolution) {
         if (resolution !== danishPurseSeineClusterStyleResolution) {
             calculateClusterInfo(resolution, "DANPURSEINE");
             danishPurseSeineClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createPurseSeineStyle(size);
     };
-    let sensorCableClusterStyleFunction = function (feature, resolution) {
+    var sensorCableClusterStyleFunction = function (feature, resolution) {
         if (resolution !== sensorCableClusterStyleResolution) {
             calculateClusterInfo(resolution, "SENSORCABLE");
             sensorCableClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createSensorCableStyle(size);
     };
-    let unknownClusterStyleFunction = function (feature, resolution) {
+    var unknownClusterStyleFunction = function (feature, resolution) {
         if (resolution !== unknownClusterStyleResolution) {
             calculateClusterInfo(resolution, "UNK");
             unknownClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
@@ -906,7 +907,7 @@ var BarentswatchStylesRepository = function () {
         BarentswatchMooringToolStyle: mooringClusterStyleFunction,
         BarentswatchLonglineToolStyle: longLineClusterStyleFunction,
         BarentswatchDanishPureSeineToolStyle: danPurSeineClusterStyleFunction,
-        BarentswatchSenosCableToolStyle: sensorCableClusterStyleFunction,
+        BarentswatchSenosCabvaroolStyle: sensorCableClusterStyleFunction,
         BarentswatchUnknownToolStyle: unknownClusterStyleFunction,
         BarentswatchSetNetsVectorReference: setNetsVectorReference,
         BarentswatchSetCrabpotVectorReference: setCrabpotVectorReference,
