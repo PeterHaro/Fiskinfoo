@@ -1282,7 +1282,7 @@ public class MapFragment extends Fragment {
             view.loadUrl("javascript:toggleLayers(" + json + ");");
 
             if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
-                view.loadUrl("javascript:getToolDataFromAndroid();");
+                //TODO: Check with Bård if this is needed now;   view.loadUrl("javascript:getToolDataFromAndroid();");
             }
 
             pageLoaded = true;
@@ -1520,7 +1520,7 @@ public class MapFragment extends Fragment {
         protected void onPostExecute(final Boolean success) {
             if(success) {
                 if(pageLoaded) {
-                    browser.loadUrl("javascript:getToolDataFromAndroid();");
+                    //TODO: Check with Bård if this is needed now; browser.loadUrl("javascript:getToolDataFromAndroid();");
                 }
             } else {
                 new AlertDialog.Builder(getContext())

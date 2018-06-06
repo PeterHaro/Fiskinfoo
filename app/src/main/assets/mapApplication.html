@@ -111,6 +111,12 @@
     });
 </script>
 <script>
+        function getLayersAndState() {
+            var retval = getLayersByNameAndVisibilityState();
+            message = JSON.stringify(retval);
+            Android.setMessage(message);
+        }
+
 </script>
 </body>
 </html>
