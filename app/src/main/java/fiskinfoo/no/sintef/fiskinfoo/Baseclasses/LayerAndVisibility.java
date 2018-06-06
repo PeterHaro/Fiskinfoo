@@ -2,5 +2,5 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 public class LayerAndVisibility {
     public String name;
-    public boolean isVisible;
+    public boolean visibility;
 }
