@@ -137,9 +137,8 @@ This Fragment does the following calls to JavaScript
   getLayersAndState()
   populateMap()
   zoomToUserPosition
+  toggleLayers (lagt til i html)
 
-? alert(getLayers())
-? toggleLayers (bare tilgjengelig i (gammel) html)
 ? getToolDataFromAndroid (bare tilgjengelig i preview html)
 
  */
@@ -406,11 +405,6 @@ public class MapFragment extends Fragment {
         public String getToolFeatureCollection() {
             return toolsFeatureCollection.toString();
         }
-    }
-
-    @SuppressWarnings("unused")
-    private void getLayers() {
-        browser.loadUrl("javascript:alert(getLayers())");
     }
 
     private void getLayersAndVisibility() {

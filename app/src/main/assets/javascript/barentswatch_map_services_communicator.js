@@ -17,10 +17,15 @@ function BarentswatchMapServicesCommunicator() {
     this.projectionExtent = this.projection.getExtent();
     this._map = null;
     this._aisStyle = null;
+    this._aisSearchPlugin = null; // This plugin facilities the search for vessels and other entities with AIS enabled
 }
 
 BarentswatchMapServicesCommunicator.prototype.setMap = function (map) {
     this._map = map;
+};
+
+BarentswatchMapServicesCommunicator.prototype.setAISSearchPlugin = function (plugin) {
+    this._aisSearchPlugin = plugin;
 };
 
 // __BEGIN_AIS_SERVICE_
@@ -99,16 +104,38 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
         renderMode: 'image'
     });
 
+    var interactionSelection;
     if (this.map != null) {
         BarentswatchStylesRepository.SetAisVectorLayer(layer);
         map.addLayer(layer);
-        map.addInteraction(BarentswatchStylesRepository.BarentswatchAisSelectionStyle());
+        interactionSelection = BarentswatchStylesRepository.BarentswatchAisSelectionStyle();
+        map.addInteraction(interactionSelection);
+    }
+    if (this.aisSearchModule != null) { // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
+        this.aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
+        $(document).ready(function () {
+            $('input.autocomplete').autocomplete({
+                data: aisSearchModule.getVesselObject(),
+                onAutocomplete: function (val) {
+                    map.getView().fit(aisSearchModule.getVessel(val).getGeometry(), map.getSize());
+                    interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
+                    interactionSelection.dispatchEvent({
+                        type: 'select',
+                        selected: [aisSearchModule.getVessel(val)],
+                        deselected: []
+                    });
+                },
+                limit: 5
+            });
+        });
+
+
     }
 };
 
 BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer = function (data) {
     //SORRY!!!
-    var _createClusteredVectorToolLayer = function (_features, _title, _style) {
+    let _createClusteredVectorToolLayer = function (_features, _title, _style) {
         return new ol.layer.Vector({
             source: new ol.source.Cluster({
                 distance: 35,
@@ -124,17 +151,17 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         });
     };
 
-    var featureData = new ol.format.GeoJSON().readFeatures(data, {
+    let featureData = new ol.format.GeoJSON().readFeatures(data, {
         featureProjection: "EPSG:3857"
     });
 
-    var netsData = [];
-    var crabPotData = [];
-    var mooringSystemData = [];
-    var longLineData = [];
-    var danishPurseSeineData = [];
-    var sensorCableData = [];
-    var unknownData = [];
+    let netsData = [];
+    let crabPotData = [];
+    let mooringSystemData = [];
+    let longLineData = [];
+    let danishPurseSeineData = [];
+    let sensorCableData = [];
+    let unknownData = [];
 
     featureData.forEach(function (feature) {
         switch (feature.values_.tooltypecode) {
@@ -162,13 +189,13 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         }
     });
 
-    var netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
-    var crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
-    var mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
-    var longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
-    var danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
-    var sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCabvaroolStyle);
-    var unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
+    let netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
+    let crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
+    let mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
+    let longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
+    let danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
+    let sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCableToolStyle);
+    let unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
     if (this.map != null) {
         BarentswatchStylesRepository.BarentswatchSetNetsVectorReference(netsLayer);
         BarentswatchStylesRepository.BarentswatchSetCrabpotVectorReference(crabpotLayer);
@@ -285,7 +312,7 @@ BarentswatchMapServicesCommunicator.prototype.createWaveWarningSingleTileWMS = f
     return this.createSingleTileWMS("bw:waveforecast_area_iso_latest");
 };
 
-BarentswatchMapServicesCommunicator.prototype.createIceEdgeSingvarileWMS = function () {
+BarentswatchMapServicesCommunicator.prototype.createIceEdgeSingleTileWMS = function () {
     return this.createSingleTileWMS("bw:icechart_latest");
 };
 

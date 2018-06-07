@@ -40,7 +40,7 @@
 
         .map {
             position: absolute;
-            height: calc(100 vw);
+            height: calc(100vw);
             width: 100vw;
         }
 
@@ -65,6 +65,17 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 <div id="map" class="map" tabindex="0">
+    <div class="row">
+        <div class="col s12">
+            <div class="row">
+                <div class="input-field col s12 m4 l8">
+                    <i class="material-icons prefix">textsms</i>
+                    <input type="text" id="autocomplete-input" class="autocomplete">
+                    <label for="autocomplete-input">Søk etter fartøy</label>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="popup" class="ol-popup" title="Closed field">
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
         <div id="popup-content"></div>
@@ -84,6 +95,8 @@
 <script src="javascript/openlayers-sidebar.js"></script>
 <script src="javascript/FiskInfoUtility.js"></script>
 <script src="javascript/animatedCluster.js"></script>
+<script src="javascript/BarentswatchLayersTranslator.js"></script>
+<script src="javascript/VesselAisSearchModule.js"></script>
 <script src="javascript/statenskartverk_opencache.js"></script>
 <script src="javascript/BarentswatchStylesRepository.js"></script>
 <script src="javascript/barentswatch_map_services_communicator.js"></script>
@@ -112,7 +125,8 @@
 </script>
 <script>
         function getLayersAndState() {
-            var retval = getLayersByNameAndVisibilityState();
+            //var retval = getLayersByNameAndVisibilityState();
+            var retval = getLayersBySaneNameAndVisibilityState();
             message = JSON.stringify(retval);
             Android.setMessage(message);
         }
@@ -127,7 +141,8 @@
             }
 
             for (var i = 0; i < layers.length; i++) {
-                setVsibilityOfLayerByName(layers[i], true);
+                //setVsibilityOfLayerByName(layers[i], true);
+                setVsibilityOfLayerByPrettyName(layers[i], true);
             }
         }
 
