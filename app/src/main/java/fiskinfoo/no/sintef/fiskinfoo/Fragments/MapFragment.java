@@ -503,6 +503,11 @@ public class MapFragment extends Fragment {
                 cancel(true);
             }
 
+            // Added to catch exception that sometimes occour due to null context
+            if(getContext() == null) {
+                cancel(true);
+            }
+
             if(cachedEntry != null && file.exists() && ContextCompat.checkSelfPermission(getContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 try {
                     cachedUpdateDateTime = simpleDateFormat.parse(cachedEntry.mLastUpdated.equals(getActivity().getString(R.string.abbreviation_na)) ? "2000-00-00T00:00:00" : cachedEntry.mLastUpdated);
