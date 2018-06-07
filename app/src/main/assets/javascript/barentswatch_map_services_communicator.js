@@ -1,3 +1,5 @@
+"use strict";
+
 //DEPENDS ON BarentswatchStylesRepository
 function BarentswatchMapServicesCommunicator() {
     this._token = "";
@@ -43,7 +45,6 @@ BarentswatchMapServicesCommunicator.prototype.fetchAISData = function () {
 BarentswatchMapServicesCommunicator.prototype._buildApiServiceQueryString = function (layerName) {
     return this._map_services_base_url + layerName + this._map_services_format;
 };
-
 
 BarentswatchMapServicesCommunicator.prototype.createApiServiceVectorLayer = function (layerName, style) {
     return new ol.layer.Vector({
@@ -105,18 +106,19 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
     });
 
     var interactionSelection;
-    if (this.map != null) {
+    if (map != null) {
         BarentswatchStylesRepository.SetAisVectorLayer(layer);
         map.addLayer(layer);
         interactionSelection = BarentswatchStylesRepository.BarentswatchAisSelectionStyle();
         map.addInteraction(interactionSelection);
     }
-    if (this.aisSearchModule != null) { // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
-        this.aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
+    if (aisSearchModule != null) {
+        // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
+        aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
         $(document).ready(function () {
             $('input.autocomplete').autocomplete({
                 data: aisSearchModule.getVesselObject(),
-                onAutocomplete: function (val) {
+                onAutocomplete: function onAutocomplete(val) {
                     map.getView().fit(aisSearchModule.getVessel(val).getGeometry(), map.getSize());
                     interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
                     interactionSelection.dispatchEvent({
@@ -128,21 +130,19 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
                 limit: 5
             });
         });
-
-
     }
 };
 
 BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer = function (data) {
     //SORRY!!!
-    let _createClusteredVectorToolLayer = function (_features, _title, _style) {
+    var _createClusteredVectorToolLayer = function _createClusteredVectorToolLayer(_features, _title, _style) {
         return new ol.layer.Vector({
             source: new ol.source.Cluster({
                 distance: 35,
                 source: new ol.source.Vector({
                     features: _features
                 }),
-                geometryFunction: function (feature) {
+                geometryFunction: function geometryFunction(feature) {
                     return new ol.geom.Point(ol.extent.getCenter(feature.getGeometry().getExtent()));
                 }
             }),
@@ -151,17 +151,17 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         });
     };
 
-    let featureData = new ol.format.GeoJSON().readFeatures(data, {
+    var featureData = new ol.format.GeoJSON().readFeatures(data, {
         featureProjection: "EPSG:3857"
     });
 
-    let netsData = [];
-    let crabPotData = [];
-    let mooringSystemData = [];
-    let longLineData = [];
-    let danishPurseSeineData = [];
-    let sensorCableData = [];
-    let unknownData = [];
+    var netsData = [];
+    var crabPotData = [];
+    var mooringSystemData = [];
+    var longLineData = [];
+    var danishPurseSeineData = [];
+    var sensorCableData = [];
+    var unknownData = [];
 
     featureData.forEach(function (feature) {
         switch (feature.values_.tooltypecode) {
@@ -189,14 +189,14 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         }
     });
 
-    let netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
-    let crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
-    let mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
-    let longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
-    let danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
-    let sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCableToolStyle);
-    let unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
-    if (this.map != null) {
+    var netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
+    var crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
+    var mooringLayer = _createClusteredVectorToolLayer(mooringSystemData, "Tools-mooring", BarentswatchStylesRepository.BarentswatchMooringToolStyle);
+    var longLineLayer = _createClusteredVectorToolLayer(longLineData, "Tools-longLine", BarentswatchStylesRepository.BarentswatchLonglineToolStyle);
+    var danishPurseSeineLayer = _createClusteredVectorToolLayer(danishPurseSeineData, "Tools-danishPurseSeine", BarentswatchStylesRepository.BarentswatchDanishPureSeineToolStyle);
+    var sensorCableLayer = _createClusteredVectorToolLayer(sensorCableData, "Tools-sensorcables", BarentswatchStylesRepository.BarentswatchSenosCableToolStyle);
+    var unknownToolLayer = _createClusteredVectorToolLayer(unknownData, "Tools-unknown", BarentswatchStylesRepository.BarentswatchUnknownToolStyle);
+    if (map != null) {
         BarentswatchStylesRepository.BarentswatchSetNetsVectorReference(netsLayer);
         BarentswatchStylesRepository.BarentswatchSetCrabpotVectorReference(crabpotLayer);
         BarentswatchStylesRepository.BarentswatchSetMooringVectorReference(mooringLayer);
@@ -237,7 +237,6 @@ BarentswatchMapServicesCommunicator.prototype.createAuthenticatedServiceVectorLa
     } else if (authenticatedCall === "tools") {
         FiskInfoUtility.corsRequest(query, "GET", "", this.parseAuthenticatedToolsVectorLayer, corsErrBack, token);
     }
-
 };
 
 function corsErrBack(error) {
@@ -274,7 +273,6 @@ BarentswatchMapServicesCommunicator.prototype._createAuthenticatedAiSLayer = fun
     } else {
         return this.barentswatchCommunicator.createAuthenticatedServiceVectorLayer(this._token, this._ais_service_url, "ais");
     }
-
 };
 
 BarentswatchMapServicesCommunicator.prototype.createAisVectorLayer = function (backend, aisStyle) {
@@ -291,9 +289,9 @@ BarentswatchMapServicesCommunicator.prototype.createAisVectorLayer = function (b
 BarentswatchMapServicesCommunicator.prototype._createAuthenticatedToolsLayer = function (token, that) {
     that._token = token;
     if (that !== null) {
-        that.createAuthenticatedServiceVectorLayer(that._token, that._tool_serive_url, "tools")
+        that.createAuthenticatedServiceVectorLayer(that._token, that._tool_serive_url, "tools");
     } else {
-        this.barentswatchCommunicator.createAuthenticatedServiceVectorLayer(this._token, this._tool_serive_url, "tools")
+        this.barentswatchCommunicator.createAuthenticatedServiceVectorLayer(this._token, this._tool_serive_url, "tools");
     }
 };
 
@@ -301,7 +299,7 @@ BarentswatchMapServicesCommunicator.prototype.createToolsVectorLayer = function 
     if (this._token === "") {
         backend.getToken(this._createAuthenticatedToolsLayer, this);
     } else {
-        this.createAuthenticatedServiceVectorLayer(this._token, this._tool_serive_url, "tools")
+        this.createAuthenticatedServiceVectorLayer(this._token, this._tool_serive_url, "tools");
     }
 };
 
