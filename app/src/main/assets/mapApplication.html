@@ -131,5 +131,30 @@
 
 
 </script>
+<script>
+        function getLayersAndState() {
+            //var retval = getLayersByNameAndVisibilityState();
+            var retval = getLayersBySaneNameAndVisibilityState();
+            message = JSON.stringify(retval);
+            Android.setMessage(message);
+        }
+
+</script>
+<script>
+        function toggleLayers(layers) {
+
+            var allLayers = getLayersByNameAndVisibilityState();
+            for (var i = 0; i < allLayers.length; i++) {
+                setVsibilityOfLayerByName(allLayers[i].name, false);
+            }
+
+            for (var i = 0; i < layers.length; i++) {
+                //setVsibilityOfLayerByName(layers[i], true);
+                setVsibilityOfLayerByPrettyName(layers[i], true);
+            }
+        }
+
+</script>
+
 </body>
 </html>
