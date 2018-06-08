@@ -147,7 +147,7 @@ This Fragment does the following calls to JavaScript
 public class MapFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MapFragment";
 
-    private AutoCompleteTextView searchEditText;
+//    private AutoCompleteTextView searchEditText;
     private LinearLayout bottomSheetLayout;
 
     private AsynchApiCallTask asynchApiCallTask;
@@ -256,15 +256,15 @@ public class MapFragment extends Fragment {
         bottomSheetLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout_bottom_sheet);
         bottomSheetLayout.setVisibility(View.GONE);
 
-        searchEditText = (AutoCompleteTextView) rootView.findViewById(R.id.map_fragment_tool_search_edit_text);
+//        searchEditText = (AutoCompleteTextView) rootView.findViewById(R.id.map_fragment_tool_search_edit_text);
 
 
 
         // TODO: Disable search if user is not authenticated
 
-        searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.text_white_transparent));
+//        searchEditText.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.text_white_transparent));
 
-        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+/*        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 switch(i) {
@@ -321,7 +321,7 @@ public class MapFragment extends Fragment {
                 }
                 return false;
             }
-        });
+        });*/
 
         return rootView;
     }
@@ -634,7 +634,7 @@ public class MapFragment extends Fragment {
                 return false;
             }
 
-
+/* search removed
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -656,7 +656,7 @@ public class MapFragment extends Fragment {
                     });
                 }
             });
-
+*/
 
             return true;
         }
@@ -1219,7 +1219,7 @@ public class MapFragment extends Fragment {
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, vesselNames);
-        searchEditText.setVisibility(View.VISIBLE);
+/*        searchEditText.setVisibility(View.VISIBLE);
         searchEditText.setAdapter(adapter);
 
         searchEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1235,7 +1235,7 @@ public class MapFragment extends Fragment {
                 InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             }
-        });
+        });*/
     }
 
     private void zoomToUserPosition() {
