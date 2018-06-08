@@ -391,7 +391,7 @@ public class MapFragment extends Fragment {
 
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {
-            Log.d(FRAGMENT_TAG, message);
+            //Log.d(FRAGMENT_TAG, message);
             try {
                 layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
