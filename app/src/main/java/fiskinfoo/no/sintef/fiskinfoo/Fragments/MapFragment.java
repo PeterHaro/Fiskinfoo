@@ -135,7 +135,7 @@ import static fiskinfoo.no.sintef.fiskinfoo.MainActivity.MY_PERMISSIONS_REQUEST_
 
 This Fragment does the following calls to JavaScript
   getLayersAndState()
-  populateMap()
+  //populateMap()
   zoomToUserPosition
   toggleLayers (lagt til i html)
 
@@ -423,7 +423,7 @@ public class MapFragment extends Fragment {
             List<String> layers = user.getActiveLayers();
             JSONArray json = new JSONArray(layers);
 
-            view.loadUrl("javascript:populateMap();");
+            //view.loadUrl("javascript:populateMap();");
             view.loadUrl("javascript:toggleLayers(" + json + ");");
 
             if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
