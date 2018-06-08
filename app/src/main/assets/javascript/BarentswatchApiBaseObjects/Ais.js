@@ -34,6 +34,10 @@ Ais.prototype.getFormattedDate = function() { // TODO: Consider adding HH:MM
   return FiskInfoUtility.formatDate(new Date(this._timeStamp));
 };
 
+Ais.prototype.getCoordinates = function() {
+    return ol.coordinate.toStringHDMS(this._position);
+};
+
 Ais.prototype.fetchShipType = function(shipType) { //TODO: Is there any directory with the different ship types ? Once we know. ADD HERE!
     return shipType === 30 ? "Fiskefartøy" : "Fritidsbåt";
 };

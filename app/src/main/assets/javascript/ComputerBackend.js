@@ -75,7 +75,7 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("date_range", "Tid i havet", feature.getTimePlacedInOcean());
     retval += this._httpBuilder.createModalIconLine("date_range", "Satt", feature.getFormattedTimeSetInOcean());
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     //TODO: MARINOGRAM HER
 
     retval += this._httpBuilder.getSelfContainedHeading(6, "Om Fartøyet");
@@ -99,8 +99,8 @@ ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("directions_boat", "Fart", feature._sog);
     retval += this._httpBuilder.createModalIconLine("compass_calibration", "Kurs", feature._cog);
-    retval += this._httpBuilder.createModalIconLine("gps_fixed", "Posisjon", feature._cog);
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("gps_fixed", "Retning", feature._cog);
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createModalIconLine("date_range", "Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createModalIconLine("add_location", "Destinasjon", feature._destination);
     //TODO: Redskaper
@@ -138,7 +138,7 @@ ComputerBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature
     retval += this._httpBuilder.createModalIconLine("get_app", "Dybde", feature._depth);
     retval += this._httpBuilder.createModalIconLine("settings_applications", "Tilhører felt", feature._belongsToField);
     retval += this._httpBuilder.createModalIconLine("business", "Operatør", feature._operator);
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
     retval += "<div class='divider'></div>";
     retval += this._httpBuilder.createModalIconLine("link", "Oljedirektoratets faktasider", feature._oilDirectorateFactPageURL); //TODO: Make it look like URL

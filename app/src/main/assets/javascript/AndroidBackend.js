@@ -9,6 +9,7 @@ AndroidBackend.prototype.getToken = function (_callback, that) {
     }
 
     this._token = Android.getToken();
+    console.log("Token is : " + this._token);
     if (that !== null) {
         _callback(this._token, that)
     } else {
@@ -71,11 +72,11 @@ AndroidBackend.prototype._createIceChartConsentrationContent = function (feature
 
 };
 
-AndroidBackend.prototype._showToolBottomsheet = function (feature) {
+ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("date_range", "Tid i havet", feature.getTimePlacedInOcean());
     retval += this._httpBuilder.createModalIconLine("date_range", "Satt", feature.getFormattedTimeSetInOcean());
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     //TODO: MARINOGRAM HER
 
     retval += this._httpBuilder.getSelfContainedHeading(6, "Om Fartøyet");
@@ -95,12 +96,12 @@ AndroidBackend.prototype._showToolBottomsheet = function (feature) {
     return retval;
 };
 
-AndroidBackend.prototype._createAisBottomsheet = function (feature) {
+ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("directions_boat", "Fart", feature._sog);
     retval += this._httpBuilder.createModalIconLine("compass_calibration", "Kurs", feature._cog);
-    retval += this._httpBuilder.createModalIconLine("gps_fixed", "Posisjon", feature._cog);
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("gps_fixed", "Retning", feature._cog);
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createModalIconLine("date_range", "Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createModalIconLine("add_location", "Destinasjon", feature._destination);
     //TODO: Redskaper
@@ -111,7 +112,7 @@ AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     return retval;
 };
 
-AndroidBackend.prototype._createJMessageBottomsheetContent = function (feature) {
+ComputerBackend.prototype._createJMessageBottomsheetContent = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("date_range", "Stengt fra dato", feature._closedDate);
     retval += this._httpBuilder.createModalIconLine("settings", "Stengt for", feature._closedFor);
@@ -125,20 +126,20 @@ AndroidBackend.prototype._createJMessageBottomsheetContent = function (feature) 
     return retval;
 };
 
-AndroidBackend.prototype._createCoralReefBottomsheet = function (feature) {
+ComputerBackend.prototype._createCoralReefBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("highlight_off", "Info", feature._info);
     return retval;
 };
 
-AndroidBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature) {
+ComputerBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("build", "Type", feature._installationType);
     retval += this._httpBuilder.createModalIconLine("settings", "Funksjon", feature._functionality);
     retval += this._httpBuilder.createModalIconLine("get_app", "Dybde", feature._depth);
     retval += this._httpBuilder.createModalIconLine("settings_applications", "Tilhører felt", feature._belongsToField);
-    retval += this._httpBuilder.createModalIconLine("bu/siness", "Operatør", feature._operator);
-    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", FiskInfoUtility.ddToDms(feature._position[1], feature._position[0]));
+    retval += this._httpBuilder.createModalIconLine("business", "Operatør", feature._operator);
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
     retval += "<div class='divider'></div>";
     retval += this._httpBuilder.createModalIconLine("link", "Oljedirektoratets faktasider", feature._oilDirectorateFactPageURL); //TODO: Make it look like URL
@@ -146,7 +147,7 @@ AndroidBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature)
     return retval;
 };
 
-AndroidBackend.prototype._buildSeismicBottomsheetText = function (feature) {
+ComputerBackend.prototype._buildSeismicBottomsheetText = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("layers", "Område", feature._areaSubheader);
     retval += this._httpBuilder.createModalIconLine("directions_boat", "Seismikkfartøy", feature._seismicVessel);

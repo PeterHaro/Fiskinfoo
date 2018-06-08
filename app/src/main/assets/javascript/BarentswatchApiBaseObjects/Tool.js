@@ -45,7 +45,7 @@ Tool.prototype.parseObject = function (toolObject) {
 };
 
 Tool.prototype.getCoordinates = function() {
-    return ol.proj.transform([this._position[0], this._position[1]], 'EPSG:4326', 'EPSG:3857')
+    return ol.coordinate.toStringHDMS(this._position);
 };
 
 Tool.prototype.getTimePlacedInOcean = function() {

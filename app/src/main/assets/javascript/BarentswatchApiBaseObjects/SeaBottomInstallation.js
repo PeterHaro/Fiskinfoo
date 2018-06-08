@@ -14,7 +14,7 @@ function SeaBottomInstallation() {
     this._oildirectoryMapURL = "";
 }
 
-SeaBottomInstallation.prototype.parseObject = function(seaBottomInstallation) {
+SeaBottomInstallation.prototype.parseObject = function (seaBottomInstallation) {
     this._name = seaBottomInstallation.get("facname");
     this._installationType = seaBottomInstallation.get("fackind");
     this._functionality = seaBottomInstallation.get("facfunc");
@@ -32,6 +32,10 @@ SeaBottomInstallation.prototype.getJson = function () {
     return JSON.stringify(this);
 };
 
-SeaBottomInstallation.prototype.getCoordinates = function() {
+SeaBottomInstallation.prototype.getCoordinates = function () {
+    return ol.coordinate.toStringHDMS(this._position);
+};
+
+SeaBottomInstallation.prototype.getCoordinates = function () {
     return ol.proj.transform([this._position[0], this._position[1]], 'EPSG:4326', 'EPSG:3857')
 };
