@@ -532,8 +532,9 @@ var BarentswatchStylesRepository = function () {
                 ol.extent.extend(extent, originalFeatures[j].getGeometry().getExtent());
             }
             maxFeatureCount = Math.max(maxFeatureCount, jj);
-            radius = 0.35 * (ol.extent.getWidth(extent) + ol.extent.getHeight(extent)) /
+            radius = 0.25 * (ol.extent.getWidth(extent) + ol.extent.getHeight(extent)) /
                 resolution;
+
             feature.set('radius', radius);
         }
     };
@@ -680,6 +681,20 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "CRABPOT");
             crabPotClusterStyleResolution = resolution;
         }
+        if(resolution < 25) { //THESE ARE NOT SELECTABLE
+            let styles = [];
+            let features = feature.get("features");
+            for(var i = 0; i < features.length; i++) {
+                features[i].superHack = true;
+                styles.push(createToolSingleFeatureStyle(features[i]));
+            }
+            console.log("I CAME INTO HACK");
+            console.log("I am returing these styles!");
+            console.log(styles);
+
+            return styles;
+        }
+
         let size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
@@ -702,7 +717,7 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "LONGLINE");
             longLineClusterStyleResolution = resolution;
         }
-        let size = feature.get("features").length;
+        let size = feature.get("features").length; //TODO: CHECK IF 2 AND DOUBLE DOUBLE SINGLE STYLE FEATURE FOR FEAT!
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
