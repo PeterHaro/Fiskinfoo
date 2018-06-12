@@ -11,6 +11,7 @@ var BarentswatchStylesRepository = function () {
     let danishPurSeineVectorReference = null;
     let sensorCableVectorReference = null;
     let unknownVectorReference = null;
+    const unrollClusterResolutionLimit = 25;
 
     var textFill = new ol.style.Fill({
         color: '#fff'
@@ -670,29 +671,34 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "NETS");
             netsClusterStyleResolution = resolution;
         }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
+        }
+
         let size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createNetStyle(size);
     };
+
+    function unrollCluster(feature) {
+        let styles = [];
+        let features = feature.get("features");
+        for (let i = 0; i < features.length; i++) {
+            features[i].superHack = true;
+            styles.push(createToolSingleFeatureStyle(features[i]));
+        }
+        return styles;
+    }
+
     let crabpotClusterStyleFunction = function (feature, resolution) {
         if (resolution !== crabPotClusterStyleResolution) {
             calculateClusterInfo(resolution, "CRABPOT");
             crabPotClusterStyleResolution = resolution;
         }
-        if(resolution < 25) { //THESE ARE NOT SELECTABLE
-            let styles = [];
-            let features = feature.get("features");
-            for(var i = 0; i < features.length; i++) {
-                features[i].superHack = true;
-                styles.push(createToolSingleFeatureStyle(features[i]));
-            }
-            console.log("I CAME INTO HACK");
-            console.log("I am returing these styles!");
-            console.log(styles);
-
-            return styles;
+        if (resolution < unrollClusterResolutionLimit) { //THESE ARE NOT SELECTABLE
+            return unrollCluster(feature);
         }
 
         let size = feature.get("features").length;
@@ -706,6 +712,9 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "MOORING");
             mooringSystemStyleResolution = resolution;
         }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
+        }
         let size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
@@ -716,6 +725,9 @@ var BarentswatchStylesRepository = function () {
         if (resolution !== longLineClusterStyleResolution) {
             calculateClusterInfo(resolution, "LONGLINE");
             longLineClusterStyleResolution = resolution;
+        }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
         }
         let size = feature.get("features").length; //TODO: CHECK IF 2 AND DOUBLE DOUBLE SINGLE STYLE FEATURE FOR FEAT!
         if (!(size > 1)) {
@@ -728,6 +740,9 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "DANPURSEINE");
             danishPurseSeineClusterStyleResolution = resolution;
         }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
+        }
         let size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
@@ -739,6 +754,9 @@ var BarentswatchStylesRepository = function () {
             calculateClusterInfo(resolution, "SENSORCABLE");
             sensorCableClusterStyleResolution = resolution;
         }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
+        }
         let size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
@@ -749,6 +767,9 @@ var BarentswatchStylesRepository = function () {
         if (resolution !== unknownClusterStyleResolution) {
             calculateClusterInfo(resolution, "UNK");
             unknownClusterStyleResolution = resolution;
+        }
+        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+            return unrollCluster(feature);
         }
         let size = feature.get("features").length;
         if (!(size > 1)) {

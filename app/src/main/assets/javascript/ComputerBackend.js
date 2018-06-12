@@ -97,9 +97,8 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
 
 ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
-    retval += this._httpBuilder.createModalIconLine("directions_boat", "Fart", feature._sog);
-    retval += this._httpBuilder.createModalIconLine("compass_calibration", "Kurs", feature._cog);
-    retval += this._httpBuilder.createModalIconLine("gps_fixed", "Retning", feature._cog);
+    retval += this._httpBuilder.createModalIconLine("directions_boat", "Fart", (feature._sog + " knop"));
+    retval += this._httpBuilder.createModalIconLine("compass_calibration", "Kurs", (feature._cog + "\xB0"));
     retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createModalIconLine("date_range", "Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createModalIconLine("add_location", "Destinasjon", feature._destination);
