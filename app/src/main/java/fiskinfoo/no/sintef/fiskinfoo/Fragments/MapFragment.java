@@ -55,6 +55,7 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -64,6 +65,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -148,7 +150,7 @@ public class MapFragment extends Fragment {
     public static final String FRAGMENT_TAG = "MapFragment";
 
 //    private AutoCompleteTextView searchEditText;
-    private LinearLayout bottomSheetLayout;
+//    private LinearLayout bottomSheetLayout;
 
     private AsynchApiCallTask asynchApiCallTask;
     private WebView browser;
@@ -173,6 +175,7 @@ public class MapFragment extends Fragment {
     private Map<String, List<Integer>> vesselToolIdsMap =  new HashMap<>();
     private boolean pageLoaded = false;
     private Tracker tracker;
+    private ProgressBar loadProgressSpinner;
 
 
     public static MapFragment newInstance() {
@@ -253,11 +256,11 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
 
         final View rootView = inf.inflate(R.layout.fragment_map, parent, false);;
-        bottomSheetLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout_bottom_sheet);
-        bottomSheetLayout.setVisibility(View.GONE);
+        //bottomSheetLayout = (LinearLayout) rootView.findViewById(R.id.linear_layout_bottom_sheet);
+        //bottomSheetLayout.setVisibility(View.GONE);
 
 //        searchEditText = (AutoCompleteTextView) rootView.findViewById(R.id.map_fragment_tool_search_edit_text);
-
+        loadProgressSpinner = (ProgressBar)rootView.findViewById(R.id.mapProgressBar);
 
 
         // TODO: Disable search if user is not authenticated
@@ -373,6 +376,15 @@ public class MapFragment extends Fragment {
 
         });
 
+        browser.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // chromium, enable hardware acceleration
+            browser.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            browser.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
         updateMap();
     }
 
@@ -431,12 +443,14 @@ public class MapFragment extends Fragment {
             }
 
             pageLoaded = true;
+            loadProgressSpinner.setVisibility(View.GONE);
+
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
                     getLayersAndVisibility();
                 }
-            }, 3000);
+            }, 200);
         }
     }
 
@@ -1142,6 +1156,7 @@ public class MapFragment extends Fragment {
 
     public void updateMap() {
         pageLoaded = false;
+        loadProgressSpinner.setVisibility(View.VISIBLE);
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
 
