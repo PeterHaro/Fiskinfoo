@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.format.DateFormat;
 import android.util.JsonReader;
@@ -47,9 +48,12 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -587,7 +591,32 @@ public class ActiveToolsFragment extends Fragment {
             String toolString = featureCollection.toString(4);
 
             if (fiskInfoUtility.isExternalStorageWritable()) {
-                fiskInfoUtility.writeDataToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
+                File reportPath = new File(getActivity().getFilesDir(), "reports");
+                if (!reportPath.exists()) {
+                    if (!reportPath.mkdirs())
+                        return;
+                }
+                File reportFile = new File(reportPath, getString(R.string.tool_report_file_name) + "." + getString(R.string.format_geojson));
+                OutputStream outputStream = null;
+                try {
+                    outputStream = new FileOutputStream(reportFile);
+                    outputStream.write(toolString.getBytes());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                } finally {
+                    if (outputStream != null) {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                //fiskInfoUtility.writeDataToExternalStorage(getActivity(), toolString.getBytes(), getString(R.string.tool_report_file_name), getString(R.string.format_geojson), null, false);
                 String directoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
                 String fileName = directoryPath + "/FiskInfo/api_setting.json";
                 File apiSettingsFile = new File(fileName);
@@ -619,6 +648,7 @@ public class ActiveToolsFragment extends Fragment {
                 }
 
                 recipient = recipient == null ? getString(R.string.tool_report_recipient_email) : recipient;
+                //recipient = recipient == null ? "erlend.stav@sintef.no" : recipient;
                 String[] recipients = new String[] { recipient };
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("plain/plain");
@@ -642,8 +672,10 @@ public class ActiveToolsFragment extends Fragment {
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.tool_report_email_header));
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
                         + "/FiskInfo/Redskapsrapport.geojson");
-                Uri uri = Uri.fromFile(file);
+                //Uri uri = Uri.fromFile(file);
+                Uri uri = FileProvider.getUriForFile(getContext(), "fiskinfoo.no.sintef.fiskinfoo.fileprovider", reportFile);
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 startActivity(Intent.createChooser(intent, getString(R.string.send_tool_report_intent_header)));
 
