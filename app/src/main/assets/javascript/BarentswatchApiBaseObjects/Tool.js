@@ -68,11 +68,38 @@ Tool.prototype.getFormattedTimeSetInOcean = function() {
 };
 
 Tool.prototype.getName = function () {
-    switch (this._tooltypename) {
-        case "Nets":
-            return "Fiskenett";
+    var lowername = this._tooltypecode.toLowerCase();
+    switch (lowername) {
+        case "longline":
+        case "long line":
+        case "line":
+            return "Line";
+        case "nets":
+        case "garn":
+            return "Garn";
+        case "crabpot":
+        case "teine":
+        case "crab pot":
+            return "Teine";
+        case "seismic":
+        case "sensorkabel":
+            return "Sensorkabel";
+        case "danpurseine":
+        case "snurpenot":
+        case "danish- / purse- seine":
+            return "Snurpenot";
+        case "sensorcable":
+        case "sensor / kabel":
+            return "Sensor / kabel";
+        case "mooring":
+        case "fortøyningssystem":
+            return "Fortøyningssystem";
+        case "unk":
+        case "ukjent redskap":
+        case "unknown":
+            return "Ukjent redskap";
         default:
-            return this._tooltypename;
+            return "Ukjent redskap";
     }
 };
 
