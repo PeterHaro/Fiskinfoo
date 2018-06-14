@@ -433,6 +433,8 @@ public class MapFragment extends Fragment {
 
         public void onPageFinished(WebView view, String url) {
             List<String> layers = user.getActiveLayers();
+            if (!layers.contains(getString(R.string.primary_background_map)))
+                layers.add(getString(R.string.primary_background_map));
             JSONArray json = new JSONArray(layers);
 
             //view.loadUrl("javascript:populateMap();");
@@ -708,7 +710,7 @@ public class MapFragment extends Fragment {
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
         LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
         for (LayerAndVisibility layer : layers) {
-            if (layer.name.equals("Grunnkart") || layer.name.contains("OpenLayers_Control")) {
+            if (layer.name.equals(getString(R.string.primary_background_map)) || layer.name.contains("OpenLayers_Control")) {
                 continue;
             }
             boolean isActive;
@@ -724,7 +726,7 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 List<String> layersList = new ArrayList<>();
-                layersList.add("Grunnkart");
+                layersList.add(getString(R.string.primary_background_map));
 
                 for (int i = 0; i < mapLayerLayout.getChildCount(); i++) {
                     if (rows.get(i).isChecked()) {

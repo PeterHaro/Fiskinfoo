@@ -79,7 +79,7 @@ limitations under the License.
     <string name="my_page">Last ned kart</string>
     <string name="map">Kart</string>
     <string name="register_tool">Redskapsregistrering</string>
-    <string name="my_tools">Mine redskaper</string>
+    <string name="my_tools">Redskap</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">Open drawer</string>
@@ -172,7 +172,7 @@ limitations under the License.
     <string name="map_search_view_tag_search">Søk</string>
     <string name="map_search_view_tag_clear">Fjern</string>
     <string name="error_no_match_for_vessel_search">Ingen treff</string>
-    <string name="primary_background_map">Grunnkart</string>
+    <string name="primary_background_map">Norges grunnkart</string>
     <string name="error_cannot_zoom_to_position_without_location_access">Kan ikke gå til posisjon uten posisjonstilgang</string>
     <string name="closed_from_date">Stengt fra dato: %1$s</string>
     <string name="closed_to_date">Stengt til dato: %1$s</string>
@@ -469,12 +469,12 @@ limitations under the License.
     <string name="removed_tools_information_text">Følgende redskaper har blitt utrapportert og vil nå bli arkivert.</string>
     <string name="unexpected_tool_removal_info_text">Følgende redskap ble ikke funnet hos Barentswatch, men ser ikke ut til å være utrapportert via appen. Dette skyldes som regel at redskapet har blitt innrapportert på en annen måte, for eks. ved å ringe inn til Kystvaktsentralen, eller at redskapet ble utrapportert før appen fikk registrert redskapet som innrapportert. Dersom du vet at redskapet har blitt tatt opp kan du velge å arkivere det.</string>
     <string name="reported_tools_removed_title">Utrapporterte redskaper</string>
-    <string name="tool_fragement_explanation_title">Mine redskaper</string>
+    <string name="tool_fragement_explanation_title">Redskap</string>
     <string name="tool_fragment_explanation">På denne siden kan du registrere og redigere redskaper når du setter de ut. Du kan også rapportere inn redskaper ved å trykke på \'Send redskapsrapport\'-knappen i innstillingene og velge en epostklient.\nDersom du fyller ut kontaktinformasjon i innstillingene benyttes disse verdiene automatisk når du oppretter nye redskaper.</string>
     <string name="contact_information">Kontaktinformasjon</string>
-    <string name="my_tools_fragment_title">Mine redskaper</string>
-    <string name="my_active_tools_fragment_title">Aktive redskaper</string>
-    <string name="my_archived_tools_fragment_title">Arkiverte redskaper</string>
+    <string name="my_tools_fragment_title">Redskap</string>
+    <string name="my_active_tools_fragment_title">Aktive redskap</string>
+    <string name="my_archived_tools_fragment_title">Arkiverte redskap</string>
     <string name="edit_tool_fragment_edit_title">Rediger redskap</string>
     <string name="edit_tool_fragment_new_tool_title">Nytt redskap</string>
     <string name="tool_updated">Redskap oppdatert</string>

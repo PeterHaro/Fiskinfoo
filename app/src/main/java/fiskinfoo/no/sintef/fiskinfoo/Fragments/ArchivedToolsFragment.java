@@ -134,7 +134,7 @@ public class ArchivedToolsFragment extends Fragment {
         }
 
         MainActivity activity = (MainActivity) getActivity();
-        String title = getResources().getString(R.string.my_archived_tools_fragment_title);
+        String title = getResources().getString(R.string.my_tools_fragment_title);
         activity.refreshTitle(title);
     }
 
