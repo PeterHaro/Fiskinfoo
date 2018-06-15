@@ -42,21 +42,3 @@ Ais.prototype.getCoordinates = function () {
 Ais.prototype.fetchShipType = function (shipType) { //TODO: Is there any directory with the different ship types ? Once we know. ADD HERE!
     return shipType === 30 ? "Fiskefartøy" : "Fritidsbåt";
 };
-
-/* "properties": {
-                "TimeStamp": jsonData[i].TimeStamp,
-                "Sog": jsonData[i].Sog,
-                "Rot": jsonData[i].Rot,
-                "Navstat": jsonData[i].Navstat,
-                "Mmsi": jsonData[i].Mmsi,
-                "Cog": jsonData[i].Cog,
-                "ShipType": jsonData[i].ShipType,
-                "Name": jsonData[i].Name,
-                "Imo": jsonData[i].Imo,
-                "Callsign": jsonData[i].Callsign,
-                "Country": jsonData[i].Country,
-                "Eta": jsonData[i].Eta,
-                "Destination": jsonData[i].Destination,
-                "IsSurvey": jsonData[i].IsSurvey,
-                "Source": jsonData[i].Source
-            }*/

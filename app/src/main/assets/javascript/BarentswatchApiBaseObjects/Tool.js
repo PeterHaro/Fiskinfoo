@@ -24,7 +24,7 @@ function Tool() {
 
 Tool.prototype.parseObject = function (toolObject) {
     this._id = toolObject.get("id");
-    this._position = ol.extent.getCenter(toolObject.getGeometry().getExtent());
+    this._position = ol.proj.transform(ol.extent.getCenter(toolObject.getGeometry().getExtent()), 'EPSG:3857', 'EPSG:4326');
     this._imo = toolObject.get("imo");
     this._ircs = toolObject.get("ircs");
     this._lastchangedbysource = toolObject.get("lastchangedbysource");
@@ -44,11 +44,11 @@ Tool.prototype.parseObject = function (toolObject) {
     this._name = this.getName();
 };
 
-Tool.prototype.getCoordinates = function() {
-    return ol.coordinate.toStringHDMS(this._position);
+Tool.prototype.getCoordinates = function () {
+    return ol.coordinate.toStringHDMS(this._position, 1);
 };
 
-Tool.prototype.getTimePlacedInOcean = function() {
+Tool.prototype.getTimePlacedInOcean = function () {
     var currentDate = new Date();
     var setupDate = new Date(this._setupdatetime);
     var deltaTime = Math.abs(setupDate - currentDate) / 1000;
@@ -63,7 +63,7 @@ Tool.prototype.getTimePlacedInOcean = function() {
     return "" + days.toString() + " Døgn " + hours.toString() + " timer " + minutes + " minutter";
 };
 
-Tool.prototype.getFormattedTimeSetInOcean = function() {
+Tool.prototype.getFormattedTimeSetInOcean = function () {
     return "Satt: " + FiskInfoUtility.formatDate(new Date(this._setupdatetime));
 };
 
