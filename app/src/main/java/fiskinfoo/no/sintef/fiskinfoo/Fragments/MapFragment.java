@@ -524,11 +524,12 @@ public class MapFragment extends Fragment {
                     newestUpdateDateTime = simpleDateFormat.parse(newestSubscribable != null ? newestSubscribable.LastUpdated : "2000-00-00T00:00:00");
 
                     if(newestSubscribable != null && cachedUpdateDateTime.getTime() - newestUpdateDateTime.getTime() < 0) {
-                        response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
                         try {
+                            response = barentswatchApi.getApi().geoDataDownload(newestSubscribable.ApiName, format);
                             data = FiskInfoUtility.toByteArray(response.getBody().in());
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
+                            return false;
                         }
 
                         if(getContext() == null) {
