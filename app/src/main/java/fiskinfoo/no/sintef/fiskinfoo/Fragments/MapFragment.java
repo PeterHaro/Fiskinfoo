@@ -176,6 +176,7 @@ public class MapFragment extends Fragment {
     private boolean pageLoaded = false;
     private Tracker tracker;
     private ProgressBar loadProgressSpinner;
+    private boolean fragmentIsActive = false;
 
 
     public static MapFragment newInstance() {
@@ -199,6 +200,7 @@ public class MapFragment extends Fragment {
 
         toolMap = new HashMap<>();
         setHasOptionsMenu(true);
+        fragmentIsActive = true;
     }
 
     @Override
@@ -222,8 +224,16 @@ public class MapFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        fragmentIsActive = false;
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
+        fragmentIsActive = true;
 
         if(getView() != null) {
             getView().refreshDrawableState();
@@ -432,6 +442,8 @@ public class MapFragment extends Fragment {
         }
 
         public void onPageFinished(WebView view, String url) {
+            if (!fragmentIsActive)
+                return;
             List<String> layers = user.getActiveLayers();
             if (!layers.contains(getString(R.string.primary_background_map)))
                 layers.add(getString(R.string.primary_background_map));
