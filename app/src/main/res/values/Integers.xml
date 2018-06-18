@@ -50,4 +50,7 @@ limitations under the License.
     <integer name="utility_row_registration_number_vessel_number_max_length">4</integer>
     <integer name="utility_row_registration_number_municipality_code_max_length">2</integer>
 
+    <!-- Barentswatch API  -->
+    <integer name="fishing_facility_api_id">9</integer>
+
 </resources>

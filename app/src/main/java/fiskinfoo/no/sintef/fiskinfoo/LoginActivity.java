@@ -18,14 +18,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.CursorLoader;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.os.Handler;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -33,7 +32,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -52,13 +50,16 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authentication;
+import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.models.Authorization;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchApiService;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.BarentswatchResultReceiver;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LoginActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor>, BarentswatchResultReceiver.Receiver {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -74,6 +75,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     private BarentswatchApi barentswatchApi;
     private TextView mRegisterUserTextView;
     private TextView mForgotPasswordTextView;
+    public BarentswatchResultReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +89,8 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
         mRegisterUserTextView = (TextView) findViewById(R.id.sign_up_text_view);
         mForgotPasswordTextView = (TextView) findViewById(R.id.forgotten_password_text_view);
 
-        //Skip login form if the user requested it
-        user = new User();
+        mReceiver = new BarentswatchResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
 
         loginUserIfStored();
 
@@ -234,7 +236,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 }
                 changeActivity(MainActivity.class, user);
             } else {
-                mAuthTask = new UserLoginTask(email, password);
+                mAuthTask = new UserLoginTask(email, password, this);
                 mAuthTask.execute((Void) null);
             }
 
@@ -301,6 +303,25 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
     }
 
+    @Override
+    public void onBarentswatchResultReceived(int resultCode, Bundle resultData) {
+        if (resultCode == BarentswatchApiService.RESULT_CODE_FETCH_AUTHORIZATIONS_SUCCESS) {
+            List<Authorization> authorizations = resultData.getParcelableArrayList(BarentswatchApiService.RESULT_PARAM_AUTHORIZATION);
+
+            if(authorizations != null) {
+                for(Authorization authorization : authorizations) {
+                    // 9 is the id of fishingfacility
+                    if(authorization.Id == getResources().getInteger(R.integer.fishing_facility_api_id)) {
+                        user.setIsFishingFacilityAuthenticated(true);
+                        break;
+                    }
+                }
+            }
+
+            changeActivity(MainActivity.class, user);
+        }
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -308,12 +329,14 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
         private final String mEmail;
         private final String mPassword;
-        private final User user = new User();
         private final AtomicReference<Authentication> authenticationResponse = new AtomicReference<>();
         private final CheckBox storeUserToDisk = (CheckBox) findViewById(R.id.login_checkbox);
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        private final Context context;
+
+        UserLoginTask(String email, String password, Context context) {
+            this.mEmail = email;
+            this.mPassword = password;
+            this.context = context;
         }
 
         @Override
@@ -328,6 +351,7 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
                 Gson gson = new Gson();
                 Authentication auth = gson.fromJson(response.body().charStream(), Authentication.class);
                 authenticationResponse.set(auth);
+
                 return auth.access_token != null;
             } catch (Exception e) {
                 Log.d(TAG, "Exception occurred when trying to login to barentswatch: " + e.toString());
@@ -340,24 +364,28 @@ public class LoginActivity extends Activity implements LoaderManager.LoaderCallb
             mAuthTask = null;
             showProgress(false);
             if (success) {
+                user = new User();
                 user.setAuthentication(true);
                 user.setUsername(mEmail);
                 user.setPassword(mPassword);
                 user.setAuthentication(authenticationResponse.get());
                 user.setPreviousAuthenticationTimeStamp((System.currentTimeMillis() / 1000L));
+                user.setIsFishingFacilityAuthenticated(false);
+
                 if(user.getActiveLayers() == null) {
                     List<String> activeLayers = new ArrayList<>();
                     activeLayers.add(getString(R.string.fishing_facility_name));
                     user.setActiveLayers(activeLayers);
                 }
+
                 if(storeUserToDisk.isChecked()) {
                     User.rememberUser(LoginActivity.this);
                     user.writeToSharedPref(LoginActivity.this);
                 } else {
                     User.forgetUser(LoginActivity.this);
                 }
-                changeActivity(MainActivity.class, user);
 
+                BarentswatchApiService.startActionFetchAuthorizations(context, mReceiver, user);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

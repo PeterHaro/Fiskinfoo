@@ -32,6 +32,7 @@ public class BarentswatchApiService extends IntentService {
     private static final String ACTION_SET_SUBSCRIPTION = "fiskinfoo.no.sintef.fiskinfoo.Implementation.action.SETSUBSCRIPTION";
     private static final String ACTION_UPDATE_SUBSCRIPTION = "fiskinfoo.no.sintef.fiskinfoo.Implementation.action.UPDATESUBSCRIPTION";
     private static final String ACTION_DELETE_SUBSCRIPTION = "fiskinfoo.no.sintef.fiskinfoo.Implementation.action.DELETESUBSCRIPTION";
+    private static final String ACTION_FETCH_AUTHORIZATIONS = "fiskinfoo.no.sintef.fiskinfoo.Implementation.action.FETCHAUTHORIZATIONS";
 
     public static final String RESULT_PARAM_ACTION = "fiskinfoo.no.sintef.fiskinfoo.Implementation.result.ACTION";
 
@@ -44,9 +45,11 @@ public class BarentswatchApiService extends IntentService {
     public static final int RESULT_CODE_FETCH_DOWNLOADS_SUCCESS = 100;
     public static final int RESULT_CODE_SUBSCRIPTION_UPDATE_SUCCESS = 101;
     public static final int RESULT_CODE_SUBSCRIPTION_DELETE_SUCCESS = 102;
+    public static final int RESULT_CODE_FETCH_AUTHORIZATIONS_SUCCESS = 103;
     public static final int RESULT_CODE_FETCH_DOWNLOADS_FAILED = -100;
     public static final int RESULT_CODE_SUBSCRIPTION_UPDATE_FAILED = -101;
     public static final int RESULT_CODE_SUBSCRIPTION_DELETE_FAILED = -102;
+    public static final int RESULT_CODE_FETCH_AUTHORIZATIONS_FAILED = -103;
 
 
     public static final String ACTION_PARAM_USER = "user";
@@ -107,6 +110,17 @@ public class BarentswatchApiService extends IntentService {
         context.startService(intent);
     }
 
+    /**
+     * Starts this service to perform fetching and downloading of download subscription information
+     * If the service is already performing a task this action will be queued.
+     *
+     * @see IntentService
+     */
+    public static void startActionFetchAuthorizations(Context context, ResultReceiver receiver, User user) {
+        Intent intent = createIntent(context, receiver, user, ACTION_FETCH_AUTHORIZATIONS);
+        context.startService(intent);
+    }
+
     private static Intent createIntent(Context context, ResultReceiver receiver, User user, String action) {
         Intent intent = new Intent(context, BarentswatchApiService.class);
         intent.setAction(action);
@@ -141,6 +155,8 @@ public class BarentswatchApiService extends IntentService {
             } else if (ACTION_DELETE_SUBSCRIPTION.equals(action)) {
                 String subID = intent.getStringExtra(ACTION_PARAM_SUBSCRIPTION_ID);
                 handleDeleteSubscription(resultReceiver, resultBundle, iAPI, subID);
+            } else if (ACTION_FETCH_AUTHORIZATIONS.equals(action)) {
+                handleFetchAuthorizations(resultReceiver, resultBundle, iAPI);
             }
         }
     }
@@ -199,6 +215,19 @@ public class BarentswatchApiService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
             receiver.send(RESULT_CODE_SUBSCRIPTION_DELETE_FAILED, b);
+        }
+    }
+
+    private void handleFetchAuthorizations(ResultReceiver receiver, Bundle b, IBarentswatchApi api) {
+        try {
+            List<Authorization> authorizations = api.getAuthorization();
+
+            b.putParcelableArrayList(RESULT_PARAM_AUTHORIZATION, new ArrayList<Parcelable>(authorizations));
+
+            receiver.send(RESULT_CODE_FETCH_AUTHORIZATIONS_SUCCESS, b);
+        } catch (Exception e) {
+            e.printStackTrace();
+            receiver.send(RESULT_CODE_FETCH_AUTHORIZATIONS_FAILED, b);
         }
     }
 
