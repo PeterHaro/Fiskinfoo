@@ -6,14 +6,12 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="INTERACT_ACROSS_USERS_FULL" />
@@ -39,14 +37,14 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main"></activity>
+            android:label="@string/title_activity_main"/>
         <activity
             android:name=".Implementation.FileDialog"
-            android:label="@string/title_activity_file_dialog"></activity>
+            android:label="@string/title_activity_file_dialog"/>
 
         <service
             android:name=".Implementation.BarentswatchApiService"
-            android:exported="false"></service>
+            android:exported="false"/>
         <service android:name=".Implementation.BarentswatchMapDownloadService" />
         <provider
             android:name="android.support.v4.content.FileProvider"
