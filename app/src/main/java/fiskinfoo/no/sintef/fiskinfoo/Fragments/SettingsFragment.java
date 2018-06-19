@@ -83,7 +83,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initOfflineModeRow() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+ /*       View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -96,8 +96,10 @@ public class SettingsFragment extends Fragment {
                         .commit();
             }
         };
-
         SettingsRow row = new SettingsRow(getContext(), getString(R.string.offline_mode), R.drawable.ic_portable_wifi_off_black_24dp, onClickListener);
+*/
+        SettingsRow row = new SettingsRow(getContext(), getString(R.string.offline_mode_next_version), R.drawable.ic_portable_wifi_off_black_24dp, null);
+        row.setEnabled(false);
         linearLayout.addView(row.getView());
     }
 

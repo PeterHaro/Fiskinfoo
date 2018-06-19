@@ -285,6 +285,7 @@ limitations under the License.
     <string name="offline_mode_activated">Offline-modus aktivert</string>
     <string name="offline_mode_deactivated">Offline-modus stoppet</string>
     <string name="offline_mode_active">Offline-modus aktiv</string>
+    <string name="offline_mode_next_version">Offline-modus - kommer i neste versjon av appen</string>
     <string name="user_settings">Brukerinnstillinger</string>
     <string name="user_settings_fragment_title">Brukerinnstillinger</string>
 
@@ -587,7 +588,7 @@ limitations under the License.
     <string name="summary_tools_status_active">Aktive: </string>
     <string name="summary_tools_status_archived">Arkiverte: </string>
     <string name="summary_map_title">Kart</string>
-    <string name="summary_map_subtitle">Kart er tilgjengelig i online og offline mode</string>
+    <string name="summary_map_subtitle">Kart med  tilgjengelige kartlag for iskant, seismikk, redskap, AIS med mer. Kartet krever nettforbindelse.</string>
     <string name="summary_button_change_profile">Se profil</string>
     <string name="summary_button_view_tools">Se redskap</string>
     <string name="summary_button_new_tool">Nytt redskap</string>

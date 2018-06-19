@@ -258,11 +258,12 @@ public class User implements Parcelable{
     }
 
     public boolean getOfflineMode() {
-        return offlineModeActive;
+        return false; // TODO Change this when we reactivate offline mode; return offlineModeActive;
     }
 
     public void setOfflineMode(boolean active) {
-        offlineModeActive = active;
+        offlineModeActive = false; // TODO: Change this when we reactivate offline mode
+        // offlineModeActive = active;
     }
 
     public Collection<SubscriptionEntry> getSubscriptionCacheEntries() {
