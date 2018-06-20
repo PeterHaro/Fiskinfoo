@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Barentswatch FiskInfo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" defer="defer" src="OpenLayers.js"></script>
+    <script>
+        var map;
+        var ls;
+        var mFeature = null;
+        var popup = null;
+        var selectFeature;
+        var geoJson = null;
+        var token = null;
+        var sensor = false;
+        var format = "image/jpeg";
+        var highlightVesselName = null;
+        window.onload = function () {
+            init();
+        }
+        var init = function () {
+            // create map
+            map = new OpenLayers.Map({
+                div: "map",
+                theme: null,
+                projection: 'EPSG:3857',
+                controls: [
+                    new OpenLayers.Control.Attribution(),
+                    new OpenLayers.Control.TouchNavigation({
+                        dragPanOptions: {
+                            enableKinetic: true
+                        }
+                    }),
+                    new OpenLayers.Control.Zoom()
+                ],
+                layers: [
+                    new OpenLayers.Layer.WMS(
+	      		"Grunnkart", "http://opencache.statkart.no/gatekeeper/gk/gk.open?",
+		      	{ layers: 'sjokartraster', format: 'image/png' },
+                        { 'displayInLayerSwitcher': false }, {
+                            isBaseLayer: true
+                        }
+
+	      	)
+                ],
+                center: new OpenLayers.LonLat(15, 66.5).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857')),
+                zoom: 5
+            });
+        };
+
+        function populateMap() {
+            map.addLayers(populateAllAvailableWmsLayers());
+            populateAndStyleToolsLayer();
+            populateAndStyleIceChartLayer();
+            populateLayers();
+            toggleAllLayersInvisible();
+
+            var toolLayer = map.getLayersByName("Redskap")[0];
+            selectFeature = new OpenLayers.Control.SelectFeature(
+            toolLayer, {
+                onSelect: clickNotice,
+                onUnselect: onPopupFeatureUnselect,
+                autoActivate: true
+            });
+            map.addControl(selectFeature);
+
+            OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+                defaultHandlerOptions: {
+                    'single': true,
+                    'double': false,
+                    'pixelTolerance': 0,
+                    'stopSingle': false,
+                    'stopDouble': false
+                },
+
+                initialize: function(options) {
+                    this.handlerOptions = OpenLayers.Util.extend(
+                        {}, this.defaultHandlerOptions
+                    );
+                    OpenLayers.Control.prototype.initialize.apply(
+                        this, arguments
+                    );
+                    this.handler = new OpenLayers.Handler.Click(
+                        this, {
+                            'click': this.trigger
+                        }, this.handlerOptions
+                    );
+                },
+
+                trigger: function(e) {
+                    mapClick(e);
+                }
+            });
+
+            var click = new OpenLayers.Control.Click();
+            map.addControl(click);
+            click.activate();
+        }
+
+        function Container(name, isVisible) {
+            this.name = name;
+            this.isVisible = isVisible;
+        }
+
+        function populateLayers() {
+            var layerArray = getLayers();
+
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            for (var i = 0; i < layerArray.length; i++) {
+                if(layerArray[i] === "Grunnkart") {
+                    continue;
+                } else if(layerArray[i] === "Redskap") {
+                    continue;
+                }
+
+                var features = getJsonFile(layerArray[i].replace(",", "").replace(" ", "_"));
+
+                if(features != null) {
+                    map.getLayersByName(layerArray[i])[0].addFeatures(geoJsonFormat.read(features));
+                }
+            }
+        }
+
+        function getLayersAndState() {
+            var retval = [];
+            var layerArray = getLayers();
+            for (var i = 0; i < layerArray.length; i++) {
+                if (getLayerVisibilityByName(layerArray[i])) {
+                    var c = new Container(layerArray[i], true);
+                    retval.push(c);
+                } else {
+                    var co = new Container(layerArray[i], false);
+                    retval.push(co);
+                }
+            }
+            message = JSON.stringify(retval);
+            Android.setMessage(message);
+        }
+
+        function toggleLayers(layers) {
+            toggleAllLayersInvisible();
+            for (var i = 0; i < layers.length; i++) {
+                toggleLayerVisibilityByName(layers[i], true);
+            }
+        }
+
+        function getToken() {
+            token = Android.getToken();
+            return token;
+        }
+
+        function getJsonFile(fileName) {
+            var jsonFile = Android.getGeoJSONFile(fileName);
+
+            if(jsonFile != null) {
+                return JSON.parse(jsonFile);
+            } else {
+                return null;
+            }
+        }
+
+        function populateAndStyleToolsLayer() {
+            var toolLayer;
+            geoJson = getJsonFile("Redskap");
+
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+
+            var toolStyle = OpenLayers.Util.extend( {}, OpenLayers.Feature.Vector.style[ 'default' ] );
+
+            toolStyle.strokeWidth = '${strokeWidth}';
+            toolStyle.strokeColor = '${strokeColor}';
+            toolStyle.fillColor = '${fillColor}';
+            toolStyle.fill = true;
+            toolStyle.pointRadius = '${pointRadius}';
+            toolStyle.fillOpacity = 1;
+            toolStyle.graphicName = "triangle";
+
+            var toolsStyleLayer = new OpenLayers.Style( toolStyle, {
+                context: {
+                    strokeWidth: function(feature) {
+                            // Is type point or line
+                            var type = feature.geometry.hasOwnProperty("x") ? 0 : 1;
+                            var retVal;
+                            if(type === 1) {
+                                retVal = map.getZoom() > 7 ? 10 : 1;
+                            } else if(type === 0) {
+                                if (highlightVesselName == null) {
+                                    retVal = 1;
+                                } else {
+                                    if(feature.hasOwnProperty("cluster")) {
+                                        if (highlightVesselName === "Ukjent fartøy") {
+                                            for (i = 0; i < feature.cluster.length; i++) {
+                                                if (feature.cluster[i].attributes.vesselname === null) {
+                                                    return 3;
+                                                }
+                                            }
+                                        } else {
+                                            for (i = 0; i < feature.cluster.length; i++) {
+                                                if (feature.cluster[i].attributes.vesselname === highlightVesselName) {
+                                                    return 3;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    retVal = 1;
+                                }
+                            } else {
+                                retVal = 4;
+                            }
+                            return retVal;
+                    },
+                    pointRadius: function(feature) {
+                        return (feature.data.hasOwnProperty("tooltypename") || feature.hasOwnProperty("cluster")) &&
+                            map.getZoom() > 6 ? 11 : 13;
+                    },
+                    strokeColor: function (feature) {
+                        if (highlightVesselName != null) {
+                            if (!feature.hasOwnProperty("cluster")) {
+                                if (!(feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null))) {
+                                    return "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+                                } else {
+                                    return "#00FF00";
+                                }
+                            } else {
+                                if (highlightVesselName != "Ukjent fartøy") {
+                                    for (i = 0; i < feature.cluster.length; i++) {
+                                        if (feature.cluster[i].data.vesselname === highlightVesselName) {
+                                            return "#00FF00";
+                                        }
+                                    }
+                                } else {
+                                    for (i = 0; i < feature.cluster.length; i++) {
+                                        if (feature.cluster[i].data.vesselname === null) {
+                                            return "#00FF00";
+                                        }
+                                    }
+                                }
+
+                                return "#00007A";
+                            }
+                        } else {
+                            return feature.hasOwnProperty("cluster") ? "#00007A" : "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+                        }
+                    },
+                    fillColor: function (feature) {
+                        if (highlightVesselName != null) {
+                            if (!feature.hasOwnProperty("cluster")) {
+                                if (feature.attributes.vesselname === highlightVesselName || (highlightVesselName === "Ukjent fartøy" && feature.attributes.vesselname == null)) {
+                                    return "#00FF00";
+                                }
+                            } else {
+                                return"#" + feature.cluster[0].data.toolcolor.substring(3, feature.cluster[0].data.toolcolor.length);
+                            }
+                        }
+
+                        if (!feature.hasOwnProperty('cluster')) {
+                            var color = "#" + feature.attributes.toolcolor.substring(3, feature.attributes.toolcolor.length);
+                            return color;
+                        } else {
+                            return "#" + feature.cluster[0].data.toolcolor.substring(3, feature.cluster[0].data.toolcolor.length);
+                        }
+                    }
+                }
+            });
+
+            var toolsStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 5
+                })
+            });
+
+            toolLayer = map.getLayersByName("Redskap")[0];
+            toolLayer.styleMap = toolsStyleMap;
+            toolLayer.addFeatures(geoJsonFormat.read(geoJson));
+        }
+
+        function populateAndStyleIceChartLayer(data) {
+            geoJson = getJsonFile("Iskonsentrasjon");
+
+            if(geoJson == null){
+                return;
+            }
+
+            var geoJsonFormat = new OpenLayers.Format.GeoJSON({
+                'internalProjection': new OpenLayers.Projection("EPSG:3857"),
+                'externalProjection': new OpenLayers.Projection("EPSG:4326")
+            });
+            var toolStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+            toolStyle.fillColor = '${fillColor}';
+            toolStyle.fill = true;
+            toolStyle.strokeWidth = 0
+            toolStyle.fillOpacity = '${fillOpacity}';
+            var toolsStyleLayer = new OpenLayers.Style(toolStyle, {
+                context: {
+                    fillColor: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var color = null;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                color = "#fb9c45";
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                color = "#ff4040";
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = "#c3c5c7";
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                color = "#ffff40";
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                color = "#a5fdb8";
+                            } else if (feature.data.icetype === "Open Water") {
+                                color = "#b0d6ff";
+                            } else {
+                                color = "#000000";
+                            }
+
+                            return color;
+                        } else {
+                            return "#FFAA7A";
+                        }
+                    },
+                    fillOpacity: function (feature) {
+                        if (feature.data.hasOwnProperty('icetype')) {
+                            var opacity = 0.2;
+                            if (feature.data.icetype === "Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Close Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Fast Ice") {
+                                color = 0.5;
+                            } else if (feature.data.icetype === "Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Very Open Drift Ice") {
+                                opacity = 0.5;;
+                            } else if (feature.data.icetype === "Open Water") {
+                                opacity = 0.5;
+                            } else {
+                                opacity = 0.5
+                            }
+
+                            return opacity;
+                        } else {
+                            return 0.5;
+                        }
+                    }
+                }
+            });
+            var iceChartStyleMap = new OpenLayers.StyleMap({
+                "default": toolsStyleLayer,
+                "select": new OpenLayers.Style({
+                    fill: true,
+                    pointRadius: 8,
+                    strokeWidth: 2,
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff",
+                    graphicZIndex: 2
+                })
+            });
+            var iceChartLayer = map.getLayersByName("Iskonsentrasjon")[0];
+            iceChartLayer.styleMap = iceChartStyleMap;
+            iceChartLayer.addFeatures(geoJsonFormat.read(geoJson));
+            selectFeature = new OpenLayers.Control.SelectFeature(
+            iceChartLayer, {
+                onSelect: iceChartClickNotice,
+                onUnselect: onPopupFeatureUnselect,
+                autoActivate: true
+            });
+            map.addControl(selectFeature);
+        }
+
+        function highlightTools(vesselName) {
+            highlightVesselName = vesselName;
+            var toolLayer = map.getLayersByName("Redskap")[0];
+            var validName = false;
+            var clustered = false;
+            var contained = false;
+            var highlightedBounds = new OpenLayers.Bounds();
+
+            map.getLayersByName("Redskap")[0].features.forEach(function(feature) {
+                if(feature.attributes.vesselname === vesselName) {
+                    validName = true;
+                    highlightedBounds.extend(feature.geometry.getBounds());
+                } else if(feature.hasOwnProperty("cluster")) {
+                    feature.cluster.forEach(function(clusterFeature) {
+                        var a = "b";
+                        if(clusterFeature.attributes.vesselname === vesselName) {
+                            <!-- break; -->
+                            validName = true;
+                            clustered = true;
+                            highlightedBounds.extend(clusterFeature.geometry.getBounds());
+                        }
+                    });
+                }
+            });
+
+            contained = map.getExtent().containsBounds(highlightedBounds);
+
+            if(validName && (!contained || clustered)) {
+                map.zoomToExtent(highlightedBounds);
+            }
+
+            toolLayer.redraw();
+        }
+
+        function getLayers() {
+            var mLayers = map.layers;
+            var retval = [];
+            for (var a = 0; a < mLayers.length; a++) {
+                retval.push(mLayers[a].name);
+            };
+            return retval;
+        }
+
+        function getLayerVisibilityByName(name) {
+            var layer = map.getLayersByName(name)[0];
+            return layer.visibility;
+        }
+
+        function toggleAllLayersInvisible() {
+            var layers = getLayers();
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i] === "Grunnkart") {
+                    continue;
+                }
+                toggleLayerVisibilityByName(layers[i], false);
+            }
+        }
+
+        function toggleLayerVisibilityByName(name, visibility) {
+            var layer = map.getLayersByName(name)[0];
+            layer.setVisibility(visibility);
+        }
+
+        function populateAllAvailableWmsLayers() {
+            OpenLayers.Strategy.RuleCluster = OpenLayers.Class(OpenLayers.Strategy.Cluster, {
+                rule: new OpenLayers.Rule({
+                    filter: new OpenLayers.Filter.Comparison({
+                        type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                        property: "tooltypecode",
+                        value: "NETSS"
+                    })
+                }),
+                distance: 50,
+                threshold: 2,
+                shouldCluster: function(cluster, feature) {
+                    var cc = cluster.geometry.getBounds().getCenterLonLat();
+                    var fc = feature.geometry.getBounds().getCenterLonLat();
+
+                    return (cluster.cluster[0].data.tooltypecode == feature.data.tooltypecode &&
+                        (Math.sqrt(Math.pow((cc.lon - fc.lon), 2) + Math.pow((cc.lat - fc.lat), 2)) / this.resolution) <= (map.getZoom() > 7 ? 10 : 60));
+                },
+
+                CLASS_NAME: "OpenLayers.Strategy.RuleCluster"
+            });
+
+            var layers = [
+                new OpenLayers.Layer.Vector("Iskant"),
+                new OpenLayers.Layer.Vector("Seismikk, pågående"),
+                new OpenLayers.Layer.Vector("Seismikk, planlagt"),
+                new OpenLayers.Layer.Vector("Iskonsentrasjon"),
+                new OpenLayers.Layer.Vector("Havbunnsinstallasjoner", {
+                    strategies: [new OpenLayers.Strategy.Cluster({
+                        distance: map.getZoom() > 7 ? 5 : 15,
+                        threshold: 2
+                    })]
+                }),
+                new OpenLayers.Layer.Vector("Redskap", {
+                    strategies: [
+                        new OpenLayers.Strategy.RuleCluster()
+                    ]
+                })
+            ];
+
+            return layers;
+        }
+
+
+        function clickNotice(feature) {
+            if(popup != null) {
+                onPopupClose();
+            }
+
+            if (feature.attributes.hasOwnProperty("tooltypename") || (feature.hasOwnProperty("cluster") && (feature.cluster[0].hasOwnProperty("cluster") || feature.cluster[0].data.hasOwnProperty("tooltypename")))) {
+                toolClickNotice(feature);
+            } else if (feature.attributes.hasOwnProperty("surmaintyp")) {
+                seismicClickNotice(feature);
+            } else if (feature.attributes.hasOwnProperty("facname") || (feature.hasOwnProperty("cluster") && feature.cluster[0].attributes.hasOwnProperty("facname"))) {
+                npdFacilityClickNotice(feature);
+            } else if(feature.attributes.hasOwnProperty("icetype")) {
+                iceChartClickNotice(feature);
+            } else {
+                unknownFeatureClickNotice(feature);
+            }
+        }
+
+        function toolClickNotice(feature) {
+            if(!feature.hasOwnProperty("cluster")) {
+                Android.updateToolBottomSheet(feature.data.toolid);
+            } else {
+                var highlightedBounds = new OpenLayers.Bounds();
+
+                feature.cluster.forEach(function(feature) {
+                    highlightedBounds.extend(feature.geometry.getBounds());
+                });
+
+                map.zoomToExtent(highlightedBounds);
+
+                Android.updateToolBottomSheet(null);
+            }
+        }
+
+        function seismicClickNotice(feature) {
+            var wgs84 = feature.geometry.clone();
+            var jsonObject = {
+                type: "Feature",
+                id: feature.id,
+                fid: feature.fid,
+                geometry: {
+                    id: feature.geometry.id,
+                    coordinates: []
+                },
+                geometry_name: "geom",
+                properties: feature.attributes
+            }
+
+            wgs84.transform("EPSG:900913", "EPSG:4326");
+
+            wgs84.components[0].components.forEach(function(obj) {
+                jsonObject.geometry.coordinates.push([obj.x, obj.y]);
+            });
+
+            Android.updateSeismicBottomSheet(JSON.stringify(jsonObject));
+            return;
+        }
+
+        function npdFacilityClickNotice(feature) {
+            if(!feature.hasOwnProperty("cluster")) {
+                var wgs84 = feature.geometry.clone();
+                var jsonObject = {
+                    type: "Feature",
+                    id: feature.id,
+                    fid: feature.fid,
+                    geometry: {
+                        id: feature.geometry.id,
+                        coordinates: []
+                    },
+                    geometry_name: "geom",
+                    properties: feature.attributes
+                }
+
+                wgs84.transform("EPSG:900913", "EPSG:4326");
+
+                jsonObject.geometry.coordinates.push(wgs84.x, wgs84.y);
+
+                Android.updateSeaFloorInstallationBottomSheet(JSON.stringify(jsonObject));
+            } else {
+                var highlightedBounds = new OpenLayers.Bounds();
+
+                feature.cluster.forEach(function(feature) {
+                    highlightedBounds.extend(feature.geometry.getBounds());
+                });
+
+                map.zoomToExtent(highlightedBounds);
+
+                Android.updateToolBottomSheet(null);
+            }
+        }
+
+        function iceChartClickNotice(feature) {
+            Android.updateIceConcentrationBottomSheet(feature.attributes.icetype);
+        }
+
+        function unknownFeatureClickNotice(feature) {
+            popup = new OpenLayers.Popup.FramedCloud("Ukjent objekt",
+            feature.geometry.getBounds().getCenterLonLat(),
+                null, "Ukjent objekt", null, true, onPopupClose);
+            popup.panMapIfOutOfView = false;
+            popup.autoSize = true;
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+
+        function onPopupFeatureUnselect(feature) {
+            if(feature.popup !== null) {
+                map.removePopup(feature.popup);
+                feature.popup.destroy();
+                feature.popup = null;
+                popup = null;
+                mFeature = null;
+            }
+        }
+
+        function onPopupClose(evt) {
+            if(mFeature != null) {
+                selectFeature
+                .unselect(mFeature);
+            } else if(popup != null) {
+                map.removePopup(popup);
+                popup.destroy();
+                popup = null;
+
+            }
+        }
+
+        function populateUserPosition(callback) {
+            /*Based on W3C standards specification: http://dev.w3.org/geo/api/spec-source.html */
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(callback, fail, { timeout: 60000 });
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+        function zoomToUserPosition() {
+            sensor = populateUserPosition(function (position) {
+                var userPosition = new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:3857'));
+                map.setCenter(userPosition, 14);
+            });
+        }
+
+        function fail() {
+            alert("Venligst sjekk om du har internettforbindelse");
+        }
+
+    </script>
+    <style>
+        html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        }
+
+        @media only screen and (max-width: 600px) {
+        html, body {
+        height: 100%;
+        }
+        }
+
+        p {
+        margin: 0;
+        }
+
+        #map {
+        width: 100%;
+        position: relative;
+        height: 100%;
+        }
+
+        .olControlAttribution {
+        position: absolute;
+        font-size: 10px;
+        bottom: 0 !important;
+        right: 0 !important;
+        background: rgba(0,0,0,0.1);
+        font-family: Arial;
+        padding: 2px 4px;
+        border-radius: 5px 0 0 0;
+        }
+
+        #Redskapsinformasjon_close {
+        background-color: cornflowerblue;
+        }
+
+        #Redskapsinformasjon_close:before {
+        content: "X";
+        text-align: center;
+        }
+
+        #title, #tags, #shortdesc {
+        display: none;
+        }
+
+        div.olControlZoom {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(255,255,255,0.4);
+        border-radius: 4px;
+        padding: 2px;
+        }
+
+        * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        div.olControlZoom a {
+        display: block;
+        margin: 1px;
+        padding: 0;
+        color: white;
+        font-size: 28px;
+        font-family: sans-serif;
+        font-weight: bold;
+        text-decoration: none;
+        text-align: center;
+        height: 32px;
+        width: 32px;
+        line-height: 28px;
+        text-shadow: 0 0 3px rgba(0,0,0,0.8);
+        background: #130085; /* fallback for IE - IE6 requires background shorthand*/
+        background: rgba(0, 60, 136, 0.5);
+        filter: alpha(opacity=80);
+        }
+
+        a.olControlZoomIn {
+        border-radius: 4px 4px 0 0;
+        }
+
+        a.olControlZoomOut {
+        border-radius: 0 0 4px 4px;
+        }
+
+        div.olControlZoom a:hover {
+        background: #130085; /* fallback for IE */
+        background: rgba(0, 60, 136, 0.7);
+        filter: alpha(opacity=100);
+        }
+
+        @media only screen and (max-width: 600px) {
+        div.olControlZoom a:hover {
+        background: rgba(0, 60, 136, 0.5);
+        }
+        }
+
+        div.olMapViewport {
+        -ms-touch-action: none;
+        }
+
+        .olLayerGrid .olTileImage {
+        -webkit-transition: opacity 0.2s linear;
+        -moz-transition: opacity 0.2s linear;
+        -o-transition: opacity 0.2s linear;
+        transition: opacity 0.2s linear;
+        }
+        /* Turn on GPU support where available */
+        .olTileImage {
+        -webkit-transform: translateZ(0);
+        -moz-transform: translateZ(0);
+        -o-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        -ms-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        -moz-perspective: 1000;
+        -ms-perspective: 1000;
+        perspective: 1000;
+        }
+    </style>
+
+</head>
+<body>
+<h1 id="title">FiskInfo test av redskapskartet</h1>
+<div id="tags">
+    mobile
+</div>
+<p id="shortdesc">
+    FiskInfo Karttjeneste
+</p>
+<div id="map"></div>
+</body>
+</html>

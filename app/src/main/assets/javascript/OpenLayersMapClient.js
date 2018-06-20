@@ -147,7 +147,7 @@ var displayFeatureInfo = function (pixel) {
     var selectedLayerName = layers[layers.length - 1].get("title");
     switch (selectedLayerName) {
         case "icechart":
-            dispatchDataToBottomsheet(features[features.length - 1], BarentswatchApiObjectTypes.ICE_CONSENTRATION);
+            //dispatchDataToBottomsheet(features[features.length - 1], BarentswatchApiObjectTypes.ICE_CONSENTRATION);
             break;
         case "npdsurveyongoing":
             dispatchDataToBottomsheet(features[features.length - 1], BarentswatchApiObjectTypes.ONGOING_SEISMIC);
