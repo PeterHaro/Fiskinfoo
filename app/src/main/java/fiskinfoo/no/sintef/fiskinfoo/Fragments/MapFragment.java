@@ -1179,7 +1179,15 @@ public class MapFragment extends Fragment {
             asynchApiCallTask.execute();
             ((MainActivity)getActivity()).toggleNetworkErrorTextView(true);
         } else {
-            browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
+            new AlertDialog.Builder(getContext())
+                    .setIcon(R.drawable.ic_warning_black_24dp)
+                    .setTitle(getString(R.string.offline_mode_map_disabled_title))
+                    .setMessage(getString(R.string.offline_mode_map_disabled_info))
+                    .setPositiveButton(getString(R.string.ok), null)
+                    .show();
+
+/* Code temporarily replaced by the above until we have offline mode in place
+           browser.loadUrl("file:///android_asset/mapApplicationOfflineMode.html");
 
             if((!new FiskInfoUtility().isNetworkAvailable(getActivity()))) {
                 new AlertDialog.Builder(getContext())
@@ -1190,7 +1198,7 @@ public class MapFragment extends Fragment {
                         .show();
             }
 
-            populateSearchFieldFromLocalFile();
+            populateSearchFieldFromLocalFile();*/
         }
     }
 

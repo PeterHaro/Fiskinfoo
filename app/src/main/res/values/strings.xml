@@ -115,6 +115,8 @@ limitations under the License.
     <string name="loading_map_layers">Laster inn kartlag.</string>
     <string name="offline_mode_map_used_title">Offlinemodus</string>
     <string name="offline_mode_map_used_info">Da det ser ut til at du ikke har internett-tilgang prøver appen å benytte kart som har blitt lastet ned mens appen var i offlinemodus.</string>
+    <string name="offline_mode_map_disabled_title">Kart ikke tilgjengelig</string>
+    <string name="offline_mode_map_disabled_info">Kartet kan ikke vises ettersom det ser ut til at du ikke har internett-tilgang prøver. Offline-mode vil bli tilgjengelig i neste versjon av appen.</string>
     <string name="search_tools_title">Søk i redskap</string>
     <string name="vessel_name_unknown">Ukjent fartøy</string>
     <string name="vessel">Fartøy: </string>

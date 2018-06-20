@@ -57,6 +57,7 @@ public class BarentswatchApi {
         public void intercept(RequestFacade request) {
             if (accessToken != null) {
                 request.addHeader("Authorization", "Bearer " + accessToken);
+                request.addHeader("User-Agent", "FiskInfo/2.0 (Android)");
             }
         }
     }
