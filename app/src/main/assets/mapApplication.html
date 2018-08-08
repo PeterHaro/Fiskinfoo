@@ -154,6 +154,18 @@
         }
 
 </script>
+<script>
+        function closeBottomSheet() {
+            var bottomSheet = document.querySelector("#bottom_sheet");
+            var instance = M.Modal.getInstance(bottomSheet);
+            if (instance.isOpen) {
+                instance.close();
+            } else {
+                Android.doDefaultBackPressed();
+            }
+        }
+
+</script>
 
 </body>
 </html>

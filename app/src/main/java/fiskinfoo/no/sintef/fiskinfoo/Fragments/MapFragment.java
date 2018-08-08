@@ -15,6 +15,7 @@
 package fiskinfoo.no.sintef.fiskinfoo.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -386,6 +387,16 @@ public class MapFragment extends Fragment {
 
         });
 
+        browser.setOnKeyListener(new View.OnKeyListener(){
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    browser.loadUrl("javascript:closeBottomSheet();");
+                    return true;
+                }
+                return false;
+            } } );
+
+
         browser.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // chromium, enable hardware acceleration
@@ -426,6 +437,22 @@ public class MapFragment extends Fragment {
         @android.webkit.JavascriptInterface
         public String getToolFeatureCollection() {
             return toolsFeatureCollection.toString();
+        }
+
+        @SuppressWarnings("unused")
+        @android.webkit.JavascriptInterface
+        public void doDefaultBackPressed() {
+            final Activity activity = getActivity();
+                // Propagate back button press to activity
+            if (activity != null) {
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        activity.onBackPressed();
+                    }
+                });
+            }
         }
     }
 
@@ -1170,8 +1197,18 @@ public class MapFragment extends Fragment {
     }
 
     public void updateMap() {
+        if (user == null) {
+            Log.d(FRAGMENT_TAG, "User null in updateMap()");
+            return;
+        }
+        if (getActivity() == null) {
+            Log.d(FRAGMENT_TAG, "Activity null in updateMap()");
+            return;
+        }
+
         pageLoaded = false;
         loadProgressSpinner.setVisibility(View.VISIBLE);
+
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
             browser.loadUrl("file:///android_asset/mapApplication.html");
 
