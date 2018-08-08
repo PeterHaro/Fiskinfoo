@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -45,7 +46,7 @@ public class FileDialog extends ListActivity {
 
     private static final String ITEM_IMAGE = "image";
 
-    private static final String ROOT = "/";
+    private static final String ROOT = Environment.getExternalStorageDirectory().getPath(); //"/";;
 
     public static final String START_PATH = "START_PATH";
 
