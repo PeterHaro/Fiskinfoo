@@ -727,27 +727,33 @@ public class FiskInfoUtility {
     }
 
     /**
-     * Validates required fields of the user settings
-     * @param userSettings
-     * @return true if all required settings are valid, false otherwise
+     *  Validates required fields of the user settings.
+     *  The following fields are required:
+     *      - Contact person name
+     *      - Contact person phone number
+     *      - Email address
+     *      - Vessel name
+     *      - Either one of the following fields: IMO, IRCS, MMSI, or registration number
+     *  @param userSettings
+     *  @return true if all required settings are valid, false otherwise
      */
     public static boolean validateUserSettings(UserSettings userSettings) {
         return  (userSettings != null) &&
-                validateIMO(userSettings.getImo()) &&
-                        validateIRCS(userSettings.getIrcs()) &&
-                        validateMMSI(userSettings.getMmsi()) &&
-                        validateName(userSettings.getContactPersonName()) &&
-                        validatePhoneNumber(userSettings.getContactPersonPhone()) &&
-                        isEmailValid(userSettings.getContactPersonEmail()) &&
-                        validateRegistrationNumber(userSettings.getRegistrationNumber()) &&
-                        validateVesselName(userSettings.getVesselName());
+                validateName(userSettings.getContactPersonName()) &&
+                validatePhoneNumber(userSettings.getContactPersonPhone()) &&
+                isEmailValid(userSettings.getContactPersonEmail()) &&
+                validateVesselName(userSettings.getVesselName()) &&
+                validateRegistrationNumber(userSettings.getRegistrationNumber()) &&
+                (validateIMO(userSettings.getImo()) ||
+                validateIRCS(userSettings.getIrcs()) ||
+                validateMMSI(userSettings.getMmsi()));
     }
 
     public static boolean match(String str1, String str2) {
         if (((str1 == null) || (str1.isEmpty())) && ((str2 == null) || (str2.isEmpty())))
             return true;
         else
-            return str1.equals(str2);
+            return str1 != null && str1.equals(str2);
     }
 
     public static boolean toolProfileMatchUserSettings(ToolEntry entry, UserSettings settings) {
@@ -767,14 +773,32 @@ public class FiskInfoUtility {
     }
 
 
+    /**
+     * Validates the county code part of a vessel registration number, case insensitive.
+     * A valid country code consists of one or two alphabetical characters in the range a-z.
+     * @param countyCode
+     * @return
+     */
     public static boolean isValidCountyCode(String countyCode) {
         return countyCode != null && countyCode.matches("^[a-zA-Z]{1,2}$");
     }
 
+    /**
+     * Validates the vessel number part of a vessel registration number
+     * A valid vessel number consists of one to four digits in the range 0-9.
+     * @param vesselNumber
+     * @return
+     */
     public static boolean isValidVesselNumber(String vesselNumber) {
         return vesselNumber != null && vesselNumber.matches("^\\d{1,4}$");
     }
 
+    /**
+     * Validates the municipality code part of a vessel registration number
+     * A valid municipality code consists of one or two alphabetical characters in the range a-z.
+     * @param municipalityCode
+     * @return
+     */
     public static boolean isValidMunicipalityCode(String municipalityCode) {
         return municipalityCode != null && municipalityCode.matches("^[a-zA-Z]{1,2}$");
     }

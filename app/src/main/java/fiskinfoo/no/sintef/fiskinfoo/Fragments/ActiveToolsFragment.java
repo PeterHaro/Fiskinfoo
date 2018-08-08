@@ -485,28 +485,7 @@ public class ActiveToolsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.send_tool_report:
-                if(user.getIsFishingFacilityAuthenticated()) {
-                    if (FiskInfoUtility.validateUserSettings(user.getSettings())) {
-                        if (tracker != null) {
-                            tracker.send(new HitBuilders.EventBuilder().setCategory("Send tool report").build());
-                            if (tracker != null) {
-                                tracker.setScreenName(SCREEN_NAME + ActiveToolsFragment.class.getSimpleName());
-                                tracker.send(new HitBuilders.ScreenViewBuilder().build());
-                            } else {
-                                Log.wtf(LOG_TAG, "TRACKER IS NULL IN ON RESUME");
-                            }
-                        }
-
-                        generateAndSendGeoJsonToolReport();
-                    } else {
-                        Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.summary_user_profile_incomplete));
-                        //TODO: Add link from dialog to jump to editing profile
-                        dialog.show();
-                    }
-                } else {
-                    Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.send_tool_report_not_authorized_error_message));
-                    dialog.show();
-                }
+                validateUserSettings();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -526,6 +505,31 @@ public class ActiveToolsFragment extends Fragment {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void validateUserSettings() {
+        if(user.getIsFishingFacilityAuthenticated()) {
+            if (FiskInfoUtility.validateUserSettings(user.getSettings())) {
+                if (tracker != null) {
+                    tracker.send(new HitBuilders.EventBuilder().setCategory("Send tool report").build());
+                    if (tracker != null) {
+                        tracker.setScreenName(SCREEN_NAME + ActiveToolsFragment.class.getSimpleName());
+                        tracker.send(new HitBuilders.ScreenViewBuilder().build());
+                    } else {
+                        Log.wtf(LOG_TAG, "TRACKER IS NULL IN ON RESUME");
+                    }
+                }
+
+                generateAndSendGeoJsonToolReport();
+            } else {
+                Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.summary_user_profile_incomplete));
+                //TODO: Add link from dialog to jump to editing profile
+                dialog.show();
+            }
+        } else {
+            Dialog dialog = dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.send_tool_report_not_authorized_error_title), getString(R.string.send_tool_report_not_authorized_error_message));
+            dialog.show();
         }
     }
 
