@@ -597,7 +597,14 @@ limitations under the License.
     <string name="summary_button_view_map">Se kart</string>
     <string name="summary_button_download_map">Last ned kart</string>
 
+    <!-- App widget -->
+    <string name="app_widget_logo_description">fhf logo</string>
+    <string name="app_widget_my_tools">Mine redskaper</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appwidget_my_tools_text">Mine redskaper:</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>

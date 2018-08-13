@@ -131,7 +131,8 @@ limitations under the License.
     <dimen name="proximity_alert_spinner_margin_right">20dp</dimen>
     <dimen name="proximity_alert_format_info_margin_right">40dp</dimen>
     <dimen name="proximity_alert_range_edit_text_width">80dp</dimen>
-    <item name="proximity_alert_dialog_button_text_size_small" format="float" type="dimen">10.0</item>
+    <item name="proximity_alert_dialog_button_text_size_small" format="float" type="dimen">10.0
+    </item>
 
     <!-- expandableListView -->
     <dimen name="expandable_list_view_child_text_size_small">10dp</dimen>
@@ -375,6 +376,12 @@ limitations under the License.
     <dimen name="card_view_rounded_corners">2dp</dimen>
     <dimen name="card_action_padding">8dp</dimen>
     <dimen name="material_button_height">48dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
 
 
 </resources>

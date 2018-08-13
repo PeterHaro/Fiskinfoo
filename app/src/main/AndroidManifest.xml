@@ -34,28 +34,46 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_main"/>
+            android:label="@string/title_activity_main" />
         <activity
             android:name=".Implementation.FileDialog"
-            android:label="@string/title_activity_file_dialog"/>
+            android:label="@string/title_activity_file_dialog" />
 
         <service
             android:name=".Implementation.BarentswatchApiService"
-            android:exported="false"/>
+            android:exported="false" />
         <service android:name=".Implementation.BarentswatchMapDownloadService" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="fiskinfoo.no.sintef.fiskinfoo.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
 
+        <service android:name=".Widget.ToolsWodgetDataProviderService" android:permission="android.permission.BIND_REMOTEVIEWS"></service>
+
+        <receiver android:name=".Widget.FiskinfoInformationWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/fiskinfo_information_widget_info" />
+        </receiver>
+
+        <activity android:name=".Widget.FiskinfoInformationWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
