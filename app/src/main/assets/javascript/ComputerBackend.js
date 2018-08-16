@@ -76,12 +76,12 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     retval += this._httpBuilder.createModalIconLine("date_range", "Tid i havet", feature.getTimePlacedInOcean());
     retval += this._httpBuilder.createModalIconLine("date_range", "Satt", feature.getFormattedTimeSetInOcean());
     retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
-    //TODO: MARINOGRAM HER
+    retval += this._httpBuilder.createModalIconLine("link", "Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._position[1] + "_" + feature._position[0] + "'" + ">Marinogram</a>");
 
-    retval += this._httpBuilder.getSelfContainedHeading(6, "Om Fartøyet");
+    retval += this._httpBuilder.getSelfContainedHeading(6, "Om Eier");
     retval += "<div class='divider'></div>";
 
-    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", feature._vesselname);
+    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", "<a target='_blank' href='javascript:locateVessel(" + "\"" + feature._vesselname + "\"" +  ")'>" + feature._vesselname + "</a>");
     retval += this._httpBuilder.createTitleLineWithStrongText("Telefon", feature._vesselphone);
     retval += this._httpBuilder.createTitleLineWithStrongText("Kallesignal(IRCS)", feature._ircs);
     retval += this._httpBuilder.createTitleLineWithStrongText("MMSI", feature._mmsi);
@@ -102,6 +102,7 @@ ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createModalIconLine("date_range", "Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createModalIconLine("add_location", "Destinasjon", feature._destination);
+    retval += this._httpBuilder.createModalIconLine("link", "Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._internalPosition[1] + "_" + feature._internalPosition[0] + "'" + ">Marinogram</a>");
     //TODO: Redskaper
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
     retval += "<div class='divider'></div>";

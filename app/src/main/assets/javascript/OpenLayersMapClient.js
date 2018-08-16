@@ -204,6 +204,17 @@ var displayFeatureInfo = function (pixel) {
     }
 };
 
+function locateVessel(vesselName) {
+    var interactionSelection = BarentswatchStylesRepository.BarentswatchAisSelectionStyle();
+    map.getView().fit(aisSearchModule.getVessel(vesselName).getGeometry(), map.getSize());
+    interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
+    interactionSelection.dispatchEvent({
+        type: 'select',
+        selected: [aisSearchModule.getVessel(vesselName)],
+        deselected: []
+    });
+}
+
 function getAllMapLayers() {
     var mLayers = [];
     map.getLayers().forEach(function (layer) {
