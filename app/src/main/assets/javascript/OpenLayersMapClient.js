@@ -204,6 +204,27 @@ var displayFeatureInfo = function (pixel) {
     }
 };
 
+function locateTool(toolOwner, toolId) {
+    var owner = aisSearchModule.getVessel(toolOwner);
+    var tool = null;
+    for (var i in owner.tools) {
+        if (owner.tools[i].get("id") === +toolId) {
+            tool = owner.tools[i];
+            break;
+        }
+    }
+    if (tool !== null) {
+        var interactionSelection = BarentswatchStylesRepository.BarentswatchToolSelectionStyle();
+        map.getView().fit(tool.getGeometry(), map.getSize());
+        interactionSelection.getFeatures().push(tool);
+        interactionSelection.dispatchEvent({
+            type: 'select',
+            selected: [tool],
+            deselected: []
+        });
+    }
+}
+
 function locateVessel(vesselName) {
     var interactionSelection = BarentswatchStylesRepository.BarentswatchAisSelectionStyle();
     map.getView().fit(aisSearchModule.getVessel(vesselName).getGeometry(), map.getSize());

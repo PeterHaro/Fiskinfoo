@@ -55,6 +55,7 @@ SimpleHtmlBuilder.prototype.buildInlineToolInfo = function (item) {
     retval += this.addModalIconLine("date_range", "Tid i havet", _feature.getTimePlacedInOcean());
     retval += this.addModalIconLine("date_range", "Satt", _feature.getFormattedTimeSetInOcean());
     retval += this.addModalIconLine("place", "Posisjon", _feature.getCoordinates());
+    retval += "<a href=\"javascript:locateTool('" +_feature._vesselname + "','" + _feature._id + "'" + ");\" class=\"collection-item\">Se redskapet</a>";
     return retval;
 };
 

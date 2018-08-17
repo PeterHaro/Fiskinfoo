@@ -26,7 +26,7 @@ ComputerBackend.prototype.showBottmsheet = function (feature) {
     body.text("");
     body.append(this._httpBuilder.getSelfContainedHeading(4, feature._name));
     this._httpBuilder.clear();
-    if (feature._type === BarentswatchApiObjectTypes.AIS) { //TODO: REFACTOR
+    if (feature._type === BarentswatchApiObjectTypes.AIS) {
         body.append("<h6 class='grey-text grey lighten-5 align-material-c-to-title'>" + feature.getShipTypeString() + "</h6>");
     } else {
         body.append("<h6 class='grey-text grey lighten-5 align-material-c-to-title'>" + feature._norwegianTitle + "</h6>");
