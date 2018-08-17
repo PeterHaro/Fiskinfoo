@@ -17,6 +17,67 @@ SimpleHtmlBuilder.prototype.createModalIconLine = function (iconName, fieldName,
     return retval;
 };
 
+SimpleHtmlBuilder.prototype.addModalIconLine = function (iconName, fieldName, fieldValue) {
+    var retval = "";
+    retval += "<div class='row '>";
+    retval += "<div class='col m4 s" + "4" + "'>";
+    retval += "<i class='material-icons prefix small'>" + iconName + "</i>";
+    retval += "<strong style='vertical-align: text-bottom; white-space: pre;'>" + fieldName + "</strong>";
+    retval += "</div>";
+    retval += "<div class='col s" + "8" + " align-material-text-to-icon' style='padding-top:11.5px; white-space: pre;'>";
+    retval += fieldValue;
+    retval += "</div>";
+    retval += "</div>";
+    return retval;
+};
+
+SimpleHtmlBuilder.prototype.buildCollectionWithHeaderAndLinks = function (headerField, items, href) {
+    this._retval = this.beginCollection("with-header");
+    this._retval += this.addCollectionHeader(headerField);
+    for (var i in items.tools) {
+        this._retval += this.addCollectionItem(items.tools[i].get("tooltypename")); //TODO: REPLACE THIS WITH THE TRANSLATOR YOU HAVE AT HOME
+    }
+    var retval = this.getString();
+    return retval;
+};
+
+/*
+    retval += this._httpBuilder.createModalIconLine("date_range", "Tid i havet", feature.getTimePlacedInOcean());
+    retval += this._httpBuilder.createModalIconLine("date_range", "Satt", feature.getFormattedTimeSetInOcean());
+    retval += this._httpBuilder.createModalIconLine("place", "Posisjon", feature.getCoordinates());
+
+ */
+
+SimpleHtmlBuilder.prototype.buildInlineToolInfo = function (item) {
+    var _feature = new BarentswatchApiObjectFactory().create(BarentswatchApiObjectTypes.TOOL);
+    _feature.parseObject(item);
+    var retval = "";
+    retval += this.addModalIconLine("date_range", "Tid i havet", _feature.getTimePlacedInOcean());
+    retval += this.addModalIconLine("date_range", "Satt", _feature.getFormattedTimeSetInOcean());
+    retval += this.addModalIconLine("place", "Posisjon", _feature.getCoordinates());
+    return retval;
+};
+
+SimpleHtmlBuilder.prototype.addCollapsibleItem = function (item) {
+    this._retval += "<li>";
+    this._retval += "<div class=\"collapsible-header\"><i class=\"material-icons\">arrow_drop_down</i>" + item.get("tooltypename") + "</div>"; //TODO: REPLACE THIS WIT TRANSLATOR
+    this._retval += "<div class=\"collapsible-body\"><span>" +
+        this.buildInlineToolInfo(item) +
+        "</span></div>";
+    this._retval += "</li>";
+};
+
+SimpleHtmlBuilder.prototype.buildCollapsible = function (items) {
+    this._beginCollapsible("popout");
+    for (var i in items) {
+        this.addCollapsibleItem(items[i]);
+    }
+    this._retval += "</ul>";
+    var retval = this.getString();
+    this.clear();
+    return retval;
+};
+
 SimpleHtmlBuilder.prototype.createTitleLineWithStrongText = function (title, field) {
     this.beginRow();
     this.mobileStrongTextColumn();
@@ -29,6 +90,32 @@ SimpleHtmlBuilder.prototype.createTitleLineWithStrongText = function (title, fie
     var retval = this.getString();
     this.clear();
     return retval;
+};
+
+SimpleHtmlBuilder.prototype._beginCollapsible = function (extraClasses) {
+    this._retval += "<ul class='collapsible ";
+    if (extraClasses !== undefined && extraClasses !== null) {
+        this._retval += extraClasses;
+    }
+    this._retval += "'>";
+};
+
+SimpleHtmlBuilder.prototype.addCollectionItem = function (itemField) {
+    return "<li class='collection-item'>" + itemField + "</li>";
+};
+
+SimpleHtmlBuilder.prototype.addCollectionHeader = function (headerField) {
+    return "<li class='collection-header'><h4>" + headerField + "</h4></li>";
+};
+
+SimpleHtmlBuilder.prototype.beginCollection = function (optionalCssClasses) {
+    var baseCollectionString = "<ul class='collection ";
+    if (optionalCssClasses !== undefined && optionalCssClasses !== null) {
+        baseCollectionString += optionalCssClasses + "'";
+    } else {
+        baseCollectionString += "'";
+    }
+    return baseCollectionString;
 };
 
 SimpleHtmlBuilder.prototype.getSelfContainedHeading = function (headingSize, text) {

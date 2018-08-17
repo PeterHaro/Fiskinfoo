@@ -63,6 +63,7 @@ ComputerBackend.prototype.showBottmsheet = function (feature) {
 
     body.append(content);
     var bottomSheet = document.querySelector("#bottom_sheet");
+    $('.collapsible').collapsible();
     var instance = M.Modal.getInstance(bottomSheet);
     instance.open();
 };
@@ -81,7 +82,7 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     retval += this._httpBuilder.getSelfContainedHeading(6, "Om Eier");
     retval += "<div class='divider'></div>";
 
-    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", "<a target='_blank' href='javascript:locateVessel(" + "\"" + feature._vesselname + "\"" +  ")'>" + feature._vesselname + "</a>");
+    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", "<a target='_blank' href='javascript:locateVessel(" + "\"" + feature._vesselname + "\"" + ")'>" + feature._vesselname + "</a>");
     retval += this._httpBuilder.createTitleLineWithStrongText("Telefon", feature._vesselphone);
     retval += this._httpBuilder.createTitleLineWithStrongText("Kallesignal(IRCS)", feature._ircs);
     retval += this._httpBuilder.createTitleLineWithStrongText("MMSI", feature._mmsi);
@@ -103,7 +104,18 @@ ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     retval += this._httpBuilder.createModalIconLine("date_range", "Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createModalIconLine("add_location", "Destinasjon", feature._destination);
     retval += this._httpBuilder.createModalIconLine("link", "Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._internalPosition[1] + "_" + feature._internalPosition[0] + "'" + ">Marinogram</a>");
-    //TODO: Redskaper
+
+    retval += this._httpBuilder.getSelfContainedHeading(6, "Mine redskaper");
+
+    //TODO: FIXME: DONT EVER DO THISS!!!
+    if (aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
+        retval += this._httpBuilder.buildCollapsible(aisSearchModule.getVessel(feature._name).tools);
+    }
+
+    //  if(aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
+    //      retval += this._httpBuilder.buildCollectionWithHeaderAndLinks("Mine redskaper", aisSearchModule.getVessel(feature._name), "");
+    //  }
+
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
     retval += "<div class='divider'></div>";
     retval += this._httpBuilder.createModalIconLine("link", "Fiskerimeldinger", "<a target='_blank' href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Fiskerimeldinger</a>");

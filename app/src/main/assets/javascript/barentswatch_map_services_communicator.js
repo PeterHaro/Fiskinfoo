@@ -192,6 +192,10 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
             default:
                 unknownData.push(feature);
         }
+
+                if(this.aisSearchModule !== null) {
+                    this.aisSearchModule.attachTools(featureData);
+                }
     });
 
     let netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
