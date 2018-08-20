@@ -67,6 +67,9 @@ ComputerBackend.prototype.showBottmsheet = function (feature) {
     var bottomSheet = document.querySelector("#bottom_sheet");
     $('.collapsible').collapsible();
     var instance = M.Modal.getInstance(bottomSheet);
+        instance.options.onCloseStart = function() {
+        $("#bottom_sheet").scrollTop(0);
+    };
     instance.open();
 };
 
