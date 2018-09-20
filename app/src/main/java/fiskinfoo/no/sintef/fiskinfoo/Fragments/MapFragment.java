@@ -364,10 +364,12 @@ public class MapFragment extends Fragment {
         if(getView() == null) {
             throw new NullPointerException();
         }
-        browser = (WebView) getView().findViewById(R.id.map_fragment_web_view);
+        browser = getView().findViewById(R.id.map_fragment_web_view);
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setDomStorageEnabled(true);
         browser.getSettings().setGeolocationEnabled(true);
+        // This is needed as CORS requests are not accepted otherwise
+        browser.getSettings().setAllowUniversalAccessFromFileURLs(true);
         browser.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
         browser.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
