@@ -21,7 +21,7 @@ AndroidBackend.prototype.getToken = function (_callback, that) {
 
 
 // TODO: Create getters and setters / "interface" for feature(s)
-ComputerBackend.prototype.showBottmsheet = function (feature) {
+AndroidBackend.prototype.showBottmsheet = function (feature) {
     var body = $("#bottom_sheet_container");
     body.text("");
     body.append(this._httpBuilder.getSelfContainedHeading(4, feature._name));
@@ -73,11 +73,11 @@ ComputerBackend.prototype.showBottmsheet = function (feature) {
     instance.open();
 };
 
-ComputerBackend.prototype._createIceChartConsentrationContent = function (feature) {
+AndroidBackend.prototype._createIceChartConsentrationContent = function (feature) {
 
 };
 
-ComputerBackend.prototype._showToolBottomsheet = function (feature) {
+AndroidBackend.prototype._showToolBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createTitleLineWithStrongText("Tid i havet", feature.getTimePlacedInOcean());
     retval += this._httpBuilder.createTitleLineWithStrongText("Satt", feature.getFormattedTimeSetInOcean());
@@ -101,7 +101,7 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     return retval;
 };
 
-ComputerBackend.prototype._createAisBottomsheet = function (feature) {
+AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createTitleLineWithStrongText("Fart", (feature._sog + " knop"));
     retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", (feature._cog + "\xB0"));
@@ -128,7 +128,7 @@ ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     return retval;
 };
 
-ComputerBackend.prototype._createJMessageBottomsheetContent = function (feature) {
+AndroidBackend.prototype._createJMessageBottomsheetContent = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createTitleLineWithStrongText("Stengt fra dato", feature._closedDate);
     retval += this._httpBuilder.createTitleLineWithStrongText("Stengt for", feature._closedFor);
@@ -142,13 +142,13 @@ ComputerBackend.prototype._createJMessageBottomsheetContent = function (feature)
     return retval;
 };
 
-ComputerBackend.prototype._createCoralReefBottomsheet = function (feature) {
+AndroidBackend.prototype._createCoralReefBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createModalIconLine("highlight_off", "Info", feature._info);
     return retval;
 };
 
-ComputerBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature) {
+AndroidBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createTitleLineWithStrongText("Type", feature._installationType);
     retval += this._httpBuilder.createTitleLineWithStrongText("Funksjon", feature._functionality);
@@ -163,7 +163,7 @@ ComputerBackend.prototype._showSubsurfaceFacilityBottomsheet = function (feature
     return retval;
 };
 
-ComputerBackend.prototype._buildSeismicBottomsheetText = function (feature) {
+AndroidBackend.prototype._buildSeismicBottomsheetText = function (feature) {
     var retval = "";
     retval += this._httpBuilder.createTitleLineWithStrongText("Område", feature._areaSubheader);
     retval += this._httpBuilder.createTitleLineWithStrongText("Seismikkfartøy", feature._seismicVessel);

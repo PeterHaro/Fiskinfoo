@@ -9,7 +9,7 @@ android {
         applicationId "fiskinfoo.no.sintef.fiskinfoo"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 23
+        versionCode 24
         versionName "2.0.2.1"
         vectorDrawables.useSupportLibrary = true
     }
