@@ -817,7 +817,7 @@ public class FiskInfoUtility {
             vesselNumber = "0" + vesselNumber;
         }
 
-        registrationNumber.append(countyCode.length() == 2 ? countyCode : countyCode + " ");
+        registrationNumber.append(countyCode);
         registrationNumber.append(vesselNumber);
         registrationNumber.append(municipalityCode);
 
