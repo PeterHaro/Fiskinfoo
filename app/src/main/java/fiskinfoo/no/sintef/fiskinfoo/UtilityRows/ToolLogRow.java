@@ -47,12 +47,12 @@ public class ToolLogRow extends BaseTableRow {
     public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener) {
         super(context, R.layout.utility_row_tool_log_row);
 
-        dateHeader = (TextView) getView().findViewById(R.id.tool_log_row_latest_date_text_view);
-        toolTypeTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_type_text_view);
-        toolPositionTextView = (TextView) getView().findViewById(R.id.tool_log_row_tool_position_text_view);
-        toolNotificationImageView = (ImageView) getView().findViewById(R.id.tool_log_row_reported_image_view);
-        editToolImageView = (ImageView) getView().findViewById(R.id.tool_log_row_edit_image_view);
-        tableRow = (TableRow) getView().findViewById(R.id.tool_log_row_table_row);
+        dateHeader =  getView().findViewById(R.id.tool_log_row_latest_date_text_view);
+        toolTypeTextView =  getView().findViewById(R.id.tool_log_row_tool_type_text_view);
+        toolPositionTextView =  getView().findViewById(R.id.tool_log_row_tool_position_text_view);
+        toolNotificationImageView =  getView().findViewById(R.id.tool_log_row_reported_image_view);
+        editToolImageView =  getView().findViewById(R.id.tool_log_row_edit_image_view);
+        tableRow =  getView().findViewById(R.id.tool_log_row_table_row);
         StringBuilder sb = new StringBuilder(tool.getCoordinates().get(0).getLatitude() < 0 ? "S" : "N");
 
         sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));

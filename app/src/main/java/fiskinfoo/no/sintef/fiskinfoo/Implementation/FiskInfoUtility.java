@@ -453,18 +453,39 @@ public class FiskInfoUtility {
         intPart = (int) absCoord;
         seconds = String.valueOf(intPart);
 
-        // e.g. output = "87/1,43/1,41/1"
-        // output = degrees + "/1," + minutes + "/1," + seconds + "/1";
-
-        // Standard output of D°M′S″
         output = degrees + "°" + minutes + "'" + seconds + "\"";
 
         return output;
     }
 
-    public static int[] decimalToDMSArray(double coord) {
+    public static double[] decimalToDMSArray(double coord) {
         double absCoord = Math.abs(coord);
-        int[] output = new int[3];
+        double[] output = new double[3];
+
+        double mod = absCoord % 1;
+        double intPart = (int) absCoord;
+        output[0] = intPart;
+
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
+        output[1] = intPart;
+
+        absCoord = mod * 60;
+        intPart = absCoord;
+        output[2] = intPart;
+
+        return output;
+    }
+
+    public static double DMSToDecimal(double[] coord) {
+        return coord[0] + (coord[1] / 60) + (coord[2] / 3600);
+    }
+
+    public static double[] decimalToDDMArray(double coord) {
+        // TODO: implement
+        double absCoord = Math.abs(coord);
+        double[] output = new double[3];
 
         double mod = absCoord % 1;
         int intPart = (int) absCoord;
@@ -474,16 +495,15 @@ public class FiskInfoUtility {
         mod = absCoord % 1;
         intPart = (int) absCoord;
         output[1] = intPart;
-
-        absCoord = mod * 60;
-        intPart = (int) Math.round(absCoord);
-        output[2] = intPart;
+        output[1] += mod;
 
         return output;
+
+
     }
 
-    public static double DMSToDecimal(double[] coord) {
-        return coord[0] + (coord[1] / 60) + (coord[2] / 3600);
+    public static double DDMToDecimal(double[] coord) {
+       return coord[0] + (coord[1] / 60.0);
     }
 
     public static Date iso08601ParseDate(String input) throws java.text.ParseException {

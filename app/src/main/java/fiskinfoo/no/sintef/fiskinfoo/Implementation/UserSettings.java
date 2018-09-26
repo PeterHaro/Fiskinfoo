@@ -17,6 +17,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Implementation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.CoordinateFormat;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 
 public class UserSettings implements Parcelable {
@@ -30,6 +31,7 @@ public class UserSettings implements Parcelable {
     private String ContactPersonEmail;
     private String ContactPersonPhone;
     private String ContactPersonName;
+    private CoordinateFormat coordinateFormat;
 
     public UserSettings() {
 
@@ -46,6 +48,25 @@ public class UserSettings implements Parcelable {
         ContactPersonEmail = in.readString();
         ContactPersonPhone = in.readString();
         ContactPersonName = in.readString();
+        // TODO: Add coordinateFormat
+        String coordinateFormatString = in.readString();
+        coordinateFormat = CoordinateFormat.createFromValue(coordinateFormatString != null ? coordinateFormatString : CoordinateFormat.DEGREES_MINUTES_SECONDS.toString());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(vesselName);
+        dest.writeString(vesselPhone);
+        dest.writeString(ircs);
+        dest.writeString(mmsi);
+        dest.writeString(imo);
+        dest.writeString(toolType.toString());
+        dest.writeString(registrationNumber);
+        dest.writeString(ContactPersonEmail);
+        dest.writeString(ContactPersonPhone);
+        dest.writeString(ContactPersonName);
+        // TODO: Add coordinateFormat
+        dest.writeString(getCoordinateFormat().toString());
     }
 
     public static final Creator<UserSettings> CREATOR = new Creator<UserSettings>() {
@@ -146,17 +167,11 @@ public class UserSettings implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(vesselName);
-        dest.writeString(vesselPhone);
-        dest.writeString(ircs);
-        dest.writeString(mmsi);
-        dest.writeString(imo);
-        dest.writeString(toolType.toString());
-        dest.writeString(registrationNumber);
-        dest.writeString(ContactPersonEmail);
-        dest.writeString(ContactPersonPhone);
-        dest.writeString(ContactPersonName);
+    public CoordinateFormat getCoordinateFormat() {
+        return coordinateFormat != null ? coordinateFormat : CoordinateFormat.DEGREES_MINUTES_SECONDS;
+    }
+
+    public void setCoordinateFormat(CoordinateFormat coordinateFormat) {
+        this.coordinateFormat = coordinateFormat;
     }
 }

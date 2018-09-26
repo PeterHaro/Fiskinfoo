@@ -516,10 +516,14 @@ limitations under the License.
     <string name="position">Posisjon</string>
     <string name="latitude">Breddegrad</string>
     <string name="longitude">Lengdegrad</string>
-    <string name="coordinates_help_text">Koordinater skrives inn som grader, minutt, sekund. Du kan legge til og fjerne posisjoner med knappene til høyre.</string>
+    <!--<string name="coordinates_help_text">Koordinater skrives inn som grader, minutt, sekund. Du kan legge til og fjerne posisjoner med knappene til høyre.</string>-->
+    <string name="coordinates_help_text">Koordinatformat er <b>%1$s</b>. Du kan endre dette i profilinstillingene.\nDu kan legge til og fjerne posisjoner med knappene til høyre.</string>
+    <string name="degrees_minutes_seconds">grader, minutt, sekund</string>
+    <string name="degrees_decimal_minutes">grader, desimalminutter</string>
     <string name="symbol_geographical_degrees">°</string>
-    <string name="symbol_geographical_minutes">\'</string>
+    <string name="symbol_geographical_minutes">’</string>
     <string name="symbol_geographical_seconds">\"</string>
+    <string name="coordinate_format">Koordinatformat</string>
 
     <!-- Tool Json properties -->
     <string name="json_tool_properties">properties</string>

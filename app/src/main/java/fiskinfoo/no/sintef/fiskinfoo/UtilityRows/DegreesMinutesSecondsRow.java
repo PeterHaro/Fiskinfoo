@@ -24,12 +24,14 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.CoordinateFormat;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.ICoordinateRow;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class DegreesMinutesSecondsRow extends BaseTableRow  {
+public class DegreesMinutesSecondsRow extends CoordinateRow implements ICoordinateRow{
     private EditText latitudeDegreesEditText;
     private EditText latitudeMinutesEditText;
     private EditText latitudeSecondsEditText;
@@ -44,15 +46,15 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
     public DegreesMinutesSecondsRow(final Activity activity, LocationProviderInterface gpsLocationTracker) {
         super(activity, R.layout.utility_row_degrees_minutes_seconds_row);
 
-        latitudeDegreesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_degrees_edit_text);
-        latitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_minutes_edit_text);
-        latitudeSecondsEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_latitude_seconds_edit_text);
-        longitudeDegreesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_degrees_edit_text);
-        longitudeMinutesEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_minutes_edit_text);
-        longitudeSecondsEditText = (EditText) super.getView().findViewById(R.id.utility_dms_row_longitude_seconds_edit_text);
-        latitudeCardinalDirectionSwitch = (SwitchCompat) super.getView().findViewById(R.id.utility_dms_row_latitude_cardinal_direction_switch);
-        longitudeCardinalDirectionSwitch = (SwitchCompat) super.getView().findViewById(R.id.utility_dms_row_longitude_cardinal_direction_switch);
-        setPositionButton = (Button) super.getView().findViewById(R.id.utility_lat_lon_row_set_position_button);
+        latitudeDegreesEditText = super.getView().findViewById(R.id.utility_dms_row_latitude_degrees_edit_text);
+        latitudeMinutesEditText = super.getView().findViewById(R.id.utility_dms_row_latitude_minutes_edit_text);
+        latitudeSecondsEditText = super.getView().findViewById(R.id.utility_dms_row_latitude_seconds_edit_text);
+        longitudeDegreesEditText = super.getView().findViewById(R.id.utility_dms_row_longitude_degrees_edit_text);
+        longitudeMinutesEditText = super.getView().findViewById(R.id.utility_dms_row_longitude_minutes_edit_text);
+        longitudeSecondsEditText = super.getView().findViewById(R.id.utility_dms_row_longitude_seconds_edit_text);
+        latitudeCardinalDirectionSwitch = super.getView().findViewById(R.id.utility_dms_row_latitude_cardinal_direction_switch);
+        longitudeCardinalDirectionSwitch = super.getView().findViewById(R.id.utility_dms_row_longitude_cardinal_direction_switch);
+        setPositionButton = super.getView().findViewById(R.id.utility_lat_lon_row_set_position_button);
         mLocationProvider = gpsLocationTracker;
 
         setPositionButton.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +63,8 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
                 double latitude = mLocationProvider.getLatitude();
                 double longitude = mLocationProvider.getLongitude();
 
-                int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
-                int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+                double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+                double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
                 latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
                 latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -81,6 +83,12 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         }
     }
 
+    @Override
+    public DegreesMinutesSecondsRow initRow(Activity activity, LocationProviderInterface gpsLocationTracker) {
+        return new DegreesMinutesSecondsRow(activity, gpsLocationTracker);
+    }
+
+    @Override
     public void setEditable(boolean editable) {
         latitudeDegreesEditText.setClickable(editable);
         latitudeDegreesEditText.setFocusable(editable);
@@ -96,12 +104,18 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         longitudeSecondsEditText.setFocusable(editable);
     }
 
+    @Override
+    public CoordinateFormat getCoordinateFormat() {
+        return CoordinateFormat.DEGREES_MINUTES_SECONDS;
+    }
+
+    @Override
     public void setCoordinates(Point position) {
         double latitude = position.getLatitude();
         double longitude = position.getLongitude();
 
-        int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
-        int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+        double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+        double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
         latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -113,6 +127,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
     }
 
+    @Override
     public String getLatitude() {
         double latitudeDegrees = Double.NaN;
         double latitudeMinutes = Double.NaN;
@@ -125,9 +140,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
             latitudeMinutes = Double.parseDouble(latitudeMinutesEditText.getText().toString().trim());
             latitudeSeconds = Double.parseDouble(latitudeSecondsEditText.getText().toString().trim());
 
-            int minLatDegree = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
-            int maxLatDegree = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
-            int minLatMinute = latitudeDegreesEditText.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
+            int minLatDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_min);
+            int maxLatDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
+            int minLatMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
             int maxLatMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
             int minLatSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
             int maxLatSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
@@ -161,8 +176,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         }
     }
 
+    @Override
     public void setLatitude(String latitude) {
-        int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(latitude));
+        double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(latitude));
 
         latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -170,6 +186,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         latitudeCardinalDirectionSwitch.setChecked(Double.valueOf(latitude) < 0);
     }
 
+    @Override
     public String getLongitude() {
         double longitudeDegrees = Double.NaN;
         double longitudeMinutes = Double.NaN;
@@ -218,8 +235,9 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         }
     }
 
+    @Override
     public void setLongitude(String longitude) {
-        int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(longitude));
+        double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(Double.valueOf(longitude));
 
         latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
         latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
@@ -227,6 +245,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         longitudeCardinalDirectionSwitch.setChecked(Double.valueOf(longitude) >= 0);
     }
 
+    @Override
     public Point getCoordinates() {
         double latitude;
         double longitude;
@@ -293,6 +312,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         }
     }
 
+    @Override
     public void SetPositionButtonOnClickListener(View.OnClickListener onClickListener) {
         if(onClickListener != null) {
             setPositionButton.setOnClickListener(onClickListener);
@@ -303,8 +323,8 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
                     double latitude = mLocationProvider.getLatitude();
                     double longitude = mLocationProvider.getLongitude();
 
-                    int[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
-                    int[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
+                    double[] latitudeDMS = FiskInfoUtility.decimalToDMSArray(latitude);
+                    double[] longitudeDMS = FiskInfoUtility.decimalToDMSArray(longitude);
 
                     latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
                     latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
@@ -319,6 +339,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         }
     }
 
+    @Override
     public void setTextWatcher(TextWatcher watcher) {
         latitudeDegreesEditText.addTextChangedListener(watcher);
         latitudeMinutesEditText.addTextChangedListener(watcher);
@@ -328,6 +349,7 @@ public class DegreesMinutesSecondsRow extends BaseTableRow  {
         longitudeSecondsEditText.addTextChangedListener(watcher);
     }
 
+    @Override
     public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
         latitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
         longitudeCardinalDirectionSwitch.setOnCheckedChangeListener(onCheckedChangeListener);

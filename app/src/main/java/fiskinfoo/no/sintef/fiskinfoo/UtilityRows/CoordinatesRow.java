@@ -28,11 +28,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.CoordinateFormat;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.ICoordinateRow;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.R;
 
-public class CoordinatesRow extends BaseTableRow {
+public class CoordinatesRow<T extends ICoordinateRow> extends BaseTableRow {
     private TextView header;
     private Button helpButton;
     private Button addCoordinateRowButton;
@@ -41,24 +43,29 @@ public class CoordinatesRow extends BaseTableRow {
     private LinearLayout latLonViewContainer;
     private TextWatcher watcher;
     private CompoundButton.OnCheckedChangeListener cardinalDirectionSwitchOnCheckedChangedListener;
-    private List<DegreesMinutesSecondsRow> coordinateRows = new ArrayList<>();
+    private List<T> coordinateRows = new ArrayList<>();
     private boolean enabled = true;
+    private T coordinateRowInterface;
 
-    public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface) {
+    public CoordinatesRow(final Activity activity, final LocationProviderInterface locationProviderInterface, final T coordinateRowInterface, CoordinateFormat coordinateFormat) {
         super(activity, R.layout.utility_row_coordinates_row);
 
-        header = (TextView) getView().findViewById(R.id.utility_coordinates_row_header_text_view);
-        helpButton = (Button) getView().findViewById(R.id.utility_coordinates_row_help_button);
-        addCoordinateRowButton = (Button) getView().findViewById(R.id.utility_coordinates_row_add_position_button);
-        removeCoordinateRowButton = (Button) getView().findViewById(R.id.utility_coordinates_row_remove_position_button);
-        latLonViewContainer = (LinearLayout) getView().findViewById(R.id.utility_coordinates_row_lat_lon_container);
-        helpTextView = (TextView) getView().findViewById(R.id.utility_coordinates_row_help_text_view);
+        this.coordinateRowInterface = coordinateRowInterface;
+        header = getView().findViewById(R.id.utility_coordinates_row_header_text_view);
+        helpButton = getView().findViewById(R.id.utility_coordinates_row_help_button);
+        addCoordinateRowButton = getView().findViewById(R.id.utility_coordinates_row_add_position_button);
+        removeCoordinateRowButton = getView().findViewById(R.id.utility_coordinates_row_remove_position_button);
+        latLonViewContainer = getView().findViewById(R.id.utility_coordinates_row_lat_lon_container);
+        helpTextView = getView().findViewById(R.id.utility_coordinates_row_help_text_view);
 
-        DegreesMinutesSecondsRow coordinatesRow = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
+        CoordinateRow coordinatesRow;
 
-        coordinateRows.add(coordinatesRow);
+        coordinatesRow = coordinateRowInterface.initRow(activity, locationProviderInterface);
+
+        coordinateRows.add((T)coordinatesRow);
         latLonViewContainer.addView(coordinatesRow.getView());
 
+        helpTextView.setText(activity.getString(R.string.coordinates_help_text, coordinateFormat.toString()));
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +76,7 @@ public class CoordinatesRow extends BaseTableRow {
         addCoordinateRowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
+                ICoordinateRow row = coordinateRowInterface.initRow(activity, locationProviderInterface);
 
                 if(watcher != null) {
                     row.setTextWatcher(watcher);
@@ -78,8 +85,8 @@ public class CoordinatesRow extends BaseTableRow {
                     row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
                 }
 
-                coordinateRows.add(row);
-                latLonViewContainer.addView(row.getView());
+                coordinateRows.add((T)row);
+                latLonViewContainer.addView(((CoordinateRow)row).getView());
             }
         });
 
@@ -109,7 +116,7 @@ public class CoordinatesRow extends BaseTableRow {
     public List<Point> getCoordinates() {
         List<Point> coordinates = new ArrayList<>();
 
-        for(DegreesMinutesSecondsRow coordinateRow : coordinateRows) {
+        for(ICoordinateRow coordinateRow : coordinateRows) {
             Point point = coordinateRow.getCoordinates();
 
             if(point == null) {
@@ -127,7 +134,7 @@ public class CoordinatesRow extends BaseTableRow {
         latLonViewContainer.removeAllViews();
 
         for(Point position : coordinates) {
-            DegreesMinutesSecondsRow row = new DegreesMinutesSecondsRow(activity, locationProviderInterface);
+            CoordinateRow row = coordinateRowInterface.initRow(activity, locationProviderInterface);
             row.setCoordinates(position);
             row.setEnabled(enabled);
 
@@ -138,13 +145,14 @@ public class CoordinatesRow extends BaseTableRow {
                 row.setCardinalDirectionSwitchOnCheckedChangedListener(cardinalDirectionSwitchOnCheckedChangedListener);
             }
 
-            coordinateRows.add(row);
+            // TODO: Fix safe cast
+            coordinateRows.add((T)row);
             latLonViewContainer.addView(row.getView());
         }
     }
 
     public void setPositionButtonOnClickListener(View.OnClickListener onClickListener) {
-        for(DegreesMinutesSecondsRow row : coordinateRows) {
+        for(ICoordinateRow row : coordinateRows) {
             row.SetPositionButtonOnClickListener(onClickListener);
         }
     }
@@ -152,7 +160,7 @@ public class CoordinatesRow extends BaseTableRow {
     public void setTextWatcher(TextWatcher watcher) {
         this.watcher = watcher;
 
-        for(DegreesMinutesSecondsRow row : coordinateRows) {
+        for(ICoordinateRow row : coordinateRows) {
             row.setTextWatcher(this.watcher);
         }
     }
@@ -160,7 +168,7 @@ public class CoordinatesRow extends BaseTableRow {
     public void setCardinalDirectionSwitchOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener onCheckedChangedListener) {
         this.cardinalDirectionSwitchOnCheckedChangedListener = onCheckedChangedListener;
 
-        for(DegreesMinutesSecondsRow row : coordinateRows) {
+        for(ICoordinateRow row : coordinateRows) {
             row.setCardinalDirectionSwitchOnCheckedChangedListener(this.cardinalDirectionSwitchOnCheckedChangedListener);
         }
     }
@@ -182,8 +190,8 @@ public class CoordinatesRow extends BaseTableRow {
             }
         }
 
-        for(DegreesMinutesSecondsRow row : coordinateRows) {
-            row.setEnabled(enabled);
+        for(ICoordinateRow row : coordinateRows) {
+            ((CoordinateRow)row).setEnabled(enabled);
         }
     }
 }

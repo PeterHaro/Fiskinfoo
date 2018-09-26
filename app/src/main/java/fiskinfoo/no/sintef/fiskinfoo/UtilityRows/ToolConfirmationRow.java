@@ -16,14 +16,10 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
-
-import java.util.Locale;
 
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
@@ -42,26 +38,24 @@ public class ToolConfirmationRow extends BaseTableRow{
     private TextView setupTimeTextView;
     private TextView lastChangedDateTimeTextView;
     private TextView lastChangedBySourceTextView;
-    private ImageView expandViewImageView;
     private CheckBox addToolCheckBox;
     private ToolEntry toolEntry;
 
     public ToolConfirmationRow(Context context, JSONObject tool) {
         super(context, R.layout.utility_row_tool_confirmation_row);
 
-        coordinatesTextView = (TextView) getView().findViewById(R.id.tool_row_tool_position_text_view);
-        ircsTextView = (TextView) getView().findViewById(R.id.tool_row_ircs_text_view);
-        mmsiTextView = (TextView) getView().findViewById(R.id.tool_row_mmsi_text_view);
-        imoTextView = (TextView) getView().findViewById(R.id.tool_row_imo_text_view);
-        vesselNameTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_name_text_view);
-        vesselPhoneTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_phone_text_view);
-        toolTypeNameTextView = (TextView) getView().findViewById(R.id.tool_row_tool_type_text_view);
-        commentTextView = (TextView) getView().findViewById(R.id.tool_row_comment_text_view);
-        setupTimeTextView = (TextView) getView().findViewById(R.id.tool_row_setup_time_text_view);
-        lastChangedDateTimeTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_text_view);
-        lastChangedBySourceTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
-        expandViewImageView = (ImageView) getView().findViewById(R.id.tool_row_expand_view_image_view);
-        addToolCheckBox = (CheckBox) getView().findViewById(R.id.tool_row_check_box);
+        coordinatesTextView = getView().findViewById(R.id.tool_row_tool_position_text_view);
+        ircsTextView = getView().findViewById(R.id.tool_row_ircs_text_view);
+        mmsiTextView = getView().findViewById(R.id.tool_row_mmsi_text_view);
+        imoTextView = getView().findViewById(R.id.tool_row_imo_text_view);
+        vesselNameTextView = getView().findViewById(R.id.tool_row_vessel_name_text_view);
+        vesselPhoneTextView = getView().findViewById(R.id.tool_row_vessel_phone_text_view);
+        toolTypeNameTextView = getView().findViewById(R.id.tool_row_tool_type_text_view);
+        commentTextView = getView().findViewById(R.id.tool_row_comment_text_view);
+        setupTimeTextView = getView().findViewById(R.id.tool_row_setup_time_text_view);
+        lastChangedDateTimeTextView = getView().findViewById(R.id.tool_row_last_changed_text_view);
+        lastChangedBySourceTextView = getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
+        addToolCheckBox = getView().findViewById(R.id.tool_row_check_box);
         toolEntry = new ToolEntry(tool, context);
 
         setupTimeTextView.setText(toolEntry.getSetupDateTime().replace("T", " ").substring(0, 19));
@@ -141,19 +135,18 @@ public class ToolConfirmationRow extends BaseTableRow{
     public ToolConfirmationRow(Context context, ToolEntry tool) {
         super(context, R.layout.utility_row_tool_confirmation_row);
 
-        coordinatesTextView = (TextView) getView().findViewById(R.id.tool_row_tool_position_text_view);
-        ircsTextView = (TextView) getView().findViewById(R.id.tool_row_ircs_text_view);
-        mmsiTextView = (TextView) getView().findViewById(R.id.tool_row_mmsi_text_view);
-        imoTextView = (TextView) getView().findViewById(R.id.tool_row_imo_text_view);
-        vesselNameTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_name_text_view);
-        vesselPhoneTextView = (TextView) getView().findViewById(R.id.tool_row_vessel_phone_text_view);
-        toolTypeNameTextView = (TextView) getView().findViewById(R.id.tool_row_tool_type_text_view);
-        commentTextView = (TextView) getView().findViewById(R.id.tool_row_comment_text_view);
-        setupTimeTextView = (TextView) getView().findViewById(R.id.tool_row_setup_time_text_view);
-        lastChangedDateTimeTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_text_view);
-        lastChangedBySourceTextView = (TextView) getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
-        expandViewImageView = (ImageView) getView().findViewById(R.id.tool_row_expand_view_image_view);
-        addToolCheckBox = (CheckBox) getView().findViewById(R.id.tool_row_check_box);
+        coordinatesTextView = getView().findViewById(R.id.tool_row_tool_position_text_view);
+        ircsTextView = getView().findViewById(R.id.tool_row_ircs_text_view);
+        mmsiTextView = getView().findViewById(R.id.tool_row_mmsi_text_view);
+        imoTextView = getView().findViewById(R.id.tool_row_imo_text_view);
+        vesselNameTextView = getView().findViewById(R.id.tool_row_vessel_name_text_view);
+        vesselPhoneTextView = getView().findViewById(R.id.tool_row_vessel_phone_text_view);
+        toolTypeNameTextView = getView().findViewById(R.id.tool_row_tool_type_text_view);
+        commentTextView = getView().findViewById(R.id.tool_row_comment_text_view);
+        setupTimeTextView = getView().findViewById(R.id.tool_row_setup_time_text_view);
+        lastChangedDateTimeTextView = getView().findViewById(R.id.tool_row_last_changed_text_view);
+        lastChangedBySourceTextView = getView().findViewById(R.id.tool_row_last_changed_by_source_text_view);
+        addToolCheckBox = getView().findViewById(R.id.tool_row_check_box);
         toolEntry = tool;
 
         addToolCheckBox.setVisibility(View.GONE);

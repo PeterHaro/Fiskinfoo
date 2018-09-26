@@ -33,7 +33,7 @@ limitations under the License.
             >
 
             <LinearLayout
-                android:id="@+id/utility_dms_row_latitude_container"
+                android:id="@+id/utility_ddm_row_latitude_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/dialog_container_margin_top"
@@ -47,20 +47,20 @@ limitations under the License.
                 >
 
                 <EditText
-                    android:id="@+id/utility_dms_row_latitude_degrees_edit_text"
+                    android:id="@+id/utility_ddm_row_latitude_degrees_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="0.9"
+                    android:layout_weight="0.4"
                     android:gravity="end"
                     android:inputType="number"
                     android:maxLength="2"
-                    android:nextFocusDown="@+id/utility_dms_row_latitude_minutes_edit_text"
-                    android:nextFocusLeft="@+id/utility_dms_row_latitude_minutes_edit_text"
-                    android:nextFocusRight="@+id/utility_dms_row_latitude_minutes_edit_text"
-                    android:nextFocusUp="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:nextFocusDown="@+id/utility_ddm_row_latitude_minutes_edit_text"
+                    android:nextFocusLeft="@+id/utility_ddm_row_latitude_minutes_edit_text"
+                    android:nextFocusRight="@+id/utility_ddm_row_latitude_minutes_edit_text"
+                    android:nextFocusUp="@+id/utility_ddm_row_latitude_minutes_edit_text"
                     android:selectAllOnFocus="true"
                     />
 
@@ -70,24 +70,24 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_degrees"
-                    android:labelFor="@+id/utility_dms_row_latitude_degrees_edit_text"
+                    android:labelFor="@+id/utility_ddm_row_latitude_degrees_edit_text"
                     />
 
                 <EditText
-                    android:id="@+id/utility_dms_row_latitude_minutes_edit_text"
+                    android:id="@+id/utility_ddm_row_latitude_minutes_edit_text"
                     android:layout_width="0.0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1.0"
                     android:gravity="end"
-                    android:inputType="number"
-                    android:maxLength="2"
-                    android:nextFocusDown="@+id/utility_dms_row_latitude_seconds_edit_text"
-                    android:nextFocusLeft="@+id/utility_dms_row_latitude_seconds_edit_text"
-                    android:nextFocusRight="@+id/utility_dms_row_latitude_seconds_edit_text"
-                    android:nextFocusUp="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:inputType="numberDecimal"
+                    android:maxLength="8"
+                    android:nextFocusDown="@+id/utility_ddm_row_longitude_degrees_edit_text"
+                    android:nextFocusLeft="@+id/utility_ddm_row_longitude_degrees_edit_text"
+                    android:nextFocusRight="@+id/utility_ddm_row_longitude_degrees_edit_text"
+                    android:nextFocusUp="@+id/utility_ddm_row_longitude_degrees_edit_text"
                     android:selectAllOnFocus="true"
                     />
 
@@ -97,38 +97,11 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_minutes"
-                    android:labelFor="@+id/utility_dms_row_latitude_minutes_edit_text"
-                    />
-
-                <EditText
-                    android:id="@+id/utility_dms_row_latitude_seconds_edit_text"
-                    android:layout_width="0.0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="1.2"
-                    android:gravity="end"
-                    android:inputType="numberDecimal"
-                    android:maxLength="5"
-                    android:nextFocusDown="@+id/utility_dms_row_longitude_degrees_edit_text"
-                    android:nextFocusLeft="@+id/utility_dms_row_longitude_degrees_edit_text"
-                    android:nextFocusRight="@+id/utility_dms_row_longitude_degrees_edit_text"
-                    android:nextFocusUp="@+id/utility_dms_row_longitude_degrees_edit_text"
-                    android:selectAllOnFocus="true"
-                    />
-
-                <TextView
-                    android:layout_width="0.0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="0.1"
-                    android:text="@string/symbol_geographical_seconds"
-                    android:labelFor="@+id/utility_dms_row_latitude_seconds_edit_text"
+                    android:labelFor="@+id/utility_ddm_row_latitude_minutes_edit_text"
                     />
 
                 <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/utility_dms_row_latitude_cardinal_direction_switch"
+                    android:id="@+id/utility_ddm_row_latitude_cardinal_direction_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/utility_dms_row_cardinal_direction_switch_padding_start"
@@ -141,7 +114,7 @@ limitations under the License.
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/utility_dms_row_longitude_container"
+                android:id="@+id/utility_ddm_row_longitude_container"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/dialog_container_margin_top"
@@ -154,20 +127,20 @@ limitations under the License.
                 >
 
                 <EditText
-                    android:id="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:id="@+id/utility_ddm_row_longitude_degrees_edit_text"
                     android:layout_width="0.0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="0.9"
+                    android:layout_weight="0.4"
                     android:gravity="end"
                     android:inputType="number"
                     android:maxLength="2"
-                    android:nextFocusDown="@+id/utility_dms_row_longitude_minutes_edit_text"
-                    android:nextFocusLeft="@+id/utility_dms_row_longitude_minutes_edit_text"
-                    android:nextFocusRight="@+id/utility_dms_row_longitude_minutes_edit_text"
-                    android:nextFocusUp="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:nextFocusDown="@+id/utility_ddm_row_longitude_minutes_edit_text"
+                    android:nextFocusLeft="@+id/utility_ddm_row_longitude_minutes_edit_text"
+                    android:nextFocusRight="@+id/utility_ddm_row_longitude_minutes_edit_text"
+                    android:nextFocusUp="@+id/utility_ddm_row_longitude_minutes_edit_text"
                     android:selectAllOnFocus="true"
                     />
 
@@ -177,24 +150,20 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_degrees"
-                    android:labelFor="@+id/utility_dms_row_longitude_degrees_edit_text"
+                    android:labelFor="@+id/utility_ddm_row_longitude_degrees_edit_text"
                     />
 
                 <EditText
-                    android:id="@+id/utility_dms_row_longitude_minutes_edit_text"
+                    android:id="@+id/utility_ddm_row_longitude_minutes_edit_text"
                     android:layout_width="0.0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
                     android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="0.9"
+                    android:layout_weight="1.0"
                     android:gravity="end"
-                    android:inputType="number"
-                    android:maxLength="2"
-                    android:nextFocusDown="@+id/utility_dms_row_longitude_seconds_edit_text"
-                    android:nextFocusLeft="@+id/utility_dms_row_longitude_seconds_edit_text"
-                    android:nextFocusRight="@+id/utility_dms_row_longitude_seconds_edit_text"
-                    android:nextFocusUp="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:inputType="numberDecimal"
+                    android:maxLength="8"
                     android:selectAllOnFocus="true"
                     />
 
@@ -204,34 +173,11 @@ limitations under the License.
                     android:layout_gravity="center_vertical"
                     android:layout_weight="0.1"
                     android:text="@string/symbol_geographical_minutes"
-                    android:labelFor="@+id/utility_dms_row_longitude_minutes_edit_text"
-                    />
-
-                <EditText
-                    android:id="@+id/utility_dms_row_longitude_seconds_edit_text"
-                    android:layout_width="0.0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin_small"
-                    android:layout_weight="1.2"
-                    android:gravity="end"
-                    android:inputType="numberDecimal"
-                    android:maxLength="5"
-                    android:selectAllOnFocus="true"
-                    />
-
-                <TextView
-                    android:layout_width="0.0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="0.1"
-                    android:text="@string/symbol_geographical_seconds"
-                    android:labelFor="@+id/utility_dms_row_longitude_seconds_edit_text"
+                    android:labelFor="@+id/utility_ddm_row_longitude_minutes_edit_text"
                     />
 
                 <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/utility_dms_row_longitude_cardinal_direction_switch"
+                    android:id="@+id/utility_ddm_row_longitude_cardinal_direction_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="@dimen/utility_dms_row_cardinal_direction_switch_padding_start"

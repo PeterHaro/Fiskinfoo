@@ -12,9 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.CoordinateFormat;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Point;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.Tool;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
@@ -64,6 +63,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
 import fiskinfoo.no.sintef.fiskinfoo.FiskInfo;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.GpsLocationTracker;
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.ICoordinateRow;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.User;
 import fiskinfoo.no.sintef.fiskinfoo.Implementation.UserSettings;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
@@ -102,7 +102,7 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     private LinearLayout fieldsContainer;
     private DatePickerRow setupDateRow;
     private TimePickerRow setupTimeRow;
-    private CoordinatesRow coordinatesRow;
+    private CoordinatesRow<ICoordinateRow> coordinatesRow;
     private SpinnerRow toolRow;
     private CheckBoxRow toolRemovedRow;
     private EditTextRow commentRow;
@@ -260,9 +260,13 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
     }
 
     private void generateFields() {
+        UserSettings settings = userInterface.getUser().getSettings();
+        CoordinateFormat coordinateFormat = settings.getCoordinateFormat() != null ? settings.getCoordinateFormat() : CoordinateFormat.DEGREES_MINUTES_SECONDS;
         setupDateRow = new DatePickerRow(getContext(), getString(R.string.tool_set_date_colon), getFragmentManager());
         setupTimeRow = new TimePickerRow(getContext(), getString(R.string.tool_set_time_colon), getFragmentManager(), true);
-        coordinatesRow = new CoordinatesRow(getActivity(), this);
+
+        coordinatesRow = coordinateFormat.getCoordinateRow(getActivity(), this);
+
         toolRow = new SpinnerRow(getContext(), getString(R.string.tool_type_colon), ToolType.getValues());
         toolRemovedRow = new CheckBoxRow(getContext(), getString(R.string.tool_removed_row_text), true);
         commentRow = new EditTextRow(getContext(), getString(R.string.comment_field_header), getString(R.string.comment_field_hint));
@@ -288,8 +292,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
 
         RelativeLayout relativeLayout = new RelativeLayout(getContext());
         mapPreviewContainer = (RelativeLayout) LayoutInflater.from(getContext()).inflate(R.layout.utility_tool_map_preview, relativeLayout, false);
-        toolMapPreviewWebView = (WebView) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_web_view);
-        mapPreviewZoomButton = (Button) mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_zoom_button);
+        toolMapPreviewWebView = mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_web_view);
+        mapPreviewZoomButton = mapPreviewContainer.findViewById(R.id.utility_tool_map_preview_zoom_button);
         mapPreviewZoomButton.setTag(null);
 
         mapPreviewZoomButton.setOnClickListener(new View.OnClickListener() {
