@@ -314,6 +314,8 @@ public class EditToolFragment extends DialogFragment implements LocationProvider
         toolMapPreviewWebView.loadUrl("file:///android_asset/tool_map_preview.html");
         toolMapPreviewWebView.getSettings().setJavaScriptEnabled(true);
         toolMapPreviewWebView.getSettings().setDomStorageEnabled(true);
+        // This is needed as CORS requests are not accepted otherwise
+        toolMapPreviewWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         toolMapPreviewWebView.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
         toolMapPreviewWebView.setWebViewClient(new barentswatchFiskInfoWebClient());
         toolMapPreviewWebView.setWebChromeClient(new WebChromeClient() {

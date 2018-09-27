@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.CoordinateFormat;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntryStatus;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolType;
@@ -44,7 +45,7 @@ public class ToolLogRow extends BaseTableRow {
     private ImageView editToolImageView;
     private TableRow tableRow;
 
-    public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener) {
+    public ToolLogRow(Context context, final ToolEntry tool, View.OnClickListener onClickListener, CoordinateFormat coordinateFormat) {
         super(context, R.layout.utility_row_tool_log_row);
 
         dateHeader =  getView().findViewById(R.id.tool_log_row_latest_date_text_view);
@@ -53,14 +54,8 @@ public class ToolLogRow extends BaseTableRow {
         toolNotificationImageView =  getView().findViewById(R.id.tool_log_row_reported_image_view);
         editToolImageView =  getView().findViewById(R.id.tool_log_row_edit_image_view);
         tableRow =  getView().findViewById(R.id.tool_log_row_table_row);
-        StringBuilder sb = new StringBuilder(tool.getCoordinates().get(0).getLatitude() < 0 ? "S" : "N");
 
-        sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLatitude())));
-        sb.append(", ");
-        sb.append(tool.getCoordinates().get(0).getLongitude() < 0 ? "W" : "E");
-        sb.append(FiskInfoUtility.decimalToDMS((tool.getCoordinates().get(0).getLongitude())));
-
-        String coordinateString = sb.toString();
+        String coordinateString = coordinateFormat.getCoordinateString(tool.getCoordinates().get(0));
         coordinateString = tool.getCoordinates().size() < 2 ? coordinateString : coordinateString + "\n..";
 
         SimpleDateFormat sdf = new SimpleDateFormat(context.getString(R.string.datetime_format_yyyy_mm_dd_t_hh_mm_ss), Locale.getDefault());

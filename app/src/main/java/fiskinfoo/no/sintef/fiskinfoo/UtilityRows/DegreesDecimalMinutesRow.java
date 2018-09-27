@@ -45,13 +45,13 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
                 double latitude = mLocationProvider.getLatitude();
                 double longitude = mLocationProvider.getLongitude();
 
-//                double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
-//                double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
+                double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
+                double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
 
-//                latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-//                latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-//                longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-//                longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+                latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+                latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+                longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+                longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
                 latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
                 longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
             }
@@ -90,8 +90,6 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
             int maxDegree = super.getContext().getResources().getInteger(R.integer.valid_degrees_value_max);
             int minMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_min);
             int maxMinute = super.getContext().getResources().getInteger(R.integer.valid_minutes_value_max);
-            int minSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_min);
-            int maxSecond = super.getContext().getResources().getInteger(R.integer.valid_seconds_value_max);
 
             valid = fieldValid = !(minDegree > latitudeDegrees || maxDegree < latitudeDegrees);
             latitudeDegreesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
@@ -109,11 +107,10 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
                 return null;
             }
 
-//            latitude = FiskInfoUtility.DDMToDecimal(new double[] { latitudeDegrees, latitudeMinutes }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1);
-//            longitude = FiskInfoUtility.DDMToDecimal(new double[] { longitudeDegrees, longitudeMinutes }) * (longitudeCardinalDirectionSwitch.isChecked() ? 1 : -1);
+            latitude = FiskInfoUtility.DDMToDecimal(new double[] { latitudeDegrees, latitudeMinutes }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1);
+            longitude = FiskInfoUtility.DDMToDecimal(new double[] { longitudeDegrees, longitudeMinutes }) * (longitudeCardinalDirectionSwitch.isChecked() ? 1 : -1);
 
-//            return new Point(latitude, longitude);
-            return null;
+            return new Point(latitude, longitude);
         } catch(NumberFormatException e) {
             latitudeDegreesEditText.setError(Double.isNaN(latitudeDegrees) ? super.getContext().getString(R.string.error_invalid_format) : null);
             latitudeMinutesEditText.setError(Double.isNaN(latitudeMinutes) ? super.getContext().getString(R.string.error_invalid_format) : null);
@@ -129,13 +126,13 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
         double latitude = position.getLatitude();
         double longitude = position.getLongitude();
 //
-//        double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
-//        double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
-//
-//        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-//        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-//        longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-//        longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+        double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
+        double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
+
+        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+        longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+        longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
         longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
     }
@@ -162,8 +159,7 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
             valid = (fieldValid = !(minLatMinute > latitudeMinutes || maxLatMinute < Math.floor(latitudeMinutes))) && valid;
             latitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
 
-            return null;
-//            return valid ? Double.toString(FiskInfoUtility.DDMToDecimal(new double[] { latitudeDegrees, latitudeMinutes }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1)) : null;
+            return valid ? Double.toString(FiskInfoUtility.DDMToDecimal(new double[] { latitudeDegrees, latitudeMinutes }) * (latitudeCardinalDirectionSwitch.isChecked() ? -1 : 1)) : null;
         } catch(NumberFormatException e) {
             if(Double.isNaN(latitudeDegrees)) {
                 latitudeDegreesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
@@ -178,10 +174,10 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
 
     @Override
     public void setLatitude(String latitude) {
-//        double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(Double.valueOf(latitude));
+        double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(Double.valueOf(latitude));
 
-//        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-//        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+        latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
         latitudeCardinalDirectionSwitch.setChecked(Double.valueOf(latitude) < 0);
     }
 
@@ -207,11 +203,7 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
             valid = (fieldValid = !(minLonMinute > longitudeMinutes || maxLonMinute < Math.floor(longitudeMinutes))) && valid;
             longitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
 
-            if(!valid) {
-                return null;
-            }
-
-            return null; // Double.toString(FiskInfoUtility.DDMToDecimal(new double[] { longitudeDegrees, longitudeMinutes }) * (longitudeCardinalDirectionSwitch.isChecked() ? -1 : 1));
+            return valid ? Double.toString(FiskInfoUtility.DDMToDecimal(new double[] { longitudeDegrees, longitudeMinutes }) * (longitudeCardinalDirectionSwitch.isChecked() ? -1 : 1)) : null;
         } catch(NumberFormatException e) {
             if(Double.isNaN(longitudeDegrees)) {
                 longitudeDegreesEditText.setError(super.getContext().getString(R.string.error_invalid_format));
@@ -226,10 +218,10 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
 
     @Override
     public void setLongitude(String longitude) {
-//        double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(Double.valueOf(longitude));
+        double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(Double.valueOf(longitude));
 
-//        latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-//        latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+        latitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+        latitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
         longitudeCardinalDirectionSwitch.setChecked(Double.valueOf(longitude) >= 0);
     }
 
@@ -244,13 +236,13 @@ public class DegreesDecimalMinutesRow extends CoordinateRow {
                     double latitude = mLocationProvider.getLatitude();
                     double longitude = mLocationProvider.getLongitude();
 
-//                    double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
-//                    double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
-//
-//                    latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
-//                    latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
-//                    longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
-//                    longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
+                    double[] latitudeDMS = FiskInfoUtility.decimalToDDMArray(latitude);
+                    double[] longitudeDMS = FiskInfoUtility.decimalToDDMArray(longitude);
+
+                    latitudeDegreesEditText.setText(String.valueOf(latitudeDMS[0]));
+                    latitudeMinutesEditText.setText(String.valueOf(latitudeDMS[1]));
+                    longitudeDegreesEditText.setText(String.valueOf(longitudeDMS[0]));
+                    longitudeMinutesEditText.setText(String.valueOf(longitudeDMS[1]));
                     latitudeCardinalDirectionSwitch.setChecked(latitude < 0);
                     longitudeCardinalDirectionSwitch.setChecked(longitude >= 0);
                 }

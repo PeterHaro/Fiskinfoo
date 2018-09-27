@@ -482,6 +482,26 @@ public class FiskInfoUtility {
         return coord[0] + (coord[1] / 60) + (coord[2] / 3600);
     }
 
+    public static String decimalToDDM(double coord, int numberOfDecimals) {
+        double absCoord = Math.abs(coord);
+        String output, degrees, minutes;
+
+        double mod = absCoord % 1;
+        int intPart = (int) absCoord;
+        degrees = String.valueOf(intPart);
+
+        absCoord = mod * 60;
+        mod = absCoord % 1;
+        intPart = (int) absCoord;
+        mod = intPart + mod;
+
+        String roundingFormat = "%." + numberOfDecimals + "f";
+        minutes =  numberOfDecimals != -1 ? String.format(Locale.getDefault(), roundingFormat, mod) : String.valueOf(mod);
+        output = degrees + "° " + minutes + "'";
+
+        return output;
+    }
+
     public static double[] decimalToDDMArray(double coord) {
         // TODO: implement
         double absCoord = Math.abs(coord);

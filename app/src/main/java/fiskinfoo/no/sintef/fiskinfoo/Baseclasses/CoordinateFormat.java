@@ -2,6 +2,7 @@ package fiskinfoo.no.sintef.fiskinfoo.Baseclasses;
 
 import android.app.Activity;
 
+import fiskinfoo.no.sintef.fiskinfoo.Implementation.FiskInfoUtility;
 import fiskinfoo.no.sintef.fiskinfoo.Interface.LocationProviderInterface;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.CoordinatesRow;
 import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.DegreesDecimalMinutesRow;
@@ -55,6 +56,35 @@ public enum CoordinateFormat {
                 throw new UnsupportedOperationException("Coordinate format is not supported in the system");
         }
         return retVal;
+    }
+
+    public String getCoordinateString(Point coordinate) {
+        StringBuilder sb = new StringBuilder(coordinate.getLatitude() < 0 ? "S" : "N");
+        String retval = null;
+
+        switch(this) {
+            case DEGREES_MINUTES_SECONDS:
+                sb.append(FiskInfoUtility.decimalToDMS(coordinate.getLatitude()));
+                sb.append(" ");
+                sb.append(coordinate.getLongitude() < 0 ? "W" : "E");
+                sb.append(FiskInfoUtility.decimalToDMS(coordinate.getLongitude()));
+
+                retval = sb.toString();
+
+                break;
+            case DEGREES_DECIMAL_MINUTES:
+                sb.append(FiskInfoUtility.decimalToDDM(coordinate.getLatitude(), 5));
+                sb.append(" ");
+                sb.append(coordinate.getLongitude() < 0 ? "W" : "E");
+                sb.append(FiskInfoUtility.decimalToDDM(coordinate.getLongitude(), 5));
+
+                retval = sb.toString();
+                break;
+            default:
+                throw new UnsupportedOperationException("Coordinate format is not supported in the system");
+        }
+
+        return retval;
     }
 
     public static String[] getValues() {

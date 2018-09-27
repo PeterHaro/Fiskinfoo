@@ -226,7 +226,7 @@ public class ActiveToolsFragment extends Fragment {
                         }
                     };
 
-                    ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                    ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener, user.getSettings().getCoordinateFormat());
                     row.getView().setTag(toolEntry.getToolId());
                     toolContainer.addView(row.getView());
                 }
@@ -708,7 +708,7 @@ public class ActiveToolsFragment extends Fragment {
                             }
                         };
 
-                        ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                        ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener, user.getSettings().getCoordinateFormat());
                         toolContainer.addView(row.getView());
                     }
                 }
@@ -787,7 +787,7 @@ public class ActiveToolsFragment extends Fragment {
                                     }
                                 };
 
-                                ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, onClickListener);
+                                ToolLogRow newRow = new ToolLogRow(v.getContext(), newTool, onClickListener, user.getSettings().getCoordinateFormat());
                                 row.getView().setTag(newTool.getToolId());
                                 toolContainer.addView(newRow.getView());
                             }
@@ -919,7 +919,7 @@ public class ActiveToolsFragment extends Fragment {
                         localChanges = true;
                     }
 
-                    ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener);
+                    ToolLogRow row = new ToolLogRow(getActivity(), toolEntry, onClickListener, user.getSettings().getCoordinateFormat());
                     row.getView().setTag(toolEntry.getToolId());
                     toolContainer.addView(row.getView());
                 }
