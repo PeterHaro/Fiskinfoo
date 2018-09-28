@@ -296,7 +296,7 @@ public class UserSettingsFragment extends Fragment {
             userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement userInterface");
         }
     }
 

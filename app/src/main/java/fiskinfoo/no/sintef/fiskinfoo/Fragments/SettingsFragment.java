@@ -77,6 +77,7 @@ public class SettingsFragment extends Fragment {
         initAppSettingsRow();
         initSetDownLoadPathRow();
         initOfflineModeRow();
+        initTermsAndServicesRow();
         //initAboutRow();
         //initLogoutRow();
 
@@ -204,6 +205,26 @@ public class SettingsFragment extends Fragment {
         linearLayout.addView(row.getView());
     }
 
+    private void initTermsAndServicesRow() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                TermsAndServicesFragment fragment = TermsAndServicesFragment.newInstance(userInterface.getUser().getSettings());
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_fragment_container, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(getString(R.string.terms_and_Services_fragment_title))
+                        .commit();
+            }
+        };
+
+        SettingsRow row = new SettingsRow(getContext(), getString(R.string.terms_and_Services_fragment_title), R.drawable.ic_settings_black_24dp, onClickListener);
+        linearLayout.addView(row.getView());
+    }
+
 
     public void logoutUser() {
         User.forgetUser(getContext());
@@ -220,7 +241,7 @@ public class SettingsFragment extends Fragment {
             userInterface = (UserInterface) getActivity();
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement UserInterface and OnFragmentInteractionListener");
         }
     }
 

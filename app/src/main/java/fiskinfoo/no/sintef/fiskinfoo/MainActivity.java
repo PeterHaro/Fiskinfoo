@@ -64,6 +64,7 @@ import fiskinfoo.no.sintef.fiskinfoo.Fragments.SettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.SubscriptionEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Baseclasses.ToolEntry;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.SummaryFragment;
+import fiskinfoo.no.sintef.fiskinfoo.Fragments.TermsAndServicesFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Fragments.UserSettingsFragment;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.BarentswatchApi;
 import fiskinfoo.no.sintef.fiskinfoo.Http.BarentswatchApiRetrofit.IBarentswatchApi;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements
         EditToolFragment.OnFragmentInteractionListener,
         OfflineModeFragment.OnFragmentInteractionListener,
         SummaryFragment.OnFragmentInteractionListener,
+        TermsAndServicesFragment.OnFragmentInteractionListener,
         UserInterface {
 
     public final static int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0x001;
@@ -113,25 +115,25 @@ public class MainActivity extends AppCompatActivity implements
 
         fiskInfoUtility = new FiskInfoUtility();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
         initializeNavigationView();
 
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView = findViewById(R.id.navigation_view);
         navigationView.inflateMenu(R.menu.navigation_drawer_menu);
         navigationView.setNavigationItemSelectedListener(this);
 
         navigationView.getMenu().performIdentifierAction(R.id.navigation_view_summary, 0);
-        navigationHeaderUserNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
+        navigationHeaderUserNameTextView = navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
 
         if (user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
             navigationHeaderUserNameTextView.setText(user.getSettings().getContactPersonName());
         }
 
-        mNetworkErrorTextView = (TextView) findViewById(R.id.activity_main_network_error_text_view);
+        mNetworkErrorTextView = findViewById(R.id.activity_main_network_error_text_view);
 
         if (!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
             toggleNetworkErrorTextView(false);
@@ -143,6 +145,17 @@ public class MainActivity extends AppCompatActivity implements
 
         if (user.getOfflineMode()) {
             initAndStartOfflineModeBackgroundThread();
+        }
+
+        if (user.getSettings() != null && !user.getSettings().getPrivacyPolicyConsent()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            TermsAndServicesFragment fragment = TermsAndServicesFragment.newInstance(user.getSettings());
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_activity_fragment_container, fragment, TermsAndServicesFragment.FRAGMENT_TAG)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack(getString(R.string.terms_and_Services_fragment_title))
+                    .commit();
         }
     }
 
@@ -475,9 +488,13 @@ public class MainActivity extends AppCompatActivity implements
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.Fragment fragment = fragmentManager.findFragmentByTag(SummaryFragment.FRAGMENT_TAG);
+        android.support.v4.app.Fragment termsAndServicesFragment = fragmentManager.findFragmentByTag(TermsAndServicesFragment.FRAGMENT_TAG);
 
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+        }else if(termsAndServicesFragment != null && termsAndServicesFragment.isVisible() && !user.getSettings().getPrivacyPolicyConsent()) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            super.onBackPressed();
         } else if ((getSupportFragmentManager().getBackStackEntryCount() > 0) ||
                 (fragment != null && fragment.isVisible())) {
             super.onBackPressed();
@@ -495,6 +512,25 @@ public class MainActivity extends AppCompatActivity implements
     public void setOfflineMode(boolean active) {
         user.setOfflineMode(active);
         user.writeToSharedPref(this);
+    }
+
+    @Override
+    public void toggleNavigationViewEnabled(boolean enabled) {
+        if(enabled) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        } else {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+    }
+
+    @Override
+    public void logOutAndDeleteUser() {
+        User.deleteUser(this);
+
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
     @Override

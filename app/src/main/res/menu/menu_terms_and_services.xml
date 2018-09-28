@@ -15,13 +15,13 @@ limitations under the License.
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="fiskinfoo.no.sintef.fiskinfoo.Fragments.UserSettingsFragment"
+    tools:context="fiskinfoo.no.sintef.fiskinfoo.Fragments.TermsAndServicesFragment"
     >
 
     <item
-        android:id="@+id/update_user_settings"
+        android:id="@+id/accept_privacy_policy"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:title="@string/update"
+        android:title="@string/accept"
         />
 </menu>

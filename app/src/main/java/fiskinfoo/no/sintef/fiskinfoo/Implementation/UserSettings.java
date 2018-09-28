@@ -62,12 +62,12 @@ public class UserSettings implements Parcelable {
         dest.writeString(ircs);
         dest.writeString(mmsi);
         dest.writeString(imo);
-        dest.writeString(toolType.toString());
+        dest.writeString(toolType != null ? toolType.toString() : ToolType.NETS.toString());
         dest.writeString(registrationNumber);
         dest.writeString(ContactPersonEmail);
         dest.writeString(ContactPersonPhone);
         dest.writeString(ContactPersonName);
-        dest.writeString(getCoordinateFormat().toString());
+        dest.writeString(toolType != null ? getCoordinateFormat().toString() : CoordinateFormat.DEGREES_MINUTES_SECONDS.toString());
         dest.writeByte((byte) (privacyPolicyConsent ? 1 : 0));
     }
 

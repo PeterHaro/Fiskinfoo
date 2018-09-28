@@ -68,7 +68,7 @@ public class CheckBoxRow extends BaseTableRow {
     }
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
-        mTextView.setOnClickListener(onClickListener);
+        getView().setOnClickListener(onClickListener);
     }
 
     @SuppressWarnings("unused")

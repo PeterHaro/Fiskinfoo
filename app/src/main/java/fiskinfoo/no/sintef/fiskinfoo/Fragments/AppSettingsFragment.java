@@ -33,6 +33,7 @@ import fiskinfoo.no.sintef.fiskinfoo.UtilityRows.SpinnerRow;
  * create an instance of this fragment.
  */
 public class AppSettingsFragment extends Fragment {
+    public static final String FRAGMENT_TAG = "AppSettingsFragment";
     private static final String ARG_PARAM_USER = "user";
 
     private UserSettings userSettings;

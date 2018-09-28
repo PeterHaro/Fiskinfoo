@@ -11,4 +11,5 @@ public interface UserInterface {
     User getUser();
     void updateUserSettings(UserSettings userSettings);
     void setOfflineMode(boolean active);
+    void logOutAndDeleteUser();
 }

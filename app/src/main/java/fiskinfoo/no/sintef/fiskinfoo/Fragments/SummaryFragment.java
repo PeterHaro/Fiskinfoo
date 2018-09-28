@@ -36,7 +36,6 @@ import fiskinfoo.no.sintef.fiskinfoo.R;
  * create an instance of this fragment.
  */
 public class SummaryFragment extends Fragment {
-
     public static final String FRAGMENT_TAG = "SummaryFragment";
 
     private User user;

@@ -21,6 +21,7 @@ limitations under the License.
     <string name="ok">OK</string>
     <string name="save">Lagre</string>
     <string name="cancel">Avbryt</string>
+    <string name="accept">Godta</string>
     <string name="zero_number">0</string>
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
@@ -291,6 +292,15 @@ limitations under the License.
     <string name="user_settings">Brukerinnstillinger</string>
     <string name="user_settings_fragment_title">Brukerinnstillinger</string>
     <string name="app_settings_fragment_title">applikasjonsinnstillinger</string>
+
+    <!-- Terms and Services -->
+    <string name="terms_and_services_consent_checkbox_text">Jeg godtar personvernpolicyen.</string>
+    <string name="terms_and_Services_fragment_title">Vilkår og personvern</string>
+    <string name="confirm_privacy_policy_consent_withdrawal">Er du sikker på at du ikke vil godta personvernserklæringen? Du vil ikke kunne bruke appen igjen før du godtar den, og alle data du har lagret i appen vil fjernes.</string>
+    <string name="confirm_privacy_policy_consent">For å kunne fortsette å bruke appen må du godta personvernserklæringen. Dersom du ikke godtar dette vil du logges ut av appen og alle data lagret i appen vil fjernes.</string>
+    <string name="privacy_policy">Lang tekst som forteller hvordan vi behandler data.</string>
+    <string name="error_privacy_policy_consent_required">Du må huke av at du godtar personvernserklæringen</string>
+    <string name="delete_user">Slett data</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Epostadresse</string>
