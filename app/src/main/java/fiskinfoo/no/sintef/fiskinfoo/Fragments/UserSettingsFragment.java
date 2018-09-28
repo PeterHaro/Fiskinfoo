@@ -53,7 +53,6 @@ public class UserSettingsFragment extends Fragment {
     private EditTextRow contactPersonPhoneRow;
     private EditTextRow contactPersonEmailRow;
     private SpinnerRow toolRow;
-    private SpinnerRow coordinateFormatRow;
     private EditTextRow vesselNameRow;
     private EditTextRow vesselPhoneNumberRow;
     private EditTextRow vesselIrcsNumberRow;
@@ -99,7 +98,7 @@ public class UserSettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_user_details, container, false);
 
-        fieldsContainer = (LinearLayout) rootView.findViewById(R.id.user_settings_fragment_fields_container);
+        fieldsContainer = rootView.findViewById(R.id.user_settings_fragment_fields_container);
 
         generateAndPopulateFields();
         setHasOptionsMenu(true);
@@ -120,7 +119,6 @@ public class UserSettingsFragment extends Fragment {
         vesselMmsiNumberRow = new EditTextRow(getContext(), getString(R.string.mmsi_number), getString(R.string.mmsi_number));
         vesselImoNumberRow = new EditTextRow(getContext(), getString(R.string.imo_number), getString(R.string.imo_number));
         vesselRegistrationNumberRow = new EditTextRow(getContext(), getString(R.string.registration_number), getString(R.string.registration_number));
-        coordinateFormatRow = new SpinnerRow(getContext(), getString(R.string.coordinate_format), CoordinateFormat.getValues());
 
         contactPersonNameRow.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
         contactPersonPhoneRow.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -173,13 +171,10 @@ public class UserSettingsFragment extends Fragment {
         fieldsContainer.addView(vesselMmsiNumberRow.getView());
         fieldsContainer.addView(vesselImoNumberRow.getView());
         fieldsContainer.addView(vesselRegistrationNumberRow.getView());
-        fieldsContainer.addView(coordinateFormatRow.getView());
 
         if (userSettings != null) {
             ArrayAdapter<String> toolRowAdapter = toolRow.getAdapter();
             toolRow.setSelectedSpinnerItem(toolRowAdapter.getPosition(userSettings.getToolType() != null ? userSettings.getToolType().toString() : Tool.BUNNTRÅL.toString()));
-            ArrayAdapter<String> coordinateFormatRowAdapter = coordinateFormatRow.getAdapter();
-            coordinateFormatRow.setSelectedSpinnerItem(coordinateFormatRowAdapter.getPosition(userSettings.getCoordinateFormat() != null ? userSettings.getCoordinateFormat().toString() : CoordinateFormat.DEGREES_MINUTES_SECONDS.toString()));
             contactPersonNameRow.setText(userSettings.getContactPersonName());
             contactPersonPhoneRow.setText(userSettings.getContactPersonPhone());
             contactPersonEmailRow.setText(userSettings.getContactPersonEmail());
@@ -287,7 +282,6 @@ public class UserSettingsFragment extends Fragment {
         userSettings.setContactPersonEmail(contactPersonEmailRow.getFieldText().toLowerCase().trim());
         userSettings.setContactPersonName(contactPersonNameRow.getFieldText().trim());
         userSettings.setContactPersonPhone(contactPersonPhoneRow.getFieldText().trim());
-        userSettings.setCoordinateFormat(CoordinateFormat.createFromValue(coordinateFormatRow.getCurrentSpinnerItem()));
 
         userInterface.updateUserSettings(userSettings);
 

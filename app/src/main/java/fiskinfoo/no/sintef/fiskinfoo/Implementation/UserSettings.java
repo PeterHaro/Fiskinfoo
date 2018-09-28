@@ -33,6 +33,8 @@ public class UserSettings implements Parcelable {
     private String ContactPersonName;
     private CoordinateFormat coordinateFormat;
 
+    private boolean privacyPolicyConsent;
+
     public UserSettings() {
 
     }
@@ -48,9 +50,9 @@ public class UserSettings implements Parcelable {
         ContactPersonEmail = in.readString();
         ContactPersonPhone = in.readString();
         ContactPersonName = in.readString();
-        // TODO: Add coordinateFormat
         String coordinateFormatString = in.readString();
         coordinateFormat = CoordinateFormat.createFromValue(coordinateFormatString != null ? coordinateFormatString : CoordinateFormat.DEGREES_MINUTES_SECONDS.toString());
+        privacyPolicyConsent = in.readByte() != 0;
     }
 
     @Override
@@ -65,8 +67,8 @@ public class UserSettings implements Parcelable {
         dest.writeString(ContactPersonEmail);
         dest.writeString(ContactPersonPhone);
         dest.writeString(ContactPersonName);
-        // TODO: Add coordinateFormat
         dest.writeString(getCoordinateFormat().toString());
+        dest.writeByte((byte) (privacyPolicyConsent ? 1 : 0));
     }
 
     public static final Creator<UserSettings> CREATOR = new Creator<UserSettings>() {
@@ -173,5 +175,13 @@ public class UserSettings implements Parcelable {
 
     public void setCoordinateFormat(CoordinateFormat coordinateFormat) {
         this.coordinateFormat = coordinateFormat;
+    }
+
+    public boolean getPrivacyPolicyConsent() {
+        return privacyPolicyConsent;
+    }
+
+    public void setPrivacyPolicyConsent(boolean privacyPolicyConsent) {
+        this.privacyPolicyConsent = privacyPolicyConsent;
     }
 }

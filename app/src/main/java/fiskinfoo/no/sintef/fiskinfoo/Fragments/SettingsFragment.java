@@ -74,6 +74,7 @@ public class SettingsFragment extends Fragment {
         linearLayout = (LinearLayout) rootView.findViewById(R.id.settings_fragment_fields_container);
 
         initUserDetailsRow();
+        initAppSettingsRow();
         initSetDownLoadPathRow();
         initOfflineModeRow();
         //initAboutRow();
@@ -180,6 +181,26 @@ public class SettingsFragment extends Fragment {
         };
 
         SettingsRow row = new SettingsRow(getContext(), getString(R.string.about), R.drawable.ic_info_black_24dp, onClickListener);
+        linearLayout.addView(row.getView());
+    }
+
+    private void initAppSettingsRow() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                AppSettingsFragment fragment = AppSettingsFragment.newInstance(userInterface.getUser().getSettings());
+
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_activity_fragment_container, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(getString(R.string.app_settings_fragment_title))
+                        .commit();
+            }
+        };
+
+        SettingsRow row = new SettingsRow(getContext(), getString(R.string.app_settings_fragment_title), R.drawable.ic_settings_black_24dp, onClickListener);
         linearLayout.addView(row.getView());
     }
 

@@ -60,7 +60,7 @@ public enum CoordinateFormat {
 
     public String getCoordinateString(Point coordinate) {
         StringBuilder sb = new StringBuilder(coordinate.getLatitude() < 0 ? "S" : "N");
-        String retval = null;
+        String retval;
 
         switch(this) {
             case DEGREES_MINUTES_SECONDS:
