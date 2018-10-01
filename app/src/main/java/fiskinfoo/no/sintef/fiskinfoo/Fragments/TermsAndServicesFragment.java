@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class TermsAndServicesFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private UserInterface userInterface;
     private LinearLayout fieldsContainer;
+    private WebView webView;
     private TextView privacyPolicyContainer;
     private CheckBoxRow termsAndServicesCheckboxRow;
 
@@ -87,7 +89,12 @@ public class TermsAndServicesFragment extends Fragment {
 
         fieldsContainer = rootView.findViewById(R.id.terms_and_services_fragment_fields_container);
         privacyPolicyContainer = rootView.findViewById(R.id.terms_and_services_fragment_privacy_policy_container);
+        privacyPolicyContainer.setVisibility(View.GONE);
         mListener.toggleNavigationViewEnabled(userSettings.getPrivacyPolicyConsent());
+
+        webView = (WebView) rootView.findViewById(R.id.terms_and_services_fragment_web_view);
+        webView.loadUrl("file:///android_asset/consent.html");
+        webView.getSettings().setDomStorageEnabled(true);
 
         generateAndPopulateFields();
 

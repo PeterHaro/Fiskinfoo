@@ -147,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements
             initAndStartOfflineModeBackgroundThread();
         }
 
+        // TODO: Remove the next line - used only to test consent
+        //if (user.getSettings() != null) user.getSettings().setPrivacyPolicyConsent(false);
+
         if (user.getSettings() != null && !user.getSettings().getPrivacyPolicyConsent()) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             TermsAndServicesFragment fragment = TermsAndServicesFragment.newInstance(user.getSettings());
