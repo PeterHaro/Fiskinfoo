@@ -368,8 +368,6 @@ public class MapFragment extends Fragment {
         browser.getSettings().setJavaScriptEnabled(true);
         browser.getSettings().setDomStorageEnabled(true);
         browser.getSettings().setGeolocationEnabled(true);
-        // This is needed as CORS requests are not accepted otherwise
-        browser.getSettings().setAllowUniversalAccessFromFileURLs(true);
         browser.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
         browser.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
