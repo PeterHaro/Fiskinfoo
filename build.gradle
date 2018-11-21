@@ -2,12 +2,12 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
         maven {
             url 'http://jcenter.bintray.com'
             name 'Google'
         }
-        google()
         maven {
             url 'https://maven.fabric.io/public'
         }
@@ -24,6 +24,7 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
         maven {
             url 'https://maven.google.com/'
