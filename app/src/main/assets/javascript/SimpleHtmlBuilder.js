@@ -1,3 +1,5 @@
+"use strict";
+
 function SimpleHtmlBuilder() {
     this._retval = "";
 }
@@ -55,16 +57,14 @@ SimpleHtmlBuilder.prototype.buildInlineToolInfo = function (item) {
     retval += this.addModalIconLine("date_range", "Tid i havet", _feature.getTimePlacedInOcean());
     retval += this.addModalIconLine("date_range", "Satt", _feature.getFormattedTimeSetInOcean());
     retval += this.addModalIconLine("place", "Posisjon", _feature.getCoordinates());
-    retval += "<a href=\"javascript:locateTool('" +_feature._vesselname + "','" + _feature._id + "'" + ");\" class=\"collection-item\">Se redskapet</a>";
+    retval += "<a href=\"javascript:locateTool('" + _feature._vesselname + "','" + _feature._id + "'" + ");\" class=\"collection-item\">Se redskapet</a>";
     return retval;
 };
 
 SimpleHtmlBuilder.prototype.addCollapsibleItem = function (item) {
     this._retval += "<li>";
     this._retval += "<div class=\"collapsible-header\"><i class=\"material-icons\">arrow_drop_down</i>" + item.get("tooltypename") + "</div>"; //TODO: REPLACE THIS WIT TRANSLATOR
-    this._retval += "<div class=\"collapsible-body\"><span>" +
-        this.buildInlineToolInfo(item) +
-        "</span></div>";
+    this._retval += "<div class=\"collapsible-body\"><span>" + this.buildInlineToolInfo(item) + "</span></div>";
     this._retval += "</li>";
 };
 
@@ -149,7 +149,6 @@ SimpleHtmlBuilder.prototype.textFieldMobileSupported = function () {
     this._retval += "<div class='col m6 s8" + "'>";
 };
 
-
 SimpleHtmlBuilder.prototype.beginColumn = function (size) {
     this._retval += "<div class='col m4 s" + size + "'>";
 };
@@ -170,7 +169,7 @@ SimpleHtmlBuilder.prototype.justifyText = function (text, length) {
     while (text.length < length) {
         text += " ";
     }
-    return text
+    return text;
 };
 
 SimpleHtmlBuilder.prototype.clear = function () {

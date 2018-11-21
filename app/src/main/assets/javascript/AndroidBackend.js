@@ -1,3 +1,5 @@
+"use strict";
+
 function AndroidBackend() {
     this._token = "";
     this._httpBuilder = new SimpleHtmlBuilder();
@@ -11,14 +13,13 @@ AndroidBackend.prototype.getToken = function (_callback, that) {
     this._token = Android.getToken();
     //console.log("Token is : " + this._token);
     if (that !== null) {
-        _callback(this._token, that)
+        _callback(this._token, that);
     } else {
         _callback(this._token);
     }
 
     return this._token;
 };
-
 
 // TODO: Create getters and setters / "interface" for feature(s)
 AndroidBackend.prototype.showBottmsheet = function (feature) {
@@ -67,15 +68,13 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
     var bottomSheet = document.querySelector("#bottom_sheet");
     $('.collapsible').collapsible();
     var instance = M.Modal.getInstance(bottomSheet);
-        instance.options.onCloseStart = function() {
+    instance.options.onCloseStart = function () {
         $("#bottom_sheet").scrollTop(0);
     };
     instance.open();
 };
 
-AndroidBackend.prototype._createIceChartConsentrationContent = function (feature) {
-
-};
+AndroidBackend.prototype._createIceChartConsentrationContent = function (feature) {};
 
 AndroidBackend.prototype._showToolBottomsheet = function (feature) {
     var retval = "";
@@ -103,8 +102,8 @@ AndroidBackend.prototype._showToolBottomsheet = function (feature) {
 
 AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
-    retval += this._httpBuilder.createTitleLineWithStrongText("Fart", (feature._sog + " knop"));
-    retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", (feature._cog + "\xB0"));
+    retval += this._httpBuilder.createTitleLineWithStrongText("Fart", feature._sog + " knop");
+    retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", feature._cog + "\xB0");
     retval += this._httpBuilder.createTitleLineWithStrongText("Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createTitleLineWithStrongText("Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createTitleLineWithStrongText("Destinasjon", feature._destination);

@@ -1,17 +1,18 @@
+'use strict';
+
 var BarentswatchStylesRepository = function () {
-    "use strict";
 
     var maxFeatureCount = 0;
     var aisVectorReference = null;
     var toolsVectorReference = null;
-    let netsVectorReference = null;
-    let crabpotVectorReference = null;
-    let mooringVectorReference = null;
-    let longlineeVectorReference = null;
-    let danishPurSeineVectorReference = null;
-    let sensorCableVectorReference = null;
-    let unknownVectorReference = null;
-    const unrollClusterResolutionLimit = 25;
+    var netsVectorReference = null;
+    var crabpotVectorReference = null;
+    var mooringVectorReference = null;
+    var longlineeVectorReference = null;
+    var danishPurSeineVectorReference = null;
+    var sensorCableVectorReference = null;
+    var unknownVectorReference = null;
+    var unrollClusterResolutionLimit = 25;
 
     var textFill = new ol.style.Fill({
         color: '#fff'
@@ -254,7 +255,7 @@ var BarentswatchStylesRepository = function () {
     var aisStyles = {
         "fishing-vessel": new ol.style.Style({
             image: new ol.style.Icon({
-                src: './boat-orange.svg',
+                src: './boat-orange.svg'
             })
         }),
         "non-fishing-vessel": new ol.style.Style({
@@ -286,8 +287,8 @@ var BarentswatchStylesRepository = function () {
         })],
         'line': new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'red'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'red' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 10
             })
@@ -297,15 +298,15 @@ var BarentswatchStylesRepository = function () {
                 fill: new ol.style.Fill({
                     color: "rgba(255, 204, 102, 1)"
                 }),
-                stroke: new ol.style.Stroke({color: 'white', width: 2}),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 }),
                 points: 3,
                 radius: 10
             })
         }),
         'sensorkabel': new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'green'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'green' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 10
             })
@@ -315,17 +316,17 @@ var BarentswatchStylesRepository = function () {
                 fill: new ol.style.Fill({
                     color: "rgba(0, 0, 153, 1)"
                 }),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 10,
                 rotation: 0,
                 angle: 0
-            })/*, // WORKS
-            text: new ol.style.Text({
-                text: "10",
-                fill: textFill,
-                stroke: textStroke
-            })*/
+            }) /*, // WORKS
+               text: new ol.style.Text({
+                 text: "10",
+                 fill: textFill,
+                 stroke: textStroke
+               })*/
         })
     };
 
@@ -336,7 +337,7 @@ var BarentswatchStylesRepository = function () {
                 fill: new ol.style.Fill({
                     color: "rgba(255, 204, 102, 1)"
                 }),
-                stroke: new ol.style.Stroke({color: 'white', width: 2}),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -352,8 +353,8 @@ var BarentswatchStylesRepository = function () {
         return new ol.style.Style({
             zIndex: 500,
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'pink'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'pink' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -368,8 +369,8 @@ var BarentswatchStylesRepository = function () {
     function createLongLineStyle(size) {
         return new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'red'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'red' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -387,7 +388,7 @@ var BarentswatchStylesRepository = function () {
                 fill: new ol.style.Fill({
                     color: "rgba(0, 51, 204, 1)"
                 }),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 20,
                 rotation: 0,
@@ -404,8 +405,8 @@ var BarentswatchStylesRepository = function () {
     function createPurseSeineStyle(size) {
         return new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'purple'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'purple' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -420,8 +421,8 @@ var BarentswatchStylesRepository = function () {
     function createSensorCableStyle(size) {
         return new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'green'}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}),
+                fill: new ol.style.Fill({ color: 'green' }),
+                stroke: new ol.style.Stroke({ color: 'black', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -436,8 +437,8 @@ var BarentswatchStylesRepository = function () {
     function createUnknownToolStyle(size) {
         return new ol.style.Style({
             image: new ol.style.RegularShape({
-                fill: new ol.style.Fill({color: 'rgba(105,105,105, 1)'}),
-                stroke: new ol.style.Stroke({color: 'white', width: 2}),
+                fill: new ol.style.Fill({ color: 'rgba(105,105,105, 1)' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 }),
                 points: 3,
                 radius: 20
             }),
@@ -449,50 +450,50 @@ var BarentswatchStylesRepository = function () {
         });
     }
 
-    var iceChartStyleFunction = function (feature, resolution) {
+    var iceChartStyleFunction = function iceChartStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return iceChartStyles[feature.get("icetype")];
     };
-    var activeSeismicStyleFunction = function (feature, resolution) {
+    var activeSeismicStyleFunction = function activeSeismicStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return activeSeismicStyles[feature.getGeometry().getType()];
     };
-    var plannedSeismicStyleFunction = function (feature, resolution) {
+    var plannedSeismicStyleFunction = function plannedSeismicStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return plannedSeismicStyles[feature.getGeometry().getType()];
     };
-    var seaBottomInstallationsStyleFunction = function (feature, resolution) {
+    var seaBottomInstallationsStyleFunction = function seaBottomInstallationsStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return seaBottomInstallationsStyles[feature.getGeometry().getType()];
     };
-    var jMessagesStyleFunction = function (feature, resolution) {
+    var jMessagesStyleFunction = function jMessagesStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return jMessageStyles[feature.getGeometry().getType()];
     };
-    var coastalRegulationsStyleFunction = function (feature, resolution) {
+    var coastalRegulationsStyleFunction = function coastalRegulationsStyleFunction(feature, resolution) {
         if (!feature) {
             return;
         }
         return coastalRegulationsStyles[feature.getGeometry().getType()];
     };
-    var coralReefStyleFunction = function (feature, resoltion) {
+    var coralReefStyleFunction = function coralReefStyleFunction(feature, resoltion) {
         if (!feature) {
             return;
         }
         return coralReefStyles[feature.getGeometry().getType()];
     };
 
-    var calculateClusterInfo = function (resolution, clusterType) {
+    var calculateClusterInfo = function calculateClusterInfo(resolution, clusterType) {
         maxFeatureCount = 0;
         var features = null;
         switch (clusterType) {
@@ -534,8 +535,7 @@ var BarentswatchStylesRepository = function () {
                 ol.extent.extend(extent, originalFeatures[j].getGeometry().getExtent());
             }
             maxFeatureCount = Math.max(maxFeatureCount, jj);
-            radius = 0.25 * (ol.extent.getWidth(extent) + ol.extent.getHeight(extent)) /
-                resolution;
+            radius = 0.25 * (ol.extent.getWidth(extent) + ol.extent.getHeight(extent)) / resolution;
 
             feature.set('radius', radius);
         }
@@ -546,12 +546,12 @@ var BarentswatchStylesRepository = function () {
     var netsClusterStyleResolution;
     var crabPotClusterStyleResolution;
     var mooringSystemStyleResolution;
-    let longLineClusterStyleResolution;
-    let danishPurseSeineClusterStyleResolution;
-    let sensorCableClusterStyleResolution;
-    let unknownClusterStyleResolution;
+    var longLineClusterStyleResolution = void 0;
+    var danishPurseSeineClusterStyleResolution = void 0;
+    var sensorCableClusterStyleResolution = void 0;
+    var unknownClusterStyleResolution = void 0;
 
-    var aisClusterStyleFunction = function (feature, resolution) {
+    var aisClusterStyleFunction = function aisClusterStyleFunction(feature, resolution) {
         if (resolution != oldAISClusterStyleResolution) {
             calculateClusterInfo(resolution, "ais");
             oldAISClusterStyleResolution = resolution;
@@ -559,9 +559,9 @@ var BarentswatchStylesRepository = function () {
         var style;
         var size = feature.get('features').length;
         if (size > 1) {
-            let radiusSize = 15;
-            if ((feature.get("radius") * 0.6) > radiusSize) {
-                radiusSize = (feature.get("radius") * 0.6);
+            var radiusSize = 15;
+            if (feature.get("radius") * 0.6 > radiusSize) {
+                radiusSize = feature.get("radius") * 0.6;
             }
             style = new ol.style.Style({
                 zIndex: -999,
@@ -580,7 +580,7 @@ var BarentswatchStylesRepository = function () {
                     text: size.toString(),
                     fill: textFill,
                     stroke: textStroke
-                }),
+                })
             });
         } else {
             var originalFeature = feature.get("features")[0];
@@ -589,7 +589,7 @@ var BarentswatchStylesRepository = function () {
         return style;
     };
 
-    var _aisSelectionStyleFunction = function (feature, resolution) {
+    var _aisSelectionStyleFunction = function _aisSelectionStyleFunction(feature, resolution) {
         if (feature.get('features') === undefined) {
             dispatchDataToBottomsheet(feature, BarentswatchApiObjectTypes.AIS); //TODO: REMOVE THIS SUPERHACK
             map.getInteractions().forEach(function (interaction) {
@@ -620,7 +620,7 @@ var BarentswatchStylesRepository = function () {
         });
     };
 
-    var _toolsSelectionStyleFunction = function (feature, resolution) {
+    var _toolsSelectionStyleFunction = function _toolsSelectionStyleFunction(feature, resolution) {
         if (feature.get('features').length === 1) {
             return createToolSingleFeatureStyle(feature.get('features')[0]);
         }
@@ -664,19 +664,19 @@ var BarentswatchStylesRepository = function () {
         });
     };
 
-
     //<editor-fold desc="Tool style functions">
     var toolsStyleCache = {};
-    let netsClusterStyleFunction = function (feature, resolution) {
+    var netsClusterStyleFunction = function netsClusterStyleFunction(feature, resolution) {
         if (resolution !== netsClusterStyleResolution) {
             calculateClusterInfo(resolution, "NETS");
             netsClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
 
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
@@ -684,95 +684,101 @@ var BarentswatchStylesRepository = function () {
     };
 
     function unrollCluster(feature) {
-        let styles = [];
-        let features = feature.get("features");
-        for (let i = 0; i < features.length; i++) {
+        var styles = [];
+        var features = feature.get("features");
+        for (var i = 0; i < features.length; i++) {
             features[i].superHack = true;
             styles.push(createToolSingleFeatureStyle(features[i]));
         }
         return styles;
     }
 
-    let crabpotClusterStyleFunction = function (feature, resolution) {
+    var crabpotClusterStyleFunction = function crabpotClusterStyleFunction(feature, resolution) {
         if (resolution !== crabPotClusterStyleResolution) {
             calculateClusterInfo(resolution, "CRABPOT");
             crabPotClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { //THESE ARE NOT SELECTABLE
+        if (resolution < unrollClusterResolutionLimit) {
+            //THESE ARE NOT SELECTABLE
             return unrollCluster(feature);
         }
 
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createCrabPotStyle(size);
     };
-    let mooringClusterStyleFunction = function (feature, resolution) {
+    var mooringClusterStyleFunction = function mooringClusterStyleFunction(feature, resolution) {
         if (resolution !== mooringSystemStyleResolution) {
             calculateClusterInfo(resolution, "MOORING");
             mooringSystemStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createMooringSystemStyle(size);
     };
-    let longLineClusterStyleFunction = function (feature, resolution) {
+    var longLineClusterStyleFunction = function longLineClusterStyleFunction(feature, resolution) {
         if (resolution !== longLineClusterStyleResolution) {
             calculateClusterInfo(resolution, "LONGLINE");
             longLineClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
-        let size = feature.get("features").length; //TODO: CHECK IF 2 AND DOUBLE DOUBLE SINGLE STYLE FEATURE FOR FEAT!
+        var size = feature.get("features").length; //TODO: CHECK IF 2 AND DOUBLE DOUBLE SINGLE STYLE FEATURE FOR FEAT!
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createLongLineStyle(size);
     };
-    let danPurSeineClusterStyleFunction = function (feature, resolution) {
+    var danPurSeineClusterStyleFunction = function danPurSeineClusterStyleFunction(feature, resolution) {
         if (resolution !== danishPurseSeineClusterStyleResolution) {
             calculateClusterInfo(resolution, "DANPURSEINE");
             danishPurseSeineClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createPurseSeineStyle(size);
     };
-    let sensorCableClusterStyleFunction = function (feature, resolution) {
+    var sensorCableClusterStyleFunction = function sensorCableClusterStyleFunction(feature, resolution) {
         if (resolution !== sensorCableClusterStyleResolution) {
             calculateClusterInfo(resolution, "SENSORCABLE");
             sensorCableClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
         return createSensorCableStyle(size);
     };
-    let unknownClusterStyleFunction = function (feature, resolution) {
+    var unknownClusterStyleFunction = function unknownClusterStyleFunction(feature, resolution) {
         if (resolution !== unknownClusterStyleResolution) {
             calculateClusterInfo(resolution, "UNK");
             unknownClusterStyleResolution = resolution;
         }
-        if (resolution < unrollClusterResolutionLimit) { // TODO: SUPER HACK
+        if (resolution < unrollClusterResolutionLimit) {
+            // TODO: SUPER HACK
             return unrollCluster(feature);
         }
-        let size = feature.get("features").length;
+        var size = feature.get("features").length;
         if (!(size > 1)) {
             return createToolSingleFeatureStyle(feature.get("features")[0]);
         }
@@ -780,76 +786,76 @@ var BarentswatchStylesRepository = function () {
     };
     //</editor-fold>
 
-// __BEGIN_SELECT_STYLES_
-    var iceChartSelectStyleFunction = function () {
+    // __BEGIN_SELECT_STYLES_
+    var iceChartSelectStyleFunction = function iceChartSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return iceChartSelectStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var activeSeismicSelectStyleFunction = function () {
+    var activeSeismicSelectStyleFunction = function activeSeismicSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return activeSeismicSelectStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var plannedSeismicSelectStyleFunction = function () {
+    var plannedSeismicSelectStyleFunction = function plannedSeismicSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return plannedSeismicSelectStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var seaBottomInstallationsSelectStyleFunction = function () {
+    var seaBottomInstallationsSelectStyleFunction = function seaBottomInstallationsSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 console.log(feature.getGeometry().getType());
                 return seaBottomInstallationsSelectStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var jMessagesSelectStyleFunction = function () {
+    var jMessagesSelectStyleFunction = function jMessagesSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return jMessageSelectionStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var coastalRegulationsSelectStyleFunction = function () {
+    var coastalRegulationsSelectStyleFunction = function coastalRegulationsSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return coastalRegulationsSelectionStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var coralReefSelectStyleFunction = function () {
+    var coralReefSelectStyleFunction = function coralReefSelectStyleFunction() {
         return new ol.interaction.Select({
-            style: function (feature, resolution) {
+            style: function style(feature, resolution) {
                 return coralReefSelectionStyles[feature.getGeometry().getType()];
             }
         });
     };
-    var aisSelectionStyleFunction = function () {
+    var aisSelectionStyleFunction = function aisSelectionStyleFunction() {
         return new ol.interaction.Select({
-            condition: function (evt) {
+            condition: function condition(evt) {
                 return evt.type == 'singleclick' || evt.type == 'click';
             },
             style: _aisSelectionStyleFunction,
             name: "Ais-selection"
         });
     };
-    var toolSelectionStyleFunction = function () {
+    var toolSelectionStyleFunction = function toolSelectionStyleFunction() {
         return new ol.interaction.Select({
-            condition: function (evt) {
+            condition: function condition(evt) {
                 return evt.type === "singleclick" || evt.type == 'click';
             },
             style: _toolsSelectionStyleFunction,
             name: "Tool-selection"
         });
     };
-// __END_SELECT_STYLES_
+    // __END_SELECT_STYLES_
 
     // GETTERS_AND_SETTERS
     //TODO: HACK, FIGURE OUT HOW TO REMOVE THIS
@@ -926,7 +932,6 @@ var BarentswatchStylesRepository = function () {
         return this.unknownVectorReference;
     }
 
-
     // __END_GETTERS_AND_SETTERS
 
     return {
@@ -975,6 +980,5 @@ var BarentswatchStylesRepository = function () {
         SetToolsVectorLayer: setToolVectorLayer,
         GetToolsVectorReference: getToolVectorLayeer,
         BarentswatchToolSelectionStyle: toolSelectionStyleFunction
-    }
-
+    };
 }();

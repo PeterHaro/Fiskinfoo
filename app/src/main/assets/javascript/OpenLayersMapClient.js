@@ -1,3 +1,5 @@
+"use strict";
+
 var applicationType = Backend.Type.ANDROID;
 
 var map;
@@ -31,13 +33,14 @@ var sensor = false;
 // __END_GEOLOCATION
 
 // __BEGIN_CONTROLS_AND_INTERACTIONS_
-var defaultInteractions = ol.interaction.defaults({altShiftDragRotate: false, pinchRotate: false});
+var defaultInteractions = ol.interaction.defaults({ altShiftDragRotate: false, pinchRotate: false });
 
 function debounce(func, wait, immediate) {
     var timeout;
     return function () {
-        var context = this, args = arguments;
-        var later = function () {
+        var context = this,
+            args = arguments;
+        var later = function later() {
             timeout = null;
             if (!immediate) func.apply(context, args);
         };
@@ -48,14 +51,13 @@ function debounce(func, wait, immediate) {
     };
 };
 
-
 map = new ol.Map({
     //renderer: (['webgl', 'canvas']),
     layers: [polar],
     target: 'map',
     interactions: defaultInteractions,
     controls: ol.control.defaults({
-        attribution: false,
+        attribution: false
     }),
     view: new ol.View({
         center: ol.proj.transform([15.5, 68], 'EPSG:4326', 'EPSG:3857'),
@@ -67,7 +69,7 @@ map = new ol.Map({
 
 app.DebounceSelect = function () {
     this.selectInteraction = new ol.interaction.Select({
-        condition: ol.events.condition.singleclick,
+        condition: ol.events.condition.singleclick
     });
 
     var handleEventDebounce = debounce(function (evt) {
@@ -75,7 +77,7 @@ app.DebounceSelect = function () {
     }.bind(this), 100);
 
     ol.interaction.Interaction.call(this, {
-        handleEvent: function (evt) {
+        handleEvent: function handleEvent(evt) {
             handleEventDebounce(evt);
             // always return true so that other interactions can
             // also process the event
@@ -129,7 +131,7 @@ function dispatchDataToBottomsheet(feature, type) {
 }
 
 // TODO: REFACTOR ME
-var displayFeatureInfo = function (pixel) {
+var displayFeatureInfo = function displayFeatureInfo(pixel) {
     var features = [];
     var layers = [];
     map.forEachFeatureAtPixel(pixel, function (feature, layer) {
@@ -244,8 +246,7 @@ function getAllMapLayers() {
             layer.getLayers().forEach(function (groupLayer) {
                 mLayers.push(groupLayer);
             });
-        }
-        else {
+        } else {
             mLayers.push(layer);
         }
     });
@@ -255,7 +256,7 @@ function getAllMapLayers() {
 function getLayersByNameAndVisibilityState() {
     var retval = [];
     getAllMapLayers().forEach(function (layer) {
-        retval.push({name: layer.get("title"), visibility: layer.getVisible()});
+        retval.push({ name: layer.get("title"), visibility: layer.getVisible() });
     });
     return retval;
 }
@@ -301,9 +302,9 @@ function populateMap() {
     barentswatchCommunicator.setMap(map);
     barentswatchCommunicator.setAISSearchPlugin(aisSearchModule);
     //document.addEventListener('DOMContentLoaded', function () { // TODO: REPLACE THIS
-//        var elems = document.querySelectorAll('.autocomplete');
-//        var instances = M.Autocomplete.init(elems, options);
-//    });
+    //        var elems = document.querySelectorAll('.autocomplete');
+    //        var instances = M.Autocomplete.init(elems, options);
+    //    });
     var iceChartLayer = barentswatchCommunicator.createApiServiceVectorLayer("icechart", BarentswatchStylesRepository.BarentswatchIceChartStyle);
     var ongoingSeismic = barentswatchCommunicator.createApiServiceVectorLayer("npdsurveyongoing", BarentswatchStylesRepository.BarentswatchActiveSeismicStyle);
     var plannedSeismic = barentswatchCommunicator.createApiServiceVectorLayer("npdsurveyplanned", BarentswatchStylesRepository.BarentswatchPlannedSeismicStyle);
@@ -350,7 +351,6 @@ function populateMap() {
         displayFeatureInfo(evt.pixel);
     });
 
-
     map.getView().on('change:resolution', function (evt) {
         var view = evt.target;
 
@@ -360,8 +360,7 @@ function populateMap() {
                 var distance = source.getDistance();
                 if (view.getZoom() >= 15 && distance > 0) {
                     source.setDistance(0);
-                }
-                else if (view.getZoom() < 15 && distance == 0) {
+                } else if (view.getZoom() < 15 && distance == 0) {
                     source.setDistance(6);
                 }
             }
@@ -377,7 +376,7 @@ function corsErrBack(error) {
 function populateUserPosition(callback) {
     /*Based on W3C standards specification: http://dev.w3.org/geo/api/spec-source.html */
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(callback, fail, {timeout: 60000});
+        navigator.geolocation.getCurrentPosition(callback, fail, { timeout: 60000 });
         return true;
     } else {
         return false;

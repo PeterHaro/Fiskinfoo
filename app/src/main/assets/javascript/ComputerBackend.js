@@ -1,3 +1,5 @@
+"use strict";
+
 function ComputerBackend() {
     this._token = "";
     this._httpBuilder = new SimpleHtmlBuilder();
@@ -10,7 +12,7 @@ ComputerBackend.prototype.getToken = function (_callback, that) {
     FiskInfoUtility.httpClient.get("/maps/pc/token", null, function (response) {
         this._token = response.responseText;
         if (that !== null) {
-            _callback(this._token, that)
+            _callback(this._token, that);
         } else {
             _callback(this._token);
         }
@@ -68,9 +70,7 @@ ComputerBackend.prototype.showBottmsheet = function (feature) {
     instance.open();
 };
 
-ComputerBackend.prototype._createIceChartConsentrationContent = function (feature) {
-
-};
+ComputerBackend.prototype._createIceChartConsentrationContent = function (feature) {};
 
 ComputerBackend.prototype._showToolBottomsheet = function (feature) {
     var retval = "";
@@ -98,8 +98,8 @@ ComputerBackend.prototype._showToolBottomsheet = function (feature) {
 
 ComputerBackend.prototype._createAisBottomsheet = function (feature) {
     var retval = "";
-    retval += this._httpBuilder.createTitleLineWithStrongText("Fart", (feature._sog + " knop"));
-    retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", (feature._cog + "\xB0"));
+    retval += this._httpBuilder.createTitleLineWithStrongText("Fart", feature._sog + " knop");
+    retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", feature._cog + "\xB0");
     retval += this._httpBuilder.createTitleLineWithStrongText("Posisjon", feature.getCoordinates());
     retval += this._httpBuilder.createTitleLineWithStrongText("Signal mottatt", feature.getFormattedDate());
     retval += this._httpBuilder.createTitleLineWithStrongText("Destinasjon", feature._destination);
