@@ -264,8 +264,12 @@ function getLayersByNameAndVisibilityState() {
 function getLayersBySaneNameAndVisibilityState() {
     var retval = [];
     var toolFound = false;
+    var aisFound = false;
     var mapLayers = getAllMapLayers();
     getAllMapLayers().forEach(function (layer) {
+        if (barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "AIS") {
+            aisFound = true;
+        }
         if (toolFound === true && barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
             return;
         }
@@ -280,6 +284,12 @@ function getLayersBySaneNameAndVisibilityState() {
     if(!toolFound) {
         retval.push( {
             name: "Redskaper",
+            visibility: false
+        });
+    }
+    if(!aisFound) {
+        retval.push({
+            name: "AIS",
             visibility: false
         });
     }
