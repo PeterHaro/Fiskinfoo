@@ -270,6 +270,9 @@ function getLayersBySaneNameAndVisibilityState() {
         if (barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "AIS") {
             aisFound = true;
         }
+        if (barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
+            toolFound = true;
+        }
         if (toolFound === true && barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
             return;
         }
