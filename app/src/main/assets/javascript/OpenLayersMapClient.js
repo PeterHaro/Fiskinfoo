@@ -277,6 +277,12 @@ function getLayersBySaneNameAndVisibilityState() {
             visibility: layer.getVisible()
         });
     });
+    if(!toolFound) {
+        retval.push( {
+            name: "Redskaper",
+            visibility: false
+        });
+    }
     return retval;
 }
 
@@ -312,6 +318,7 @@ function populateMap() {
     var legalMessages = barentswatchCommunicator.createApiServiceVectorLayer("jmelding", BarentswatchStylesRepository.BarentswatchJMessagesStyle);
     var coastalcodRegulations = barentswatchCommunicator.createApiServiceVectorLayer("coastalcodregulations", BarentswatchStylesRepository.BarentswatchCoastalRegulationStyle);
     var coralReef = barentswatchCommunicator.createApiServiceVectorLayer("coralreef", BarentswatchStylesRepository.BarentswatchCoralReefStyle);
+    var toolLayer =
 
     //VISIBILITY THING TODO: REMOVE ME
     iceChartLayer.setVisible(false);
