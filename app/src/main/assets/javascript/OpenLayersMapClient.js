@@ -1,5 +1,3 @@
-"use strict";
-
 var applicationType = Backend.Type.ANDROID;
 
 var map;
@@ -264,38 +262,19 @@ function getLayersByNameAndVisibilityState() {
 function getLayersBySaneNameAndVisibilityState() {
     var retval = [];
     var toolFound = false;
-    var aisFound = false;
     var mapLayers = getAllMapLayers();
     getAllMapLayers().forEach(function (layer) {
-        if (barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "AIS") {
-            aisFound = true;
-        }
         if (barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
             toolFound = true;
         }
         if (toolFound === true && barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
             return;
         }
-        if (toolFound === false && barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")) === "Redskaper") {
-            toolFound = true;
-        }
         retval.push({
             name: barentswatchLayersTranslator.translateFromLayerToSaneName(layer.get("title")),
             visibility: layer.getVisible()
         });
     });
-    if(!toolFound) {
-        retval.push( {
-            name: "Redskaper",
-            visibility: false
-        });
-    }
-    if(!aisFound) {
-        retval.push({
-            name: "AIS",
-            visibility: false
-        });
-    }
     return retval;
 }
 
@@ -331,7 +310,7 @@ function populateMap() {
     var legalMessages = barentswatchCommunicator.createApiServiceVectorLayer("jmelding", BarentswatchStylesRepository.BarentswatchJMessagesStyle);
     var coastalcodRegulations = barentswatchCommunicator.createApiServiceVectorLayer("coastalcodregulations", BarentswatchStylesRepository.BarentswatchCoastalRegulationStyle);
     var coralReef = barentswatchCommunicator.createApiServiceVectorLayer("coralreef", BarentswatchStylesRepository.BarentswatchCoralReefStyle);
-    var toolLayer =
+    var coralReef = barentswatchCommunicator.createApiServiceVectorLayer("coralreef", BarentswatchStylesRepository.BarentswatchCoralReefStyle);
 
     //VISIBILITY THING TODO: REMOVE ME
     iceChartLayer.setVisible(false);

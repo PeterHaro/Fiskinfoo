@@ -1,5 +1,3 @@
-"use strict";
-
 function ComputerBackend() {
     this._token = "";
     this._httpBuilder = new SimpleHtmlBuilder();

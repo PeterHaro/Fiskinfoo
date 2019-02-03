@@ -1,5 +1,3 @@
-"use strict";
-
 //DEPENDS ON BarentswatchStylesRepository
 function BarentswatchMapServicesCommunicator() {
     this._token = "";

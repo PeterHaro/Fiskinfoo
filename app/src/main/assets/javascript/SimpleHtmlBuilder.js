@@ -1,5 +1,3 @@
-"use strict";
-
 function SimpleHtmlBuilder() {
     this._retval = "";
 }

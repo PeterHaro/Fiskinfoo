@@ -1,5 +1,3 @@
-'use strict';
-
 var BarentswatchStylesRepository = function () {
 
     var maxFeatureCount = 0;
