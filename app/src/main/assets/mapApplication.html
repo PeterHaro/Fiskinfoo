@@ -146,6 +146,7 @@
             var allLayers = getLayersByNameAndVisibilityState();
             for (var i = 0; i < allLayers.length; i++) {
                 setVsibilityOfLayerByName(allLayers[i].name, false);
+                console.log(allLayers[i].name);
             }
             console.log("Showing layers: " + layers);
             for (var i = 0; i < layers.length; i++) {
