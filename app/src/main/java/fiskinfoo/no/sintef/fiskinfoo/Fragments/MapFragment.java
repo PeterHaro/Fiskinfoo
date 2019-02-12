@@ -93,6 +93,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +166,7 @@ public class MapFragment extends Fragment {
     private Vibrator vibrator;
     private MediaPlayer mediaPlayer;
     private FiskInfoPolygon2D tools = null;
-    private JSONArray layersAndVisibility = null;
+    //private JSONArray layersAndVisibility = null;
     private boolean cacheDeserialized = false;
     private boolean alarmFiring = false;
     protected double cachedLat;
@@ -409,6 +410,46 @@ public class MapFragment extends Fragment {
         updateMap();
     }
 
+    final static List<String> allLayers = new ArrayList<>(Arrays.asList(
+            "Norges grunnkart", "Bølgevarsel", "Iskant", "Iskonsentrasjon", "Pågående seismikk",
+            "Planlagt seismikk","Havbunninstallasjon", "J-melding", "Stengte felt",
+            "Forbudsområde - Korallrev","Ais","Redskaper"));
+
+    public List<String> getAvailableLayers() {
+        //TODO: Add filtereing for the layers that are not available
+        return allLayers;
+    }
+
+/*
+    LayerAndVisibility[] localLayersAndVisibility = null; //= LayerAndVisibility.getDefault();
+
+    public LayerAndVisibility[] getLocalLayersAndVisibility() {
+        if (localLayersAndVisibility == null) {
+            localLayersAndVisibility = LayerAndVisibility.getDefault();
+            // Initialize which layers are visible based on user settings
+            List<String> userLayers = user.getActiveLayers();
+            for (LayerAndVisibility layer : localLayersAndVisibility) {
+                if (layer.name.equals((getString(R.string.primary_background_map))))
+                    continue;
+                else
+                    layer.visibility = userLayers.contains(layer.name);
+            }
+        }
+        return localLayersAndVisibility;
+    }
+
+
+    public List<String> getLocalActiveLayers() {
+        ArrayList<String> list = new ArrayList<>();
+        for (LayerAndVisibility layer : getLocalLayersAndVisibility()) {
+            if (layer.visibility) {
+                list.add(layer.name);
+            }
+        }
+        return list;
+    }
+*/
+
     public class JavaScriptInterface {
         Context mContext;
 
@@ -426,7 +467,7 @@ public class MapFragment extends Fragment {
         public void setMessage(String message) {
             //Log.d(FRAGMENT_TAG, message);
             try {
-                layersAndVisibility = new JSONArray(message);
+                //layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
                 e.printStackTrace();
                 //TODO
@@ -456,10 +497,10 @@ public class MapFragment extends Fragment {
         }
     }
 
-    private void getLayersAndVisibility() {
+/*    private void getLayersAndVisibility() {
         //browser.loadUrl("javascript:getLayersByNameAndVisibilityState()");
         browser.loadUrl("javascript:getLayersAndState()");
-    }
+    }*/
 
     private class barentswatchFiskInfoWebClient extends WebViewClient {
         @Override
@@ -471,9 +512,9 @@ public class MapFragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             if (!fragmentIsActive)
                 return;
-            List<String> layers = user.getActiveLayers();
-            if (!layers.contains(getString(R.string.primary_background_map)))
-                layers.add(getString(R.string.primary_background_map));
+            List<String> layers = user.getActiveLayers(); //.getActiveLayers();
+            //if (!layers.contains(getString(R.string.primary_background_map)))
+            //    layers.add(getString(R.string.primary_background_map));
             JSONArray json = new JSONArray(layers);
 
             //view.loadUrl("javascript:populateMap();");
@@ -486,12 +527,12 @@ public class MapFragment extends Fragment {
             pageLoaded = true;
             loadProgressSpinner.setVisibility(View.GONE);
 
-            Handler handler = new Handler();
+/*            Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
                     getLayersAndVisibility();
                 }
-            }, 200);
+            }, 200);*/
         }
     }
 
@@ -739,24 +780,44 @@ public class MapFragment extends Fragment {
     }
     //
     private void createMapLayerSelectionDialog() {
-        if(layersAndVisibility == null) {
+/*        if(layersAndVisibility == null) {
+            Log.d("MapLayerDialog", "Cannot show dialog as layersAndVisibitlity == null");
             return;
-        }
+        }*/
 
         final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_select_map_layers, R.string.choose_map_layers);
         Button okButton = (Button) dialog.findViewById(R.id.select_map_layers_update_map_button);
         final List<CheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
-        LayerAndVisibility[] layers = new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
+/*        LayerAndVisibility[] layers = getLocalLayersAndVisibility(); // new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
         for (LayerAndVisibility layer : layers) {
             if (layer.name.equals(getString(R.string.primary_background_map)) || layer.name.contains("OpenLayers_Control")) {
                 continue;
             }
+
+            // TODO: Add check on access to AIS and Tools
+
             boolean isActive;
             isActive = layer.visibility;
 
             CheckBoxRow row = new CheckBoxRow(getActivity(), layer.name, false, isActive);
+            rows.add(row);
+            View mapLayerRow = row.getView();
+            mapLayerLayout.addView(mapLayerRow);
+        }
+*/
+        for (String layer : getAvailableLayers()) {
+            if (layer.equals(getString(R.string.primary_background_map)) || layer.contains("OpenLayers_Control"))
+                continue;
+            if (layer.equals("Redskaper") && !user.getIsFishingFacilityAuthenticated())
+                continue;
+            if (layer.equals("AIS") && !user.getIsAuthenticated())
+                continue;
+
+            boolean isActive = user.getActiveLayers().contains(layer);
+            CheckBoxRow row = new CheckBoxRow(getActivity(), layer, false, isActive);
+            row.setCompact();
             rows.add(row);
             View mapLayerRow = row.getView();
             mapLayerLayout.addView(mapLayerRow);
@@ -785,7 +846,7 @@ public class MapFragment extends Fragment {
                 JSONArray json = new JSONArray(layersList);
                 browser.loadUrl("javascript:toggleLayers(" + json + ")");
 
-                getLayersAndVisibility();
+                //getLayersAndVisibility();
             }
         });
 
