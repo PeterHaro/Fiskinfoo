@@ -304,6 +304,7 @@ limitations under the License.
     <dimen name="catch_log_header_date_field_margin_left">5dp</dimen>
     <dimen name="catch_log_header_padding_bottom">8dp</dimen>
     <dimen name="catch_log_header_padding_top">8dp</dimen>
+    <dimen name="catch_log_header_date_container_margin_left">10dp</dimen>
 
     <!-- Utility rows -->
     <dimen name="table_row_padding_bottom">7dp</dimen>
