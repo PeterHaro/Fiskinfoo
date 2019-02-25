@@ -223,14 +223,14 @@ var BarentswatchStylesRepository = function () {
             return;
         }
         var featureName = "";
-        if (feature.values_.ShipType === 30) {
+        if (feature.N.ShipType === 30) {
             featureName = "fishing-vessel";
         } else {
             featureName = "non-fishing-vessel";
         }
         var style = aisStyles[featureName];
 
-        style.image_.setRotation(feature.values_.Cog * Math.PI / 180);
+        style.image_.setRotation(feature.N.Cog * Math.PI / 180);
         return style;
     }
 
@@ -594,7 +594,7 @@ var BarentswatchStylesRepository = function () {
             dispatchDataToBottomsheet(feature, BarentswatchApiObjectTypes.AIS); //TODO: REMOVE THIS SUPERHACK
             map.getInteractions().forEach(function (interaction) {
                 if (interaction instanceof ol.interaction.Select) {
-                    if (interaction.featureOverlay_.style_.name === "_aisSelectionStyleFunction") {
+                    if (interaction.f.V.name === "_aisSelectionStyleFunction") {
                         interaction.getFeatures().clear();
                     }
                 }
@@ -613,7 +613,7 @@ var BarentswatchStylesRepository = function () {
         aisClusterStyleFunction(feature, resolution);
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.Select) {
-                if (interaction.featureOverlay_.style_.name === "_aisSelectionStyleFunction") {
+                if (interaction.f.V.name === "_aisSelectionStyleFunction") {
                     interaction.getFeatures().clear();
                 }
             }
@@ -630,7 +630,7 @@ var BarentswatchStylesRepository = function () {
         });
 
         map.getView().fit(extent, map.getSize());
-        switch (feature.get('features')[0].values_.tooltypecode) {
+        switch (feature.get('features')[0].N.tooltypecode) {
             case "NETS":
                 netsClusterStyleFunction(feature, resolution);
                 break;
@@ -657,7 +657,7 @@ var BarentswatchStylesRepository = function () {
         }
         map.getInteractions().forEach(function (interaction) {
             if (interaction instanceof ol.interaction.Select) {
-                if (interaction.featureOverlay_.style_.name === "_toolsSelectionStyleFunction") {
+                if (interaction.f.V.name === "_toolsSelectionStyleFunction") {
                     interaction.getFeatures().clear();
                 }
             }

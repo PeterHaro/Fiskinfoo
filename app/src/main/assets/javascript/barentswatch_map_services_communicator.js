@@ -169,7 +169,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
     var unknownData = [];
 
     featureData.forEach(function (feature) {
-        switch (feature.values_.tooltypecode) {
+        switch (feature.N.tooltypecode) {
             case "NETS":
                 netsData.push(feature);
                 break;

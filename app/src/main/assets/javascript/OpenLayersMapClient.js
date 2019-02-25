@@ -246,16 +246,16 @@ var displayFeatureInfo = function (pixel) {
             dispatchDataToBottomsheet(features[features.length - 1], BarentswatchApiObjectTypes.CORAL_REEF);
             break;
         case "AIS":
-            if (features[features.length - 1].values_.features.length > 1) {
+            if (features[features.length - 1].N.features.length > 1) {
                 return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.AIS);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.AIS);
             break;
         case "Tools":
-            if (features[features.length - 1].values_.features.length > 1) {
+            if (features[features.length - 1].N.features.length > 1) {
                 return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             break;
         case "Tools-nets":
         case "Tools-crabpot":
@@ -268,12 +268,12 @@ var displayFeatureInfo = function (pixel) {
                 for (var i = 0; i < features.length; i++) {
                     features[i].superHack = false;
                 }
-                dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+                dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             }
-            if (features[features.length - 1].values_.features.length > 1) {
+            if (features[features.length - 1].N.features.length > 1) {
                 return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             break;
         default:
             popupOverlay.setPosition(undefined);
