@@ -122,13 +122,19 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
             $('input.autocomplete').autocomplete({
                 data: aisSearchModule.getVesselObject(),
                 onAutocomplete: function (val) {
+                console.time("onAutoComplete");
+                console.time("fit");
                     map.getView().fit(aisSearchModule.getVessel(val).getGeometry(), map.getSize());
+                    console.timeEnd("fit");
+                    console.time("getF");
                     interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
+                    console.timeEnd("getF");
                     interactionSelection.dispatchEvent({
                         type: 'select',
                         selected: [aisSearchModule.getVessel(val)],
                         deselected: []
                     });
+                    console.timeEnd("onAutoComplete");
                 },
                 limit: 5
             });
