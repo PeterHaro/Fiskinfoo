@@ -6,10 +6,12 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -668,6 +670,21 @@ public class ActiveToolsFragment extends Fragment {
                     sb.append(featureList.getJSONObject(i).getJSONObject("properties").getString("ToolId"));
                     sb.append("\n");
                 }
+
+                PackageManager packageManager = getActivity().getPackageManager();
+                PackageInfo packageInfo;
+                sb.append("\nAppversjon (Android): ");
+
+                try {
+                    packageInfo = packageManager.getPackageInfo(getActivity().getPackageName(), PackageManager.GET_ACTIVITIES);
+                    sb.append(packageInfo.versionName);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    sb.append("Error retrieving version number");
+                }
+
+                sb.append("\nAndroidversjon: ");
+                sb.append(Build.VERSION.RELEASE);
 
                 toolIds = sb.toString();
 

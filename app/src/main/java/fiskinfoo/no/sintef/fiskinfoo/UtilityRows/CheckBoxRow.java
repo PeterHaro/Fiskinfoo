@@ -16,8 +16,10 @@ package fiskinfoo.no.sintef.fiskinfoo.UtilityRows;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import fiskinfoo.no.sintef.fiskinfoo.R;
@@ -58,6 +60,19 @@ public class CheckBoxRow extends BaseTableRow {
             }
         });
     }
+
+    /**
+     * Adjust margins to give a more compact version of the row
+     */
+    public void setCompact() {
+        TableRow.LayoutParams params = (TableRow.LayoutParams) mCheckBox.getLayoutParams();
+        params.setMarginStart(5);
+        params.setMargins(5, 5, 5, 1);
+        params = (TableRow.LayoutParams) mTextView.getLayoutParams();
+        params.setMargins(5, 5, 5, 1);
+        //mTextView.setTextSize(15);
+    }
+
 
     public void setText(String buttonText) {
         mTextView.setText(buttonText);

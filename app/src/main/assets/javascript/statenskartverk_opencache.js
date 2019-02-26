@@ -1,6 +1,6 @@
 function StatensKartverkCommunicator() {
-    this._wmts_url = "http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?";
-    this._wms_url = "http://opencache.statkart.no/gatekeeper/gk/gk.open_wmts";
+    this._wmts_url = "https://opencache.statkart.no/gatekeeper/gk/gk.open_wmts?";
+    this._wms_url = "https://opencache.statkart.no/gatekeeper/gk/gk.open_wmts";
 
     this.sProjection = 'EPSG:3857';
     this.projection = ol.proj.get(this.sProjection),
