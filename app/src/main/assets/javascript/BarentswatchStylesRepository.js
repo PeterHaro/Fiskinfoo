@@ -230,7 +230,7 @@ var BarentswatchStylesRepository = function () {
         }
         var style = aisStyles[featureName];
 
-        style.image_.setRotation(feature.N.Cog * Math.PI / 180);
+        style.getImage().setRotation(feature.N.Cog * Math.PI / 180);
         return style;
     }
 
