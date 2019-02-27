@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -37,7 +38,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -252,13 +256,163 @@ public class MapFragment extends Fragment {
         }
     }
 
+    protected ArrayAdapter<VesselWrapper> searchAutoCompleteAdapter = null;
+
+
+
+
+    class VesselWrapper {
+        JSONObject jsonObject;
+        String name;
+
+        public VesselWrapper(JSONObject object) {
+            jsonObject = object;
+        }
+
+        public VesselWrapper(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+            /*
+            try {
+                String name = jsonObject.getString("name");
+                return name;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }*/
+        }
+    }
+
+    public VesselWrapper[] createVessleWrappers(JSONArray jsonArray) {
+        VesselWrapper[] vesselWrappers = new VesselWrapper[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                vesselWrappers[i] = new VesselWrapper(jsonArray.getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return vesselWrappers;
+    }
+
+
+    /*TODO Erlend remove
+    public class JSONVesselAdapter extends ArrayAdapter<JSONObject> {
+        // View lookup cache
+        private static class ViewHolder {
+            TextView name;
+            TextView home;
+        }
+
+        public UsersAdapter(Context context, ArrayList<User> users) {
+            super(context, R.layout.item_user, users);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // Get the data item for this position
+            User user = getItem(position);
+            // Check if an existing view is being reused, otherwise inflate the view
+            ViewHolder viewHolder; // view lookup cache stored in tag
+            if (convertView == null) {
+                // If there's no view to re-use, inflate a brand new view for row
+                viewHolder = new ViewHolder();
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                convertView = inflater.inflate(R.layout.item_user, parent, false);
+                viewHolder.name = (TextView) convertView.findViewById(R.id.tvName);
+                viewHolder.home = (TextView) convertView.findViewById(R.id.tvHome);
+                // Cache the viewHolder object inside the fresh view
+                convertView.setTag(viewHolder);
+            } else {
+                // View is being recycled, retrieve the viewHolder object from tag
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            // Populate the data from the data object via the viewHolder object
+            // into the template view.
+            viewHolder.name.setText(user.name);
+            viewHolder.home.setText(user.hometown);
+            // Return the completed view to render on screen
+            return convertView;
+        }
+    }
+
+
+*/
+
+
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        final Activity act = getActivity();
+        View view = act.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(act);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
         for (int i = 0; i < menu.size(); i++) {
             menu.removeItem(i);
         }
         inflater.inflate(R.menu.menu_map, menu);
+
+
+        // Get the search menu.
+        MenuItem searchMenu = menu.findItem(R.id.app_bar_menu_search);
+
+        // Get SearchView object.
+        SearchView searchView = (SearchView) searchMenu.getActionView();
+
+        // Get SearchView autocomplete object.
+        final SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchAutoComplete.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.barentswatch_blue, null));
+        searchAutoComplete.setTextColor(ResourcesCompat.getColor(getResources(),R.color.text_white, null));
+        searchAutoComplete.setDropDownBackgroundResource(android.R.color.holo_blue_light);
+
+        searchAutoCompleteAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, new ArrayList<VesselWrapper>());
+        searchAutoComplete.setAdapter(searchAutoCompleteAdapter);
+
+        // Listen to search view item on click event.
+        searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
+                Object selected = adapterView.getItemAtPosition(itemIndex);
+                if ((selected != null) && (selected instanceof VesselWrapper)) {
+                    VesselWrapper vesselWrapper = (VesselWrapper)adapterView.getItemAtPosition(itemIndex);
+                    searchAutoComplete.setText(vesselWrapper.toString());
+
+                    hideKeyboard();
+                    browser.loadUrl("javascript:setSelectedVessel('" + vesselWrapper.toString() + "');");
+                }
+            }
+        });
+
+        // Below event is triggered when submit search query.
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+                alertDialog.setMessage("Search keyword is " + query);
+                alertDialog.show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+
     }
 
     // This event fires 3rd, and is the first time views are available in the fragment
@@ -462,6 +616,34 @@ public class MapFragment extends Fragment {
         public String getToken() {
             return user.getToken();
         }
+
+        @android.webkit.JavascriptInterface
+        public void dismissKeyboard() {
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            final Activity act = getActivity();
+            View view = act.getCurrentFocus();
+            //If no view currently has focus, create a new one, just so we can grab a window token from it
+            if (view == null) {
+                view = new View(act);
+            }
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        @android.webkit.JavascriptInterface
+        public void setAutoCompleteData(String vesselObjectsString) {
+            try {
+                //JSONArray vesselObjects = new JSONArray(vesselObjectsString);
+                JSONObject vesselObject = new JSONObject(vesselObjectsString);
+                VesselWrapper[] wrappers = createVessleWrappers(vesselObject.names()); //vesselObjects);
+                searchAutoCompleteAdapter.clear();
+                searchAutoCompleteAdapter.addAll(wrappers);
+            } catch (Exception e) {
+                e.printStackTrace();
+                //TODO
+            }
+        }
+
 
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {

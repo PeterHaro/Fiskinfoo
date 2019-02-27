@@ -118,23 +118,8 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
     }
     if (this.aisSearchModule != null) { // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
         this.aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
-        $(document).ready(function () {
-            $('input.autocomplete').autocomplete({
-                data: aisSearchModule.getVesselObject(),
-                onAutocomplete: function (val) {
-                    map.getView().fit(aisSearchModule.getVessel(val).getGeometry(), map.getSize());
-                    interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
-                    interactionSelection.dispatchEvent({
-                        type: 'select',
-                        selected: [aisSearchModule.getVessel(val)],
-                        deselected: []
-                    });
-                },
-                limit: 5
-            });
-        });
 
-
+        Android.setAutoCompleteData( JSON.stringify(this.aisSearchModule.getVesselObject()));
     }
 };
 

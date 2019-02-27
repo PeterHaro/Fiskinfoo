@@ -357,6 +357,26 @@ function getLayersBySaneNameAndVisibilityState() {
     return retval;
 }
 
+
+function setSelectedVessel(vesselname) {
+    var vessel = aisSearchModule.getVessel(vesselname);
+    map.getView().fit(vessel.getGeometry(), map.getSize());
+//    map.getView().fit(aisSearchModule.getVessel(val).getGeometry(), map.getSize());
+    interactionSelection.getFeatures().push(vessel);
+//    interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
+//    console.timeEnd("getF");
+                    //Android.dismissKeyboard();
+    interactionSelection.dispatchEvent({
+        type: 'select',
+        selected: [vessel],
+        //selected: [aisSearchModule.getVessel(val)],
+            deselected: []
+        });
+}
+
+
+
+
 function setVsibilityOfLayerByPrettyName(name, visiblity) {
     var layers = getAllMapLayers();
     layers.forEach(function (layer) {
