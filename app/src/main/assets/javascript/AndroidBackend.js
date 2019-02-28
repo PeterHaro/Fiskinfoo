@@ -22,6 +22,7 @@ AndroidBackend.prototype.getToken = function (_callback, that) {
 
 // TODO: Create getters and setters / "interface" for feature(s)
 AndroidBackend.prototype.showBottmsheet = function (feature) {
+    console.time("showBottom Android");
     var body = $("#bottom_sheet_container");
     body.text("");
     body.append(this._httpBuilder.getSelfContainedHeading(4, feature._name));
@@ -37,7 +38,9 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
 
     switch (feature._type) {
         case BarentswatchApiObjectTypes.TOOL:
+            console.time("showTool");
             content = this._showToolBottomsheet(feature);
+            console.timeEnd("showTool");
             break;
         case BarentswatchApiObjectTypes.SEABOTTOM_INSTALLATION:
             content = this._showSubsurfaceFacilityBottomsheet(feature);
@@ -57,7 +60,9 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
             content = this._buildSeismicBottomsheetText(feature);
             break;
         case BarentswatchApiObjectTypes.AIS:
+            console.time("showAIS");
             content = this._createAisBottomsheet(feature);
+            console.timeEnd("showAIS");
             break;
         default:
             return null;
@@ -71,6 +76,7 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
         $("#bottom_sheet").scrollTop(0);
     };
     instance.open();
+    console.timeEnd("showBottom Android");
 };
 
 AndroidBackend.prototype._createIceChartConsentrationContent = function (feature) {
@@ -102,29 +108,65 @@ AndroidBackend.prototype._showToolBottomsheet = function (feature) {
 };
 
 AndroidBackend.prototype._createAisBottomsheet = function (feature) {
+    console.time("createAISBottomsheet function");
     var retval = "";
+    console.time("temp01");
     retval += this._httpBuilder.createTitleLineWithStrongText("Fart", (feature._sog + " knop"));
+    console.timeEnd("temp01");
+    console.time("temp02");
     retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", (feature._cog + "\xB0"));
+    console.timeEnd("temp02");
+    console.time("temp03");
     retval += this._httpBuilder.createTitleLineWithStrongText("Posisjon", feature.getCoordinates());
+    console.timeEnd("temp03");
+    console.time("temp04");
     retval += this._httpBuilder.createTitleLineWithStrongText("Signal mottatt", feature.getFormattedDate());
+    console.timeEnd("temp04");
+    console.time("temp05");
     retval += this._httpBuilder.createTitleLineWithStrongText("Destinasjon", feature._destination);
+    console.timeEnd("temp05");
+    console.time("temp06");
     retval += this._httpBuilder.createTitleLineWithStrongText("Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._internalPosition[1] + "_" + feature._internalPosition[0] + "'" + ">Marinogram</a>");
+    console.timeEnd("temp06");
+    console.time("temp07");
 
-    retval += this._httpBuilder.getSelfContainedHeading(6, "Mine redskaper");
+    retval += this._httpBuilder.getSelfContainedHeading(6, "Redskap");
+    console.timeEnd("temp07");
+    console.time("temp08");
 
     //TODO: FIXME: DONT EVER DO THISS!!!
     if (aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
-        retval += this._httpBuilder.buildCollapsible(aisSearchModule.getVessel(feature._name).tools);
+        // Showing only the first 3 tools - showing all can crash the app and make the UI unusable
+        var allTools = aisSearchModule.getVessel(feature._name).tools;
+        var someTools = [];
+        var i;
+        for (i = 0; (i < allTools.length) && (i < 3); i++) {
+            someTools[i] = allTools[i];
+        }
+        retval += this._httpBuilder.buildCollapsible(someTools);
+        if (someTools.length < allTools.length) {
+            retval += this._httpBuilder.createTitleLineWithStrongText("Ikke vist", allTools.length-someTools.length.toString() + " ytteligere redskap");
+        }
     }
+    console.timeEnd("temp08");
+    console.time("temp09");
 
     //  if(aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
     //      retval += this._httpBuilder.buildCollectionWithHeaderAndLinks("Mine redskaper", aisSearchModule.getVessel(feature._name), "");
     //  }
 
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
+    console.timeEnd("temp09");
+    console.time("temp10");
     retval += "<div class='divider'></div>";
+    console.timeEnd("temp10");
+    console.time("temp11");
     retval += this._httpBuilder.createTitleLineWithStrongText("Fiskerimeldinger", "<a target='_blank' href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Fiskerimeldinger</a>");
+    console.timeEnd("temp11");
+    console.time("temp12");
     retval += this._httpBuilder.createTitleLineWithStrongText("J-meldinger", "<a target='_blank' href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/'>J-meldinger</a>");
+    console.timeEnd("temp12");
+    console.timeEnd("createAISBottomsheet function");
     return retval;
 };
 

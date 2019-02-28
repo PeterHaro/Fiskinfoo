@@ -60,6 +60,8 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -336,13 +338,22 @@ public class MapFragment extends Fragment {
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
+                Log.d("Selected", "Start" );
                 Object selected = adapterView.getItemAtPosition(itemIndex);
+                Log.d("Selected", "ItemAtPos" );
                 if ((selected != null) && (selected instanceof VesselWrapper)) {
                     VesselWrapper vesselWrapper = (VesselWrapper)adapterView.getItemAtPosition(itemIndex);
+                    Log.d("Selected", "Wrapper");
                     searchAutoComplete.setText(vesselWrapper.toString());
 
+                    Log.d("Selected", "SetText");
+
+                    searchAutoComplete.clearFocus();
                     hideKeyboard();
-                    browser.loadUrl("javascript:setSelectedVessel('" + vesselWrapper.toString() + "');");
+                    Log.d("Selected", "Hide KB");
+                    browser.loadUrl("javascript:showVesselAndBottomsheet('" + vesselWrapper.toString() + "');");
+                    //browser.loadUrl("javascript:locateVessel('" + vesselWrapper.toString() + "');");
+                    Log.d("Selected", "Load URL");
                 }
             }
         });
@@ -352,7 +363,7 @@ public class MapFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 hideKeyboard();
-                browser.loadUrl("javascript:setSelectedVessel('" + query + "');");
+                browser.loadUrl("javascript:locateVessel('" + query + "');");
                 return false;
             }
 
@@ -501,7 +512,6 @@ public class MapFragment extends Fragment {
                 return false;
             } } );
 
-
         browser.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // chromium, enable hardware acceleration
@@ -523,36 +533,6 @@ public class MapFragment extends Fragment {
         //TODO: Add filtereing for the layers that are not available
         return allLayers;
     }
-
-/*
-    LayerAndVisibility[] localLayersAndVisibility = null; //= LayerAndVisibility.getDefault();
-
-    public LayerAndVisibility[] getLocalLayersAndVisibility() {
-        if (localLayersAndVisibility == null) {
-            localLayersAndVisibility = LayerAndVisibility.getDefault();
-            // Initialize which layers are visible based on user settings
-            List<String> userLayers = user.getActiveLayers();
-            for (LayerAndVisibility layer : localLayersAndVisibility) {
-                if (layer.name.equals((getString(R.string.primary_background_map))))
-                    continue;
-                else
-                    layer.visibility = userLayers.contains(layer.name);
-            }
-        }
-        return localLayersAndVisibility;
-    }
-
-
-    public List<String> getLocalActiveLayers() {
-        ArrayList<String> list = new ArrayList<>();
-        for (LayerAndVisibility layer : getLocalLayersAndVisibility()) {
-            if (layer.visibility) {
-                list.add(layer.name);
-            }
-        }
-        return list;
-    }
-*/
 
     public class JavaScriptInterface {
         Context mContext;
@@ -636,9 +616,25 @@ public class MapFragment extends Fragment {
 
     private class barentswatchFiskInfoWebClient extends WebViewClient {
         @Override
+        public void onLoadResource(WebView view, String url) {
+            // Added just for debug purposes
+            super.onLoadResource(view, url);
+            Log.d("barentswatchFiskInfoWC", url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            // Added just for debug purposes
+            super.onReceivedError(view, request, error);
+            Log.d("barentswatchFiskInfoErr", request.toString() + " " + error.toString());
+        }
+
+        @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
+            return false;
+            // According to the documentation, the below code just delays things, and we should instead return false
+            //view.loadUrl(url);
+            //return true;
         }
 
         public void onPageFinished(WebView view, String url) {
@@ -922,23 +918,7 @@ public class MapFragment extends Fragment {
         final List<CheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
-/*        LayerAndVisibility[] layers = getLocalLayersAndVisibility(); // new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
-        for (LayerAndVisibility layer : layers) {
-            if (layer.name.equals(getString(R.string.primary_background_map)) || layer.name.contains("OpenLayers_Control")) {
-                continue;
-            }
 
-            // TODO: Add check on access to AIS and Tools
-
-            boolean isActive;
-            isActive = layer.visibility;
-
-            CheckBoxRow row = new CheckBoxRow(getActivity(), layer.name, false, isActive);
-            rows.add(row);
-            View mapLayerRow = row.getView();
-            mapLayerLayout.addView(mapLayerRow);
-        }
-*/
         for (String layer : getAvailableLayers()) {
             if (layer.equals(getString(R.string.primary_background_map)) || layer.contains("OpenLayers_Control"))
                 continue;
@@ -977,8 +957,6 @@ public class MapFragment extends Fragment {
 
                 JSONArray json = new JSONArray(layersList);
                 browser.loadUrl("javascript:toggleLayers(" + json + ")");
-
-                //getLayersAndVisibility();
             }
         });
 
