@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Check device's network connectivity and speed
  *
@@ -91,16 +93,18 @@ public class FiskinfoConnectivityManager {
                     //parse url. if url is not parsed properly then return
                     URL url;
                     try {
-                        url = new URL("http://clients3.google.com/generate_204");
+                        url = new URL("https://clients3.google.com/generate_204");
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                         return false;
                     }
 
                     //open connection. If fails return false
-                    HttpURLConnection urlConnection;
+//                    HttpURLConnection urlConnection;
+                    HttpsURLConnection urlConnection;
                     try {
-                        urlConnection = (HttpURLConnection) url.openConnection();
+                        urlConnection = (HttpsURLConnection) url.openConnection();
+
                     } catch (IOException e) {
                         e.printStackTrace();
                         return false;

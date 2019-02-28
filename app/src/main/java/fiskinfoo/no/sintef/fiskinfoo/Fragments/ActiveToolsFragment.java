@@ -765,9 +765,9 @@ public class ActiveToolsFragment extends Fragment {
 
             if(matchedTools.length() > 0) {
                 final Dialog dialog = dialogInterface.getDialog(getActivity(), R.layout.dialog_confirm_tools_from_api, R.string.tool_confirmation);
-                Button cancelButton = (Button) dialog.findViewById(R.id.dialog_bottom_cancel_button);
-                Button addToolsButton = (Button) dialog.findViewById(R.id.dialog_bottom_add_button);
-                final LinearLayout linearLayoutToolContainer = (LinearLayout) dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
+                Button cancelButton = dialog.findViewById(R.id.dialog_bottom_cancel_button);
+                Button addToolsButton = dialog.findViewById(R.id.dialog_bottom_add_button);
+                final LinearLayout linearLayoutToolContainer = dialog.findViewById(R.id.dialog_confirm_tool_main_container_linear_layout);
                 final List<ToolConfirmationRow> matchedToolsList = new ArrayList<>();
 
                 for(int i = 0; i < matchedTools.length(); i++) {
