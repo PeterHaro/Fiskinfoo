@@ -32,7 +32,7 @@ Ais.prototype.getShipTypeString = function () {
 };
 
 Ais.prototype.getFormattedDate = function () { // TODO: Consider adding HH:MM
-    return FiskInfoUtility.formatDate(new Date(this._timeStamp));
+    return FiskInfoUtility.formatDateAndTime(new Date(this._timeStamp));
 };
 
 Ais.prototype.getCoordinates = function () {

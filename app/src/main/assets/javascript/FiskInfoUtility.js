@@ -95,6 +95,23 @@ var FiskInfoUtility = function () {
         return day + '.' + monthNames[monthIndex] + ' ' + year;
     }
 
+    function formatDateAndTime(date) {
+        var res = formatDate(date) + " ";
+
+        var hour = date.getHours();
+        if (hour < 10) {res += "0"};
+        res += hour.toString() + ":";
+
+        var minutes = date.getMinutes();
+        if (minutes < 10) {res += "0"};
+        res += minutes.toString();
+
+        return res;
+// TODO: Consider to use locale instead, e.g. something like:
+//        return res + date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute: '2-digit'});
+
+    }
+
     var httpClient = {
         get: function (url, data, callback) {
             var xhr = new XMLHttpRequest();
@@ -174,6 +191,7 @@ var FiskInfoUtility = function () {
     return {
         corsRequest: corsRequest,
         formatDate: formatDate,
+        formatDateAndTime: formatDateAndTime,
         ddToDms: ddToDms,
         httpClient: httpClient
     }

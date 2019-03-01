@@ -108,31 +108,15 @@ AndroidBackend.prototype._showToolBottomsheet = function (feature) {
 };
 
 AndroidBackend.prototype._createAisBottomsheet = function (feature) {
-    console.time("createAISBottomsheet function");
     var retval = "";
-    console.time("temp01");
     retval += this._httpBuilder.createTitleLineWithStrongText("Fart", (feature._sog + " knop"));
-    console.timeEnd("temp01");
-    console.time("temp02");
     retval += this._httpBuilder.createTitleLineWithStrongText("Kurs", (feature._cog + "\xB0"));
-    console.timeEnd("temp02");
-    console.time("temp03");
     retval += this._httpBuilder.createTitleLineWithStrongText("Posisjon", feature.getCoordinates());
-    console.timeEnd("temp03");
-    console.time("temp04");
     retval += this._httpBuilder.createTitleLineWithStrongText("Signal mottatt", feature.getFormattedDate());
-    console.timeEnd("temp04");
-    console.time("temp05");
     retval += this._httpBuilder.createTitleLineWithStrongText("Destinasjon", feature._destination);
-    console.timeEnd("temp05");
-    console.time("temp06");
     retval += this._httpBuilder.createTitleLineWithStrongText("Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._internalPosition[1] + "_" + feature._internalPosition[0] + "'" + ">Marinogram</a>");
-    console.timeEnd("temp06");
-    console.time("temp07");
 
     retval += this._httpBuilder.getSelfContainedHeading(6, "Redskap");
-    console.timeEnd("temp07");
-    console.time("temp08");
 
     //TODO: FIXME: DONT EVER DO THISS!!!
     if (aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
@@ -144,29 +128,22 @@ AndroidBackend.prototype._createAisBottomsheet = function (feature) {
             someTools[i] = allTools[i];
         }
         retval += this._httpBuilder.buildCollapsible(someTools);
+        var remainingTools = allTools.length - someTools.length;
         if (someTools.length < allTools.length) {
-            retval += this._httpBuilder.createTitleLineWithStrongText("Ikke vist", allTools.length-someTools.length.toString() + " ytteligere redskap");
+            retval += this._httpBuilder.createTitleLineWithStrongText("Ikke vist", (allTools.length-someTools.length).toString() + " ytteligere redskap");
         }
+    } else {
+            retval += this._httpBuilder.createTitleLineWithStrongText("Ingen", "");
     }
-    console.timeEnd("temp08");
-    console.time("temp09");
 
     //  if(aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
     //      retval += this._httpBuilder.buildCollectionWithHeaderAndLinks("Mine redskaper", aisSearchModule.getVessel(feature._name), "");
     //  }
 
     retval += this._httpBuilder.getSelfContainedHeading(6, "MER INFO");
-    console.timeEnd("temp09");
-    console.time("temp10");
     retval += "<div class='divider'></div>";
-    console.timeEnd("temp10");
-    console.time("temp11");
     retval += this._httpBuilder.createTitleLineWithStrongText("Fiskerimeldinger", "<a target='_blank' href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Fiskerimeldinger</a>");
-    console.timeEnd("temp11");
-    console.time("temp12");
     retval += this._httpBuilder.createTitleLineWithStrongText("J-meldinger", "<a target='_blank' href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/'>J-meldinger</a>");
-    console.timeEnd("temp12");
-    console.timeEnd("createAISBottomsheet function");
     return retval;
 };
 

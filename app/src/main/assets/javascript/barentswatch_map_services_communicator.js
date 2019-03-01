@@ -178,10 +178,11 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
                 unknownData.push(feature);
         }
 
-                if(this.aisSearchModule !== null) {
-                    this.aisSearchModule.attachTools(featureData);
-                }
     });
+
+    if(this.aisSearchModule !== null) {
+        this.aisSearchModule.attachTools(featureData);
+    }
 
     var netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
     var crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
