@@ -21,6 +21,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -129,11 +132,21 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.getMenu().performIdentifierAction(R.id.navigation_view_summary, 0);
         navigationHeaderUserNameTextView = navigationView.getHeaderView(0).findViewById(R.id.navigation_header_user_name_text_view);
 
-        if (user.getSettings() != null && user.getSettings().getContactPersonName() != null) {
-            navigationHeaderUserNameTextView.setText(user.getSettings().getContactPersonName());
+        if (user.getSettings() != null) {
+            if(user.getSettings().getContactPersonName() != null) {
+                navigationHeaderUserNameTextView.setText(user.getSettings().getContactPersonName());
+                if(user.getSettings().getVesselName() != null) {
+                    String headerString = user.getSettings().getContactPersonName() + " - " + user.getSettings().getVesselName();
+                    navigationHeaderUserNameTextView.setText(headerString);
+                }
+            }
         }
 
-        mNetworkErrorTextView = findViewById(R.id.activity_main_network_error_text_view);
+        TextView navigationViewVersionNumberTextView = findViewById(R.id.navigation_view_version_number_text_view);
+        String appVersion = getApplicationVersionNumber();
+        navigationViewVersionNumberTextView.setText(appVersion);
+
+                mNetworkErrorTextView = findViewById(R.id.activity_main_network_error_text_view);
 
         if (!fiskInfoUtility.isNetworkAvailable(getBaseContext())) {
             toggleNetworkErrorTextView(false);
@@ -160,6 +173,25 @@ public class MainActivity extends AppCompatActivity implements
                     .addToBackStack(getString(R.string.terms_and_Services_fragment_title))
                     .commit();
         }
+    }
+
+    private String getApplicationVersionNumber() {
+        StringBuilder sb = new StringBuilder();
+        PackageManager packageManager = this.getPackageManager();
+        PackageInfo packageInfo;
+        sb.append("v.");
+
+        try {
+            packageInfo = packageManager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+            sb.append(packageInfo.versionName);
+
+            return sb.toString();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            sb.append("Error retrieving version number");
+        }
+
+        return null;
     }
 
     public void refreshTitle(String title) {

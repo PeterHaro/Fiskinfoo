@@ -229,8 +229,8 @@ var BarentswatchStylesRepository = function () {
             featureName = "non-fishing-vessel";
         }
         var style = aisStyles[featureName];
-
         style.getImage().setRotation(feature.N.Cog * Math.PI / 180);
+
         return style;
     }
 
