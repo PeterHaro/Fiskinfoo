@@ -91,7 +91,7 @@ limitations under the License.
     <string name="settings_fragment_title">Innstillinger</string>
     <string name="about_detailed">Info om appen.\nHvorfor kreves de forskjellige tilgangene?\nNevne open source libs brukt.\n</string>
     <string name="about_fragment_title">Om appen</string>
-    <string name="user_information">Brukerinformasjon</string>
+    <string name="user_information">Brukerprofil</string>
     <string name="request_write_access_offline_mode_rationale">Offlinemodus trenger skrivetillatelse til å laste ned og lagre kart for å fungere. Ønsker du å tillate dette?</string>
 
     <!-- Download fragment strings -->
@@ -291,7 +291,7 @@ limitations under the License.
     <string name="offline_mode_next_version">Offline-modus - kommer i neste versjon av appen</string>
     <string name="user_settings">Brukerinnstillinger</string>
     <string name="user_settings_fragment_title">Brukerinnstillinger</string>
-    <string name="app_settings_fragment_title">applikasjonsinnstillinger</string>
+    <string name="app_settings_fragment_title">Applikasjonsinnstillinger</string>
 
     <!-- Terms and Services -->
     <string name="terms_and_services_consent_checkbox_text">Jeg samtykker til vilkårene</string>
@@ -521,7 +521,7 @@ limitations under the License.
     <string name="tool_log_row_tool_type_image_view_content_description">Redskapsikon</string>
     <string name="user_profile_summary">Brukerprofil</string>
     <string name="user_profile_summary_hint">Profilinformasjon</string>
-    <string name="user_profile_summary_help">Informasjon om deg og ditt fartøy hentes fra brukerprofilen din og legges ved rapporten ved innsending. Informasjonen endres ved å editere brukerinformasjon under menyvalget Innstillinger.</string>
+    <string name="user_profile_summary_help">Informasjon om deg og ditt fartøy hentes fra brukerprofilen din og legges ved rapporten ved innsending. Informasjonen endres ved å editere brukerprofil under menyvalget Innstillinger.</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
