@@ -290,8 +290,8 @@ limitations under the License.
     <string name="offline_mode_active">Offline-modus aktiv</string>
     <string name="offline_mode_next_version">Offline-modus - kommer i neste versjon av appen</string>
     <string name="user_settings">Brukerinnstillinger</string>
-    <string name="user_settings_fragment_title">Brukerinnstillinger</string>
-    <string name="app_settings_fragment_title">applikasjonsinnstillinger</string>
+    <string name="user_settings_fragment_title">Brukerprofil</string>
+    <string name="app_settings_fragment_title">Applikasjonsinnstillinger</string>
 
     <!-- Terms and Services -->
     <string name="terms_and_services_consent_checkbox_text">Jeg samtykker til vilkårene</string>
