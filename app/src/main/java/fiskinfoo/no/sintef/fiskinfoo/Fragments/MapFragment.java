@@ -534,6 +534,10 @@ public class MapFragment extends Fragment {
         return allLayers;
     }
 
+    protected boolean waitingForAIS = false;
+    protected boolean waitingForTools = false;
+
+
     public class JavaScriptInterface {
         Context mContext;
 
@@ -574,6 +578,22 @@ public class MapFragment extends Fragment {
             }
         }
 
+
+        @android.webkit.JavascriptInterface
+        public void aisFinishedLoading() {
+            if (waitingForAIS) {
+                waitingForAIS = false;
+                refreshMapLayersIfReady();
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void toolsFinishedLoading() {
+            if (waitingForTools) {
+                waitingForTools = false;
+                refreshMapLayersIfReady();
+            }
+        }
 
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {
@@ -640,20 +660,22 @@ public class MapFragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             if (!fragmentIsActive)
                 return;
-            List<String> layers = user.getActiveLayers(); //.getActiveLayers();
+            //List<String> layers = user.getActiveLayers(); //.getActiveLayers();
             //if (!layers.contains(getString(R.string.primary_background_map)))
             //    layers.add(getString(R.string.primary_background_map));
-            JSONArray json = new JSONArray(layers);
+            //JSONArray json = new JSONArray(layers);
 
             //view.loadUrl("javascript:populateMap();");
-            view.loadUrl("javascript:toggleLayers(" + json + ");");
+            //view.loadUrl("javascript:toggleLayers(" + json + ");");
 
-            if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
+            //if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
                 //TODO: Check with Bård if this is needed now;   view.loadUrl("javascript:getToolDataFromAndroid();");
-            }
+            //}
 
             pageLoaded = true;
-            loadProgressSpinner.setVisibility(View.GONE);
+            refreshMapLayersIfReady();
+
+            //loadProgressSpinner.setVisibility(View.GONE);
 
 /*            Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -664,6 +686,19 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void refreshMapLayersIfReady() {
+        if (pageLoaded && !waitingForAIS && !waitingForTools) {
+
+            getActivity().runOnUiThread(new Runnable(){
+                public void run() {
+                    List<String> layers = user.getActiveLayers();
+                    JSONArray json = new JSONArray(layers);
+                    browser.loadUrl("javascript:toggleLayers(" + json + ");");
+                    loadProgressSpinner.setVisibility(View.GONE);
+                }
+            });
+        }
+    }
 
     public class AsynchApiCallTask extends AsyncTask<String, Void, Boolean> {
         @Override
@@ -954,9 +989,9 @@ public class MapFragment extends Fragment {
                 if(layersList.contains(getString(R.string.fishing_facility_name)) && !user.getIsFishingFacilityAuthenticated()) {
                     dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.about_fishing_facility_title), getString(R.string.about_fishing_facility_details)).show();
                 }
-
-                JSONArray json = new JSONArray(layersList);
-                browser.loadUrl("javascript:toggleLayers(" + json + ")");
+                refreshMapLayersIfReady();
+                //JSONArray json = new JSONArray(layersList);
+                //browser.loadUrl("javascript:toggleLayers(" + json + ")");
             }
         });
 
@@ -1378,6 +1413,9 @@ public class MapFragment extends Fragment {
         }
 
         pageLoaded = false;
+        waitingForTools = user.getIsFishingFacilityAuthenticated(); // Wait for tools only if user is allowed to see them
+        waitingForAIS = user.getIsAuthenticated();  // Wait for AIS only if user is allowd to see it
+
         loadProgressSpinner.setVisibility(View.VISIBLE);
 
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {

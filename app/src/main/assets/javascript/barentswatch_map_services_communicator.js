@@ -143,6 +143,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
 
         Android.setAutoCompleteData( JSON.stringify(this.aisSearchModule.getVesselObject()));
     }
+    Android.aisFinishedLoading();
 };
 
 BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer = function (data) {
@@ -240,6 +241,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         map.addLayer(unknownToolLayer);
         map.addInteraction(BarentswatchStylesRepository.BarentswatchToolSelectionStyle());
     }
+    Android.toolsFinishedLoading();
 };
 
 /*BarentswatchMapServicesCommunicator.prototype.createClusteredVectorToolLayer = function (_features, _title) {
