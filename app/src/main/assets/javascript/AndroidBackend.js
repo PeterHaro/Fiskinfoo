@@ -119,7 +119,7 @@ AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     retval += this._httpBuilder.getSelfContainedHeading(6, "Redskap");
 
     //TODO: FIXME: DONT EVER DO THISS!!!
-    if (aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
+    if (aisSearchModule.getVessel(feature._callsign).hasOwnProperty("tools")) {
         // Showing only the first 3 tools - showing all can crash the app and make the UI unusable
         var allTools = aisSearchModule.getVessel(feature._name).tools;
         var someTools = [];
