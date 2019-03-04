@@ -39,7 +39,7 @@ function () {
     key: "setVesselData",
     value: function setVesselData(vessels) {
       this.vessels = new Map(vessels.map(function (i) {
-        return [i.N.Name, i];
+        return [i.N.Callsign, i];
       })); // vessels.reduce((map, obj) => (map[obj.values_.Name] = obj, map), {});
 
       this.vesselNames = _toConsumableArray(this.vessels.keys());

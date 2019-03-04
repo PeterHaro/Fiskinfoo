@@ -7,6 +7,7 @@ function Ais() {
     this._closedDescription = "";
     this._shipType = "";
     this._eta = "";
+    this._callsign = "";
     this._mmsi = "";
     this._timeStamp = "";
     this._destination = "";
@@ -17,6 +18,7 @@ Ais.prototype.parseObject = function (aisObject) {
     this._name = aisObject.get("Name");
     this._shipType = aisObject.get("ShipType");
     this._eta = aisObject.get("Eta");
+    this._callsign = aisObject.get("Callsign");
     this._mmsi = aisObject.get("Mmsi");
     this._destination = aisObject.get("Destination");
     this._timeStamp = aisObject.get("TimeStamp");
@@ -32,7 +34,7 @@ Ais.prototype.getShipTypeString = function () {
 };
 
 Ais.prototype.getFormattedDate = function () { // TODO: Consider adding HH:MM
-    return FiskInfoUtility.formatDateAndTime(new Date(this._timeStamp));
+    return FiskInfoUtility.formatDate(new Date(this._timeStamp));
 };
 
 Ais.prototype.getCoordinates = function () {
