@@ -91,6 +91,7 @@ import org.xml.sax.InputSource;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -273,17 +274,26 @@ public class MapFragment extends Fragment {
             this.name = name;
         }
 
+        public String getCallSignal() {
+            try {
+                return jsonObject.getString("Callsign");
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
         @Override
         public String toString() {
-            return name;
-            /*
+            //return name;
+
             try {
-                String name = jsonObject.getString("name");
-                return name;
+                String name = jsonObject.getString("Name");
+                String callsignal = jsonObject.getString("Callsign");
+                return callsignal + " - " + name;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
-            }*/
+            }
         }
     }
 
@@ -291,7 +301,7 @@ public class MapFragment extends Fragment {
         VesselWrapper[] vesselWrappers = new VesselWrapper[jsonArray.length()];
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
-                vesselWrappers[i] = new VesselWrapper(jsonArray.getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
+                vesselWrappers[i] = new VesselWrapper(jsonArray.getJSONObject(i)); //getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -331,6 +341,8 @@ public class MapFragment extends Fragment {
         searchAutoComplete.setTextColor(ResourcesCompat.getColor(getResources(),R.color.text_white, null));
         searchAutoComplete.setDropDownBackgroundResource(android.R.color.holo_blue_light);
 
+        searchAutoComplete.setHint(getString(R.string.vessel_search_hint));
+
         searchAutoCompleteAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, new ArrayList<VesselWrapper>());
         searchAutoComplete.setAdapter(searchAutoCompleteAdapter);
 
@@ -338,22 +350,14 @@ public class MapFragment extends Fragment {
         searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
-                Log.d("Selected", "Start" );
                 Object selected = adapterView.getItemAtPosition(itemIndex);
-                Log.d("Selected", "ItemAtPos" );
                 if ((selected != null) && (selected instanceof VesselWrapper)) {
                     VesselWrapper vesselWrapper = (VesselWrapper)adapterView.getItemAtPosition(itemIndex);
-                    Log.d("Selected", "Wrapper");
                     searchAutoComplete.setText(vesselWrapper.toString());
-
-                    Log.d("Selected", "SetText");
-
                     searchAutoComplete.clearFocus();
                     hideKeyboard();
-                    Log.d("Selected", "Hide KB");
-                    browser.loadUrl("javascript:showVesselAndBottomsheet('" + vesselWrapper.toString() + "');");
+                    browser.loadUrl("javascript:showVesselAndBottomsheet('" + vesselWrapper.getCallSignal() + "');");
                     //browser.loadUrl("javascript:locateVessel('" + vesselWrapper.toString() + "');");
-                    Log.d("Selected", "Load URL");
                 }
             }
         });
@@ -567,9 +571,8 @@ public class MapFragment extends Fragment {
         @android.webkit.JavascriptInterface
         public void setAutoCompleteData(String vesselObjectsString) {
             try {
-                //JSONArray vesselObjects = new JSONArray(vesselObjectsString);
-                JSONObject vesselObject = new JSONObject(vesselObjectsString);
-                VesselWrapper[] wrappers = createVessleWrappers(vesselObject.names()); //vesselObjects);
+                JSONArray vesselObjects = new JSONArray(vesselObjectsString);
+                VesselWrapper[] wrappers = createVessleWrappers(vesselObjects); // vesselObject.names()); //vesselObjects);
                 searchAutoCompleteAdapter.clear();
                 searchAutoCompleteAdapter.addAll(wrappers);
             } catch (Exception e) {

@@ -140,8 +140,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
                 limit: 5
             });
         });
-
-        Android.setAutoCompleteData( JSON.stringify(this.aisSearchModule.getVesselObject()));
+        Android.setAutoCompleteData( data) ; //JSON.stringify(this.aisSearchModule.getVesselObject()));
     }
     Android.aisFinishedLoading();
 };
