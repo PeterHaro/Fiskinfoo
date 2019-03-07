@@ -118,6 +118,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
     }
     if (this.aisSearchModule != null) { // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
         this.aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
+
         $(document).ready(function () {
             $('input.autocomplete').autocomplete({
                 data: aisSearchModule.getVesselObject(),
@@ -139,9 +140,9 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
                 limit: 5
             });
         });
-
-
+        Android.setAutoCompleteData( data) ; //JSON.stringify(this.aisSearchModule.getVesselObject()));
     }
+    Android.aisFinishedLoading();
 };
 
 BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer = function (data) {
@@ -175,7 +176,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
     var unknownData = [];
 
     featureData.forEach(function (feature) {
-        switch (feature.values_.tooltypecode) {
+        switch (feature.N.tooltypecode) {
             case "NETS":
                 netsData.push(feature);
                 break;
@@ -199,10 +200,11 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
                 unknownData.push(feature);
         }
 
-                if(this.aisSearchModule !== null) {
-                    this.aisSearchModule.attachTools(featureData);
-                }
     });
+
+    if(this.aisSearchModule !== null) {
+        this.aisSearchModule.attachTools(featureData);
+    }
 
     var netsLayer = _createClusteredVectorToolLayer(netsData, "Tools-nets", BarentswatchStylesRepository.BarentswatchToolNetsStyle);
     var crabpotLayer = _createClusteredVectorToolLayer(crabPotData, "Tools-crabpot", BarentswatchStylesRepository.BarentswatchCrabpotToolStyle);
@@ -238,6 +240,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedToolsVectorLayer
         map.addLayer(unknownToolLayer);
         map.addInteraction(BarentswatchStylesRepository.BarentswatchToolSelectionStyle());
     }
+    Android.toolsFinishedLoading();
 };
 
 /*BarentswatchMapServicesCommunicator.prototype.createClusteredVectorToolLayer = function (_features, _title) {

@@ -31,22 +31,6 @@ limitations under the License.
             android:scrollbars="none"
             />
 
-        <android.support.v7.widget.AppCompatAutoCompleteTextView
-            android:id="@+id/map_fragment_tool_search_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="10dp"
-            android:visibility="invisible"
-            android:drawableEnd="@drawable/ic_search_black_24dp"
-            android:inputType="textAutoComplete"
-            android:imeOptions="actionSearch"
-            android:selectAllOnFocus="true"
-            android:lines="1"
-            android:maxLines="1"
-            android:hint="@string/tool_search_hint"
-            />
     </RelativeLayout>
 
     <ProgressBar

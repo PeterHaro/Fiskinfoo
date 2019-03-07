@@ -22,6 +22,7 @@ AndroidBackend.prototype.getToken = function (_callback, that) {
 
 // TODO: Create getters and setters / "interface" for feature(s)
 AndroidBackend.prototype.showBottmsheet = function (feature) {
+    console.time("showBottom Android");
     var body = $("#bottom_sheet_container");
     body.text("");
     body.append(this._httpBuilder.getSelfContainedHeading(4, feature._name));
@@ -37,7 +38,9 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
 
     switch (feature._type) {
         case BarentswatchApiObjectTypes.TOOL:
+            console.time("showTool");
             content = this._showToolBottomsheet(feature);
+            console.timeEnd("showTool");
             break;
         case BarentswatchApiObjectTypes.SEABOTTOM_INSTALLATION:
             content = this._showSubsurfaceFacilityBottomsheet(feature);
@@ -57,7 +60,9 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
             content = this._buildSeismicBottomsheetText(feature);
             break;
         case BarentswatchApiObjectTypes.AIS:
+            console.time("showAIS");
             content = this._createAisBottomsheet(feature);
+            console.timeEnd("showAIS");
             break;
         default:
             return null;
@@ -71,6 +76,7 @@ AndroidBackend.prototype.showBottmsheet = function (feature) {
         $("#bottom_sheet").scrollTop(0);
     };
     instance.open();
+    console.timeEnd("showBottom Android");
 };
 
 AndroidBackend.prototype._createIceChartConsentrationContent = function (feature) {
@@ -110,11 +116,24 @@ AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     retval += this._httpBuilder.createTitleLineWithStrongText("Destinasjon", feature._destination);
     retval += this._httpBuilder.createTitleLineWithStrongText("Se Marinogram", "<a target='_blank' href='https://www.yr.no/sted/hav/" + feature._internalPosition[1] + "_" + feature._internalPosition[0] + "'" + ">Marinogram</a>");
 
-    retval += this._httpBuilder.getSelfContainedHeading(6, "Mine redskaper");
+    retval += this._httpBuilder.getSelfContainedHeading(6, "Redskap");
 
     //TODO: FIXME: DONT EVER DO THISS!!!
-    if (aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {
-        retval += this._httpBuilder.buildCollapsible(aisSearchModule.getVessel(feature._name).tools);
+    if (aisSearchModule.getVessel(feature._callsign).hasOwnProperty("tools")) {
+        // Showing only the first 3 tools - showing all can crash the app and make the UI unusable
+        var allTools = aisSearchModule.getVessel(feature._name).tools;
+        var someTools = [];
+        var i;
+        for (i = 0; (i < allTools.length) && (i < 3); i++) {
+            someTools[i] = allTools[i];
+        }
+        retval += this._httpBuilder.buildCollapsible(someTools);
+        var remainingTools = allTools.length - someTools.length;
+        if (someTools.length < allTools.length) {
+            retval += this._httpBuilder.createTitleLineWithStrongText("Ikke vist", (allTools.length-someTools.length).toString() + " ytteligere redskap");
+        }
+    } else {
+            retval += this._httpBuilder.createTitleLineWithStrongText("Ingen", "");
     }
 
     //  if(aisSearchModule.getVessel(feature._name).hasOwnProperty("tools")) {

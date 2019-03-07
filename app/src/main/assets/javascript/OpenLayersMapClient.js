@@ -200,24 +200,38 @@ function buggyZoomToMyPosition() {
 }
 
 function dispatchDataToBottomsheet(feature, type) {
+    console.time("dispatchData");
+    console.time("factory");
     var _feature = barentswatchObjectFactory.create(type);
+    console.timeEnd("factory");
+    console.time("parse");
     _feature.parseObject(feature);
+    console.timeEnd("parse");
     //DISPATCH HERE
+    console.time("showBottomsheet");
     backendCommunicator.showBottmsheet(_feature);
+    console.timeEnd("showBottomsheet");
+    console.timeEnd("dispatchData");
 }
 
 // TODO: REFACTOR ME
 var displayFeatureInfo = function (pixel) {
     var features = [];
     var layers = [];
+    console.time("DF");
+    console.time("DF forEach");
+
     map.forEachFeatureAtPixel(pixel, function (feature, layer) {
         features.push(feature);
         layers.push(layer);
     }, {
         hitTolerance: 10
     });
+    console.timeEnd("DF forEach");
     if (!Array.isArray(layers) || !layers.length) {
         // No features, escape early
+        console.log("No features return");
+        console.timeEnd("DF");
         return;
     }
 
@@ -246,16 +260,20 @@ var displayFeatureInfo = function (pixel) {
             dispatchDataToBottomsheet(features[features.length - 1], BarentswatchApiObjectTypes.CORAL_REEF);
             break;
         case "AIS":
-            if (features[features.length - 1].values_.features.length > 1) {
+            if (features[features.length - 1].N.features.length > 1) {
+                console.log("AIS return");
+                console.timeEnd("DF");
                 return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.AIS);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.AIS);
             break;
         case "Tools":
-            if (features[features.length - 1].values_.features.length > 1) {
+            if (features[features.length - 1].N.features.length > 1) {
+                console.log("Tools return");
+                console.timeEnd("DF");
                 return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             break;
         case "Tools-nets":
         case "Tools-crabpot":
@@ -268,18 +286,21 @@ var displayFeatureInfo = function (pixel) {
                 for (var i = 0; i < features.length; i++) {
                     features[i].superHack = false;
                 }
-                dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+                dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             }
-            if (features[features.length - 1].values_.features.length > 1) {
-                return;
+            if (features[features.length - 1].N.features.length > 1) {
+               console.log("Tools unknown return");
+               console.timeEnd("DF");
+               return;
             }
-            dispatchDataToBottomsheet(features[features.length - 1].values_.features[0], BarentswatchApiObjectTypes.TOOL);
+            dispatchDataToBottomsheet(features[features.length - 1].N.features[0], BarentswatchApiObjectTypes.TOOL);
             break;
         default:
             popupOverlay.setPosition(undefined);
             closer.blur();
             break;
     }
+    console.timeEnd("DF");
 };
 
 function locateTool(toolOwner, toolId) {
@@ -303,15 +324,32 @@ function locateTool(toolOwner, toolId) {
     }
 }
 
+function showVesselAndBottomsheet(vesselName) {
+    var vessel = aisSearchModule.getVessel(vesselName);
+    if (vessel != null) {
+        locateVessel(vesselName);
+        dispatchDataToBottomsheet(vessel, BarentswatchApiObjectTypes.AIS);
+    }
+}
+
+
 function locateVessel(vesselName) {
+    console.time("LocateVessel");
     var interactionSelection = BarentswatchStylesRepository.BarentswatchAisSelectionStyle();
+    console.time("Fit");
     map.getView().fit(aisSearchModule.getVessel(vesselName).getGeometry(), map.getSize());
-    interactionSelection.getFeatures().push(aisSearchModule.getVessel(val));
+    console.timeEnd("Fit");
+    console.time("Push");
+    interactionSelection.getFeatures().push(aisSearchModule.getVessel(vesselName));
+    console.timeEnd("Push");
+    console.time("DispatchEvent");
     interactionSelection.dispatchEvent({
         type: 'select',
         selected: [aisSearchModule.getVessel(vesselName)],
         deselected: []
     });
+    console.timeEnd("DispatchEvent");
+    console.timeEnd("LocateVessel");
 }
 
 function getAllMapLayers() {

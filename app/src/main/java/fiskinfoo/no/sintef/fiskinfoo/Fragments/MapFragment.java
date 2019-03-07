@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -37,7 +38,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -56,6 +60,8 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -85,6 +91,7 @@ import org.xml.sax.InputSource;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -252,13 +259,125 @@ public class MapFragment extends Fragment {
         }
     }
 
+    protected ArrayAdapter<VesselWrapper> searchAutoCompleteAdapter = null;
+
+
+    class VesselWrapper {
+        JSONObject jsonObject;
+        String name;
+
+        public VesselWrapper(JSONObject object) {
+            jsonObject = object;
+        }
+
+        public VesselWrapper(String name) {
+            this.name = name;
+        }
+
+        public String getCallSignal() {
+            try {
+                return jsonObject.getString("Callsign");
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public String toString() {
+            //return name;
+
+            try {
+                String name = jsonObject.getString("Name");
+                String callsignal = jsonObject.getString("Callsign");
+                return callsignal + " - " + name;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }
+        }
+    }
+
+    public VesselWrapper[] createVessleWrappers(JSONArray jsonArray) {
+        VesselWrapper[] vesselWrappers = new VesselWrapper[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                vesselWrappers[i] = new VesselWrapper(jsonArray.getJSONObject(i)); //getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return vesselWrappers;
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        final Activity act = getActivity();
+        View view = act.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(act);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
         for (int i = 0; i < menu.size(); i++) {
             menu.removeItem(i);
         }
         inflater.inflate(R.menu.menu_map, menu);
+
+
+        // Get the search menu.
+        MenuItem searchMenu = menu.findItem(R.id.app_bar_menu_search);
+
+        // Get SearchView object.
+        SearchView searchView = (SearchView) searchMenu.getActionView();
+
+        // Get SearchView autocomplete object.
+        final SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchAutoComplete.setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.barentswatch_blue, null));
+        searchAutoComplete.setTextColor(ResourcesCompat.getColor(getResources(),R.color.text_white, null));
+        searchAutoComplete.setDropDownBackgroundResource(android.R.color.holo_blue_light);
+
+        searchAutoComplete.setHint(getString(R.string.vessel_search_hint));
+
+        searchAutoCompleteAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, new ArrayList<VesselWrapper>());
+        searchAutoComplete.setAdapter(searchAutoCompleteAdapter);
+
+        // Listen to search view item on click event.
+        searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
+                Object selected = adapterView.getItemAtPosition(itemIndex);
+                if ((selected != null) && (selected instanceof VesselWrapper)) {
+                    VesselWrapper vesselWrapper = (VesselWrapper)adapterView.getItemAtPosition(itemIndex);
+                    searchAutoComplete.setText(vesselWrapper.toString());
+                    searchAutoComplete.clearFocus();
+                    hideKeyboard();
+                    browser.loadUrl("javascript:showVesselAndBottomsheet('" + vesselWrapper.getCallSignal() + "');");
+                    //browser.loadUrl("javascript:locateVessel('" + vesselWrapper.toString() + "');");
+                }
+            }
+        });
+
+        // Below event is triggered when submit search query.
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                hideKeyboard();
+                browser.loadUrl("javascript:locateVessel('" + query + "');");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+
     }
 
     // This event fires 3rd, and is the first time views are available in the fragment
@@ -397,7 +516,6 @@ public class MapFragment extends Fragment {
                 return false;
             } } );
 
-
         browser.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // chromium, enable hardware acceleration
@@ -420,35 +538,9 @@ public class MapFragment extends Fragment {
         return allLayers;
     }
 
-/*
-    LayerAndVisibility[] localLayersAndVisibility = null; //= LayerAndVisibility.getDefault();
+    protected boolean waitingForAIS = false;
+    protected boolean waitingForTools = false;
 
-    public LayerAndVisibility[] getLocalLayersAndVisibility() {
-        if (localLayersAndVisibility == null) {
-            localLayersAndVisibility = LayerAndVisibility.getDefault();
-            // Initialize which layers are visible based on user settings
-            List<String> userLayers = user.getActiveLayers();
-            for (LayerAndVisibility layer : localLayersAndVisibility) {
-                if (layer.name.equals((getString(R.string.primary_background_map))))
-                    continue;
-                else
-                    layer.visibility = userLayers.contains(layer.name);
-            }
-        }
-        return localLayersAndVisibility;
-    }
-
-
-    public List<String> getLocalActiveLayers() {
-        ArrayList<String> list = new ArrayList<>();
-        for (LayerAndVisibility layer : getLocalLayersAndVisibility()) {
-            if (layer.visibility) {
-                list.add(layer.name);
-            }
-        }
-        return list;
-    }
-*/
 
     public class JavaScriptInterface {
         Context mContext;
@@ -461,6 +553,49 @@ public class MapFragment extends Fragment {
         @android.webkit.JavascriptInterface
         public String getToken() {
             return user.getToken();
+        }
+
+        @android.webkit.JavascriptInterface
+        public void dismissKeyboard() {
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            final Activity act = getActivity();
+            View view = act.getCurrentFocus();
+            //If no view currently has focus, create a new one, just so we can grab a window token from it
+            if (view == null) {
+                view = new View(act);
+            }
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+        @android.webkit.JavascriptInterface
+        public void setAutoCompleteData(String vesselObjectsString) {
+            try {
+                JSONArray vesselObjects = new JSONArray(vesselObjectsString);
+                VesselWrapper[] wrappers = createVessleWrappers(vesselObjects); // vesselObject.names()); //vesselObjects);
+                searchAutoCompleteAdapter.clear();
+                searchAutoCompleteAdapter.addAll(wrappers);
+            } catch (Exception e) {
+                e.printStackTrace();
+                //TODO
+            }
+        }
+
+
+        @android.webkit.JavascriptInterface
+        public void aisFinishedLoading() {
+            if (waitingForAIS) {
+                waitingForAIS = false;
+                refreshMapLayersIfReady();
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void toolsFinishedLoading() {
+            if (waitingForTools) {
+                waitingForTools = false;
+                refreshMapLayersIfReady();
+            }
         }
 
         @android.webkit.JavascriptInterface
@@ -504,28 +639,46 @@ public class MapFragment extends Fragment {
 
     private class barentswatchFiskInfoWebClient extends WebViewClient {
         @Override
+        public void onLoadResource(WebView view, String url) {
+            // Added just for debug purposes
+            super.onLoadResource(view, url);
+            Log.d("barentswatchFiskInfoWC", url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            // Added just for debug purposes
+            super.onReceivedError(view, request, error);
+            Log.d("barentswatchFiskInfoErr", request.toString() + " " + error.toString());
+        }
+
+        @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
+            return false;
+            // According to the documentation, the below code just delays things, and we should instead return false
+            //view.loadUrl(url);
+            //return true;
         }
 
         public void onPageFinished(WebView view, String url) {
             if (!fragmentIsActive)
                 return;
-            List<String> layers = user.getActiveLayers(); //.getActiveLayers();
+            //List<String> layers = user.getActiveLayers(); //.getActiveLayers();
             //if (!layers.contains(getString(R.string.primary_background_map)))
             //    layers.add(getString(R.string.primary_background_map));
-            JSONArray json = new JSONArray(layers);
+            //JSONArray json = new JSONArray(layers);
 
             //view.loadUrl("javascript:populateMap();");
-            view.loadUrl("javascript:toggleLayers(" + json + ");");
+            //view.loadUrl("javascript:toggleLayers(" + json + ");");
 
-            if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
+            //if(toolsFeatureCollection != null && (getActivity() != null && (new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode())) {
                 //TODO: Check with Bård if this is needed now;   view.loadUrl("javascript:getToolDataFromAndroid();");
-            }
+            //}
 
             pageLoaded = true;
-            loadProgressSpinner.setVisibility(View.GONE);
+            refreshMapLayersIfReady();
+
+            //loadProgressSpinner.setVisibility(View.GONE);
 
 /*            Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -536,6 +689,19 @@ public class MapFragment extends Fragment {
         }
     }
 
+    public void refreshMapLayersIfReady() {
+        if (pageLoaded && !waitingForAIS && !waitingForTools) {
+
+            getActivity().runOnUiThread(new Runnable(){
+                public void run() {
+                    List<String> layers = user.getActiveLayers();
+                    JSONArray json = new JSONArray(layers);
+                    browser.loadUrl("javascript:toggleLayers(" + json + ");");
+                    loadProgressSpinner.setVisibility(View.GONE);
+                }
+            });
+        }
+    }
 
     public class AsynchApiCallTask extends AsyncTask<String, Void, Boolean> {
         @Override
@@ -790,23 +956,7 @@ public class MapFragment extends Fragment {
         final List<CheckBoxRow> rows = new ArrayList<>();
         final LinearLayout mapLayerLayout = (LinearLayout) dialog.findViewById(R.id.map_layers_checkbox_layout);
         final Button cancelButton = (Button) dialog.findViewById(R.id.select_map_layers_cancel_button);
-/*        LayerAndVisibility[] layers = getLocalLayersAndVisibility(); // new Gson().fromJson(layersAndVisibility.toString(), LayerAndVisibility[].class);
-        for (LayerAndVisibility layer : layers) {
-            if (layer.name.equals(getString(R.string.primary_background_map)) || layer.name.contains("OpenLayers_Control")) {
-                continue;
-            }
 
-            // TODO: Add check on access to AIS and Tools
-
-            boolean isActive;
-            isActive = layer.visibility;
-
-            CheckBoxRow row = new CheckBoxRow(getActivity(), layer.name, false, isActive);
-            rows.add(row);
-            View mapLayerRow = row.getView();
-            mapLayerLayout.addView(mapLayerRow);
-        }
-*/
         for (String layer : getAvailableLayers()) {
             if (layer.equals(getString(R.string.primary_background_map)) || layer.contains("OpenLayers_Control"))
                 continue;
@@ -842,11 +992,9 @@ public class MapFragment extends Fragment {
                 if(layersList.contains(getString(R.string.fishing_facility_name)) && !user.getIsFishingFacilityAuthenticated()) {
                     dialogInterface.getHyperlinkAlertDialog(getActivity(), getString(R.string.about_fishing_facility_title), getString(R.string.about_fishing_facility_details)).show();
                 }
-
-                JSONArray json = new JSONArray(layersList);
-                browser.loadUrl("javascript:toggleLayers(" + json + ")");
-
-                //getLayersAndVisibility();
+                refreshMapLayersIfReady();
+                //JSONArray json = new JSONArray(layersList);
+                //browser.loadUrl("javascript:toggleLayers(" + json + ")");
             }
         });
 
@@ -1268,6 +1416,9 @@ public class MapFragment extends Fragment {
         }
 
         pageLoaded = false;
+        waitingForTools = user.getIsFishingFacilityAuthenticated(); // Wait for tools only if user is allowed to see them
+        waitingForAIS = user.getIsAuthenticated();  // Wait for AIS only if user is allowd to see it
+
         loadProgressSpinner.setVisibility(View.VISIBLE);
 
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {

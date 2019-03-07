@@ -91,7 +91,7 @@ limitations under the License.
     <string name="settings_fragment_title">Innstillinger</string>
     <string name="about_detailed">Info om appen.\nHvorfor kreves de forskjellige tilgangene?\nNevne open source libs brukt.\n</string>
     <string name="about_fragment_title">Om appen</string>
-    <string name="user_information">Brukerinformasjon</string>
+    <string name="user_information">Brukerprofil</string>
     <string name="request_write_access_offline_mode_rationale">Offlinemodus trenger skrivetillatelse til å laste ned og lagre kart for å fungere. Ønsker du å tillate dette?</string>
 
     <!-- Download fragment strings -->
@@ -521,7 +521,7 @@ limitations under the License.
     <string name="tool_log_row_tool_type_image_view_content_description">Redskapsikon</string>
     <string name="user_profile_summary">Brukerprofil</string>
     <string name="user_profile_summary_hint">Profilinformasjon</string>
-    <string name="user_profile_summary_help">Informasjon om deg og ditt fartøy hentes fra brukerprofilen din og legges ved rapporten ved innsending. Informasjonen endres ved å editere brukerinformasjon under menyvalget Innstillinger.</string>
+    <string name="user_profile_summary_help">Informasjon om deg og ditt fartøy hentes fra brukerprofilen din og legges ved rapporten ved innsending. Informasjonen endres ved å editere brukerprofil under menyvalget Innstillinger.</string>
 
     <!-- Position -->
     <string name="position">Posisjon</string>
@@ -614,5 +614,6 @@ limitations under the License.
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="vessel_search_hint">Kallesignal / fartøynavn</string>
 
 </resources>

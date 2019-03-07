@@ -95,6 +95,12 @@ var FiskInfoUtility = function () {
         return day + '.' + monthNames[monthIndex] + ' ' + year;
     }
 
+    function formatDateAndTime(date) {
+        moment.locale('nb');
+        var formatedDate = moment(date);
+        return formatedDate.format('LLL');
+    }
+
     var httpClient = {
         get: function (url, data, callback) {
             var xhr = new XMLHttpRequest();
@@ -174,6 +180,7 @@ var FiskInfoUtility = function () {
     return {
         corsRequest: corsRequest,
         formatDate: formatDate,
+        formatDateAndTime: formatDateAndTime,
         ddToDms: ddToDms,
         httpClient: httpClient
     }
