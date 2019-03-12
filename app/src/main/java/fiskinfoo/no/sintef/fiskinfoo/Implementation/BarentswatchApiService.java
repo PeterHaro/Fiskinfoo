@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,11 @@ public class BarentswatchApiService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             final User user = intent.getParcelableExtra(ACTION_PARAM_USER);
+
+            if (user == null) {
+                Log.d("BarentswatchApiService", "Service invoked without user information");
+                return;
+            }
             ResultReceiver resultReceiver = intent.getParcelableExtra(ACTION_PARAM_RECEIVER);
 
             BarentswatchApi barentswatchApi = new BarentswatchApi();
