@@ -650,7 +650,7 @@ var BarentswatchStylesRepository = function () {
                 sensorCableClusterStyleFunction(feature, resolution);
                 break;
             case "UNK":
-                unknownClusterStyleResolution(feature, resolution);
+                unknownClusterStyleFunction(feature, resolution);
                 break;
             default:
                 console.log("Invalid selected tool");
