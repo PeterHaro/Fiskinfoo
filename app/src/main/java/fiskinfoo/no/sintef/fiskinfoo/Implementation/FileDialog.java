@@ -230,30 +230,35 @@ public class FileDialog extends ListActivity {
         TreeMap<String, String> dirsPathMap = new TreeMap<>();
         TreeMap<String, String> filesMap = new TreeMap<>();
         TreeMap<String, String> filesPathMap = new TreeMap<>();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                String dirName = file.getName();
-                dirsMap.put(dirName, dirName);
-                dirsPathMap.put(dirName, file.getPath());
-            } else {
-                final String fileName = file.getName();
-                final String fileNameLwr = fileName.toLowerCase();
-                if (formatFilter != null) {
-                    boolean contains = false;
-                    for (String aFormatFilter : formatFilter) {
-                        final String formatLwr = aFormatFilter.toLowerCase();
-                        if (fileNameLwr.endsWith(formatLwr)) {
-                            contains = true;
-                            break;
+        if (files == null) {
+            Toast.makeText(this, getString(R.string.file_dialog_no_folder_for_storage), Toast.LENGTH_LONG).show();
+        }
+        else {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    String dirName = file.getName();
+                    dirsMap.put(dirName, dirName);
+                    dirsPathMap.put(dirName, file.getPath());
+                } else {
+                    final String fileName = file.getName();
+                    final String fileNameLwr = fileName.toLowerCase();
+                    if (formatFilter != null) {
+                        boolean contains = false;
+                        for (String aFormatFilter : formatFilter) {
+                            final String formatLwr = aFormatFilter.toLowerCase();
+                            if (fileNameLwr.endsWith(formatLwr)) {
+                                contains = true;
+                                break;
+                            }
                         }
-                    }
-                    if (contains) {
+                        if (contains) {
+                            filesMap.put(fileName, fileName);
+                            filesPathMap.put(fileName, file.getPath());
+                        }
+                    } else {
                         filesMap.put(fileName, fileName);
                         filesPathMap.put(fileName, file.getPath());
                     }
-                } else {
-                    filesMap.put(fileName, fileName);
-                    filesPathMap.put(fileName, file.getPath());
                 }
             }
         }

@@ -222,7 +222,7 @@ public class DownloadFragment extends Fragment implements DownloadListAdapter.Do
 
 
     protected void fetchAndRefreshDownloadList(boolean hasNetwork) {
-        if (hasNetwork) {
+        if ((hasNetwork) && (user != null) && (mReceiver != null)) {
             BarentswatchApiService.startActionFetchDownloads(getContext(), mReceiver, user);
         } else {
             ArrayList<AvailableSubscriptionItem> data = fetchCachedDownloads();
