@@ -97,11 +97,11 @@ function () {
     key: "_attachTools",
     value: function _attachTools(tools) {
       tools.forEach(function (tool) {
-        if (this.vessels.get(tool.get("vesselname")) !== undefined) {
-          if (this.vessels.get(tool.get("vesselname")).tools === undefined) {
-            this.vessels.get(tool.get("vesselname")).tools = [tool];
+        if (this.vessels.get(tool.get("ircs")) !== undefined) {
+          if (this.vessels.get(tool.get("ircs")).tools === undefined) {
+            this.vessels.get(tool.get("ircs")).tools = [tool];
           } else {
-            this.vessels.get(tool.get("vesselname")).tools.push(tool);
+            this.vessels.get(tool.get("ircs")).tools.push(tool);
           }
         }
       }.bind(this));

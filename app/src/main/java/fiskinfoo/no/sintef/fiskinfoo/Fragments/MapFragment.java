@@ -366,8 +366,8 @@ public class MapFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                hideKeyboard();
-                browser.loadUrl("javascript:locateVessel('" + query + "');");
+                //hideKeyboard();
+                //browser.loadUrl("javascript:showVesselAndBottomsheet('" + query + "');");
                 return false;
             }
 

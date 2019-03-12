@@ -93,7 +93,7 @@ AndroidBackend.prototype._showToolBottomsheet = function (feature) {
     retval += this._httpBuilder.getSelfContainedHeading(6, "Om Eier");
     retval += "<div class='divider'></div>";
 
-    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", "<a target='_blank' href='javascript:locateVessel(" + "\"" + feature._vesselname + "\"" + ")'>" + feature._vesselname + "</a>");
+    retval += this._httpBuilder.createTitleLineWithStrongText("Fartøy", "<a target='_blank' href='javascript:showVesselAndBottomsheet(" + "\"" + feature._ircs + "\"" + ")'>" + feature._vesselname + "</a>");
     retval += this._httpBuilder.createTitleLineWithStrongText("Telefon", feature._vesselphone);
     retval += this._httpBuilder.createTitleLineWithStrongText("Kallesignal(IRCS)", feature._ircs);
     retval += this._httpBuilder.createTitleLineWithStrongText("MMSI", feature._mmsi);
@@ -121,7 +121,7 @@ AndroidBackend.prototype._createAisBottomsheet = function (feature) {
     //TODO: FIXME: DONT EVER DO THISS!!!
     if (aisSearchModule.getVessel(feature._callsign).hasOwnProperty("tools")) {
         // Showing only the first 3 tools - showing all can crash the app and make the UI unusable
-        var allTools = aisSearchModule.getVessel(feature._name).tools;
+        var allTools = aisSearchModule.getVessel(feature._callsign).tools;
         var someTools = [];
         var i;
         for (i = 0; (i < allTools.length) && (i < 3); i++) {
