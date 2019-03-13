@@ -654,10 +654,13 @@ public class MapFragment extends Fragment {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            return false;
-            // According to the documentation, the below code just delays things, and we should instead return false
-            //view.loadUrl(url);
-            //return true;
+            if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            } else {
+                return false;
+            }
         }
 
         public void onPageFinished(WebView view, String url) {
