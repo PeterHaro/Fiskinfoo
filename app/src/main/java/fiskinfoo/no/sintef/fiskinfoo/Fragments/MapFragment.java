@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -652,11 +653,26 @@ public class MapFragment extends Fragment {
             Log.d("barentswatchFiskInfoErr", request.toString() + " " + error.toString());
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
                 view.getContext().startActivity(
                         new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            String a = "";
+
+            if (request != null && (request.getUrl().toString().startsWith("http://") || request.getUrl().toString().startsWith("https://"))) {
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(request.getUrl().toString())));
                 return true;
             } else {
                 return false;
