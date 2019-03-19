@@ -1441,7 +1441,11 @@ public class MapFragment extends Fragment {
         loadProgressSpinner.setVisibility(View.VISIBLE);
 
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
-            browser.loadUrl("file:///android_asset/mapApplication.html");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                browser.loadUrl("file:///android_asset/mapApplication.html");
+            } else {
+                browser.loadUrl("file:///android_asset/mapApplicationAndroid4.html");
+            }
 
             asynchApiCallTask = new AsynchApiCallTask();
             asynchApiCallTask.execute();

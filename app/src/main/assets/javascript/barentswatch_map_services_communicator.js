@@ -119,6 +119,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
     if (this.aisSearchModule != null) { // TODO: FIXME: REPLACE THIS!!! This is fetched from outer scope as a UUUUUUUUGLY hack
         this.aisSearchModule.setVesselData(BarentswatchStylesRepository.GetAisVectorReference().getSource().getSource().getFeatures());
 
+/*
         $(document).ready(function () {
             $('input.autocomplete').autocomplete({
                 data: aisSearchModule.getVesselObject(),
@@ -140,6 +141,7 @@ BarentswatchMapServicesCommunicator.prototype.parseAuthenticatedAISVectorLayer =
                 limit: 5
             });
         });
+        */
         Android.setAutoCompleteData( data) ; //JSON.stringify(this.aisSearchModule.getVesselObject()));
     }
     Android.aisFinishedLoading();
