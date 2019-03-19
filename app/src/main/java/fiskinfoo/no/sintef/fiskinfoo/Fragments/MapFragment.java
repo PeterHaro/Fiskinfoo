@@ -45,6 +45,8 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -98,6 +100,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -264,9 +267,10 @@ public class MapFragment extends Fragment {
 
 
     class VesselWrapper {
-        JSONObject jsonObject;
+        //JSONObject jsonObject;
         String name;
-
+        String callSign;
+/*
         public VesselWrapper(JSONObject object) {
             jsonObject = object;
         }
@@ -274,19 +278,26 @@ public class MapFragment extends Fragment {
         public VesselWrapper(String name) {
             this.name = name;
         }
+*/
+        public VesselWrapper(String name, String callSign) {
+            this.name = name;
+            this.callSign = callSign;
+        }
+
 
         public String getCallSignal() {
-            try {
+            return callSign;
+  /*          try {
                 return jsonObject.getString("Callsign");
             } catch (JSONException e) {
                 return null;
-            }
+            }*/
         }
 
         @Override
         public String toString() {
-            //return name;
-
+            return callSign + " - " + name;
+/*
             try {
                 String name = jsonObject.getString("Name");
                 String callsignal = jsonObject.getString("Callsign");
@@ -294,22 +305,63 @@ public class MapFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
-            }
+            }*/
         }
     }
 
-    public VesselWrapper[] createVessleWrappers(JSONArray jsonArray) {
-        VesselWrapper[] vesselWrappers = new VesselWrapper[jsonArray.length()];
-        for (int i = 0; i < jsonArray.length(); i++) {
+
+    public ArrayList<VesselWrapper> createVesselWrappers(String jsonStr) {
+        ArrayList<VesselWrapper> vesselWrappers = new ArrayList<>();
+        JsonReader reader = new JsonReader(new StringReader(jsonStr));
+        try {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                vesselWrappers.add(readVessel(reader));
+            }
+            reader.endArray();
+        } catch (IOException ex) {
+        } finally {
             try {
-                vesselWrappers[i] = new VesselWrapper(jsonArray.getJSONObject(i)); //getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
-            } catch (JSONException e) {
+                reader.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return vesselWrappers;
     }
 
+    public VesselWrapper readVessel(JsonReader reader) throws IOException {
+        String callSign = "";
+        String name = "";
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String propName = reader.nextName();
+            if (propName.equals("Name") && (reader.peek() != JsonToken.NULL)) {
+                name = reader.nextString();
+            } else if (propName.equals("Callsign") && (reader.peek() != JsonToken.NULL)) {
+                callSign = reader.nextString();
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return new VesselWrapper(name, callSign);
+    }
+
+    /*
+        public VesselWrapper[] createVessleWrappers(JSONArray jsonArray) {
+            VesselWrapper[] vesselWrappers = new VesselWrapper[jsonArray.length()];
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    vesselWrappers[i] = new VesselWrapper(jsonArray.getJSONObject(i)); //getString(i));//new VesselWrapper(jsonArray.getJSONObject(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return vesselWrappers;
+        }
+    */
     public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -572,8 +624,9 @@ public class MapFragment extends Fragment {
         @android.webkit.JavascriptInterface
         public void setAutoCompleteData(String vesselObjectsString) {
             try {
-                JSONArray vesselObjects = new JSONArray(vesselObjectsString);
-                VesselWrapper[] wrappers = createVessleWrappers(vesselObjects); // vesselObject.names()); //vesselObjects);
+                ArrayList<VesselWrapper> wrappers = createVesselWrappers(vesselObjectsString); // vesselObject.names()); //vesselObjects);
+//                JSONArray vesselObjects = new JSONArray(vesselObjectsString);
+//                VesselWrapper[] wrappers = createVessleWrappers(vesselObjects); // vesselObject.names()); //vesselObjects);
                 searchAutoCompleteAdapter.clear();
                 searchAutoCompleteAdapter.addAll(wrappers);
             } catch (Exception e) {
