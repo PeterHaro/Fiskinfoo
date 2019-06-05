@@ -59,6 +59,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
@@ -542,7 +543,7 @@ public class MapFragment extends Fragment {
         browser.getSettings().setDomStorageEnabled(true);
         browser.getSettings().setGeolocationEnabled(true);
         browser.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-
+        browser.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         browser.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
         browser.setWebViewClient(new barentswatchFiskInfoWebClient());
         browser.setWebChromeClient(new WebChromeClient() {
@@ -550,6 +551,11 @@ public class MapFragment extends Fragment {
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 Log.d("geolocation permission", "permission >>>" + origin);
                 callback.invoke(origin, true, false);
+            }
+
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                android.util.Log.d("WebView", consoleMessage.message());
+                return true;
             }
 
             @Override
@@ -581,14 +587,18 @@ public class MapFragment extends Fragment {
         updateMap();
     }
 
+    public ArrayList<String> layersFromSintium = new ArrayList<String>();
+    public ArrayList<Integer> colorsFromSintium = new ArrayList<Integer>();
+
     final static List<String> allLayers = new ArrayList<>(Arrays.asList(
-            "Norges grunnkart", "Bølgevarsel", "Iskant", "Iskonsentrasjon", "Pågående seismikk",
+            "Norges grunnkart", "Bølgevarsel", "Iskant", "miow", "Iskonsentrasjon", "Pågående seismikk",
             "Planlagt seismikk","Havbunninstallasjon", "J-melding", "Stengte felt",
             "Forbudsområde - Korallrev","Ais","Redskaper"));
 
     public List<String> getAvailableLayers() {
         //TODO: Add filtereing for the layers that are not available
-        return allLayers;
+        //return allLayers;
+        return layersFromSintium;
     }
 
     protected boolean waitingForAIS = false;
@@ -654,7 +664,6 @@ public class MapFragment extends Fragment {
 
         @android.webkit.JavascriptInterface
         public void setMessage(String message) {
-            //Log.d(FRAGMENT_TAG, message);
             try {
                 //layersAndVisibility = new JSONArray(message);
             } catch (Exception e) {
@@ -662,6 +671,44 @@ public class MapFragment extends Fragment {
                 //TODO
             }
         }
+
+        @android.webkit.JavascriptInterface
+        public void setToolColors(String colors) {
+            try {
+                JSONArray colorsJSONArray = new JSONArray(colors);
+                colorsFromSintium.clear();
+                for (int i=0; i < colorsJSONArray.length(); i++){
+                    String color = colorsJSONArray.get(i).toString();
+                    int colorInt = Color.parseColor(color);
+                    colorsFromSintium.add(colorInt);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                //TODO : Not my job! xoxo, torbjørn!
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void setLayers(String layers) {
+            try {
+                JSONArray layersJSONArray = new JSONArray(layers);
+                layersFromSintium.clear();
+                for (int i=0; i < layersJSONArray.length(); i++){
+                    layersFromSintium.add(layersJSONArray.get(i).toString());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                //TODO : Not my job! xoxo, torbjørn!
+            }
+        }
+
+        @android.webkit.JavascriptInterface
+        public void addActiveLayer(String layer) {
+            List<String> activeLayer = user.getActiveLayers();
+            if (activeLayer.contains(layer)) return;
+            activeLayer.add(layer);
+        }
+
 
         @SuppressWarnings("unused")
         @android.webkit.JavascriptInterface
@@ -709,6 +756,7 @@ public class MapFragment extends Fragment {
         @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Log.d("URL TEST", url);
             if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
                 view.getContext().startActivity(
                         new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
@@ -735,6 +783,7 @@ public class MapFragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             if (!fragmentIsActive)
                 return;
+
             //List<String> layers = user.getActiveLayers(); //.getActiveLayers();
             //if (!layers.contains(getString(R.string.primary_background_map)))
             //    layers.add(getString(R.string.primary_background_map));
@@ -749,6 +798,8 @@ public class MapFragment extends Fragment {
 
             pageLoaded = true;
             refreshMapLayersIfReady();
+            browser.loadUrl("javascript:getLayers()");
+            browser.loadUrl("javascript:getColors()");
 
             //loadProgressSpinner.setVisibility(View.GONE);
 
@@ -763,7 +814,6 @@ public class MapFragment extends Fragment {
 
     public void refreshMapLayersIfReady() {
         if (pageLoaded && !waitingForAIS && !waitingForTools) {
-
             getActivity().runOnUiThread(new Runnable(){
                 public void run() {
                     List<String> layers = user.getActiveLayers();
@@ -1086,9 +1136,16 @@ public class MapFragment extends Fragment {
         TableLayout tableLayout = (TableLayout) dialog.findViewById(R.id.tool_legend_table_layout);
         Button dismissButton = (Button) dialog.findViewById(R.id.tool_legend_dismiss_button);
 
-        for (ToolType toolType : ToolType.values()) {
-            View toolLegendRow = new ToolLegendRow(getActivity(), toolType.getHexColorValue(), toolType.toString()).getView();
-            tableLayout.addView(toolLegendRow);
+        String[] toolTypes = new String[] { "Teine", "Snurpenot", "Line", "Fortøyningssystem", "Garn", "Sensor / kabel", "Ukjent redskap" };
+
+        if (colorsFromSintium.size() > 0) {
+            int i = 0;
+            for (String toolType: toolTypes) {
+                int color = colorsFromSintium.get(i);
+                View toolLegendRow = new ToolLegendRow(getActivity(), color, toolType).getView();
+                tableLayout.addView(toolLegendRow);
+                i += 1;
+            }
         }
 
         dismissButton.setOnClickListener(new View.OnClickListener() {
@@ -1492,12 +1549,13 @@ public class MapFragment extends Fragment {
         waitingForAIS = user.getIsAuthenticated();  // Wait for AIS only if user is allowd to see it
 
         loadProgressSpinner.setVisibility(View.VISIBLE);
-
+        Log.d(FRAGMENT_TAG, "Before network availability check!");
         if((new FiskInfoUtility().isNetworkAvailable(getActivity())) && !user.getOfflineMode()) {
+            Log.d(FRAGMENT_TAG, "Network Available");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                browser.loadUrl("file:///android_asset/mapApplication.html");
+                browser.loadUrl("file:///android_asset/sintium_app/index.html");
             } else {
-                browser.loadUrl("file:///android_asset/mapApplicationAndroid4.html");
+                browser.loadUrl("file:///android_asset/sintium_app/index.html");
             }
 
             asynchApiCallTask = new AsynchApiCallTask();

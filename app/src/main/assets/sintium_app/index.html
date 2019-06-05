@@ -5,25 +5,19 @@
     <title>SINTIUM - App test</title>
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/3.0.8/dc.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://openlayers.org/en/latest/css/ol.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link href="css/sintium.sintium.css" rel="stylesheet">
-    <link href="css/fiskinfo.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="./css/sintium.sintium.css" rel="stylesheet">
+    <link href="./css/fiskinfo.css" rel="stylesheet">
+
+    <script src="./javascript/libs/materialize.min.js"></script>
     <script src="./javascript/libs/ol.js"></script>
-    <script type="text/javascript" src="./javascript/libs/sintium.js"></script>
+    <script src="./javascript/libs/sintium.js"></script>
+
     <script src="./javascript/CommonVariables.js"></script>
     <script src="./javascript/HelperFunctions.js"></script>
-    <script src="./javascript/ToolsLayer.js"></script>
-    <script src="./javascript/VesselsLayer.js"></script>
-    <script src="./javascript/SeaBottomInstallationsLayer.js"></script>
-    <script src="./javascript/MaritimeBoardersLayer.js"></script>
-    <script src="./javascript/FishRegulationGroup.js"></script>
-    <script src="./javascript/SeismicGroup.js"></script>
-    <script src="./javascript/IceGroup.js"></script>
-    <script src="./javascript/TradeAreaGroup.js"></script>
-    <script src="./javascript/BuildVesselLookup.js"></script>
+
 </head>
 <body>
 
@@ -39,7 +33,7 @@
             {{ } }}
         </div>
         <div class="info-header-title">
-            <h2>{{=it.title}}</h2>
+            <div class="info-header-title-no-break">{{=it.title}}</div>
             <div>{{=it.subtitle}}</div>
         </div>
     </div>
@@ -66,7 +60,6 @@
         {{ } }}
         {{?}}
         <h3 class="info-title dashed-bottom-border">Redskap</h3>
-        <div class="info-tools-container">
         {{ if (it.hasTools) { }}
             <ul class="collapsible popout">
                 {{ for(var index in it.tools) { }}
@@ -88,9 +81,10 @@
                 {{ } }}
             </ul>
         {{ } else { }}
-            Ingen redskaper
+            <div class="no-tools-container">
+                Ingen redskaper
+            </div>
         {{ } }}
-        </div>
         <h3 class="info-title dashed-bottom-border">Mer Info</h3>
         <div class="info-column pad-row">
             <div class="label">Fiskerimeldinger</div>
@@ -111,7 +105,7 @@
         </div>
         {{?}}
         <div class="info-header-title">
-            <h2>{{=it.title}}</h2>
+            <div class="info-header-title-no-break">{{=it.title}}</div>
             <div>{{=it.subTitle}}</div>
         </div>
     </div>
@@ -126,10 +120,31 @@
             {{ for(var infoLabel in it.info) { }}
             <div class="info-column pad-row">
                 <div class="label">{{=infoLabel}}</div>
-                <span>{{=it.info[infoLabel]}}</span>
+                {{ if (it.info[infoLabel]) { }}
+                    <span>{{=it.info[infoLabel]}}</span>
+                {{ } else { }}
+                    <span>Mangler</span>
+                {{ } }}
             </div>
             {{ } }}
             {{?}}
+
+            {{? it.infoWithHeader }}
+            {{ for(var header in it.infoWithHeader) { }}
+                <h3 class="info-title dashed-bottom-border">{{=header}}</h3>
+                {{ for(var infoLabel in it.infoWithHeader[header]) { }}
+                    <div class="info-column pad-row">
+                        <div class="label">{{=infoLabel}}</div>
+                        {{ if (it.infoWithHeader[header][infoLabel]) { }}
+                            <span>{{=it.infoWithHeader[header][infoLabel]}}</span>
+                        {{ } else { }}
+                            <span>Mangler</span>
+                        {{ } }}
+                    </div>
+                {{ } }}
+            {{ } }}
+            {{?}}
+
             {{? it.infoWithIcon }}
             {{ for(var infoLabel in it.infoWithIcon) { }}
             <div class="info-row dashed-bottom-border">
@@ -146,74 +161,46 @@
             {{ } }}
             {{?}}
         </div>
-        {{? it.marinogramLocation }}
-        <div id="marinogram">
-            <img
-                    onerror="marinogramError()"
-                    src="https://www.yr.no/sted/Hav/{{=it.marinogramLocation[1]}}_{{=it.marinogramLocation[0]}}/marinogram.png"
-                    class="image"
-            />
+
+        {{? it.moreInfoFish }}
+        <h3 class="info-title dashed-bottom-border">Mer Info</h3>
+        <div class="info-column pad-row">
+            <div class="label">Fiskerimeldinger</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Fiskerimeldinger</a>
+        </div>
+        <div class="info-column pad-row">
+            <div class="label">J-meldinger</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/'>J-meldinger</a>
         </div>
         {{?}}
+
+        {{? it.moreInfoOil }}
+        <h3 class="info-title dashed-bottom-border">Mer Info</h3>
+        <div class="info-column pad-row">
+            <div class="label">Oljedirektoratets faktasider</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Oljedirektoratets faktasider</a>
+        </div>
+        <div class="info-column pad-row">
+            <div class="label">Oljedirektoratets kart</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/'>Oljedirektoratets kart</a>
+        </div>
+        {{?}}
+
     </div>
 </div>
 
 <script src="./javascript/BottomSheets.js"></script>
-<script>
-    
-
-    function getColors() {
-        var colorsAsInt = toolsLayerColors.map(function(color) {
-            return parseInt(color.replace(/^#/, ''), 16);
-        });
-        var stringifiedColors = JSON.stringify(toolsLayerColors);
-        Android.setToolColors(stringifiedColors);
-    }
-
-    function getLayers() {
-        var layerNames = map.getLayerManager().getLayerNames();
-        stringifiedLayerNames = JSON.stringify(layerNames);
-        Android.setLayers(stringifiedLayerNames);
-    }
-
-    function toggleLayers(layers) {
-        var layerManager = map.getLayerManager();
-        var layerNames = layerManager.getLayerNames();
-        for (var layerIndex in layerNames) {
-            var layer = layerNames[layerIndex];
-            var visibility = layers.indexOf(layer) >= 0;
-            layerManager.setLayerVisibleById(layer, visibility);
-        }
-    }
-
-    function fail() {
-        alert("Noe gikk galt, venligst sjekk om du har internett- eller Ggps (gps, glonass osv) forbindelse");
-    }
-
-    function populateUserPosition(callback) {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(callback, fail, {timeout: 60000});
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function zoomToUserPosition() {
-        sensor = populateUserPosition(function (position) {
-            var userPosition = ol.proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
-            map.setView(new ol.View({
-                center: userPosition,
-                zoom: 10
-            }));
-        });
-    }
-    
-    function showVesselAndBottomsheet(callsignal) {
-        
-    }
-    
-</script>
+<script src="./javascript/ToolsLayer.js"></script>
+<script src="./javascript/VesselsLayer.js"></script>
+<script src="./javascript/SeaBottomInstallationsLayer.js"></script>
+<script src="./javascript/MaritimeBoardersLayer.js"></script>
+<script src="./javascript/FishRegulationGroup.js"></script>
+<script src="./javascript/SeismicGroup.js"></script>
+<script src="./javascript/IceGroup.js"></script>
+<script src="./javascript/TradeAreaGroup.js"></script>
+<script src="./javascript/Map.js"></script>
+<script src="./javascript/BuildVesselLookup.js"></script>
+<script src="./javascript/ExposedFunctions.js"></script>
 
 </body>
 </html>
