@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SINTIUM - App test</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/3.0.8/dc.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://openlayers.org/en/latest/css/ol.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link href="css/sintium.sintium.css" rel="stylesheet">
+    <link href="css/fiskinfo.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="./javascript/libs/ol.js"></script>
+    <script type="text/javascript" src="./javascript/libs/sintium.js"></script>
+    <script src="./javascript/CommonVariables.js"></script>
+    <script src="./javascript/HelperFunctions.js"></script>
+    <script src="./javascript/ToolsLayer.js"></script>
+    <script src="./javascript/VesselsLayer.js"></script>
+    <script src="./javascript/SeaBottomInstallationsLayer.js"></script>
+    <script src="./javascript/MaritimeBoardersLayer.js"></script>
+    <script src="./javascript/FishRegulationGroup.js"></script>
+    <script src="./javascript/SeismicGroup.js"></script>
+    <script src="./javascript/IceGroup.js"></script>
+    <script src="./javascript/TradeAreaGroup.js"></script>
+    <script src="./javascript/BuildVesselLookup.js"></script>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="vessel-info-template" class="info">
+    <div class="info-header">
+        <div class="info-vessel-header-icon">
+            {{ if (it.shipType == 30) { }}
+            <img src="./images/boat_brown.svg" style="transform: rotate({{=it.cog}}deg);" />
+            {{ } else { }}
+            <img src="./images/boat_gray.svg" style="transform: rotate({{=it.cog}}deg);" />
+            {{ } }}
+        </div>
+        <div class="info-header-title">
+            <h2>{{=it.title}}</h2>
+            <div>{{=it.subtitle}}</div>
+        </div>
+    </div>
+    <div class="info-container">
+        <div class="info-column">
+            <div class="info-vessel-panels">
+                <div class="info-vessel-panel-left">
+                    <h4>Fart</h4>
+                    <div>{{=it.sog}} knop</div>
+                </div>
+                <div class="info-vessel-panel-right">
+                    <h4>Kurs</h4>
+                    <div>{{=it.cog}} °</div>
+                </div>
+            </div>
+        </div>
+        <h3 class="info-title dashed-bottom-border">Om Fartøyet</h3>
+        {{? it.info }}
+        {{ for(var infoLabel in it.info) { }}
+        <div class="info-column pad-row">
+            <div class="label">{{=infoLabel}}</div>
+            <span>{{=it.info[infoLabel]}}</span>
+        </div>
+        {{ } }}
+        {{?}}
+        <h3 class="info-title dashed-bottom-border">Redskap</h3>
+        <div class="info-tools-container">
+        {{ if (it.hasTools) { }}
+            <ul class="collapsible popout">
+                {{ for(var index in it.tools) { }}
+                    <li>
+                        <div class="collapsible-header">{{=it.tools[index].type}}</div>
+                        <div class="collapsible-body">
+                            {{ for(var label in it.tools[index].info) { }}
+                            <div class="info-tools-item">
+                                    <i class='material-icons prefix small'>
+                                        {{=it.tools[index].info[label].icon}}
+                                    </i>
+                                    <div class="info-tools-item-name">{{=label}}</div>
+                                    <div>{{=it.tools[index].info[label].value}}</div>
+                            </div>
+                            {{ } }}
+                            <a href="javascript:locateTool({{=it.tools[index].key}})" class="collection-item">Se redskapet</a>
+                        </div>
+                    </li>
+                {{ } }}
+            </ul>
+        {{ } else { }}
+            Ingen redskaper
+        {{ } }}
+        </div>
+        <h3 class="info-title dashed-bottom-border">Mer Info</h3>
+        <div class="info-column pad-row">
+            <div class="label">Fiskerimeldinger</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/Fiskerimeldinger'>Fiskerimeldinger</a>
+        </div>
+        <div class="info-column pad-row">
+            <div class="label">J-meldinger</div>
+            <a href='https://www.fiskeridir.no/Yrkesfiske/Regelverk-og-reguleringer/J-meldinger/Gjeldende-J-meldinger/'>J-meldinger</a>
+        </div>
+    </div>
+</div>
+
+<div id="info-template" class="info">
+    <div class="info-header">
+        {{? it.icon }}
+        <div class="info-header-icon" style="color: {{=it.iconColor}};">
+            <i class="{{=it.icon}}"></i>
+        </div>
+        {{?}}
+        <div class="info-header-title">
+            <h2>{{=it.title}}</h2>
+            <div>{{=it.subTitle}}</div>
+        </div>
+    </div>
+    {{ if (it.description) { }}
+    <div class="info-row pad-row-big">
+        {{=it.description}}
+    </div>
+    {{ } }}
+    <div class="info-container">
+        <div class="info-column">
+            {{? it.info }}
+            {{ for(var infoLabel in it.info) { }}
+            <div class="info-column pad-row">
+                <div class="label">{{=infoLabel}}</div>
+                <span>{{=it.info[infoLabel]}}</span>
+            </div>
+            {{ } }}
+            {{?}}
+            {{? it.infoWithIcon }}
+            {{ for(var infoLabel in it.infoWithIcon) { }}
+            <div class="info-row dashed-bottom-border">
+                <i class="{{=it.infoWithIcon[infoLabel].icon}}"></i>
+                {{? it.infoWithIcon[infoLabel].value }}
+                <span>
+                                {{ if(infoLabel.charAt(0) != "_") { }}
+                                    {{=infoLabel}}:
+                                {{ } }}
+                                {{=it.infoWithIcon[infoLabel].value}}
+                    </span>
+                {{?}}
+            </div>
+            {{ } }}
+            {{?}}
+        </div>
+        {{? it.marinogramLocation }}
+        <div id="marinogram">
+            <img
+                    onerror="marinogramError()"
+                    src="https://www.yr.no/sted/Hav/{{=it.marinogramLocation[1]}}_{{=it.marinogramLocation[0]}}/marinogram.png"
+                    class="image"
+            />
+        </div>
+        {{?}}
+    </div>
+</div>
+
+<script src="./javascript/BottomSheets.js"></script>
+<script>
+    
+
+    function getColors() {
+        var colorsAsInt = toolsLayerColors.map(function(color) {
+            return parseInt(color.replace(/^#/, ''), 16);
+        });
+        var stringifiedColors = JSON.stringify(toolsLayerColors);
+        Android.setToolColors(stringifiedColors);
+    }
+
+    function getLayers() {
+        var layerNames = map.getLayerManager().getLayerNames();
+        stringifiedLayerNames = JSON.stringify(layerNames);
+        Android.setLayers(stringifiedLayerNames);
+    }
+
+    function toggleLayers(layers) {
+        var layerManager = map.getLayerManager();
+        var layerNames = layerManager.getLayerNames();
+        for (var layerIndex in layerNames) {
+            var layer = layerNames[layerIndex];
+            var visibility = layers.indexOf(layer) >= 0;
+            layerManager.setLayerVisibleById(layer, visibility);
+        }
+    }
+
+    function fail() {
+        alert("Noe gikk galt, venligst sjekk om du har internett- eller Ggps (gps, glonass osv) forbindelse");
+    }
+
+    function populateUserPosition(callback) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(callback, fail, {timeout: 60000});
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function zoomToUserPosition() {
+        sensor = populateUserPosition(function (position) {
+            var userPosition = ol.proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
+            map.setView(new ol.View({
+                center: userPosition,
+                zoom: 10
+            }));
+        });
+    }
+    
+    function showVesselAndBottomsheet(callsignal) {
+        
+    }
+    
+</script>
+
+</body>
+</html>
