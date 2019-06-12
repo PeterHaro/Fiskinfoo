@@ -1,0 +1,701 @@
+*, *::before, *::after {
+  box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0; }
+
+g.axis.y.invisible {
+  visibility: hidden; }
+
+g.axis.x.invisible {
+  visibility: hidden; }
+
+.drawer-parent {
+  position: relative;
+  overflow: hidden; }
+
+.drawer-expanded {
+  width: 250px !important; }
+
+.drawer-container {
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  z-index: 100;
+  transition: ease-in width 225ms;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2); }
+
+.drawer-container-left {
+  left: 0; }
+
+.sintium-drawer-container-right {
+  right: 0; }
+
+.drawer-content-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden; }
+
+.drawer-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  overflow: hidden;
+  color: white; }
+
+.drawer-content-left {
+  right: 0; }
+
+.drawer-content-right {
+  left: 0; }
+
+.drawer-arrow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  height: 90px;
+  width: 24px;
+  margin-top: -45px;
+  color: #fff;
+  background-color: #384e58;
+  cursor: pointer; }
+
+.drawer-arrow-left {
+  margin-right: -24px;
+  right: 0;
+  border-radius: 0 5px 5px 0; }
+
+.drawer-arrow-right {
+  left: 0;
+  margin-left: -24px;
+  border-radius: 5px 0 0 5px; }
+
+.select-location-switcher {
+  display: flex;
+  flex-direction: row;
+  align-items: center; }
+
+.select-location-switcher a {
+  margin-left: 10px; }
+
+#goto {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end; }
+
+.material-icons {
+  font-size: 30px !important; }
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: -10px;
+  margin-left: 10px; }
+
+.logo i {
+  margin-top: 10px; }
+
+.sintium-temporary-widget-storage {
+  display: block;
+  overflow: hidden; }
+
+.widget {
+  display: block; }
+
+body.example {
+  margin-bottom: 50px; }
+
+#example-text-area {
+  margin-bottom: 15px; }
+
+#example-demo-area {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px; }
+
+#example-js, #example-html {
+  background-color: #f7f7f7;
+  padding-top: 25px;
+  padding-bottom: 20px; }
+
+#example-html {
+  width: 100%;
+  min-height: 300px; }
+
+#example-button-area {
+  margin-top: 20px; }
+
+#example-nightmode-button-area {
+  display: flex;
+  flex: 1;
+  flex-direction: row-reverse;
+  margin-bottom: 20px; }
+
+.example-code-container {
+  border: none !important;
+  margin: 0; }
+
+.material-icons {
+  font-size: 30px !important; }
+
+.example-logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: -10px;
+  margin-left: 10px; }
+
+.example-logo i {
+  margin-top: 10px; }
+
+.demo-container {
+  padding: 25px 5px 25px 5px; }
+
+.demo {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1px 15px 10px 15px;
+  height: 180px; }
+
+h5 {
+  font-size: 20px; }
+
+.sintium-map {
+  position: relative !important; }
+
+.sintium-map-user-interface {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden; }
+
+.sintium-map-controls-space {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+  pointer-events: none; }
+
+.sintium-map-controls-horizontal {
+  display: flex;
+  flex-direction: row; }
+
+.sintium-map-controls-horizontal {
+  display: flex;
+  flex-direction: row; }
+
+.sintium-map-controls-vertical {
+  display: flex;
+  flex-direction: column; }
+
+.sintium-map-controls-top-left {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 10px;
+  left: 10px; }
+
+.sintium-map-controls-top-left > .sintium-map-controls-vertical {
+  align-items: flex-start; }
+
+.sintium-map-controls-top-left > .sintium-map-controls-vertical > div:not(:last-child) {
+  margin-bottom: 6px; }
+
+.sintium-map-controls-top-left > .sintium-map-controls-vertical > div {
+  margin-right: 6px; }
+
+.sintium-map-controls-top-left > .sintium-map-controls-horizontal > div:not(:first-child) {
+  margin-left: 6px; }
+
+.sintium-map-controls-bottom-left {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  bottom: 10px;
+  left: 10px; }
+
+.sintium-map-controls-bottom-left > .sintium-map-controls-vertical {
+  align-items: flex-start; }
+
+.sintium-map-controls-bottom-left > .sintium-map-controls-vertical > div:not(:last-child) {
+  margin-top: 6px; }
+
+.sintium-map-controls-bottom-left > .sintium-map-controls-vertical > div {
+  margin-right: 6px; }
+
+.sintium-map-controls-bottom-left > .sintium-map-controls-horizontal > div:not(:first-child) {
+  margin-left: 6px; }
+
+.sintium-map-controls-top-right {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 10px;
+  right: 10px; }
+
+.sintium-map-controls-top-right > .sintium-map-controls-vertical {
+  align-items: flex-end; }
+
+.sintium-map-controls-top-right > .sintium-map-controls-vertical > div:not(:last-child) {
+  margin-bottom: 6px; }
+
+.sintium-map-controls-top-right > .sintium-map-controls-vertical > div {
+  margin-left: 6px; }
+
+.sintium-map-controls-top-right > .sintium-map-controls-horizontal > div:not(:last-child) {
+  margin-right: 6px; }
+
+.sintium-map-controls-bottom-right {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  bottom: 10px;
+  right: 10px; }
+
+.sintium-map-controls-bottom-right > .sintium-map-controls-vertical {
+  align-items: flex-end; }
+
+.sintium-map-controls-bottom-right > .sintium-map-controls-vertical > div:not(:last-child) {
+  margin-top: 6px; }
+
+.sintium-map-controls-bottom-right > .sintium-map-controls-vertical > div {
+  margin-left: 6px; }
+
+.sintium-map-controls-bottom-right > .sintium-map-controls-horizontal > div:not(:last-child) {
+  margin-right: 6px; }
+
+.sintium-map-controls-bottom-center {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-bottom: 10px; }
+
+.sintium-map-controls-bottom-center > div:not(:last-child) {
+  margin-right: 6px; }
+
+.sintium-map-control {
+  position: relative;
+  display: flex;
+  background: white;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: #4c4c4e;
+  overflow: visible;
+  pointer-events: all; }
+
+.sintium-map-button-control {
+  align-items: center;
+  justify-content: center;
+  height: 35px;
+  width: 35px;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0; }
+
+.sintium-map-button-control:hover {
+  border: 1px solid #325f85 !important;
+  border-radius: 2px !important;
+  color: #1c5385;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); }
+
+.sintium-map-button-control.active {
+  background: #325f85 !important;
+  border: 1px solid #325f85 !important;
+  color: white; }
+
+.sintium-map-button-control.active:hover {
+  background: #325f85 !important;
+  border: 1px solid #325f85 !important;
+  color: white; }
+
+.sintium-map-button-control.selected {
+  background: black !important;
+  border: 1px solid black !important;
+  color: white; }
+
+.sintium-map-button-control.active > .normal-icon {
+  display: none; }
+
+.sintium-map-button-control.active > .selected-icon {
+  display: none; }
+
+.sintium-map-button-control.normal > .active-icon {
+  display: none; }
+
+.sintium-map-button-control.normal > .selected-icon {
+  display: none; }
+
+.sintium-map-button-control.selected > .active-icon {
+  display: none; }
+
+.sintium-map-button-control.selected > .normal-icon {
+  display: none; }
+
+.sintium-map-button-control.icon-small {
+  font-size: 12px; }
+
+.sintium-map-widget-control {
+  position: relative; }
+
+.sintium-map-widget-control-content {
+  display: flex;
+  flex: 1;
+  margin: 5px; }
+
+.sintium-map-button-control > .sintium-map-button-control-popout-menu {
+  display: none;
+  position: absolute;
+  z-index: 10000000; }
+
+.sintium-map-controls-horizontal .sintium-map-button-control-popout-menu {
+  flex-direction: column; }
+
+.sintium-map-controls-container-left > .sintium-map-controls-vertical .sintium-map-button-control-popout-menu {
+  left: 100%; }
+
+.sintium-map-controls-container-left > .sintium-map-controls-vertical .sintium-map-button-control-popout-menu > .sintium-map-button-control {
+  margin-left: 8px; }
+
+.sintium-map-controls-container-right > .sintium-map-controls-vertical .sintium-map-button-control-popout-menu {
+  right: 100%; }
+
+.sintium-map-controls-container-right > .sintium-map-controls-vertical .sintium-map-button-control-popout-menu > .sintium-map-button-control {
+  margin-right: 8px; }
+
+.sintium-map-controls-container-bottom > .sintium-map-controls-horizontal .sintium-map-button-control-popout-menu {
+  bottom: 100%; }
+
+.sintium-map-controls-container-bottom > .sintium-map-controls-horizontal .sintium-map-button-control-popout-menu > .sintium-map-button-control {
+  margin-bottom: 8px; }
+
+.sintium-map-controls-container-top > .sintium-map-controls-horizontal .sintium-map-button-control-popout-menu {
+  top: 100%; }
+
+.sintium-map-controls-container-top > .sintium-map-controls-horizontal .sintium-map-button-control-popout-menu > .sintium-map-button-control {
+  margin-top: 8px; }
+
+.sintium-map-button-control-popout-menu.sintium-map-button-control-popout-menu-visible {
+  display: flex !important; }
+
+.sintium-map-composite-control > div:not(:first-child) {
+  border-top-color: rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0; }
+
+.sintium-map-composite-control > div:not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0; }
+
+.sintium-map-drawer-container {
+  position: relative;
+  background: white;
+  width: 0px;
+  -webkit-transition: width 0.225s;
+  /* Safari */
+  transition: width 0.225s;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  pointer-events: all; }
+
+.sintium-map-drawer-container-left {
+  position: relative;
+  left: 0; }
+
+.sintium-map-drawer-container-right {
+  position: relative;
+  right: 0; }
+
+.sintium-map-drawer-container-bottom {
+  position: absolute;
+  -webkit-transition: height 0.225s;
+  /* Safari */
+  transition: height 0.225s;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  pointer-events: all;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  height: 0;
+  z-index: 1000000000000000000000000000000000000000000000000000000000000000000; }
+
+.sintium-map-drawer-container-bottom-open-full {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100000000000; }
+
+.sintium-map-drawer-container-expanded {
+  width: 250px !important; }
+
+.sintium-map-drawer-container-bottom-expanded {
+  height: 60% !important; }
+
+.sintium-map-drawer-container-close-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  z-index: 10000000;
+  cursor: pointer;
+  color: #4c4c4e; }
+
+.sintium-map-drawer-container-bottom-close-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  z-index: 10000000;
+  cursor: pointer;
+  color: #4c4c4e;
+  border-bottom: 1px solid #f1f1f1; }
+
+.sintium-map-drawer-container-bottom-close-arrow:hover {
+  background-color: #fafafa;
+  color: #325f85; }
+
+.sintium-map-drawer-container-close-arrow:hover {
+  background-color: #fafafa;
+  color: #325f85; }
+
+.sintium-map-drawer-container-left-close-arrow {
+  right: 0;
+  border-left: 1px solid #f1f1f1; }
+
+.sintium-map-drawer-container-right-close-arrow {
+  left: 0;
+  border-right: 1px solid #f1f1f1; }
+
+.sintium-map-drawer-content {
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 236px;
+  overflow: hidden;
+  color: #4c4c4e;
+  z-index: 1000000;
+  background-color: white;
+  display: none;
+  flex-direction: column; }
+
+.sintium-map-drawer-content-bottom {
+  width: 100% !important;
+  padding-top: 18px; }
+
+.sintium-map-drawer-content-left {
+  right: 16px; }
+
+.sintium-map-drawer-content-right {
+  left: 16px; }
+
+.sintium-map-drawer-content-on-top {
+  display: flex; }
+
+.sintium-map-popup {
+  position: absolute;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: #4c4c4e;
+  padding: 15px;
+  background-color: white;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+  z-index: 10000000000000000000000000; }
+
+.sintium-map-popup:after, .sintium-map-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none; }
+
+.sintium-map-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px; }
+
+.sintium-map-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px; }
+
+.sintium-map-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  color: #4c4c4e; }
+
+.sintium-drawn-feature-popup {
+  display: flex;
+  flex-direction: column; }
+
+.sintium-drawn-feature-popup > .drawn-feature-delete {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  font-weight: bold; }
+
+.sintium-drawn-feature-popup > .drawn-feature-delete > span {
+  cursor: pointer; }
+
+.sintium-drawn-feature-popup > .drawn-feature-colors {
+  display: flex;
+  flex-direction: row;
+  padding-top: 10px;
+  padding-bottom: 10px; }
+
+.sintium-drawn-feature-popup > .drawn-feature-colors-header {
+  font-weight: bold; }
+
+.sintium-drawn-feature-popup > .drawn-feature-colors > .drawn-feature-color {
+  width: 25px;
+  height: 25px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  cursor: pointer; }
+
+.sintium-map-drawer-container .collapsible {
+  width: 100%;
+  border: none;
+  margin: 0;
+  box-shadow: none; }
+
+.sintium-map-drawer-container > .collapsible {
+  border-right: 1px solid red; }
+
+.sintium-map-drawer-container .collapsible .entry {
+  height: 3rem;
+  line-height: 3rem;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid #ddd;
+  color: #fff;
+  background-color: #999; }
+
+.sintium-map-drawer-container .collapsible .layer-type {
+  background-color: #000; }
+
+.sintium-map-drawer-container .collapsible .layer-group {
+  background-color: #444; }
+
+.sintium-map-drawer-container .collapsible .layer {
+  position: relative;
+  color: #000;
+  background-color: #fff;
+  overflow: hidden !important; }
+
+.sintium-map-drawer-container .collapsible .layer-option {
+  color: #fff;
+  background-color: #333; }
+
+.header-prefix {
+  min-width: 25px;
+  margin: 0 0 0 4px; }
+
+.header-prefix i {
+  width: unset;
+  margin-right: unset;
+  user-select: none; }
+
+.header-prefix .material-icons {
+  width: auto;
+  line-height: 3rem; }
+
+.header-suffix .material-icons {
+  cursor: pointer; }
+
+.header-suffix {
+  min-width: 20px;
+  margin: 0 10px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+
+.header-suffix [type="checkbox"] + span:not(.lever),
+.header-suffix [type="radio"] + span:not(.lever) {
+  padding-left: 20px;
+  display: flex;
+  height: 20px; }
+
+.sintium-map-drawer-container .header-title {
+  height: 100%;
+  display: flex;
+  flex-grow: 10; }
+
+.sintium-map-drawer-container .collapsible-header {
+  line-height: unset;
+  padding: 0;
+  border: none;
+  background-color: unset; }
+
+.sintium-map-drawer-container .collapsible-body {
+  padding: 0;
+  border: none; }
+
+.lock-container-div {
+  position: absolute;
+  left: 0;
+  height: 45px;
+  width: 100%;
+  z-index: 1000000; }
+
+.lock-div {
+  position: absolute;
+  top: 8px;
+  right: -8px;
+  color: #000;
+  background-color: white; }
+
+.lock-whiteout {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 30px;
+  width: 30px;
+  color: #000;
+  background-color: white; }
+
+
+/*# sourceMappingURL=sintium.sintium.css.map*/
