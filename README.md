@@ -26,5 +26,5 @@ Some of the map layers and functionality of the app is only available for users 
 
 The FiskInfo app is under ongoing further development, and among the plans is new functionality that provides decision support for chosing the best time and location for getting the right catch.
 
-## Building the Andoid app
+## Building the Android app
 The repository contains the full source code needed to build the app in Android Studio, with one minor exception. The app uses Firebase for analytics, and require a google-services.json file to be present in the app folder to build with Firebase enabled. To build the app, create your own version of this file or disable Firebase in the app.
