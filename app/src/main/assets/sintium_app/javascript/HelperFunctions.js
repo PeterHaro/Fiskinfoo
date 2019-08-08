@@ -6,6 +6,35 @@ function errorBox(errorMessage) {
     return html;
 }
 
+function getPositionFromGeometry(geometry) {
+    return ol.proj.transform(ol.extent.getCenter(geometry.getExtent()), 'EPSG:3857', 'EPSG:4326');
+}
+
+function nFormatter(num, digits) {
+    var si = [
+        { value: 1, symbol: "" },
+        { value: 1E3, symbol: "k" },
+        { value: 1E6, symbol: "M" },
+        { value: 1E9, symbol: "G" },
+        { value: 1E12, symbol: "T" },
+        { value: 1E15, symbol: "P" },
+        { value: 1E18, symbol: "E" }
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var i;
+    for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+            break;
+        }
+    }
+    return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+}
+
+function degreesToRadians(degrees) {
+    var pi = Math.PI;
+    return parseFloat(degrees) * (pi / 180);
+}
+
 function marinogramError() {
     var marinogramDiv = document.getElementById("marinogram");
     if (marinogramDiv == null) return;
@@ -24,7 +53,7 @@ function getMaxThreeToolsFromCallSign(callsign) {
 }
 
 function vesselCodeToShipTypeName(record) {
-    var number = record("ShipType");
+    var number = record.get("ShipType");
     switch (number) {
         case 30: return "Fiskefartøy";
         case 31:
@@ -40,9 +69,9 @@ function vesselCodeToShipTypeName(record) {
     }
 }
 
-function landCodeToCountryName(record, columnName) {
+function landCodeToCountryName(value) {
     var countryName = "";
-    var landCodeArray = record(columnName).split(";");
+    var landCodeArray = value.split(";");
     for (var i = 0; i < landCodeArray.length; i++) {
         switch(landCodeArray[i].toLowerCase()) {
             case "is":

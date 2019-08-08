@@ -5,7 +5,7 @@ var infoTemplate = Sintium.templateWidget({
 var infoDrawer = Sintium.drawer({
     position: 'bottom',
     widgets: [infoTemplate],
-    previewSize: 88,
+    previewSize: 72,
     size: '100%'
 });
 
@@ -16,6 +16,10 @@ var vesselInfoTemplate = Sintium.templateWidget({
 var vesselInfoDrawer = Sintium.drawer({
     position: 'bottom',
     widgets: [vesselInfoTemplate],
-    previewSize: 88,
+    previewSize: 72,
     size: '100%'
 });
+
+function closeSheetCallBack() {
+    map.getSelectionHandler().clearSelection();
+}

@@ -1,48 +1,42 @@
 geoJSON = new ol.format.GeoJSON();
 
-function getPositionFromGeometry(geometry) {
-    var toolFeature = new ol.Feature({
-        geometry: geoJSON.readGeometry(geometry, {
-            featureProjection: 'EPSG:3857'
-        })
-    });
-    return ol.proj.transform(ol.extent.getCenter(toolFeature.getGeometry().getExtent()), 'EPSG:3857', 'EPSG:4326');
-}
+vesselSearchData = [];
 
 vesselsSource
-    .getDataContainerAsync()
-    .then(function(dataContainer) {
-        var vessels = dataContainer.getData().all();
-        var labelLookup = dataContainer.getLabelLookup();
-        vessels.forEach(function(vessel) {
-            var callsign = vessel[labelLookup["Callsign"]];
-            var key = vessel[labelLookup["__key"]];
+    .onDataAdded(function(dataContainer) {
+        dataContainer.forEachRecord(function(vessel) {
+            var callSign = vessel.get("Callsign");
+            var name = vessel.get("Name");
+            var key = vessel.key();
 
-            if (vesselMap[callsign] === undefined)
-                vesselMap[callsign] = { 
+            if (vesselMap[callSign] === undefined)
+                vesselMap[callSign] = { 
                     key: key
                 };
             else
-                vesselMap[callsign].key = key;
+                vesselMap[callSign].key = key;
 
+            vesselSearchData.push({
+                "Name": name,
+                "Callsign": callSign
+            });
         });
 
+        var autoCompleteData = JSON.stringify(vesselSearchData);
+        Android.setAutoCompleteData(autoCompleteData);
         Android.aisFinishedLoading();
-    });
+    }, true);
 
 toolsSource
-    .getDataContainerAsync()
-    .then(function(dataContainer) {
-        var tools = dataContainer.getData().all();
-        var labelLookup = dataContainer.getLabelLookup();
-        tools.forEach(function(tool) {
-            var callsign = tool[labelLookup["ircs"]];
-            var toolTypeCode = tool[labelLookup["tooltypecode"]];
-            var setupTime = tool[labelLookup["setupdatetime"]];
-            var key = tool[labelLookup["__key"]];
-            var geometry = tool[labelLookup["geometry"]];
+    .onDataAdded(function(dataContainer) {
+        dataContainer.forEachRecord(function(tool) {
+            var callSign = tool.get("ircs");
+            var toolTypeCode = tool.get("tooltypecode");
+            var setupTime = tool.get("setupdatetime");
+            var key = tool.key();
 
-            var coordinate = getPositionFromGeometry(geometry);
+            var coordinate = getPositionFromGeometry(tool.getGeometry());
+
             var toolData = {
                 type: formatToolType(toolTypeCode),
                 key: key,
@@ -62,16 +56,16 @@ toolsSource
                 }
             };
 
-            if (callsign === null) return;
+            if (callSign === null) return;
 
-            if (vesselMap[callsign] === undefined)
-                vesselMap[callsign] = {};
+            if (vesselMap[callSign] === undefined)
+                vesselMap[callSign] = {};
             
-            if (vesselMap[callsign].tools === undefined)
-                vesselMap[callsign].tools = [toolData];
+            if (vesselMap[callSign].tools === undefined)
+                vesselMap[callSign].tools = [toolData];
             else
-                vesselMap[callsign].tools.push(toolData);
+                vesselMap[callSign].tools.push(toolData);
         });
 
         Android.toolsFinishedLoading();
-    });
+    }, true);

@@ -1,39 +1,55 @@
 
-function iceChartStyleFunction(feature, record) {
-    var color;
-    switch (record("icetype")) {
-        case "Close Drift Ice":
-            color = "rgba(251, 156, 69, 0.5)";
-            break;
-        case "Very Close Drift Ice":
-            color = "rgba(255, 64, 64, 0.5)";
-            break;
-        case "Fast Ice":
-            color = "rgba(195, 197, 199, 0.5)";
-            break;
-        case "Open Drift Ice":
-            color = "rgba(255, 255, 64, 0.5)";
-            break;
-        case "Very Open Drift Ice":
-            color = "rgba(165, 253, 184, 0.5)";
-            break;
-        case "Open Water":
-            color = "rgba(176, 214, 255, 0.5)";
-            break;
-    }
-    return color ? [new ol.style.Style({
-        fill: new ol.style.Fill({
-            color: color
-        })
-    })] : null;
-}
-
 // Instantiating planned seismic activity layer
 var iceConcentrationSource = Sintium.dataSource({
-    url: "https://www.barentswatch.no/api/v1/geodata/download/icechart/?format=JSON"
+    url: "https://www.barentswatch.no/api/v1/geodata/download/icechart/?format=JSON",
 });
 
-var iceConcentrationLayer = Sintium.vectorLayer({
+var closeDriftIceStyle = new ol.style.Style({
+    fill: new ol.style.Fill({ color: "rgba(251, 156, 69, 0.5)" })
+});
+var veryCloseDriftIceStyle = new ol.style.Style({
+    fill: new ol.style.Fill({ color: "rgba(255, 64, 64, 0.5)" })
+});
+
+var fastIceStyle = new ol.style.Style({
+    fill: new ol.style.Fill({ color: "rgba(195, 197, 199, 0.5)" })
+});
+
+var openDriftIceStyle = new ol.style.Style({
+    fill:  new ol.style.Fill({ color: "rgba(255, 255, 64, 0.5)" })
+});
+
+var veryOpenDriftIceStyle = new ol.style.Style({
+    fill:  new ol.style.Fill({ color: "rgba(165, 253, 184, 0.5)" })
+});
+
+var openWaterStyle = new ol.style.Style({
+    fill: new ol.style.Fill({ color: "rgba(176, 214, 255, 0.5)" })
+});
+
+function iceChartStyleFunction(feature) {
+    var key = feature.getFeatureKey();
+    var record = iceConcentrationSource
+        .getDataContainer()
+        .getRecord(key);
+
+    switch (record.get("icetype")) {
+        case "Close Drift Ice":
+            return closeDriftIceStyle;
+        case "Very Close Drift Ice":
+            return veryCloseDriftIceStyle;
+        case "Fast Ice":
+            return fastIceStyle;
+        case "Open Drift Ice":
+            return openDriftIceStyle;
+        case "Very Open Drift Ice":
+            return veryOpenDriftIceStyle;
+        case "Open Water":
+            return openWaterStyle;
+    }
+}
+
+var iceConcentrationLayer = Sintium.vectorLayer2({
     layerId: "Iskonsentrasjon",
     dataSource: iceConcentrationSource,
     visible: false,
@@ -45,14 +61,16 @@ var iceEdgeSource = Sintium.dataSource({
     url: "https://www.barentswatch.no/api/v1/geodata/download/iceedge/?format=JSON"
 });
 
-var iceEdgeLayer = Sintium.vectorLayer({
+var iceEdgeLayer = Sintium.vectorLayer2({
     layerId: "Iskant",
     dataSource: iceEdgeSource,
     visible: false,
-    style: Sintium.style({
-        fillColor: "#7cb5ec",
-        strokeSize: 4
-    })
+    style: {
+        single: {
+            fillColor: "#7cb5ec",
+            strokeSize: 4
+        }
+    }
 });
 
 // Instantiating ice group

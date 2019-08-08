@@ -4,18 +4,18 @@ function getColors() {
 }
 
 function getLayers() {
-    var layerNames = map.getLayerManager().getLayerNames();
+    var layerNames = map.getLayerHandler().getLayerNames().slice().reverse();
     var stringifiedLayerNames = JSON.stringify(layerNames);
     Android.setLayers(stringifiedLayerNames);
 }
 
 function toggleLayers(layers) {
-    var layerManager = map.getLayerManager();
-    var layerNames = layerManager.getLayerNames();
+    var layerHandler = map.getLayerHandler();
+    var layerNames = layerHandler.getLayerNames();
     for (var layerIndex in layerNames) {
         var layer = layerNames[layerIndex];
         var visibility = layers.indexOf(layer) >= 0;
-        layerManager.setLayerVisibleById(layer, visibility);
+        layerHandler.setLayerVisibleById(layer, visibility);
     }
 }
 
@@ -35,9 +35,12 @@ function populateUserPosition(callback) {
 function zoomToUserPosition() {
     sensor = populateUserPosition(function (position) {
         var userPosition = ol.proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857');
-        map.setView(new ol.View({
-            center: userPosition,
-            zoom: 10
-        }));
+        map.zoomToCoordinates([position.coords.longitude, position.coords.latitude], 10)
     });
+}
+
+function closeBottomSheet() {
+    infoDrawer.close();
+    vesselInfoDrawer.close();
+    map.getSelectionHandler().clearSelection();
 }

@@ -1,5 +1,5 @@
-
-function onClickClusterFunction(e) {
+function closeInfoDrawer(e) {
+    e.getMap().getSelectionHandler().clearSelection();
     infoDrawer.close();
 }
 
@@ -10,10 +10,12 @@ var zoomControl = Sintium.zoomControl();
 // Instantiating map
 var map = Sintium.map({
     domId: "map",
-    layers: [vesselsLayer, fishRegulationsGroup, seismicGroup, iceGroup, tradeAreaGroup, toolsLayer, seaBottomInstallationsLayer, maritimeBordersLayer],
+    layers: [toolsLayer, vesselsLayer, seaBottomInstallationsLayer, maritimeBordersLayer, fishRegulationsGroup, seismicGroup, iceGroup, tradeAreaGroup],
     use: [infoDrawer, vesselInfoDrawer],
     controls: [zoomControl],
     zoomOnClusterClick: true,
-    unrollClustersAtZoom: 10,
-    onClickCluster: onClickClusterFunction
+    onClickEmptySpace: closeInfoDrawer,
+    onClickCluster: closeInfoDrawer,
+    hitTolerance: 4,
+    rotation: false
 });

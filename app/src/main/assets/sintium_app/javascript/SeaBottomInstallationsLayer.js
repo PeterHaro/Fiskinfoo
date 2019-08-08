@@ -1,53 +1,65 @@
+function seaBottomInstallationsFunction(e) {
+    if (selectedFeature) unsetSelectedFeature(selectedFeature);
+
+    selectedFeature = e.popFeature();
+    var record = e.popRecord();
+    var coordinate = selectedFeature.getCenterCoordinate();
+    infoTemplate.setData({
+        title: record.get("facname"),
+        subTitle: "Havbunnsinstallasjoner",
+        info: {
+            "Type": record.get("fackind"),
+            "Funksjon": record.get("facfunc"),
+            "Dybde": record.get("waterdepth"),
+            "Tilhørende felt": record.get("belong2nm"),
+            "Oppstart": formattedDate(record.get("dtstartup")),
+            "Operatør": record.get("curopernam"),
+            "Posisjon: ": formatLocation(coordinate),
+            "Marinogram": marinogramLink(coordinate)
+        }
+    });
+    infoDrawer.open();
+    selectedFeature.setText(record.get("facname"), 28);
+}
 
 // Instantiating sea bottom installations layer
 var seaBottomInstallationsSource = Sintium.dataSource({
-    url: "https://www.barentswatch.no/api/v1/geodata/download/npdfacility/?format=JSON"
+    url: "https://www.barentswatch.no/api/v1/geodata/download/npdfacility/?format=JSON",
 });
 
-var seaBottomInstallationsLayer = Sintium.vectorLayer({
+var seaBottomInstallationsLayer = Sintium.vectorLayer2({
     layerId: "Havbunnsinstallasjoner",
     dataSource: seaBottomInstallationsSource,
     visible: false,
     clustered: true,
-    selections: [
-        Sintium.selection(['single click'], function(e) {
-            if (selectedFeature) unsetSelectedFeature(selectedFeature);
+    style: {
+        single: {
+            size: 5,
+            shape: "circle",
+            fillColor: "rgba(102, 204, 255, 1.0)",
+            strokeColor: "rgba(8, 113, 114, 1.0)"
+        },
+        cluster: {
+            fillColor: "rgba(102, 204, 255, 1.0)",
+            strokeColor: "rgba(8, 113, 114, 1.0)",
+            size: 13
+        }
+    },
+    selectedStyle: {
+        single: {
+            size: 18,
+            shape: "circle",
+            fillColor: "rgba(102, 204, 255, 1.0)",
+            strokeColor: "rgba(8, 113, 114, 1.0)"
+        },
+        cluster: {
+            size: 13
+        }
+    }
+});
 
-            selectedFeature = e.getAllSelectedFeatures()[0];
-            var record = selectedFeature.getRecord();
-            var coordinate = selectedFeature.getCenterCoordinate();
-            infoTemplate.setData({
-                title: record("facname"),
-                subTitle: "Havbunnsinstallasjoner",
-                info: {
-                    "Type": record("fackind"),
-                    "Funksjon": record("facfunc"),
-                    "Dybde": record("waterdepth"),
-                    "Tilhørende felt": record("belong2nm"),
-                    "Oppstart": formattedDate(record("dtstartup")),
-                    "Operatør": record("curopernam"),
-                    "Posisjon: ": formatLocation(coordinate),
-                    "Marinogram": marinogramLink(coordinate)
-                }
-            });
-            e.getMap().clearMarkers();
-            infoDrawer.open();
-            selectedFeature.setText(record("facname"), 28);
-        })
-    ],
-    style: Sintium.style({
-        size: 5,
-        colors: toolsLayerColors,
-        clusterSize: 13,
-        shape: "circle",
-        fillColor: "rgba(102, 204, 255, 1.0)",
-        strokeColor: "rgba(8, 113, 114, 1.0)"
-    }),
-    selectedStyle: Sintium.style({
-        shape: "circle",
-        size: 18,
-        clusterSize: 13,
-        fillColor: "rgba(102, 204, 255, 1.0)",
-        strokeColor: "rgba(8, 113, 114, 1.0)"
-    })
+seaBottomInstallationsLayer.addSelection({
+    selector: "single",
+    condition: "click",
+    callback: seaBottomInstallationsFunction
 });

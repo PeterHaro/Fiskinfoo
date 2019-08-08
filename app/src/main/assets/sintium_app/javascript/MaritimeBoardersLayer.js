@@ -1,49 +1,53 @@
-
-function martimeBordersSelection(e) {
-    selectedFeature = e.getAllSelectedFeatures()[0];
-    var record = selectedFeature.getRecord();
+function maritimeBordersSelection(e) {
+    selectedFeature = e.popFeature();
+    var record = e.popRecord();
     infoTemplate.setData({
-        title: record("navn"),
+        title: record.get("navn"),
         subTitle: "Martime grenser",
-        description: record("informasjon"),
+        description: record.get("informasjon"),
         infoWithIcon: {
             "_Land": {
                 icon: "far fa-flag",
-                value: landCodeToCountryName(record, "landkode")
+                value: landCodeToCountryName(record.get("landkode"))
             },
             "Gyldig fra:": {
                 icon: "fas fa-calendar-alt",
-                value: formattedDate(record("gyldig_fra"))
+                value: formattedDate(record.get("gyldig_fra"))
             },
             "Siste oppdatering": {
                 icon: "fas fa-calendar-alt",
-                value: formattedDate(record("oppdateringsdato"))
+                value: formattedDate(record.get("oppdateringsdato"))
             }
         }
     });
-    e.getMap().clearMarkers();
     infoDrawer.open();
 }
 
 // Instantiating maritime borders layer
 var maritimeBordersSource = Sintium.dataSource({
-    url: "https://www.barentswatch.no/api/v1/geodata/download/maritimeboundary/?format=JSON"
+    url: "https://www.barentswatch.no/api/v1/geodata/download/maritimeboundary/?format=JSON",
 });
 
-var maritimeBordersLayer = Sintium.vectorLayer({
+var maritimeBordersLayer = Sintium.vectorLayer2({
     layerId: "Maritime grenser",
     dataSource: maritimeBordersSource,
     visible: false,
-    selections: [
-        Sintium.selection(['single click'], martimeBordersSelection)
-    ],
-    style: Sintium.style({
-        fillColor: "#1c5385",
-        strokeSize: 2
-    }),
-    selectedStyle: Sintium.style({
-        fillColor: "#1c5385",
-        strokeSize: 4
-    })
+    style: {
+        single: {
+            fillColor: "#1c5385",
+            strokeSize: 2
+        }
+    },
+    selectedStyle: {
+        single: {
+            fillColor: "#1c5385",
+            strokeSize: 4
+        }
+    }
+});
 
+maritimeBordersLayer.addSelection({
+    selector: "single",
+    condition: "click",
+    callback: maritimeBordersSelection
 });
