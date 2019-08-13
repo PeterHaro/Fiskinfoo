@@ -759,7 +759,7 @@ public class FiskInfoUtility {
      * @return
      */
     public static boolean validateRegistrationNumber(String regnum) {
-        return regnum != null && regnum.matches("^[a-zA-Z]{1,2}\\d{1,4}[a-zA-Z]{1,2}$");
+        return regnum != null && regnum.matches("^[a-zA-Z|øØ]{1,2}\\d{1,4}[a-zA-Z|øØ]{1,2}$");
     }
 
     public static boolean validateVesselName(String name) {
