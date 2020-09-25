@@ -198,7 +198,8 @@ public class ActiveToolsFragment extends Fragment {
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.active_tools_swipe_refresh_layout);
         newToolButton = (FloatingActionButton) rootView.findViewById(R.id.register_tool_layout_add_tool_material_button);
 
-        if(!user.getIsFishingFacilityAuthenticated()) {
+        if (false) { // TODO: Revert
+//        if(!user.getIsFishingFacilityAuthenticated()) {
             newToolButton.setEnabled(false);
             newToolButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.unavailable_grey)));
 

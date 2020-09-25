@@ -213,6 +213,7 @@ public class DegreesMinutesSecondsRow extends CoordinateRow implements ICoordina
             longitudeMinutesEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
 
             valid = (fieldValid = !(minLonSecond > longitudeSeconds || maxLonSecond < longitudeSeconds)) && valid;
+
             longitudeSecondsEditText.setError(fieldValid ? null : super.getContext().getString(R.string.error_invalid_format));
 
             if(!valid) {
